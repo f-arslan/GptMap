@@ -19,3 +19,6 @@ rootProject.name = "gptmap"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":app")
 include(":core:designsystem")
+include(":core:common")
+include(":core:data")
+include(":core:model")
