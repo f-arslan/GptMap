@@ -2,9 +2,13 @@ buildscript {
     repositories {
         mavenCentral()
     }
+    dependencies {
+        classpath(libs.google.services)
+        classpath(libs.gradle)
+        classpath(libs.firebase.crashlytics.gradlePlugin)
+    }
 }
 
-// Lists all plugins used throughout the project without applying them.
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.jvm) apply false

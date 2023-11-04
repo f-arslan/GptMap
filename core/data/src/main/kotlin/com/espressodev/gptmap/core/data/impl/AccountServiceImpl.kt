@@ -11,6 +11,7 @@ import com.espressodev.gptmap.core.data.SendPasswordResetEmailResponse
 import com.espressodev.gptmap.core.data.SignInResponse
 import com.espressodev.gptmap.core.data.SignUpResponse
 import com.espressodev.gptmap.core.data.UpdatePasswordResponse
+import com.espressodev.gptmap.core.model.Response
 
 class AccountServiceImpl @Inject constructor(
     private val auth: FirebaseAuth
