@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
@@ -17,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
+import com.espressodev.gptmap.feature.map.MapRoute
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -24,7 +24,7 @@ fun GmApp() {
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
         val appState = rememberAppState()
         Column {
-            Text(text = "Hello")
+            MapRoute()
         }
     }
 }
@@ -44,7 +44,7 @@ fun rememberAppState(
     resources: Resources = resources(),
     coroutineScope: CoroutineScope = rememberCoroutineScope()
 ) = remember(navController, snackbarHostState, coroutineScope) {
-    SpAppState(
+    GmAppState(
         navController,
         snackbarHostState,
         snackbarManager,

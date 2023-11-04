@@ -10,6 +10,6 @@ android {
 
 dependencies {
     implementation(libs.androidx.compose.runtime)
-    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.firestore)
     implementation(libs.play.services.maps)
 }

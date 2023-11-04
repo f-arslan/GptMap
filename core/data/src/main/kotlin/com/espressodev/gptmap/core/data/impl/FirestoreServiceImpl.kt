@@ -4,7 +4,7 @@ import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.model.User
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.dataObjects
+import com.google.firebase.firestore.dataObjects
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -35,7 +35,6 @@ class FirestoreServiceImpl @Inject constructor(
 
 
     companion object {
-        private const val TAG = "FirestoreServiceImpl"
         private const val USERS = "users"
 
         private const val USER_PROFILE_PICTURE_URL = "profilePictureUrl"

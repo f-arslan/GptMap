@@ -30,11 +30,11 @@ androidxWork = "2.9.0-rc01"
 coil = "2.4.0"
 firebaseBom = "32.5.0"
 firebaseCrashlyticsPlugin = "2.9.9"
-firebase-crashlytics-ktx = "18.5.1"
-firebase-auth-ktx = "22.2.0"
-firebase-firestore-ktx = "24.9.1"
-firebase-analytics-ktx = "21.5.0"
-firebase-messaging-ktx = "23.3.1"
+firebase-crashlytics = "18.5.1"
+firebase-auth = "22.2.0"
+firebase-firestore = "24.9.1"
+firebase-analytics = "21.5.0"
+firebase-messaging = "23.3.1"
 gmsPlugin = "4.4.0"
 googleOss = "17.0.1"
 googleOssPlugin = "0.10.6"
@@ -54,14 +54,9 @@ playServicesLocation = "21.0.1"
 playServicesMaps = "18.2.0"
 secrets = "2.0.1"
 kotlin1910 = "1.9.10"
+mapsCompose = "4.1.1"
 junit = "1.1.5"
-monitor = "1.6.1"
-material = "1.10.0"
 googleServices = "4.4.0"
-firebaseAuth = "22.2.0"
-firebaseFirestore = "24.9.1"
-firebaseCrashlytics = "18.5.1"
-firebaseAnalytics = "21.5.0"
 gradle = "7.3.1"
 
 
@@ -110,13 +105,12 @@ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "j
 coil-kt = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
 coil-kt-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 coil-kt-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil" }
-firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebase-auth-ktx" }
-firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebase-firestore-ktx" }
-firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebase-auth" }
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebase-firestore" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
-firebase-crashlytics-ktx = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
-firebase-analytics-ktx = { group = "com.google.firebase", name = "firebase-analytics-ktx", version.ref = "firebase-analytics-ktx" }
-firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebase-messaging-ktx" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics", version.ref = "firebase-crashlytics" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebase-messaging" }
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 google-oss-licenses = { group = "com.google.android.gms", name = "play-services-oss-licenses", version.ref = "googleOss" }
 google-oss-licenses-plugin = { group = "com.google.android.gms", name = "oss-licenses-plugin", version.ref = "googleOssPlugin" }
@@ -131,6 +125,7 @@ kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
 retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-kotlin-serialization = { group = "com.jakewharton.retrofit", name = "retrofit2-kotlinx-serialization-converter", version.ref = "retrofitKotlinxSerializationJson" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
@@ -149,7 +144,6 @@ work-testing = { group = "androidx.work", name = "work-testing", version = "2.8.
 # End of it
 
 google-services = { group = "com.google.gms", name = "google-services", version.ref = "googleServices" }
-firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics", version.ref = "firebaseCrashlytics" }
 gradle = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
 
 

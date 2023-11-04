@@ -12,11 +12,11 @@ class AndroidApplicationFirebaseConventionPlugin : Plugin<Project> {
             }
 
             dependencies {
-                "implementation"(libs.findLibrary("firebase-auth-ktx").get())
-                "implementation"(libs.findLibrary("firebase-firestore-ktx").get())
-                "implementation"(libs.findLibrary("firebase-crashlytics-ktx").get())
-                "implementation"(libs.findLibrary("firebase-analytics-ktx").get())
-                "implementation"(libs.findLibrary("firebase-messaging-ktx").get())
+                "implementation"(libs.findLibrary("firebase-auth").get())
+                "implementation"(libs.findLibrary("firebase-firestore").get())
+                "implementation"(libs.findLibrary("firebase-crashlytics").get())
+                "implementation"(libs.findLibrary("firebase-analytics").get())
+                "implementation"(libs.findLibrary("firebase-messaging").get())
                 "implementation"(libs.findLibrary("play-services-auth").get())
                 "implementation"(libs.findLibrary("play-services-location").get())
                 "implementation"(libs.findLibrary("play-services-maps").get())

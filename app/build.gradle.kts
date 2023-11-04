@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.gptmap.android.application)
     alias(libs.plugins.gptmap.android.application.compose)
     alias(libs.plugins.gptmap.android.hilt)
-    alias(libs.plugins.gptmap.android.application.firebase)
 }
 
 android {
@@ -32,6 +31,8 @@ android {
 }
 
 dependencies {
+    implementation(projects.feature.map)
+
     implementation(projects.core.designsystem)
     implementation(projects.core.common)
     implementation(projects.core.data)
