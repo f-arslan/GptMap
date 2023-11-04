@@ -22,3 +22,40 @@ dependencies {
     compileOnly(libs.ksp.gradlePlugin)
     compileOnly(libs.android.gradlePlugin)
 }
+
+gradlePlugin {
+    plugins {
+        register("androidApplicationCompose") {
+            id = "gptmap.android.application.compose"
+            implementationClass = "AndroidApplicationComposeConventionPlugin"
+        }
+        register("androidApplication") {
+            id = "gptmap.android.application"
+            implementationClass = "AndroidApplicationConventionPlugin"
+        }
+        register("androidLibraryCompose") {
+            id = "gptmap.android.library.compose"
+            implementationClass = "AndroidLibraryComposeConventionPlugin"
+        }
+        register("androidLibrary") {
+            id = "gptmap.android.library"
+            implementationClass = "AndroidLibraryConventionPlugin"
+        }
+        register("androidFeature") {
+            id = "gptmap.android.feature"
+            implementationClass = "AndroidFeatureConventionPlugin"
+        }
+        register("androidHilt") {
+            id = "gptmap.android.hilt"
+            implementationClass = "AndroidHiltConventionPlugin"
+        }
+        register("androidFirebase") {
+            id = "gptmap.android.application.firebase"
+            implementationClass = "AndroidApplicationFirebaseConventionPlugin"
+        }
+        register("jvmLibrary") {
+            id = "gptmap.jvm.library"
+            implementationClass = "JvmLibraryConventionPlugin"
+        }
+    }
+}

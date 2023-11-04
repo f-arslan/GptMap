@@ -7,8 +7,8 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             pluginManager.apply {
-                apply("surprisepackage.android.library")
-                apply("surprisepackage.android.hilt")
+                apply("gptmap.android.library")
+                apply("gptmap.android.hilt")
             }
 
             dependencies {

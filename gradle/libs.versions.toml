@@ -28,8 +28,13 @@ androidxUiAutomator = "2.2.0"
 androidxWindowManager = "1.1.0"
 androidxWork = "2.9.0-rc01"
 coil = "2.4.0"
-firebaseBom = "32.4.0"
+firebaseBom = "32.5.0"
 firebaseCrashlyticsPlugin = "2.9.9"
+firebase-crashlytics-ktx = "18.5.1"
+firebase-auth-ktx = "22.2.0"
+firebase-firestore-ktx = "24.9.1"
+firebase-analytics-ktx = "21.5.0"
+firebase-messaging-ktx = "23.3.1"
 gmsPlugin = "4.4.0"
 googleOss = "17.0.1"
 googleOssPlugin = "0.10.6"
@@ -44,6 +49,9 @@ ksp = "1.9.10-1.0.13"
 retrofit = "2.9.0"
 retrofitKotlinxSerializationJson = "1.0.0"
 room = "2.6.0"
+playServicesAuth = "20.7.0"
+playServicesLocation = "21.0.1"
+playServicesMaps = "18.2.0"
 secrets = "2.0.1"
 
 
@@ -91,9 +99,14 @@ androidx-work-testing = { group = "androidx.work", name = "work-testing", versio
 coil-kt = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
 coil-kt-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 coil-kt-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil" }
+firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebase-auth-ktx" }
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebase-firestore-ktx" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
-firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
+firebase-crashlytics-ktx = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
+firebase-analytics-ktx = { group = "com.google.firebase", name = "firebase-analytics-ktx", version.ref = "firebase-analytics-ktx" }
+firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebase-messaging-ktx" }
+play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 google-oss-licenses = { group = "com.google.android.gms", name = "play-services-oss-licenses", version.ref = "googleOss" }
 google-oss-licenses-plugin = { group = "com.google.android.gms", name = "oss-licenses-plugin", version.ref = "googleOssPlugin" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
@@ -112,6 +125,8 @@ retrofit-kotlin-serialization = { group = "com.jakewharton.retrofit", name = "re
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
+play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -133,3 +148,13 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
+
+# Plugins defined by this project
+gptmap-android-application = { id = "gptmap.android.application", version = "unspecified" }
+gptmap-android-application-compose = { id = "gptmap.android.application.compose", version = "unspecified" }
+gptmap-android-library = { id = "gptmap.android.library", version = "unspecified" }
+gptmap-android-library-compose = { id = "gptmap.android.library.compose", version = "unspecified" }
+gptmap-android-feature = { id = "gptmap.android.feature", version = "unspecified" }
+gptmap-android-hilt = { id = "gptmap.android.hilt", version = "unspecified" }
+gptmap-android-application-firebase = { id = "gptmap.android.application.firebase", version = "unspecified" }
+gptmap-jvm-library = { id = "gptmap.jvm.library", version = "unspecified" }
