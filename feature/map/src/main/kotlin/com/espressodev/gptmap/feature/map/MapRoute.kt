@@ -9,6 +9,8 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.espressodev.gptmap.core.designsystem.component.MapSearchButton
+import com.espressodev.gptmap.core.designsystem.component.MapTextField
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -39,6 +41,12 @@ private fun MapScreen() {
 @Composable
 private fun MapBottomBar() {
     BottomAppBar {
+        MapTextField(
+            value = ,
+            placeholder = ,
+            onValueChange =
+        )
+        MapSearchButton(onClick = {})
     }
 }
 
