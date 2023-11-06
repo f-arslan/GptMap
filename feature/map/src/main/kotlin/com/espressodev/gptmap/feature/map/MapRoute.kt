@@ -3,7 +3,9 @@ package com.espressodev.gptmap.feature.map
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,10 +24,21 @@ fun MapRoute() {
 
 @Composable
 private fun MapScreen() {
-    Scaffold {
+    Scaffold(
+        bottomBar = {
+            MapBottomBar()
+        },
+    ) {
         Column(modifier = Modifier.padding(it)) {
             MapSection()
         }
+    }
+}
+
+
+@Composable
+private fun MapBottomBar() {
+    BottomAppBar {
     }
 }
 

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Common -->
+    <string name="clear">Clear</string>
+    <string name="search">Search</string>
+
+
+    <!-- Map Screen -->
+    <string name="map_textField_placeholder">Whenever you ready…</string>
+</resources>
