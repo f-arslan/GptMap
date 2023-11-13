@@ -1,23 +1,23 @@
 [versions]
 accompanist = "0.32.0"
 androidDesugarJdkLibs = "2.0.4"
-androidGradlePlugin = "8.1.2"
-androidTools = "31.1.2"
+androidGradlePlugin = "8.1.3"
+androidTools = "31.1.3"
 androidxActivity = "1.8.0"
 androidxAppCompat = "1.6.1"
 androidxBrowser = "1.6.0"
 androidxComposeBom = "2023.10.01"
-androidxComposeCompiler = "1.5.3"
+androidxComposeCompiler = "1.5.4"
 androidxComposeRuntimeTracing = "1.0.0-alpha04"
 androidxCore = "1.12.0"
 androidxCoreSplashscreen = "1.0.1"
 androidxDataStore = "1.0.0"
 androidxEspresso = "3.5.1"
-androidxHiltNavigationCompose = "1.0.0"
+androidxHiltNavigationCompose = "1.1.0"
 androidxLifecycle = "2.6.2"
 androidxMacroBenchmark = "1.2.0"
 androidxMetrics = "1.0.0-alpha04"
-androidxNavigation = "2.7.4"
+androidxNavigation = "2.7.5"
 androidxProfileinstaller = "1.3.1"
 androidxTestCore = "1.5.0"
 androidxTestExt = "1.1.5"
@@ -39,13 +39,13 @@ gmsPlugin = "4.4.0"
 googleOss = "17.0.1"
 googleOssPlugin = "0.10.6"
 hilt = "2.48.1"
-hiltExt = "1.0.0"
+hiltExt = "1.1.0"
 junit4 = "4.13.2"
-kotlin = "1.9.10"
+kotlin = "1.9.20"
 kotlinxCoroutines = "1.7.3"
 kotlinxDatetime = "0.4.1"
 kotlinxSerializationJson = "1.6.0"
-ksp = "1.9.10-1.0.13"
+ksp = "1.9.20-1.0.14"
 retrofit = "2.9.0"
 retrofitKotlinxSerializationJson = "1.0.0"
 room = "2.6.0"
@@ -53,12 +53,12 @@ playServicesAuth = "20.7.0"
 playServicesLocation = "21.0.1"
 playServicesMaps = "18.2.0"
 secrets = "2.0.1"
-kotlin1910 = "1.9.10"
 mapsCompose = "4.1.1"
 junit = "1.1.5"
 googleServices = "4.4.0"
+okhttp3Logging = "4.12.0"
 gradle = "7.3.1"
-
+googleGson = "2.10.1"
 
 [libraries]
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
@@ -126,8 +126,13 @@ kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
+
 retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-converter-gson = { group = "com.squareup.retrofit2:converter-gson", name = "retrofit-converter-gson", version.ref = "retrofit" }
+okhttp3-logging-interceptor = { group = "com.squareup.okhttp3:logging-interceptor", name = "okhttp3-logging-interceptor", version.ref = "okhttp3Logging" }
+google-code-gson = { group = "com.google.code.gson:gson", name = "google-gson", version.ref = "googleGson" }
 retrofit-kotlin-serialization = { group = "com.jakewharton.retrofit", name = "retrofit2-kotlinx-serialization-converter", version.ref = "retrofitKotlinxSerializationJson" }
+
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
@@ -168,4 +173,4 @@ gptmap-android-feature = { id = "gptmap.android.feature", version = "unspecified
 gptmap-android-hilt = { id = "gptmap.android.hilt", version = "unspecified" }
 gptmap-android-application-firebase = { id = "gptmap.android.application.firebase", version = "unspecified" }
 gptmap-jvm-library = { id = "gptmap.jvm.library", version = "unspecified" }
-kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin1910" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

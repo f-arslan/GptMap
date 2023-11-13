@@ -2,6 +2,7 @@ package com.espressodev.gptmap.core.designsystem.component
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Shape
@@ -9,6 +10,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
+import com.espressodev.gptmap.core.designsystem.Constants.NO_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
@@ -19,7 +21,10 @@ fun MapSearchButton(
     shape: Shape = RoundedCornerShape(HIGH_PADDING),
     onClick: () -> Unit,
 ) {
-    FloatingActionButton(onClick = onClick, shape = shape) {
+    FloatingActionButton(
+        onClick = onClick, shape = shape,
+        elevation = FloatingActionButtonDefaults.elevation(defaultElevation = NO_PADDING)
+    ) {
         Icon(icon, stringResource(id = AppText.search))
     }
 }

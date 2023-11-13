@@ -3,8 +3,10 @@ package com.espressodev.gptmap.core.designsystem.component
 import androidx.annotation.StringRes
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -38,7 +40,9 @@ fun MapTextField(
         modifier = modifier,
         trailingIcon = {
             if (shouldShownClearIcon) {
-                Icon(GmIcons.ClearDefault, stringResource(id = AppText.clear))
+                IconButton(onClick = { onValueChange("") }) {
+                    Icon(GmIcons.ClearDefault, stringResource(id = AppText.clear))
+                }
             }
         },
         maxLines = 3,

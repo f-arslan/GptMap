@@ -20,7 +20,6 @@ object Constants {
     val AVATAR_SIZE = 125.dp
     val APP_ICON_SIZE = 200.dp
     val APP_ICON_SIZE_SMALL = 100.dp
-    val BUTTON_SIZE = 54.dp
     val BUTTON_WIDTH = 150.dp
     val BUTTON_HEIGHT = 56.dp
     val CARD_HEIGHT = 150.dp
