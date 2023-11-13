@@ -128,9 +128,9 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
 
 retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
-retrofit-converter-gson = { group = "com.squareup.retrofit2:converter-gson", name = "retrofit-converter-gson", version.ref = "retrofit" }
-okhttp3-logging-interceptor = { group = "com.squareup.okhttp3:logging-interceptor", name = "okhttp3-logging-interceptor", version.ref = "okhttp3Logging" }
-google-code-gson = { group = "com.google.code.gson:gson", name = "google-gson", version.ref = "googleGson" }
+retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
+okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp3Logging" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "googleGson" }
 retrofit-kotlin-serialization = { group = "com.jakewharton.retrofit", name = "retrofit2-kotlinx-serialization-converter", version.ref = "retrofitKotlinxSerializationJson" }
 
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
