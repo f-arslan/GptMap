@@ -16,7 +16,8 @@ initializeApp();
 
 
 // Set the maximum instances to 10 for all functions
-setGlobalOptions({ maxInstances: 20 });
+setGlobalOptions({ maxInstances: 10 });
+
 
 const { OpenAI } = require("openai");
 
@@ -24,75 +25,46 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-async function createAssistant() {
-  return await openai.beta.assistants.retrieve("asst_npYA2Cc8VynlL6hwZADo4koh");
-}
-
-async function createThread() {
-  return await openai.beta.threads.create();
-}
-
-async function processThread(thread, message) {
-  await openai.beta.threads.messages.create(thread.id, {
-    role: "user",
-    content: message,
-  });
-}
-
-async function createRun(thread, assistant) {
-  return await openai.beta.threads.runs.create(thread.id, {
-    assistant_id: assistant.id,
-  });
-}
-
-async function runStatusObserver(thread, run) {
-  return await openai.beta.threads.runs.retrieve(thread.id, run.id);
-}
-
-async function getMessages(thread) {
-  return await openai.beta.threads.messages.list(thread.id);
-}
-
 exports.asklocation = onRequest({ region: "europe-west3" }, async (request, response) => {
   try {
 
-    const assistant = createAssistant();
+    const assistant = await openai.beta.assistants.retrieve("asst_npYA2Cc8VynlL6hwZADo4koh");
+    const thread = await openai.beta.threads.create();
+    const message = "what is the best place in the earth?";
 
-    const thread = createThread();
+    await openai.beta.threads.messages.create(thread.id, {
+      role: "user",
+      content: message,
+    });
 
-    const message = request;
+    const run = await openai.beta.threads.runs.create(thread.id, {
+      assistant_id: assistant.id,
+    });
 
-    processThread(thread, message);
+    let runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
 
-    const run = createRun(thread, assistant);
-
-    let runStatus = runStatusObserver(thread, run);
-
-    maxThreshold = 3;
+    maxThreshold = 15;
     count = 0;
-    while (runStatus !== "completed" && runcount < maxThreshold) {
-      delay();
-      runStatus = runStatusObserver();
+    while (runStatus.status !== "completed" && count < maxThreshold) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
+      console.log(runStatus.status);
+      count++;
     }
-    if (runStatus !== completed) {
-      return null;
-    }
+    console.log("run Status:", runStatus.status);
 
-    const messages = getMessages(thread);
-
+    const messages = await openai.beta.threads.messages.list(thread.id);
     const lastMessageForRun = messages.data.filter(
       (message) => message.run_id == run.id && message.role === "assistant",
-    ).pop();
-
+    );
+    console.log(lastMessageForRun);
     if (lastMessageForRun) {
-      console.log(`${lastMessageForRun.content[0].text.value}\n`);
+      console.log(`${lastMessageForRun.content}\n`);
     }
   } catch (error) {
     console.log(error);
   }
+
+  response.send("Hello, World!");
+  return;
 });
-
-
-async function delay() {
-  return await new Promise((resolve) => setTimeout(resolve, 1000));
-}

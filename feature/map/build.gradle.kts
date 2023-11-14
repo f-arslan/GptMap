@@ -11,5 +11,8 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.chatgpt)
+    implementation(projects.core.model)
+
     implementation(libs.maps.compose)
 }

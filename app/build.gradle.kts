@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.gptmap.android.application)
     alias(libs.plugins.gptmap.android.application.compose)
     alias(libs.plugins.gptmap.android.hilt)
+    alias(libs.plugins.gptmap.android.application.firebase)
 }
 
 android {

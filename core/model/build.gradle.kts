@@ -12,4 +12,5 @@ dependencies {
     implementation(libs.androidx.compose.runtime)
     implementation(libs.firebase.firestore)
     implementation(libs.play.services.maps)
+    implementation(libs.gson)
 }

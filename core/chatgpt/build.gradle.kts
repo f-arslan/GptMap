@@ -12,6 +12,8 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.model)
+
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.converter.gson)
     implementation(libs.okhttp3.logging.interceptor)

@@ -13,4 +13,6 @@ dependencies {
 
     implementation(libs.androidx.lifecycle.viewModelCompose)
     implementation(libs.androidx.lifecycle.runtimeCompose)
+    implementation(libs.firebase.bom)
+    implementation(libs.firebase.crashlytics)
 }
