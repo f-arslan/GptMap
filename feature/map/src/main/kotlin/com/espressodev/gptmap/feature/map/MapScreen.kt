@@ -1,29 +1,35 @@
 package com.espressodev.gptmap.feature.map
 
+import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
+import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.component.MapSearchButton
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
-import com.espressodev.gptmap.core.model.Location
+import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.Response
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
@@ -34,6 +40,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 @Composable
 fun MapRoute(viewModel: MapViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    Log.d("MapRoute", "uiState: $uiState")
     MapScreen(
         uiState = uiState,
         onSearchValueChange = viewModel::onSearchValueChange,
@@ -47,17 +54,30 @@ private fun MapScreen(
     onSearchValueChange: (String) -> Unit,
     onSearchClick: () -> Unit
 ) {
-    Scaffold(
-        bottomBar = {
-            MapBottomBar(
-                searchValue = uiState.searchValue,
-                onValueChange = onSearchValueChange,
-                onSearchClick = onSearchClick
-            )
-        },
-    ) {
-        Column(modifier = Modifier.padding(it)) {
-            MapSection(uiState.location)
+    with(uiState.location) {
+        when (this) {
+            is Response.Failure -> {}
+            Response.Loading -> {}
+            is Response.Success -> {
+                val latLng: LatLng = data.content.coordinates.let {
+                    LatLng(it.latitude, it.longitude)
+                }
+                val cameraPositionState = rememberCameraPositionState {
+                    position = CameraPosition.fromLatLngZoom(latLng, 15f)
+                }
+                LaunchedEffect(latLng) {
+                    if (data.id != "default")
+                        cameraPositionState.animate(CameraUpdateFactory.newLatLng(latLng))
+                }
+                Column(modifier = Modifier.fillMaxSize()) {
+                    MapSection(
+                        cameraPositionState = cameraPositionState,
+                        modifier = Modifier.weight(1f),
+                        loadingState = uiState.loadingState
+                    )
+                    MapBottomBar(uiState.searchValue, onSearchValueChange, onSearchClick)
+                }
+            }
         }
     }
 }
@@ -69,10 +89,10 @@ private fun MapBottomBar(
     onValueChange: (String) -> Unit,
     onSearchClick: () -> Unit
 ) {
-    BottomAppBar {
+    Surface {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = MEDIUM_PADDING)
+            modifier = Modifier.padding(MEDIUM_PADDING)
         ) {
             MapTextField(
                 value = searchValue,
@@ -87,19 +107,31 @@ private fun MapBottomBar(
 }
 
 @Composable
-private fun MapSection(location: Response<Location>) {
-    val singapore = LatLng(1.35, 103.87)
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(singapore, 10f)
-    }
-    Box(modifier = Modifier.fillMaxSize()) {
-
+private fun MapSection(
+    modifier: Modifier,
+    cameraPositionState: CameraPositionState,
+    loadingState: LoadingState
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+    ) {
+        AnimatedVisibility(
+            visible = loadingState == LoadingState.Loading,
+            modifier = Modifier
+                .padding(top = VERY_HIGH_PADDING)
+                .zIndex(1f)
+                .align(Alignment.TopCenter)
+        ) {
+            CircularProgressIndicator()
+        }
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraPositionState
+            cameraPositionState = cameraPositionState,
         ) {
+            // TODO: Make default marker, because this is not functionality
             Marker(
-                state = MarkerState(position = singapore),
+                state = MarkerState(position = cameraPositionState.position.target),
                 title = "Singapore",
                 snippet = "Marker in Singapore"
             )

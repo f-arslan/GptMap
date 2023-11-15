@@ -5,8 +5,10 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
@@ -15,14 +17,19 @@ import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MapSearchButton(
     icon: ImageVector = GmIcons.SearchDefault,
     shape: Shape = RoundedCornerShape(HIGH_PADDING),
     onClick: () -> Unit,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
     FloatingActionButton(
-        onClick = onClick, shape = shape,
+        onClick = {
+            keyboardController?.hide()
+            onClick()
+        }, shape = shape,
         elevation = FloatingActionButtonDefaults.elevation(defaultElevation = NO_PADDING)
     ) {
         Icon(icon, stringResource(id = AppText.search))
