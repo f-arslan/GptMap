@@ -1,7 +1,9 @@
 package com.espressodev.gptmap.core.model
 
+import androidx.compose.runtime.Stable
 import com.google.firebase.firestore.DocumentId
 
+@Stable
 data class User(
     @DocumentId val userId: String = "",
     val fullName: String = "",
