@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.gptmap.android.library)
     alias(libs.plugins.gptmap.android.hilt)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.secrets)
 }
 
@@ -18,4 +19,5 @@ dependencies {
     implementation(libs.retrofit.converter.gson)
     implementation(libs.okhttp3.logging.interceptor)
     implementation(libs.gson)
+    implementation(libs.kotlinx.serialization.json)
 }

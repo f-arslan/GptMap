@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.gptmap.android.library)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.gptmap.android.library.compose)
 }
 
@@ -13,4 +14,5 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.play.services.maps)
     implementation(libs.gson)
+    implementation(libs.kotlinx.serialization.json)
 }

@@ -1,4 +1,8 @@
 package com.espressodev.gptmap.core.model
 
-class Location {
-}
+import com.espressodev.gptmap.core.model.chatgpt.Content
+
+data class Location(
+    val id: String,
+    val content: Content
+)

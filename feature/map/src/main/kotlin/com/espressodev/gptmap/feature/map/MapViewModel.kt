@@ -7,8 +7,8 @@ import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.model.chatgpt.ChatgptRequest
 import com.espressodev.gptmap.core.model.chatgpt.Message
+
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -25,7 +25,7 @@ class MapViewModel @Inject constructor(
 
     fun onSearchValueChange(text: String) = _uiState.update { it.copy(searchValue = text) }
 
-    fun onSearchClick() = launchCatching {
+    fun onSearchClick() = viewModelScope.launch {
         val requestBody = ChatgptRequest(
             model = "gpt-3.5-turbo",
             messages = listOf(Message(uiState.value.searchValue, "user")),
