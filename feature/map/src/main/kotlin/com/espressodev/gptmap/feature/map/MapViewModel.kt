@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.espressodev.gptmap.core.chatgpt.ChatgptService
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.data.LogService
+import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.model.chatgpt.ChatgptRequest
 import com.espressodev.gptmap.core.model.chatgpt.Message
 
@@ -26,13 +27,12 @@ class MapViewModel @Inject constructor(
     fun onSearchValueChange(text: String) = _uiState.update { it.copy(searchValue = text) }
 
     fun onSearchClick() = viewModelScope.launch {
-        val requestBody = ChatgptRequest(
-            model = "gpt-3.5-turbo",
-            messages = listOf(Message(uiState.value.searchValue, "user")),
-            temperature = 0.7
-        )
+        _uiState.update { it.copy(location = Response.Loading) }
+
+        val requestBody = ChatgptRequest(listOf(Message(uiState.value.searchValue)))
         val response = chatgptService.getPrompt(requestBody)
-        Log.d(TAG, response.toString())
+
+        _uiState.update { it.copy(location = response) }
     }
 
     private companion object {

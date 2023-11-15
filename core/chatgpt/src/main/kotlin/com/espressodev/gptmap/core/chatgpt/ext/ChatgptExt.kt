@@ -1,10 +1,6 @@
 package com.espressodev.gptmap.core.chatgpt.ext
 
-import com.espressodev.gptmap.core.model.Location
-import com.espressodev.gptmap.core.model.chatgpt.Content
 import com.espressodev.gptmap.core.model.chatgpt.ChatgptRequest
-import com.espressodev.gptmap.core.model.chatgpt.ChatgptResponse
-import kotlinx.serialization.json.Json
 
 
 internal fun ChatgptRequest.mergeMessageWithPreText(): ChatgptRequest {
@@ -12,11 +8,6 @@ internal fun ChatgptRequest.mergeMessageWithPreText(): ChatgptRequest {
     val requestContent = "${PRE_TEXT}$currentContent"
     val newMessages = listOf(messages.first().copy(content = requestContent))
     return copy(messages = newMessages)
-}
-
-internal fun ChatgptResponse.toLocation(responseContent: String, id: String): Location {
-    val content = Json.decodeFromString<Content>(responseContent)
-    return Location(id = id, content = content)
 }
 
 

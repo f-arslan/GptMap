@@ -6,7 +6,7 @@ data class ChatgptRequest(
     @SerializedName("messages")
     val messages: List<Message>,
     @SerializedName("model")
-    val model: String,
+    val model: String = "gpt-3.5-turbo",
     @SerializedName("temperature")
-    val temperature: Double
+    val temperature: Double = 0.7
 )
