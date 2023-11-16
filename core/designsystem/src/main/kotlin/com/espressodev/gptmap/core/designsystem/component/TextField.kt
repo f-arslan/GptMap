@@ -6,7 +6,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -56,6 +55,6 @@ private fun TextFieldPreview() {
     MapTextField(
         value = "",
         onValueChange = {},
-        placeholder = AppText.map_textField_placeholder,
+        placeholder = AppText.map_text_field_placeholder,
     )
 }

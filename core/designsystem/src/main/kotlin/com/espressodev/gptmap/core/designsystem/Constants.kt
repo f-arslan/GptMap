@@ -15,20 +15,5 @@ object Constants {
     val VERY_HIGH_PADDING = 24.dp
     val MAX_PADDING = 32.dp
     val VERY_MAX_PADDING = 48.dp
-    val ICON_SIZE = 40.dp
-    val SMALL_ICON_SIZE = 14.dp
-    val AVATAR_SIZE = 125.dp
-    val APP_ICON_SIZE = 200.dp
-    val APP_ICON_SIZE_SMALL = 100.dp
-    val BUTTON_WIDTH = 150.dp
-    val BUTTON_HEIGHT = 56.dp
-    val CARD_HEIGHT = 150.dp
-    val FOOD_CARD_HEIGHT = 150.dp
-    val CARD_WIDTH = 220.dp
-    val FEATURE_CARD_HEIGHT = 300.dp
-    val CARD_IMAGE_HEIGHT = 130.dp
-    val MARKER_SIZE = 64.dp
-    val TEXT_FIELD_HEIGHT = 54.dp
-    val IMAGE_SIZE = 100.dp
-    val IMAGE_HEIGHT = 140.dp
+    val MARKER_SIZE = 72.dp
 }

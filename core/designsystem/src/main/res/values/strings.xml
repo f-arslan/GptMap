@@ -6,5 +6,6 @@
 
 
     <!-- Map Screen -->
-    <string name="map_textField_placeholder">Whenever you ready…</string>
+    <string name="map_text_field_placeholder">Whenever you ready…</string>
+    <string name="loading_dialog_text">Discovering your dream place…</string>
 </resources>
