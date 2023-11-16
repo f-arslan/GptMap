@@ -11,19 +11,18 @@ internal fun ChatgptRequest.mergeMessageWithPreText(): ChatgptRequest {
 }
 
 
-private const val PRE_TEXT = "Information: Details about a preferred location\n" +
-        "Task: Provide coordinates, city, country, and a friendly description\n" +
-        "Note: you can make similar guesses if specific information is not provided\n" +
-        "Friendly Description: Keep the description warm and inviting and short (max 15 words)\n" +
-        "If you can't find anything you can return random location" +
-        "Size of Description: Concise and brief\n" +
+private const val PRE_TEXT = "User Input: Desired place, and a close guess if not exact.\n" +
+        "Provide coordinates, city, district, country, poetic description (15 words or less), and a normal description (under 50 words, covering area, population, key landmarks).\n" +
+        "Return a close location if the exact one isn't found." +
         "Output: JSON object only,\n" +
         "make JSON format accordingly:" +
         "data class Content(\n" +
         "    val coordinates: Coordinates,\n" +
         "    val city: String,\n" +
+        "    val district: String? = null,\n" +
         "    val country: String,\n" +
-        "    val description: String\n" +
+        "    val poeticDescription: String,\n" +
+        "    val normalDescription: String\n" +
         ")" +
         "data class Coordinates(\n" +
         "    val latitude: Double,\n" +

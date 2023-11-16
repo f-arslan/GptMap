@@ -7,8 +7,10 @@ import kotlinx.serialization.Serializable
 data class Content(
     val coordinates: Coordinates,
     val city: String,
+    val district: String? = null,
     val country: String,
-    val description: String
+    val poeticDescription: String,
+    val normalDescription: String
 )
 
 

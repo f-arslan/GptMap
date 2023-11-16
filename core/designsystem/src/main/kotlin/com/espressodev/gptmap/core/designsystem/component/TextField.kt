@@ -22,6 +22,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 @Composable
 fun MapTextField(
     value: String,
+    textFieldEnabledState: Boolean,
     @StringRes placeholder: Int,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -45,6 +46,7 @@ fun MapTextField(
             }
         },
         maxLines = 3,
+        enabled = textFieldEnabledState
     )
 }
 
@@ -53,8 +55,12 @@ fun MapTextField(
 @Preview(showBackground = true)
 private fun TextFieldPreview() {
     MapTextField(
-        value = "",
-        onValueChange = {},
+        value = "quam",
+        textFieldEnabledState = true,
         placeholder = AppText.map_text_field_placeholder,
+        onValueChange = {},
+        modifier = Modifier,
+        shape = RoundedCornerShape(HIGH_PADDING),
+        leadingIcon = GmIcons.TravelExploreDefault
     )
 }

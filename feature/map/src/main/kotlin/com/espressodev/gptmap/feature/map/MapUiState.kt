@@ -10,7 +10,9 @@ import com.espressodev.gptmap.core.model.chatgpt.Coordinates
 data class MapUiState(
     val searchValue: String = "",
     val location: Response<Location>,
-    val loadingState: LoadingState = LoadingState.Idle
+    val loadingState: LoadingState = LoadingState.Idle,
+    val searchButtonEnabledState: Boolean = true,
+    val searchTextFieldEnabledState: Boolean = true
 ) {
     // TODO: THIS LOGIC WILL BE MOVE TO MONGODB
     constructor() : this(
@@ -23,8 +25,10 @@ data class MapUiState(
                         longitude = 28.9784
                     ),
                     city = "Istanbul",
+                    district = "Eminonu",
                     country = "Turkey",
-                    description = "Enchanting Istanbul, where East meets West in a vibrant blend of culture and history."
+                    poeticDescription = "Spires touch the sky, Bosphorus whispers tales—a city's heartbeat, where continents embrace, Istanbul's poetic dance.",
+                    normalDescription = "Enchanting Istanbul, where East meets West in a vibrant blend of culture and history."
                 )
             )
         )

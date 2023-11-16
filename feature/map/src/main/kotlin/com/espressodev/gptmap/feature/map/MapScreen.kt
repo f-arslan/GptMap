@@ -85,7 +85,11 @@ private fun MapScreen(
                         modifier = Modifier.weight(1f),
                         loadingState = uiState.loadingState
                     )
-                    MapBottomBar(uiState.searchValue, onSearchValueChange, onSearchClick)
+                    MapBottomBar(
+                        uiState = uiState,
+                        onValueChange = onSearchValueChange,
+                        onSearchClick = onSearchClick
+                    )
                 }
             }
         }
@@ -95,7 +99,7 @@ private fun MapScreen(
 
 @Composable
 private fun MapBottomBar(
-    searchValue: String,
+    uiState: MapUiState,
     onValueChange: (String) -> Unit,
     onSearchClick: () -> Unit
 ) {
@@ -105,13 +109,17 @@ private fun MapBottomBar(
             modifier = Modifier.padding(MEDIUM_PADDING)
         ) {
             MapTextField(
-                value = searchValue,
+                value = uiState.searchValue,
+                textFieldEnabledState = uiState.searchTextFieldEnabledState,
                 placeholder = AppText.map_text_field_placeholder,
                 onValueChange = onValueChange,
                 modifier = Modifier.weight(1f)
             )
             Spacer(modifier = Modifier.width(MEDIUM_PADDING))
-            MapSearchButton(onClick = onSearchClick)
+            MapSearchButton(
+                buttonEnabledState = uiState.searchButtonEnabledState,
+                onClick = onSearchClick
+            )
         }
     }
 }

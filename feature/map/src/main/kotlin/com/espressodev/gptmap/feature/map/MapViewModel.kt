@@ -6,10 +6,8 @@ import com.espressodev.gptmap.core.chatgpt.ChatgptService
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.model.LoadingState
-import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.model.chatgpt.ChatgptRequest
 import com.espressodev.gptmap.core.model.chatgpt.Message
-
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,13 +25,26 @@ class MapViewModel @Inject constructor(
 
     fun onSearchValueChange(text: String) = _uiState.update { it.copy(searchValue = text) }
 
-    fun onSearchClick() = viewModelScope.launch {
-        _uiState.update { it.copy(loadingState = LoadingState.Loading) }
+    fun onSearchClick() = launchCatching {
+        _uiState.update {
+            it.copy(
+                loadingState = LoadingState.Loading,
+                searchButtonEnabledState = false,
+                searchTextFieldEnabledState = false,
+            )
+        }
 
-        val requestBody = ChatgptRequest(listOf(Message(uiState.value.searchValue)))
-        val response = chatgptService.getPrompt(requestBody)
+        val response = chatgptService.getPrompt(uiState.value.searchValue)
 
-        _uiState.update { it.copy(location = response, loadingState = LoadingState.Idle) }
+        _uiState.update {
+            it.copy(
+                location = response,
+                loadingState = LoadingState.Idle,
+                searchButtonEnabledState = true,
+                searchTextFieldEnabledState = true,
+                searchValue = ""
+            )
+        }
     }
 
     private companion object {
