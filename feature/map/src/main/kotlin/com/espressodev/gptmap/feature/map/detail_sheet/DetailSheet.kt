@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
@@ -16,16 +17,21 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 
 
@@ -40,7 +46,48 @@ internal fun DetailSheet() {
 val PurpleBackgroundColor = Color(0XFF2c1d40)
 val BarColor = Color(0xFF534568)
 
+val brush = Brush.verticalGradient(
+    listOf(Color.Green.copy(alpha = 0.8f), Color.Transparent)
+)
+
 @Preview(showBackground = true)
+@Composable
+fun BottomCard() {
+    Box(
+        modifier = Modifier
+            .size(200.dp)
+            .clip(Polygon(5, 0f))
+            .background(Color.Magenta)
+    )
+}
+
+class Polygon(val sides: Int, val rotation: Float = 0f) : Shape {
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density
+    ): Outline {
+        return Outline.Generic(
+            Path().apply {
+                val angle = 2.0 * Math.PI / sides
+                moveTo(0f, 0f)
+                lineTo(0f, size.height)
+                lineTo(size.height, 0f)
+                lineTo(size.width, size.height)
+
+                close()
+            })
+    }
+}
+
+fun cardPath(size: Size): Path {
+    val path = Path()
+
+
+    return path
+}
+
+
 @Composable
 fun Chart() {
     Box(
