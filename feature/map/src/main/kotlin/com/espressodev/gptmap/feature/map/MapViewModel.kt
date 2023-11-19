@@ -42,9 +42,15 @@ class MapViewModel @Inject constructor(
                 loadingState = LoadingState.Idle,
                 searchButtonEnabledState = true,
                 searchTextFieldEnabledState = true,
+                bottomState = MapBottomState.DETAIL,
                 searchValue = ""
             )
         }
+    }
+
+
+    fun onDismissBottomSheet() {
+        _uiState.update { it.copy(bottomState = MapBottomState.SEARCH) }
     }
 
     private companion object {

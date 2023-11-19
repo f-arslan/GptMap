@@ -37,6 +37,9 @@ import com.espressodev.gptmap.core.designsystem.component.MapSearchButton
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.Response
+import com.espressodev.gptmap.feature.map.MapBottomState.DETAIL
+import com.espressodev.gptmap.feature.map.MapBottomState.SEARCH
+import com.espressodev.gptmap.feature.map.detail_sheet.DetailSheet
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -50,11 +53,11 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 @Composable
 fun MapRoute(viewModel: MapViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    Log.d("MapRoute", "uiState: $uiState")
     MapScreen(
         uiState = uiState,
         onSearchValueChange = viewModel::onSearchValueChange,
-        onSearchClick = viewModel::onSearchClick
+        onSearchClick = viewModel::onSearchClick,
+        onDismiss = viewModel::onDismissBottomSheet
     )
 }
 
@@ -62,7 +65,8 @@ fun MapRoute(viewModel: MapViewModel = hiltViewModel()) {
 private fun MapScreen(
     uiState: MapUiState,
     onSearchValueChange: (String) -> Unit,
-    onSearchClick: () -> Unit
+    onSearchClick: () -> Unit,
+    onDismiss: () -> Unit
 ) {
     with(uiState.location) {
         when (this) {
@@ -83,13 +87,18 @@ private fun MapScreen(
                     MapSection(
                         cameraPositionState = cameraPositionState,
                         modifier = Modifier.weight(1f),
-                        loadingState = uiState.loadingState
+                        loadingState = uiState.loadingState,
                     )
-                    MapBottomBar(
-                        uiState = uiState,
-                        onValueChange = onSearchValueChange,
-                        onSearchClick = onSearchClick
-                    )
+                    when (uiState.bottomState) {
+                        SEARCH -> {
+                            MapBottomBar(
+                                uiState = uiState,
+                                onValueChange = onSearchValueChange,
+                                onSearchClick = onSearchClick
+                            )
+                        }
+                        DETAIL -> DetailSheet(data.content, onDismiss = onDismiss)
+                    }
                 }
             }
         }
@@ -128,7 +137,7 @@ private fun MapBottomBar(
 private fun MapSection(
     modifier: Modifier,
     cameraPositionState: CameraPositionState,
-    loadingState: LoadingState
+    loadingState: LoadingState,
 ) {
     Box(
         modifier = modifier
@@ -139,22 +148,6 @@ private fun MapSection(
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
-        )
-    }
-}
-
-@Composable
-private fun BoxScope.LocationPin() {
-    IconButton(
-        modifier = Modifier
-            .align(Alignment.Center)
-            .zIndex(1f)
-            .size(MARKER_SIZE),
-        onClick = {}) {
-        Icon(
-            painter = painterResource(id = AppDrawable.location_pin),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.tertiary
         )
     }
 }
@@ -181,6 +174,22 @@ private fun BoxScope.LoadingDialog(loadingState: LoadingState) {
                 Text(text = "Discovering your dream place...")
             }
         }
+    }
+}
+
+@Composable
+private fun BoxScope.LocationPin() {
+    IconButton(
+        modifier = Modifier
+            .align(Alignment.Center)
+            .zIndex(1f)
+            .size(MARKER_SIZE),
+        onClick = {}) {
+        Icon(
+            painter = painterResource(id = AppDrawable.location_pin),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.tertiary
+        )
     }
 }
 

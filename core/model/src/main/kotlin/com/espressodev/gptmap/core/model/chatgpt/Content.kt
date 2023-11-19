@@ -11,6 +11,12 @@ data class Content(
     val country: String,
     val poeticDescription: String,
     val normalDescription: String
-)
+) {
+    fun toDistrictAndCountry() = district?.let {
+        "$district, $country"
+    } ?: country
+
+    fun toPoeticDescWithDecor() = "\"$poeticDescription\""
+}
 
 

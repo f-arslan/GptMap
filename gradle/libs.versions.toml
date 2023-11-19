@@ -1,7 +1,7 @@
 [versions]
 accompanist = "0.32.0"
 androidDesugarJdkLibs = "2.0.4"
-androidGradlePlugin = "8.1.3"
+androidGradlePlugin = "8.1.4"
 androidTools = "31.1.3"
 androidxActivity = "1.8.0"
 androidxAppCompat = "1.6.1"
@@ -57,7 +57,7 @@ mapsCompose = "4.1.1"
 junit = "1.1.5"
 googleServices = "4.4.0"
 okhttp3Logging = "4.12.0"
-gradle = "7.3.1"
+gradle = "8.1.4"
 googleGson = "2.10.1"
 
 [libraries]

@@ -6,13 +6,18 @@ import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.model.chatgpt.Content
 import com.espressodev.gptmap.core.model.chatgpt.Coordinates
 
+enum class MapBottomState {
+    SEARCH, DETAIL
+}
+
 
 data class MapUiState(
     val searchValue: String = "",
     val location: Response<Location>,
     val loadingState: LoadingState = LoadingState.Idle,
     val searchButtonEnabledState: Boolean = true,
-    val searchTextFieldEnabledState: Boolean = true
+    val searchTextFieldEnabledState: Boolean = true,
+    val bottomState: MapBottomState = MapBottomState.SEARCH
 ) {
     // TODO: THIS LOGIC WILL BE MOVE TO MONGODB
     constructor() : this(
