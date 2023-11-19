@@ -12,6 +12,7 @@ object Constants {
     val MEDIUM_PLUS = 10.dp
     val MEDIUM_HIGH_PADDING = 12.dp
     val HIGH_PADDING = 16.dp
+    val HIGH_PLUS_PADDING = 20.dp
     val VERY_HIGH_PADDING = 24.dp
     val MAX_PADDING = 32.dp
     val VERY_MAX_PADDING = 48.dp
