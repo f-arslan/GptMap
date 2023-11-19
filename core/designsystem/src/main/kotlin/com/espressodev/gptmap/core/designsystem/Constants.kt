@@ -18,4 +18,6 @@ object Constants {
     val VERY_MAX_PADDING = 48.dp
     val MARKER_SIZE = 72.dp
     val BUTTON_SIZE = 56.dp
+    val BIG_BUTTON_SIZE = 64.dp
+    val LARGE_BUTTON_SIZE = 96.dp
 }

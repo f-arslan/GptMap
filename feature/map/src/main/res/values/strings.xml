@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="street_view">Street View</string>
+    <string name="add_favourite">Add to Favourite</string>
+</resources>

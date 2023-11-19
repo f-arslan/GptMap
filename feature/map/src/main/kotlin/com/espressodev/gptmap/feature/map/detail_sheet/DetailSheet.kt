@@ -1,14 +1,22 @@
 package com.espressodev.gptmap.feature.map.detail_sheet
 
+import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -23,16 +31,24 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.espressodev.gptmap.core.designsystem.Constants.BIG_BUTTON_SIZE
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PLUS_PADDING
+import com.espressodev.gptmap.core.designsystem.Constants.MAX_PADDING
+import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
+import com.espressodev.gptmap.core.designsystem.Constants.NO_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
+import com.espressodev.gptmap.core.designsystem.GmIcons
+import com.espressodev.gptmap.feature.map.R.string as AppText
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,7 +88,8 @@ fun BottomCard() {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Spacer(modifier = Modifier.height(VERY_HIGH_PADDING))
+                Spacer(modifier = Modifier.height(MEDIUM_PADDING))
+                DetailButtons()
                 Text(
                     text = "\"Spires touch the sky, Bosphorus whispers tales—a city's heartbeat, where continents embrace, Istanbul's poetic dance.\"",
                     textAlign = TextAlign.Center,
@@ -91,6 +108,34 @@ fun BottomCard() {
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun DetailButtons() {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(HIGH_PADDING),
+        modifier = Modifier.padding(bottom = HIGH_PADDING)
+    ) {
+        SquareButton(icon = GmIcons.StreetViewDefault, AppText.street_view, onClick = {})
+        SquareButton(icon = GmIcons.FavouriteOutlined, AppText.add_favourite, onClick = {})
+    }
+}
+
+@Composable
+fun SquareButton(icon: ImageVector, @StringRes contentDesc: Int, onClick: () -> Unit) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        ElevatedButton(
+            onClick = onClick, modifier = Modifier.size(BIG_BUTTON_SIZE),
+            shape = RoundedCornerShape(HIGH_PADDING),
+            contentPadding = PaddingValues(NO_PADDING)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = stringResource(id = contentDesc),
+                modifier = Modifier.size(MAX_PADDING)
+            )
         }
     }
 }
