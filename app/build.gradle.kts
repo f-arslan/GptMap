@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.gptmap.android.application.compose)
     alias(libs.plugins.gptmap.android.hilt)
     alias(libs.plugins.gptmap.android.application.firebase)
+    alias(libs.plugins.secrets)
+    id("newrelic")
 }
 
 android {
@@ -28,6 +30,10 @@ android {
         }
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     namespace = "com.espressodev.gptmap"
 }
 
@@ -41,4 +47,5 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.android.agent)
 }

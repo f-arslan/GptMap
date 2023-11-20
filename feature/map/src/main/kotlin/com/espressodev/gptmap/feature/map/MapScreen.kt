@@ -2,6 +2,7 @@ package com.espressodev.gptmap.feature.map
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -22,8 +23,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.zIndex
@@ -43,11 +47,14 @@ import com.espressodev.gptmap.feature.map.detail_sheet.DetailSheet
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
+import com.espressodev.gptmap.feature.map.R.raw as AppRaw
 
 
 @Composable
@@ -97,6 +104,7 @@ private fun MapScreen(
                                 onSearchClick = onSearchClick
                             )
                         }
+
                         DETAIL -> DetailSheet(data.content, onDismiss = onDismiss)
                     }
                 }
@@ -139,6 +147,23 @@ private fun MapSection(
     cameraPositionState: CameraPositionState,
     loadingState: LoadingState,
 ) {
+    val context = LocalContext.current
+    val isSystemInDarkTheme = isSystemInDarkTheme()
+    val mapProperties by remember(isSystemInDarkTheme) {
+        mutableStateOf(
+            if (isSystemInDarkTheme) {
+                MapProperties(
+                    mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
+                        context,
+                        AppRaw.dark_map_style
+                    )
+                )
+            } else {
+                MapProperties()
+            }
+        )
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -148,6 +173,7 @@ private fun MapSection(
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
+            properties = mapProperties
         )
     }
 }

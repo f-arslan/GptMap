@@ -6,6 +6,7 @@ buildscript {
         classpath(libs.google.services)
         classpath(libs.gradle)
         classpath(libs.firebase.crashlytics.gradlePlugin)
+        classpath(libs.agent.gradle.plugin)
     }
 }
 
