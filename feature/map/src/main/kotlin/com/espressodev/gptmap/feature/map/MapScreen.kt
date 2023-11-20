@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,7 +44,6 @@ import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.feature.map.MapBottomState.DETAIL
 import com.espressodev.gptmap.feature.map.MapBottomState.SEARCH
-import com.espressodev.gptmap.feature.map.detail_sheet.DetailSheet
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -58,13 +58,15 @@ import com.espressodev.gptmap.feature.map.R.raw as AppRaw
 
 
 @Composable
-fun MapRoute(viewModel: MapViewModel = hiltViewModel()) {
+fun MapRoute(viewModel: MapViewModel = hiltViewModel(), onStreetViewClick: () -> Unit) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     MapScreen(
         uiState = uiState,
         onSearchValueChange = viewModel::onSearchValueChange,
         onSearchClick = viewModel::onSearchClick,
-        onDismiss = viewModel::onDismissBottomSheet
+        onDismiss = viewModel::onDismissBottomSheet,
+        onStreetViewClick = onStreetViewClick,
+        onFavouriteClick = viewModel::onFavouriteClick
     )
 }
 
@@ -73,7 +75,9 @@ private fun MapScreen(
     uiState: MapUiState,
     onSearchValueChange: (String) -> Unit,
     onSearchClick: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onStreetViewClick: () -> Unit,
+    onFavouriteClick: () -> Unit
 ) {
     with(uiState.location) {
         when (this) {
@@ -105,7 +109,12 @@ private fun MapScreen(
                             )
                         }
 
-                        DETAIL -> DetailSheet(data.content, onDismiss = onDismiss)
+                        DETAIL -> DetailSheet(
+                            data.content,
+                            onDismiss = onDismiss,
+                            onStreetViewClick = onStreetViewClick,
+                            onFavouriteClick = onFavouriteClick
+                        )
                     }
                 }
             }
@@ -197,7 +206,7 @@ private fun BoxScope.LoadingDialog(loadingState: LoadingState) {
                 modifier = Modifier.padding(HIGH_PADDING)
             ) {
                 CircularProgressIndicator()
-                Text(text = "Discovering your dream place...")
+                Text(text = stringResource(R.string.discovering_your_dream_place))
             }
         }
     }

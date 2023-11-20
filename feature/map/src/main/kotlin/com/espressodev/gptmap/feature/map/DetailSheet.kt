@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.feature.map.detail_sheet
+package com.espressodev.gptmap.feature.map
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -31,7 +31,12 @@ import com.espressodev.gptmap.feature.map.R.string as AppText
 
 
 @Composable
-internal fun DetailSheet(content: Content, onDismiss: () -> Unit) {
+internal fun DetailSheet(
+    content: Content,
+    onDismiss: () -> Unit,
+    onStreetViewClick: () -> Unit,
+    onFavouriteClick: () -> Unit
+) {
     BackHandler {
         onDismiss()
     }
@@ -57,7 +62,7 @@ internal fun DetailSheet(content: Content, onDismiss: () -> Unit) {
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(MEDIUM_PADDING))
-            DetailButtons()
+            DetailButtons(onStreetViewClick, onFavouriteClick)
             Text(
                 text = content.toPoeticDescWithDecor(),
                 textAlign = TextAlign.Center,
@@ -80,13 +85,21 @@ internal fun DetailSheet(content: Content, onDismiss: () -> Unit) {
 }
 
 @Composable
-private fun DetailButtons() {
+private fun DetailButtons(onStreetViewClick: () -> Unit, onFavouriteClick: () -> Unit) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(HIGH_PADDING),
         modifier = Modifier.padding(bottom = HIGH_PADDING)
     ) {
-        SquareButton(icon = GmIcons.StreetViewDefault, AppText.street_view, onClick = {})
-        SquareButton(icon = GmIcons.FavouriteOutlined, AppText.add_favourite, onClick = {})
+        SquareButton(
+            icon = GmIcons.StreetViewDefault,
+            AppText.street_view,
+            onClick = onStreetViewClick
+        )
+        SquareButton(
+            icon = GmIcons.FavouriteOutlined,
+            AppText.add_favourite,
+            onClick = onFavouriteClick
+        )
     }
 }
 

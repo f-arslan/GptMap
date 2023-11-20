@@ -24,7 +24,7 @@ fun GmApp() {
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
         val appState = rememberAppState()
         Column {
-            MapRoute()
+            // MapRoute()
         }
     }
 }

@@ -53,6 +53,10 @@ class MapViewModel @Inject constructor(
         _uiState.update { it.copy(bottomState = MapBottomState.SEARCH) }
     }
 
+    fun onFavouriteClick() {
+
+    }
+
     private companion object {
         const val TAG = "MapViewModel"
     }

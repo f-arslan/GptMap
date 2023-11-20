@@ -4,12 +4,12 @@ agentGradlePlugin = "7.0.0"
 androidAgent = "6.10.0"
 androidDesugarJdkLibs = "2.0.4"
 androidGradlePlugin = "8.1.4"
-androidTools = "31.1.3"
+androidTools = "31.1.4"
 androidxActivity = "1.8.0"
 androidxAppCompat = "1.6.1"
 androidxBrowser = "1.6.0"
 androidxComposeBom = "2023.10.01"
-androidxComposeCompiler = "1.5.4"
+androidxComposeCompiler = "1.5.4"  # Used in version catolog
 androidxComposeRuntimeTracing = "1.0.0-alpha04"
 androidxCore = "1.12.0"
 androidxCoreSplashscreen = "1.0.1"
@@ -61,6 +61,7 @@ googleServices = "4.4.0"
 okhttp3Logging = "4.12.0"
 gradle = "8.1.4"
 googleGson = "2.10.1"
+material = "1.10.0"
 
 [libraries]
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
@@ -78,7 +79,6 @@ androidx-compose-material-iconsExtended = { group = "androidx.compose.material",
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-material3-windowSizeClass = { group = "androidx.compose.material3", name = "material3-window-size-class" }
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
-androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata" }
 androidx-compose-runtime-tracing = { group = "androidx.compose.runtime", name = "runtime-tracing", version.ref = "androidxComposeRuntimeTracing" }
 androidx-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-compose-ui-testManifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
@@ -154,6 +154,7 @@ work-testing = { group = "androidx.work", name = "work-testing", version = "2.8.
 
 google-services = { group = "com.google.gms", name = "google-services", version.ref = "googleServices" }
 gradle = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 
 [plugins]
