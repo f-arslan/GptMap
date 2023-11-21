@@ -41,6 +41,7 @@ dependencies {
     implementation(projects.feature.map)
     implementation(projects.feature.login)
     implementation(projects.feature.register)
+    implementation(projects.feature.forgotPassword)
 
     implementation(projects.core.designsystem)
     implementation(projects.core.common)

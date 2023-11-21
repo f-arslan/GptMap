@@ -3,6 +3,7 @@ package com.espressodev.gptmap
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
+import com.espressodev.gptmap.feature.forgot_password.forgotPasswordScreen
 import com.espressodev.gptmap.feature.login.loginRoute
 import com.espressodev.gptmap.feature.login.loginScreen
 import com.espressodev.gptmap.feature.map.mapRoute
@@ -28,8 +29,9 @@ fun GmNavHost(
             navigateToForgotPassword = { appState.navigate("") }
         )
         registerScreen(
-            clearAndNavigateLogin = { appState.clearAndNavigate(loginRoute) },
-            clearAndNavigateMap = { appState.clearAndNavigate(mapRoute) }
+            navigateToLogin = { appState.clearAndNavigate(loginRoute) },
+            navigateToMap = { appState.clearAndNavigate(mapRoute) }
         )
+        forgotPasswordScreen(navigateToLogin = { appState.clearAndNavigate(loginRoute) })
     }
 }

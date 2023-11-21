@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.feature.login
 
+import android.util.Log
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.ext.isValidEmail
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
@@ -37,8 +38,7 @@ class LoginViewModel @Inject constructor(
     fun onEvent(event: LoginEvent, navigateToMap: () -> Unit = {}) {
         when (event) {
             is LoginEvent.OnEmailChanged -> _uiState.update { it.copy(email = event.email) }
-            LoginEvent.OnFacebookClicked -> TODO()
-            LoginEvent.OnGoogleClicked -> TODO()
+            LoginEvent.OnGoogleClicked -> oneTapSignIn()
             LoginEvent.OnLoginClicked -> onLoginClick(navigateToMap)
             is LoginEvent.OnPasswordChanged -> _uiState.update { it.copy(password = event.password) }
             is LoginEvent.OnLoadingStateChanged -> _uiState.update { it.copy(loadingState = event.state) }

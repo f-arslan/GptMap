@@ -12,13 +12,13 @@ fun NavController.navigateToRegister(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.registerScreen(
-    clearAndNavigateLogin: () -> Unit,
-    clearAndNavigateMap: () -> Unit
+    navigateToLogin: () -> Unit,
+    navigateToMap: () -> Unit
 ) {
     composable(registerRoute) {
         RegisterRoute(
-            clearAndNavigateLogin = clearAndNavigateLogin,
-            clearAndNavigateMap = clearAndNavigateMap
+            clearAndNavigateLogin = navigateToLogin,
+            clearAndNavigateMap = navigateToMap
         )
     }
 }

@@ -22,7 +22,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Named
-import com.espressodev.gptmap.core.google_auth.BuildConfig.GOOGLE_WEB_CLIENT_ID
+import com.espressodev.gptmap.core.google_auth.BuildConfig.WEB_CLIENT_ID
 
 
 @Module
@@ -40,7 +40,7 @@ class GoogleAuthModule {
         .setGoogleIdTokenRequestOptions(
             BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
                 .setSupported(true)
-                .setServerClientId(GOOGLE_WEB_CLIENT_ID)
+                .setServerClientId(WEB_CLIENT_ID)
                 .setFilterByAuthorizedAccounts(true)
                 .build()
         )
@@ -53,7 +53,7 @@ class GoogleAuthModule {
         .setGoogleIdTokenRequestOptions(
             BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
                 .setSupported(true)
-                .setServerClientId(GOOGLE_WEB_CLIENT_ID)
+                .setServerClientId(WEB_CLIENT_ID)
                 .setFilterByAuthorizedAccounts(false)
                 .build()
         )
@@ -62,7 +62,7 @@ class GoogleAuthModule {
     @Provides
     fun provideGoogleSignInOptions() =
         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(GOOGLE_WEB_CLIENT_ID)
+            .requestIdToken(WEB_CLIENT_ID)
             .requestEmail()
             .build()
 

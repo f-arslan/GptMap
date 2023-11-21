@@ -19,6 +19,5 @@ sealed class LoginEvent {
     data class OnPasswordChanged(val password: String) : LoginEvent()
     data class OnLoadingStateChanged (val state: LoadingState): LoginEvent()
     data object OnGoogleClicked : LoginEvent()
-    data object OnFacebookClicked : LoginEvent()
     data object OnLoginClicked : LoginEvent()
 }

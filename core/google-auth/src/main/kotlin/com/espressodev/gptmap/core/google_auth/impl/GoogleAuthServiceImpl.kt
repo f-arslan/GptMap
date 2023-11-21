@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.core.google_auth.impl
 
+import android.util.Log
 import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.google_auth.GoogleAuthService
 import com.espressodev.gptmap.core.google_auth.OneTapSignInUpResponse
@@ -31,13 +32,17 @@ class GoogleAuthServiceImpl @Inject constructor(
     override suspend fun oneTapSignInWithGoogle(): OneTapSignInUpResponse {
         return try {
             val signInResult = oneTapClient.beginSignIn(signInRequest).await()
+            Log.d("GoogleAuthServiceImpl", "oneTapSignInWithGoogle: $signInResult")
             GoogleResponse.Success(signInResult)
         } catch (e: Exception) {
             try {
                 val signUpResult = oneTapClient.beginSignIn(signUpRequest).await()
+                Log.d("GoogleAuthServiceImpl", "oneTapSignInWithGoogle: $signUpResult")
                 GoogleResponse.Success(signUpResult)
             } catch (e: Exception) {
+                Log.d("GoogleAuthServiceImpl", "oneTapSignInWithGoogle: $e")
                 GoogleResponse.Failure(e)
+
             }
         }
     }

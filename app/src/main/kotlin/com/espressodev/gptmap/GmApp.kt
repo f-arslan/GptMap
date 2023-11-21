@@ -1,7 +1,6 @@
 package com.espressodev.gptmap
 
 import android.content.res.Resources
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -16,16 +15,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
-import com.espressodev.gptmap.feature.map.MapRoute
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun GmApp() {
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
         val appState = rememberAppState()
-        Column {
-            // MapRoute()
-        }
+        GmNavHost(appState = appState)
     }
 }
 

@@ -12,11 +12,11 @@ fun NavController.navigateToForgotPassword(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.forgotPasswordScreen(
-    clearAndNavigateLogin: () -> Unit,
+    navigateToLogin: () -> Unit,
 ) {
     composable(route = forgotPasswordRoute) {
         ForgotPasswordRoute(
-            clearAndNavigateLogin = clearAndNavigateLogin,
+            clearAndNavigateLogin = navigateToLogin,
         )
     }
 }

@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.feature.login
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -41,6 +42,7 @@ fun LoginRoute(
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    Log.d("LoginRoute", "uiState: $uiState")
     if (uiState.loadingState is LoadingState.Loading) GmCircularIndicator()
     LoginScreen(
         uiState = uiState,
