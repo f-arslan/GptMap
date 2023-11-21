@@ -1,16 +1,11 @@
 package com.espressodev.gptmap.feature.login
 
-import android.app.Activity
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -35,10 +30,8 @@ import com.espressodev.gptmap.core.designsystem.component.ExtFloActionButton
 import com.espressodev.gptmap.core.designsystem.component.GmCircularIndicator
 import com.espressodev.gptmap.core.designsystem.component.HeaderWrapper
 import com.espressodev.gptmap.core.designsystem.component.PasswordTextField
+import com.espressodev.gptmap.core.google_auth.composable.OneTapLauncher
 import com.espressodev.gptmap.core.model.LoadingState
-import com.google.android.gms.auth.api.identity.BeginSignInResult
-import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.GoogleAuthProvider
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
@@ -46,47 +39,26 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 @Composable
 fun LoginRoute(
     clearAndNavigate: (String) -> Unit,
-    navigate: (String) -> Unit,
+    navigateToHome: () -> Unit,
+    navigateToLogin: () -> Unit,
+    navigateToForgotPassword: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val keyboardController = LocalSoftwareKeyboardController.current
     if (uiState.loadingState is LoadingState.Loading) GmCircularIndicator()
-    Surface {
-        LoginScreen(
-            uiState = uiState,
-            onEvent
-                    onNotMemberClick = { clearAndNavigate(registerRoute) },
-            onForgotPasswordClick = { navigate(forgotPasswordRoute) }
-        )
-    }
-    val launcher =
-        rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                try {
-                    val credentials =
-                        viewModel.oneTapClient.getSignInCredentialFromIntent(result.data)
-                    val googleIdToken = credentials.googleIdToken
-                    val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
-                    viewModel.signInWithGoogle(googleCredentials)
-                } catch (it: ApiException) {
-                    print(it)
-                }
-            }
-        }
-
-    fun launch(signInResult: BeginSignInResult) {
-        val intent = IntentSenderRequest.Builder(signInResult.pendingIntent.intentSender).build()
-        launcher.launch(intent)
-    }
-
-    OneTapSignInUp(uiState.oneTapSignInResponse, launch = { launch(it) })
-
-    SignInUpWithGoogle(uiState.signInWithGoogleResponse, navigateToHomeScreen = { signedIn ->
-        if (signedIn) {
-            clearAndNavigate(homeRoute)
-        }
-    })
+    LoginScreen(
+        uiState = uiState,
+        onEvent = { event -> viewModel.onEvent(event, navigateToHome) },
+        onNotMemberClick = navigateToLogin,
+        onForgotPasswordClick = navigateToForgotPassword
+    )
+    OneTapLauncher(
+        oneTapClient = viewModel.oneTapClient,
+        oneTapSignInUpResponse = uiState.oneTapSignInResponse,
+        singInUpWithGoogleResponse = uiState.signInWithGoogleResponse,
+        signInWithGoogle = viewModel::signInWithGoogle,
+        navigate = navigateToHome
+    )
 }
 
 
@@ -173,5 +145,5 @@ fun LoginHeader() {
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(LoginUiState("Fatih"), {}, {}, {}, {}, {}, {})
+    LoginScreen(LoginUiState("Fatih"), {}, {}, {})
 }

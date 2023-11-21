@@ -8,7 +8,9 @@ import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.google_auth.GoogleAuthService
 import com.espressodev.gptmap.core.model.LoadingState
+import com.espressodev.gptmap.core.model.google.GoogleResponse
 import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.firebase.auth.AuthCredential
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -57,5 +59,19 @@ class LoginViewModel @Inject constructor(
             false
         } else true
 
+    private fun oneTapSignIn() = launchCatching {
+        _uiState.update { it.copy(oneTapSignInResponse = GoogleResponse.Loading) }
+        _uiState.update { it.copy(oneTapSignInResponse = googleAuthService.oneTapSignInWithGoogle()) }
+    }
 
+    fun signInWithGoogle(googleCredential: AuthCredential) = launchCatching {
+        _uiState.update { it.copy(signInWithGoogleResponse = GoogleResponse.Loading) }
+        _uiState.update {
+            it.copy(
+                signInWithGoogleResponse = googleAuthService.firebaseSignInWithGoogle(
+                    googleCredential
+                )
+            )
+        }
+    }
 }
