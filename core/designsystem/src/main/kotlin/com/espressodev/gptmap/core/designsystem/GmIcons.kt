@@ -2,9 +2,11 @@ package com.espressodev.gptmap.core.designsystem
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Streetview
 import androidx.compose.material.icons.filled.TravelExplore
+import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Face
@@ -27,4 +29,6 @@ object GmIcons {
     val FaceOutlined = Icons.Outlined.Face
     val EmailOutlined = Icons.Outlined.Email
     val MarkEmailUnreadOutlined = Icons.Outlined.MarkEmailUnread
+    val ArrowBackOutlined = Icons.Outlined.ArrowBack
+    val FingerPrintFilled = Icons.Filled.Fingerprint
 }
