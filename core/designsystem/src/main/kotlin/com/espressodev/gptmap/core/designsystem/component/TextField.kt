@@ -69,6 +69,7 @@ fun MapTextField(
 fun DefaultTextField(
     value: String,
     @StringRes label: Int,
+    leadingIcon: ImageVector,
     onValueChange: (String) -> Unit,
     enabled: Boolean = true,
 ) {
@@ -79,6 +80,9 @@ fun DefaultTextField(
         enabled = enabled,
         label = { Text(text = stringResource(id = label)) },
         shape = RoundedCornerShape(MEDIUM_PADDING),
+        leadingIcon = {
+            Icon(imageVector = leadingIcon, contentDescription = null)
+        },
         trailingIcon = {
             if (showClearIcon) {
                 IconButton(onClick = {

@@ -11,9 +11,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,12 +33,10 @@ import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LoginRoute(
-    clearAndNavigate: (String) -> Unit,
-    navigateToHome: () -> Unit,
-    navigateToLogin: () -> Unit,
+    navigateToMap: () -> Unit,
+    navigateToRegister: () -> Unit,
     navigateToForgotPassword: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
@@ -48,8 +44,8 @@ fun LoginRoute(
     if (uiState.loadingState is LoadingState.Loading) GmCircularIndicator()
     LoginScreen(
         uiState = uiState,
-        onEvent = { event -> viewModel.onEvent(event, navigateToHome) },
-        onNotMemberClick = navigateToLogin,
+        onEvent = { event -> viewModel.onEvent(event, navigateToMap) },
+        onNotMemberClick = navigateToRegister,
         onForgotPasswordClick = navigateToForgotPassword
     )
     OneTapLauncher(
@@ -57,7 +53,7 @@ fun LoginRoute(
         oneTapSignInUpResponse = uiState.oneTapSignInResponse,
         singInUpWithGoogleResponse = uiState.signInWithGoogleResponse,
         signInWithGoogle = viewModel::signInWithGoogle,
-        navigate = navigateToHome
+        navigate = navigateToMap
     )
 }
 
@@ -74,6 +70,7 @@ fun LoginScreen(
         DefaultTextField(
             value = uiState.email,
             label = AppText.email,
+            leadingIcon = GmIcons.EmailOutlined,
             onValueChange = { onEvent(LoginEvent.OnEmailChanged(it)) })
         Column {
             PasswordTextField(

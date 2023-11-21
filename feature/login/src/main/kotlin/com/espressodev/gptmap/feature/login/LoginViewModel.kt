@@ -8,6 +8,7 @@ import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.google_auth.GoogleAuthService
 import com.espressodev.gptmap.core.model.LoadingState
+import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.model.google.GoogleResponse
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.AuthCredential
@@ -33,21 +34,35 @@ class LoginViewModel @Inject constructor(
     private val email get() = uiState.value.email
     private val password get() = uiState.value.password
 
-    fun onEvent(event: LoginEvent, navigateToHome: () -> Unit = {}) {
+    fun onEvent(event: LoginEvent, navigateToMap: () -> Unit = {}) {
         when (event) {
             is LoginEvent.OnEmailChanged -> _uiState.update { it.copy(email = event.email) }
             LoginEvent.OnFacebookClicked -> TODO()
             LoginEvent.OnGoogleClicked -> TODO()
-            LoginEvent.OnLoginClicked -> onLoginClick(navigateToHome)
+            LoginEvent.OnLoginClicked -> onLoginClick(navigateToMap)
             is LoginEvent.OnPasswordChanged -> _uiState.update { it.copy(password = event.password) }
             is LoginEvent.OnLoadingStateChanged -> _uiState.update { it.copy(loadingState = event.state) }
         }
     }
 
-    private fun onLoginClick(navigateToHome: () -> Unit) = launchCatching {
+    private fun onLoginClick(navigateToMap: () -> Unit) = launchCatching {
         if (!formValidation()) return@launchCatching
         onEvent(LoginEvent.OnLoadingStateChanged(LoadingState.Loading))
-
+        accountService.firebaseSignInWithEmailAndPassword(email.trim(), password).apply {
+            when (this) {
+                is Response.Failure -> SnackbarManager.showMessage(AppText.email_or_password_error)
+                Response.Loading -> {}
+                is Response.Success -> {
+                    accountService.reloadFirebaseUser()
+                    if (accountService.isEmailVerified) {
+                        // TODO: ADD EMAIL VERIFICATION STATUS TO DB
+                        navigateToMap()
+                    } else {
+                        SnackbarManager.showMessage(AppText.please_verify_email)
+                    }
+                }
+            }
+        }
     }
 
     private fun formValidation(): Boolean =

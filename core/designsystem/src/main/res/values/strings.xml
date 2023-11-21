@@ -52,6 +52,8 @@
     <string name="not_valid_name">Please insert a valid name.</string>
     <string name="email_confirmation_body">Please check your inbox for the confirmation email and click the verification link to complete signup. Contact support if you don\'t receive it.</string>
     <string name="email_confirmation_title">Check Your Email</string>
+    <string name="register_header">Join Us Today!</string>
+    <string name="register_sub_header">Signing up is easy and opens up a world of fun conversations.</string>
 
     <!-- Login -->
     <string name="login">Login</string>
