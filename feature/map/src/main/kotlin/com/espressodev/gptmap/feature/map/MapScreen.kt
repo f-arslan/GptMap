@@ -58,14 +58,14 @@ import com.espressodev.gptmap.feature.map.R.raw as AppRaw
 
 
 @Composable
-fun MapRoute(viewModel: MapViewModel = hiltViewModel(), onStreetViewClick: () -> Unit) {
+fun MapRoute(viewModel: MapViewModel = hiltViewModel(), navigateToStreetView: () -> Unit) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     MapScreen(
         uiState = uiState,
         onSearchValueChange = viewModel::onSearchValueChange,
         onSearchClick = viewModel::onSearchClick,
         onDismiss = viewModel::onDismissBottomSheet,
-        onStreetViewClick = onStreetViewClick,
+        onStreetViewClick = navigateToStreetView,
         onFavouriteClick = viewModel::onFavouriteClick
     )
 }
