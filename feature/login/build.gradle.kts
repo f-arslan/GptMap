@@ -7,3 +7,10 @@ plugins {
 android {
     namespace = "com.espressodev.gptmap.feature.login"
 }
+
+
+dependencies {
+    implementation(projects.core.googleAuth)
+    implementation(libs.play.services.auth)
+    implementation(libs.firebase.auth)
+}

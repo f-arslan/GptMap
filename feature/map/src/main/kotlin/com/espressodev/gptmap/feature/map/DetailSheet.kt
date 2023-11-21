@@ -111,5 +111,3 @@ private fun DetailButtons(onStreetViewClick: () -> Unit, onFavouriteClick: () ->
 
 
 
-
-

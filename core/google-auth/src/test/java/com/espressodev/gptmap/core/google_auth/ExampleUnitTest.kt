@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.feature.onboarding
+package com.espressodev.gptmap.core.google_auth
 
 import org.junit.Test
 

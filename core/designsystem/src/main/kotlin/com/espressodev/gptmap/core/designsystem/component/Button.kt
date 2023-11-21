@@ -1,16 +1,23 @@
 package com.espressodev.gptmap.core.designsystem.component
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -19,11 +26,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.espressodev.gptmap.core.designsystem.Constants
 import com.espressodev.gptmap.core.designsystem.Constants.BUTTON_SIZE
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
+import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.NO_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
@@ -55,6 +64,40 @@ fun MapSearchButton(
         contentPadding = PaddingValues(NO_PADDING)
     ) {
         Icon(icon, stringResource(id = AppText.search))
+    }
+}
+
+@Composable
+fun ExtFloActionButton(
+    @DrawableRes icon: Int,
+    @StringRes label: Int,
+    onClick: () -> Unit
+) {
+    OutlinedButton(onClick = onClick, shape = RoundedCornerShape(HIGH_PADDING)) {
+        Image(
+            painter = painterResource(icon),
+            contentDescription = null
+        )
+        Spacer(Modifier.width(MEDIUM_PADDING))
+        Text(stringResource(label), style = MaterialTheme.typography.titleMedium)
+    }
+}
+
+@Composable
+fun DefaultButton(@StringRes text: Int, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Button(
+        modifier = modifier.defaultMinSize(BUTTON_SIZE),
+        onClick = onClick,
+        shape = RoundedCornerShape(HIGH_PADDING),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+        )
+    ) {
+        Text(
+            text = stringResource(id = text),
+            style = MaterialTheme.typography.titleMedium,
+        )
     }
 }
 

@@ -3,9 +3,70 @@
     <!-- Common -->
     <string name="clear">Clear</string>
     <string name="search">Search</string>
+    <string name="or">Or</string>
+    <string name="name">Name</string>
+    <string name="re_password">Repeat Password</string>
+    <string name="recovery_password">Recovery password</string>
+    <string name="or_continue_with">Or continue with</string>
+    <string name="generic_error">Something wrong happened. Please try again.</string>
+    <string name="close">CLOSE</string>
+    <string name="confirm_icon">Confirm Icon</string>
+    <string name="connection_error">Connection error. Would you like to retry?</string>
+    <string name="options">Options</string>
+    <string name="cancel">Cancel</string>
+    <string name="menu">Menu</string>
+    <string name="history">History</string>
+    <string name="contact">Contact</string>
+    <string name="ok">OK</string>
+    <string name="working_on">Working on… 🙈</string>
+    <string name="skip">Skip</string>
+    <string name="enable_notifications">Enable Notifications</string>
+    <string name="update">Update</string>
+    <string name="confirm">Confirm</string>
+    <string name="logo">Logo</string>
+    <string name="learn_more">Learn More</string>
+    <string name="continue_google">Continue with Google</string>
+    <string name="alert_icon">Alert Icon</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="back_arrow">Back Arrow</string>
 
 
-    <!-- Map Screen -->
+    <!-- Map -->
     <string name="map_text_field_placeholder">Whenever you ready…</string>
     <string name="loading_dialog_text">Discovering your dream place…</string>
+
+    <!-- Register -->
+    <string name="register">Register</string>
+    <string name="x_icon" translatable="false">Twitter</string>
+    <string name="facebook_icon" translatable="false">Facebook</string>
+    <string name="google_icon" translatable="false">Google</string>
+    <string name="full_name">Full Name</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="repeat_password">Repeat Password</string>
+    <string name="already_have_account">Already have an account?</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="password_error">Your password should have at least six digits and include one digit, one lower case letter and one upper case letter.</string>
+    <string name="password_match_error">Passwords do not match.</string>
+    <string name="email_error">Please insert a valid email.</string>
+    <string name="not_valid_name">Please insert a valid name.</string>
+    <string name="email_confirmation_body">Please check your inbox for the confirmation email and click the verification link to complete signup. Contact support if you don\'t receive it.</string>
+    <string name="email_confirmation_title">Check Your Email</string>
+
+    <!-- Login -->
+    <string name="login">Login</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="not_a_member">Not a member?</string>
+    <string name="register_now">Register now</string>
+    <string name="empty_password_error">Password cannot be empty.</string>
+    <string name="please_verify_email">Please verify your email. Also check your spam folder as well.</string>
+    <string name="email_or_password_error">Email or password is incorrect.</string>
+    <string name="login_header">Hello Again!</string>
+    <string name="login_sub_header">Welcome back you\'ve been missed</string>
+
+    <!-- Forgot Password -->
+    <string name="forgot_password_instruction">No worries, we\'ll send you reset instructions.</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="back_login">Back to Login</string>
+
 </resources>
