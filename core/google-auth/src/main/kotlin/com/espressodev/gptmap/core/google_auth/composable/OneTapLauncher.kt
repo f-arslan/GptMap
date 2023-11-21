@@ -19,6 +19,7 @@ import kotlinx.coroutines.Job
 import com.espressodev.gptmap.core.model.google.GoogleResponse.Loading
 import com.espressodev.gptmap.core.model.google.GoogleResponse.Success
 import com.espressodev.gptmap.core.model.google.GoogleResponse.Failure
+import io.realm.kotlin.mongodb.App
 
 @Composable
 fun OneTapLauncher(
@@ -34,12 +35,10 @@ fun OneTapLauncher(
                 try {
                     val credentials =
                         oneTapClient.getSignInCredentialFromIntent(result.data)
-                    Log.d("OneTapLauncher", "credentials: $credentials")
                     val googleIdToken = credentials.googleIdToken
                     val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
                     signInWithGoogle(googleCredentials)
                 } catch (it: ApiException) {
-                    Log.d("OneTapLauncher", "ApiException: $it")
                     print(it)
                 }
             }
@@ -47,7 +46,6 @@ fun OneTapLauncher(
 
     fun launch(signInResult: BeginSignInResult) {
         val intent = IntentSenderRequest.Builder(signInResult.pendingIntent.intentSender).build()
-        Log.d("OneTapLauncher", "intent: $intent")
         launcher.launch(intent)
     }
 

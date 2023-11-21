@@ -42,7 +42,6 @@ fun LoginRoute(
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    Log.d("LoginRoute", "uiState: $uiState")
     if (uiState.loadingState is LoadingState.Loading) GmCircularIndicator()
     LoginScreen(
         uiState = uiState,

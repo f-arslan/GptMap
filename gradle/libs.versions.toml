@@ -57,6 +57,7 @@ playServicesMaps = "18.2.0"
 secrets = "2.0.1"
 mapsCompose = "4.1.1"
 junit = "1.1.5"
+realmKotlin = "1.11.0"
 googleServices = "4.4.0"
 okhttp3Logging = "4.12.0"
 gradle = "8.1.4"
@@ -128,8 +129,13 @@ kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", v
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinxDatetime" }
+
+realm-library-base = { group = "io.realm.kotlin", name = "library-base", version.ref = "realmKotlin" }
+realm-library-sync = { group = "io.realm.kotlin", name = "library-sync", version.ref = "realmKotlin" }
+
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
+
 
 retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
@@ -168,6 +174,7 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
+realm-kotlin = { id = "io.realm.kotlin", version.ref = "realmKotlin" }
 
 # Plugins defined by this project
 gptmap-android-application = { id = "gptmap.android.application", version = "unspecified" }
