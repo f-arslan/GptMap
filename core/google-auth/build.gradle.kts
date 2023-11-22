@@ -9,14 +9,15 @@ plugins {
 
 android {
     namespace = "com.espressodev.gptmap.core.google_auth"
-    buildFeatures {
-        buildConfig = true
+    kotlin {
+
     }
 }
 
 dependencies {
     implementation(projects.core.model)
     implementation(projects.core.data)
+    implementation(projects.core.mongodb)
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.activity.compose)
     implementation(projects.core.designsystem)

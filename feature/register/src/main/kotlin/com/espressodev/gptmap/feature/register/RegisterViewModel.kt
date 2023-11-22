@@ -92,12 +92,12 @@ class RegisterScreenViewModel @Inject constructor(
         _uiState.update { it.copy(oneTapSignUpResponse = googleAuthService.oneTapSignUpWithGoogle()) }
     }
 
-    fun signUpWithGoogle(googleCredential: AuthCredential) = launchCatching {
+    fun signUpWithGoogle(googleCredential: AuthCredential, token: String?) = launchCatching {
         _uiState.update { it.copy(signUpWithGoogleResponse = GoogleResponse.Loading) }
         _uiState.update {
             it.copy(
                 signUpWithGoogleResponse = googleAuthService.firebaseSignInWithGoogle(
-                    googleCredential
+                    googleCredential, token
                 )
             )
         }

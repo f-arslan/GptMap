@@ -4,7 +4,6 @@ buildscript {
     }
     dependencies {
         classpath(libs.google.services)
-        classpath(libs.gradle)
         classpath(libs.firebase.crashlytics.gradlePlugin)
         classpath(libs.agent.gradle.plugin)
     }
@@ -20,6 +19,4 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.secrets) apply false
     alias(libs.plugins.android.library) apply false
-    alias(libs.plugins.kotlinAndroid) apply false
-    alias(libs.plugins.realm.kotlin) apply false
 }

@@ -30,4 +30,7 @@ object Constants {
     const val TERMS_CONDITIONS_LINK = "https://sites.google.com/view/smile-terms-conditions/home"
     const val GITHUB_DESC = "Check out this open source project on GitHub by clicking here."
     const val GITHUB_LINK = "https://github.com/f-arslan/smile"
+
+    // Mongodb
+    const val MONGO_APP_ID = "gptmapapp-odcnu"
 }

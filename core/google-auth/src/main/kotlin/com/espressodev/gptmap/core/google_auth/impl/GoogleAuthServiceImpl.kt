@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.core.google_auth.impl
 
-import android.util.Log
 import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.google_auth.GoogleAuthService
 import com.espressodev.gptmap.core.google_auth.OneTapSignInUpResponse
@@ -9,11 +8,15 @@ import com.espressodev.gptmap.core.model.User
 import com.espressodev.gptmap.core.model.google.GoogleConstants.SIGN_IN_REQUEST
 import com.espressodev.gptmap.core.model.google.GoogleConstants.SIGN_UP_REQUEST
 import com.espressodev.gptmap.core.model.google.GoogleResponse
+import com.espressodev.gptmap.core.mongodb.impl.MongoService.APP_ID
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import io.realm.kotlin.mongodb.App
+import io.realm.kotlin.mongodb.Credentials
+import io.realm.kotlin.mongodb.GoogleAuthType
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Named
@@ -32,15 +35,12 @@ class GoogleAuthServiceImpl @Inject constructor(
     override suspend fun oneTapSignInWithGoogle(): OneTapSignInUpResponse {
         return try {
             val signInResult = oneTapClient.beginSignIn(signInRequest).await()
-            Log.d("GoogleAuthServiceImpl", "oneTapSignInWithGoogle: $signInResult")
             GoogleResponse.Success(signInResult)
         } catch (e: Exception) {
             try {
                 val signUpResult = oneTapClient.beginSignIn(signUpRequest).await()
-                Log.d("GoogleAuthServiceImpl", "oneTapSignInWithGoogle: $signUpResult")
                 GoogleResponse.Success(signUpResult)
             } catch (e: Exception) {
-                Log.d("GoogleAuthServiceImpl", "oneTapSignInWithGoogle: $e")
                 GoogleResponse.Failure(e)
 
             }
@@ -57,13 +57,19 @@ class GoogleAuthServiceImpl @Inject constructor(
     }
 
     override suspend fun firebaseSignInWithGoogle(
-        googleCredential: AuthCredential
+        googleCredential: AuthCredential,
+        token: String?,
     ): SignInUpWithGoogleResponse {
         return try {
             val authResult = auth.signInWithCredential(googleCredential).await()
             val isNewUser = authResult.additionalUserInfo?.isNewUser ?: false
             if (isNewUser) {
                 authResult.user?.let { addUserToFirestore(it) }
+            }
+            token?.let {
+                App.create(APP_ID).login(Credentials.jwt(token)).also {
+                    println(it)
+                }
             }
             GoogleResponse.Success(true)
         } catch (e: Exception) {
