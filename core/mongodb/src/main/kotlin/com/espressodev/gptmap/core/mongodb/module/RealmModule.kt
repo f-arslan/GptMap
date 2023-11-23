@@ -9,6 +9,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.realm.kotlin.mongodb.App
+import io.realm.kotlin.mongodb.User
 import javax.inject.Singleton
 
 
@@ -18,6 +19,10 @@ object RealmModule {
     @Singleton
     @Provides
     fun provideRealmApp(): App = App.create(APP_ID)
+
+    @Provides
+    fun provideRealmUser(app: App): User? = app.currentUser
+
     @Provides
     fun bindRealmAccountService(app: App): RealmAccountService =
         RealmAccountServiceImpl(app = app)

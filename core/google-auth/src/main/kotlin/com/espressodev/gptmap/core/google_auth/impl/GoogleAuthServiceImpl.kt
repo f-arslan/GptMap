@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.core.google_auth.impl
 
+import android.util.Log
 import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.google_auth.GoogleAuthService
 import com.espressodev.gptmap.core.google_auth.OneTapSignInUpResponse
@@ -17,6 +18,7 @@ import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -64,9 +66,12 @@ class GoogleAuthServiceImpl @Inject constructor(
                 val authResult = auth.signInWithCredential(googleCredential).await()
                 authResult.additionalUserInfo?.isNewUser?.also {
                     println(it)
-                    authResult.user?.also { user -> addUserToFirestore(user, Provider.GOOGLE) }
+                    authResult.user?.also { user ->
+                        launch {
+                            addUserToFirestore(user, Provider.GOOGLE)
+                        }
+                    }
                 }
-
                 val response = authResult?.user?.getIdToken(true)?.await()?.token?.let {
                     realmAccountService.loginWithGmail(it)
                 } ?: throw Exception("Google client id didn't got it")
@@ -95,5 +100,9 @@ class GoogleAuthServiceImpl @Inject constructor(
             )
             firestoreService.saveUser(user)
         }
+    }
+
+    companion object {
+        const val TAG = "GoogleAuthServiceImpl"
     }
 }
