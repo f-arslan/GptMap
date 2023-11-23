@@ -4,19 +4,17 @@ import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.google_auth.GoogleAuthService
 import com.espressodev.gptmap.core.google_auth.OneTapSignInUpResponse
 import com.espressodev.gptmap.core.google_auth.SignInUpWithGoogleResponse
+import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.model.User
 import com.espressodev.gptmap.core.model.google.GoogleConstants.SIGN_IN_REQUEST
 import com.espressodev.gptmap.core.model.google.GoogleConstants.SIGN_UP_REQUEST
 import com.espressodev.gptmap.core.model.google.GoogleResponse
-import com.espressodev.gptmap.core.mongodb.impl.MongoService.APP_ID
+import com.espressodev.gptmap.core.mongodb.RealmAccountService
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import io.realm.kotlin.mongodb.App
-import io.realm.kotlin.mongodb.Credentials
-import io.realm.kotlin.mongodb.GoogleAuthType
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Named
@@ -31,6 +29,7 @@ class GoogleAuthServiceImpl @Inject constructor(
     @Named(SIGN_UP_REQUEST)
     private val signUpRequest: BeginSignInRequest,
     private val firestoreService: FirestoreService,
+    private val realmAccountService: RealmAccountService,
 ) : GoogleAuthService {
     override suspend fun oneTapSignInWithGoogle(): OneTapSignInUpResponse {
         return try {
@@ -56,19 +55,22 @@ class GoogleAuthServiceImpl @Inject constructor(
         }
     }
 
-    override suspend fun firebaseSignInWithGoogle(
-        googleCredential: AuthCredential,
-        token: String?,
-    ): SignInUpWithGoogleResponse {
+    override suspend fun firebaseSignInWithGoogle(googleCredential: AuthCredential): SignInUpWithGoogleResponse {
         return try {
             val authResult = auth.signInWithCredential(googleCredential).await()
             val isNewUser = authResult.additionalUserInfo?.isNewUser ?: false
             if (isNewUser) {
                 authResult.user?.let { addUserToFirestore(it) }
             }
-            token?.let {
-                App.create(APP_ID).login(Credentials.jwt(token)).also {
-                    println(it)
+            authResult.user?.getIdToken(true)?.await()?.token?.also {
+                realmAccountService.loginWithGmail(it).apply {
+                    when (this) {
+                        is Response.Failure -> GoogleResponse.Failure(e)
+                        Response.Loading -> {}
+                        is Response.Success -> {
+                            GoogleResponse.Success(true)
+                        }
+                    }
                 }
             }
             GoogleResponse.Success(true)

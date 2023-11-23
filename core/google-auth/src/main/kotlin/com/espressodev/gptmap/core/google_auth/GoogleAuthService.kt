@@ -10,8 +10,5 @@ typealias SignInUpWithGoogleResponse = GoogleResponse<Boolean>
 interface GoogleAuthService {
     suspend fun oneTapSignInWithGoogle(): OneTapSignInUpResponse
     suspend fun oneTapSignUpWithGoogle(): OneTapSignInUpResponse
-    suspend fun firebaseSignInWithGoogle(
-        googleCredential: AuthCredential,
-        token: String? = null
-    ): SignInUpWithGoogleResponse
+    suspend fun firebaseSignInWithGoogle(googleCredential: AuthCredential, ): SignInUpWithGoogleResponse
 }

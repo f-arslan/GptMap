@@ -23,6 +23,7 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Named
 import com.espressodev.gptmap.core.google_auth.BuildConfig.WEB_CLIENT_ID
+import com.espressodev.gptmap.core.mongodb.RealmAccountService
 
 
 @Module
@@ -73,7 +74,7 @@ class GoogleAuthModule {
     ) = GoogleSignIn.getClient(app, options)
 
     @Provides
-    fun provideAuthRepository(
+    fun provideAuthService(
         auth: FirebaseAuth,
         oneTapClient: SignInClient,
         @Named(SIGN_IN_REQUEST)
@@ -81,16 +82,18 @@ class GoogleAuthModule {
         @Named(SIGN_UP_REQUEST)
         signUpRequest: BeginSignInRequest,
         firestoreService: FirestoreService,
+        realmAccountService: RealmAccountService,
     ): GoogleAuthService = GoogleAuthServiceImpl(
         auth = auth,
         oneTapClient = oneTapClient,
         signInRequest = signInRequest,
         signUpRequest = signUpRequest,
-        firestoreService = firestoreService
+        firestoreService = firestoreService,
+        realmAccountService = realmAccountService
     )
 
     @Provides
-    fun provideProfileRepository(
+    fun provideProfileService(
         auth: FirebaseAuth,
         oneTapClient: SignInClient,
         signInClient: GoogleSignInClient,
