@@ -18,7 +18,7 @@ class FirestoreServiceImpl @Inject constructor(
         get() = getUserDocRef(accountService.currentUserId).dataObjects<User>()
 
     override suspend fun saveUser(user: User) {
-        userColRef.document(user.userId).set(user).await()
+        userColRef.document(user.userId).set(user)
     }
 
     override suspend fun updateUserProfilePictureUrl(userId: String, profilePictureUrl: String) {

@@ -11,7 +11,7 @@ data class User(
     val profilePictureUrl: String = "",
     val fcmToken: String = "",
     val isEmailVerified: Boolean = false,
-    val provider: Provider = Provider.DEFAULT
+    val provider: String = Provider.DEFAULT.name
 )
 
 enum class Provider {

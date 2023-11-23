@@ -1,8 +1,9 @@
 package com.espressodev.gptmap.core.mongodb.module
 
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
-import com.espressodev.gptmap.core.mongodb.impl.MongoModule.APP_ID
+import com.espressodev.gptmap.core.mongodb.RealmDatabaseService
 import com.espressodev.gptmap.core.mongodb.impl.RealmAccountServiceImpl
+import com.espressodev.gptmap.core.mongodb.impl.RealmDatabaseServiceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,6 +22,9 @@ object RealmModule {
     fun bindRealmAccountService(app: App): RealmAccountService =
         RealmAccountServiceImpl(app = app)
 
+    @Provides
+    fun bindRealmDatabaseService(app: App): RealmDatabaseService =
+        RealmDatabaseServiceImpl(app = app)
 
 
     const val APP_ID = "gptmapapp-odcnu"

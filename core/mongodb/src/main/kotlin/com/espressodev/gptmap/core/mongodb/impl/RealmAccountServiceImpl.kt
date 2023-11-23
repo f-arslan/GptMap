@@ -4,8 +4,6 @@ import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
 import io.realm.kotlin.mongodb.App
 import io.realm.kotlin.mongodb.Credentials
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,12 +13,10 @@ class RealmAccountServiceImpl @Inject constructor(private val app: App) : RealmA
         TODO()
     }
 
-    override suspend fun loginWithGmail(token: String) = withContext(Dispatchers.IO) {
-        try {
-            app.login(Credentials.jwt(token))
-            Response.Success(true)
-        } catch (e: Exception) {
-            Response.Failure(e)
-        }
+    override suspend fun loginWithGmail(token: String) = try {
+        app.login(Credentials.jwt(token))
+        Response.Success(true)
+    } catch (e: Exception) {
+        Response.Failure(e)
     }
 }

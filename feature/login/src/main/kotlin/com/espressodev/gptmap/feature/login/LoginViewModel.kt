@@ -85,9 +85,7 @@ class LoginViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 signInWithGoogleResponse = googleAuthService.firebaseSignInWithGoogle(
-                    googleCredential,
-                    token
-                )
+                    googleCredential)
             )
         }
     }

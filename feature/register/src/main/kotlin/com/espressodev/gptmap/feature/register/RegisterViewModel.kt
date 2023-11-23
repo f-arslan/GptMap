@@ -96,9 +96,7 @@ class RegisterScreenViewModel @Inject constructor(
         _uiState.update { it.copy(signUpWithGoogleResponse = GoogleResponse.Loading) }
         _uiState.update {
             it.copy(
-                signUpWithGoogleResponse = googleAuthService.firebaseSignInWithGoogle(
-                    googleCredential, token
-                )
+                signUpWithGoogleResponse = googleAuthService.firebaseSignInWithGoogle(googleCredential)
             )
         }
     }
