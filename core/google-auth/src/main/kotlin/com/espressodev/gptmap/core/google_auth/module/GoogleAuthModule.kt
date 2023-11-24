@@ -24,6 +24,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Named
 import com.espressodev.gptmap.core.google_auth.BuildConfig.WEB_CLIENT_ID
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
+import com.espressodev.gptmap.core.mongodb.RealmDatabaseService
 
 
 @Module
@@ -83,13 +84,15 @@ class GoogleAuthModule {
         signUpRequest: BeginSignInRequest,
         firestoreService: FirestoreService,
         realmAccountService: RealmAccountService,
+        realmDatabaseService: RealmDatabaseService
     ): GoogleAuthService = GoogleAuthServiceImpl(
         auth = auth,
         oneTapClient = oneTapClient,
         signInRequest = signInRequest,
         signUpRequest = signUpRequest,
         firestoreService = firestoreService,
-        realmAccountService = realmAccountService
+        realmAccountService = realmAccountService,
+        realmDatabaseService = realmDatabaseService
     )
 
     @Provides

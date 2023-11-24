@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.core.google_auth.impl
 
-import android.util.Log
 import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.google_auth.GoogleAuthService
 import com.espressodev.gptmap.core.google_auth.OneTapSignInUpResponse
@@ -12,6 +11,7 @@ import com.espressodev.gptmap.core.model.google.GoogleConstants.SIGN_IN_REQUEST
 import com.espressodev.gptmap.core.model.google.GoogleConstants.SIGN_UP_REQUEST
 import com.espressodev.gptmap.core.model.google.GoogleResponse
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
+import com.espressodev.gptmap.core.mongodb.RealmDatabaseService
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.AuthCredential
@@ -35,6 +35,7 @@ class GoogleAuthServiceImpl @Inject constructor(
     private val signUpRequest: BeginSignInRequest,
     private val firestoreService: FirestoreService,
     private val realmAccountService: RealmAccountService,
+    private val realmDatabaseService: RealmDatabaseService,
 ) : GoogleAuthService {
     override suspend fun oneTapSignInWithGoogle(): OneTapSignInUpResponse {
         return try {
@@ -61,14 +62,13 @@ class GoogleAuthServiceImpl @Inject constructor(
     }
 
     override suspend fun firebaseSignInWithGoogle(googleCredential: AuthCredential): SignInUpWithGoogleResponse =
-        withContext(Dispatchers.IO) {
+        withContext(Dispatchers.Main) {
             try {
                 val authResult = auth.signInWithCredential(googleCredential).await()
                 authResult.additionalUserInfo?.isNewUser?.also {
-                    println(it)
                     authResult.user?.also { user ->
                         launch {
-                            addUserToFirestore(user, Provider.GOOGLE)
+                            addUserToDatabase(user, Provider.GOOGLE)
                         }
                     }
                 }
@@ -85,7 +85,7 @@ class GoogleAuthServiceImpl @Inject constructor(
             }
         }
 
-    private suspend fun addUserToFirestore(firebaseUser: FirebaseUser, provider: Provider) {
+    private suspend fun addUserToDatabase(firebaseUser: FirebaseUser, provider: Provider) {
         firebaseUser.apply {
             val displayName = displayName ?: throw Exception("Display name is null")
             val email = email ?: throw Exception("Email is null")
@@ -99,6 +99,7 @@ class GoogleAuthServiceImpl @Inject constructor(
                 profilePictureUrl = photoUrl.toString()
             )
             firestoreService.saveUser(user)
+            realmDatabaseService.saveUserToDatabase(user.toRealmUser())
         }
     }
 
