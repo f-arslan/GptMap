@@ -10,8 +10,9 @@ import com.espressodev.gptmap.core.model.User
 import com.espressodev.gptmap.core.model.google.GoogleConstants.SIGN_IN_REQUEST
 import com.espressodev.gptmap.core.model.google.GoogleConstants.SIGN_UP_REQUEST
 import com.espressodev.gptmap.core.model.google.GoogleResponse
+import com.espressodev.gptmap.core.model.realm.RealmUser
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
-import com.espressodev.gptmap.core.mongodb.RealmDatabaseService
+import com.espressodev.gptmap.core.mongodb.impl.RealmSyncServiceImpl
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.AuthCredential
@@ -35,7 +36,6 @@ class GoogleAuthServiceImpl @Inject constructor(
     private val signUpRequest: BeginSignInRequest,
     private val firestoreService: FirestoreService,
     private val realmAccountService: RealmAccountService,
-    private val realmDatabaseService: RealmDatabaseService,
 ) : GoogleAuthService {
     override suspend fun oneTapSignInWithGoogle(): OneTapSignInUpResponse {
         return try {
@@ -65,6 +65,10 @@ class GoogleAuthServiceImpl @Inject constructor(
         withContext(Dispatchers.Main) {
             try {
                 val authResult = auth.signInWithCredential(googleCredential).await()
+
+                val response = authResult?.user?.getIdToken(true)?.await()?.token?.let {
+                    realmAccountService.loginWithEmail(it)
+                } ?: throw Exception("Google client id didn't got it")
                 authResult.additionalUserInfo?.isNewUser?.also {
                     authResult.user?.also { user ->
                         launch {
@@ -72,9 +76,6 @@ class GoogleAuthServiceImpl @Inject constructor(
                         }
                     }
                 }
-                val response = authResult?.user?.getIdToken(true)?.await()?.token?.let {
-                    realmAccountService.loginWithGmail(it)
-                } ?: throw Exception("Google client id didn't got it")
                 if (response is Response.Success) {
                     GoogleResponse.Success(true)
                 } else {
@@ -99,7 +100,6 @@ class GoogleAuthServiceImpl @Inject constructor(
                 profilePictureUrl = photoUrl.toString()
             )
             firestoreService.saveUser(user)
-            realmDatabaseService.saveUserToDatabase(user.toRealmUser())
         }
     }
 

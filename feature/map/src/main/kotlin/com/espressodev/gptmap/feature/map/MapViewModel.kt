@@ -8,6 +8,8 @@ import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.chatgpt.ChatgptRequest
 import com.espressodev.gptmap.core.model.chatgpt.Message
+import com.espressodev.gptmap.core.model.realm.RealmUser
+import com.espressodev.gptmap.core.mongodb.impl.RealmSyncServiceImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -46,6 +48,8 @@ class MapViewModel @Inject constructor(
                 searchValue = ""
             )
         }
+
+        RealmSyncServiceImpl().addUser(RealmUser())
     }
 
 

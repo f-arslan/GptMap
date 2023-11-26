@@ -15,4 +15,5 @@ dependencies {
     implementation(projects.core.model)
 
     implementation(libs.maps.compose)
+    implementation(project(":core:mongodb"))
 }

@@ -1,6 +1,7 @@
 package com.espressodev.gptmap.core.model.realm
 
 import com.espressodev.gptmap.core.model.Provider
+import io.realm.kotlin.internal.interop.RealmObjectT
 import io.realm.kotlin.types.RealmInstant
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
@@ -21,4 +22,14 @@ open class RealmUser : RealmObject {
     override fun toString(): String =
         "RealmUser(_id=$_id, userId='$userId', firebaseId='$firebaseId', email='$email', profilePictureUrl='$profilePictureUrl', fcmToken='$fcmToken', isEmailVerified=$isEmailVerified, provider='$provider', date=$date)"
 
+}
+
+open class Dog: RealmObject {
+    var name: String = ""
+    var age: Int = 10
+
+    constructor() {
+        this.name = "Fido"
+        this.age = 10
+    }
 }
