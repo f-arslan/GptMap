@@ -15,7 +15,7 @@ data class User(
     val provider: String = Provider.DEFAULT.name
 ) {
     fun toRealmUser(): RealmUser = RealmUser().apply {
-        firebaseId = userId
+        firebaseId = this@User.userId
         email = this@User.email
         profilePictureUrl = this@User.profilePictureUrl
         fcmToken = this@User.fcmToken

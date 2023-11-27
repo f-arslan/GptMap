@@ -9,7 +9,7 @@ import org.mongodb.kbson.ObjectId
 
 open class RealmUser : RealmObject {
     @PrimaryKey
-    var _id: ObjectId = ObjectId.invoke()
+    var _id: ObjectId = ObjectId()
     var userId: String = ""
     var firebaseId: String = ""
     var email: String = ""
@@ -20,16 +20,18 @@ open class RealmUser : RealmObject {
     var date: RealmInstant = RealmInstant.from(System.currentTimeMillis(), 0)
 
     override fun toString(): String =
-        "RealmUser(_id=$_id, userId='$userId', firebaseId='$firebaseId', email='$email', profilePictureUrl='$profilePictureUrl', fcmToken='$fcmToken', isEmailVerified=$isEmailVerified, provider='$provider', date=$date)"
+        "RealmUser(_id=$_id, userId='${userId}' firebaseId='$firebaseId', email='$email', profilePictureUrl='$profilePictureUrl', fcmToken='$fcmToken', isEmailVerified=$isEmailVerified, provider='$provider', date=$date)"
 
 }
 
-open class Dog: RealmObject {
+class Hero(): RealmObject {
+    @PrimaryKey
+    var _id: ObjectId = ObjectId()
     var name: String = ""
-    var age: Int = 10
+    var power: String = ""
+    var owner_id: String = ""
 
-    constructor() {
-        this.name = "Fido"
-        this.age = 10
+    constructor(ownerId: String = "") : this() {
+        owner_id = ownerId
     }
 }

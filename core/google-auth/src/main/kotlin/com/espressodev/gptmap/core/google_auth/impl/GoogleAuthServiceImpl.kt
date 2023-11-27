@@ -12,10 +12,12 @@ import com.espressodev.gptmap.core.model.google.GoogleConstants.SIGN_UP_REQUEST
 import com.espressodev.gptmap.core.model.google.GoogleResponse
 import com.espressodev.gptmap.core.model.realm.RealmUser
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
+import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.espressodev.gptmap.core.mongodb.impl.RealmSyncServiceImpl
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +38,7 @@ class GoogleAuthServiceImpl @Inject constructor(
     private val signUpRequest: BeginSignInRequest,
     private val firestoreService: FirestoreService,
     private val realmAccountService: RealmAccountService,
+    private val realmSyncService: RealmSyncService
 ) : GoogleAuthService {
     override suspend fun oneTapSignInWithGoogle(): OneTapSignInUpResponse {
         return try {
@@ -66,9 +69,8 @@ class GoogleAuthServiceImpl @Inject constructor(
             try {
                 val authResult = auth.signInWithCredential(googleCredential).await()
 
-                val response = authResult?.user?.getIdToken(true)?.await()?.token?.let {
-                    realmAccountService.loginWithEmail(it)
-                } ?: throw Exception("Google client id didn't got it")
+                loginToRealm(authResult)
+
                 authResult.additionalUserInfo?.isNewUser?.also {
                     authResult.user?.also { user ->
                         launch {
@@ -76,15 +78,17 @@ class GoogleAuthServiceImpl @Inject constructor(
                         }
                     }
                 }
-                if (response is Response.Success) {
-                    GoogleResponse.Success(true)
-                } else {
-                    GoogleResponse.Failure(Exception("Realm auth problem"))
-                }
+                GoogleResponse.Success(true)
             } catch (e: Exception) {
                 GoogleResponse.Failure(e)
             }
         }
+
+    private suspend fun loginToRealm(authResult: AuthResult) {
+        authResult.user?.getIdToken(true)?.await()?.token?.let {
+            realmAccountService.loginWithEmail(it)
+        }
+    }
 
     private suspend fun addUserToDatabase(firebaseUser: FirebaseUser, provider: Provider) {
         firebaseUser.apply {
@@ -100,6 +104,7 @@ class GoogleAuthServiceImpl @Inject constructor(
                 profilePictureUrl = photoUrl.toString()
             )
             firestoreService.saveUser(user)
+            realmSyncService.addUser(user.toRealmUser())
         }
     }
 

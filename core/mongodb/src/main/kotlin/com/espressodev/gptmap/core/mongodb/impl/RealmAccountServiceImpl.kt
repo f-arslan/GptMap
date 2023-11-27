@@ -1,17 +1,28 @@
 package com.espressodev.gptmap.core.mongodb.impl
 
-import com.espressodev.gptmap.core.model.Response
+import android.util.Log
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
-import com.espressodev.gptmap.core.mongodb.impl.RealmApp.app
+import io.realm.kotlin.mongodb.App
 import io.realm.kotlin.mongodb.Credentials
+import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RealmAccountServiceImpl : RealmAccountService {
-    override suspend fun loginWithEmail(token: String) = try {
-        app.login(Credentials.jwt(token))
-        Response.Success(true)
-    } catch (e: Exception) {
-        Response.Failure(e)
+class RealmAccountServiceImpl @Inject constructor(private val app: App) : RealmAccountService {
+    override suspend fun loginWithEmail(token: String) {
+        try {
+            app.login(Credentials.jwt(token))
+        } catch (e: Exception) {
+            Log.e(TAG, "loginWithEmail: ", e)
+        }
+    }
+
+    override suspend fun logOut() {
+        app.currentUser?.logOut()
+    }
+
+
+    private companion object {
+        const val TAG = "RealmAccountServiceImpl"
     }
 }
