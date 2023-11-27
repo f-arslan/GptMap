@@ -38,7 +38,6 @@ class GoogleAuthServiceImpl @Inject constructor(
     private val signUpRequest: BeginSignInRequest,
     private val firestoreService: FirestoreService,
     private val realmAccountService: RealmAccountService,
-    private val realmSyncService: RealmSyncService
 ) : GoogleAuthService {
     override suspend fun oneTapSignInWithGoogle(): OneTapSignInUpResponse {
         return try {
@@ -90,6 +89,8 @@ class GoogleAuthServiceImpl @Inject constructor(
         }
     }
 
+    private val realmSyncServiceImpl = RealmSyncServiceImpl()
+
     private suspend fun addUserToDatabase(firebaseUser: FirebaseUser, provider: Provider) {
         firebaseUser.apply {
             val displayName = displayName ?: throw Exception("Display name is null")
@@ -104,7 +105,7 @@ class GoogleAuthServiceImpl @Inject constructor(
                 profilePictureUrl = photoUrl.toString()
             )
             firestoreService.saveUser(user)
-            realmSyncService.addUser(user.toRealmUser())
+            realmSyncServiceImpl.addUser(user.toRealmUser())
         }
     }
 
