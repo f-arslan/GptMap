@@ -5,14 +5,11 @@ import com.espressodev.gptmap.core.google_auth.GoogleAuthService
 import com.espressodev.gptmap.core.google_auth.OneTapSignInUpResponse
 import com.espressodev.gptmap.core.google_auth.SignInUpWithGoogleResponse
 import com.espressodev.gptmap.core.model.Provider
-import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.model.User
 import com.espressodev.gptmap.core.model.google.GoogleConstants.SIGN_IN_REQUEST
 import com.espressodev.gptmap.core.model.google.GoogleConstants.SIGN_UP_REQUEST
 import com.espressodev.gptmap.core.model.google.GoogleResponse
-import com.espressodev.gptmap.core.model.realm.RealmUser
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
-import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.espressodev.gptmap.core.mongodb.impl.RealmSyncServiceImpl
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -64,18 +61,19 @@ class GoogleAuthServiceImpl @Inject constructor(
     }
 
     override suspend fun firebaseSignInWithGoogle(googleCredential: AuthCredential): SignInUpWithGoogleResponse =
-        withContext(Dispatchers.Main) {
+        withContext(Dispatchers.IO) {
             try {
                 val authResult = auth.signInWithCredential(googleCredential).await()
 
                 loginToRealm(authResult)
 
                 authResult.additionalUserInfo?.isNewUser?.also {
-                    authResult.user?.also { user ->
-                        launch {
-                            addUserToDatabase(user, Provider.GOOGLE)
+                    if (it)
+                        authResult.user?.also { user ->
+                            launch {
+                                addUserToDatabase(user, Provider.GOOGLE)
+                            }
                         }
-                    }
                 }
                 GoogleResponse.Success(true)
             } catch (e: Exception) {
