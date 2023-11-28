@@ -1,25 +1,35 @@
 package com.espressodev.gptmap.feature.login
 
-import android.util.Log
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
+import com.espressodev.gptmap.core.designsystem.Constants.LARGE_BUTTON_SIZE
+import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
+import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
+import com.espressodev.gptmap.core.designsystem.Constants.VERY_SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.component.AppWrapper
 import com.espressodev.gptmap.core.designsystem.component.DayHeader
@@ -67,6 +77,8 @@ fun LoginScreen(
     onForgotPasswordClick: () -> Unit
 ) {
     AppWrapper {
+        AppIcon()
+        Spacer(modifier = Modifier.height(MEDIUM_PADDING))
         LoginHeader()
         DefaultTextField(
             value = uiState.email,
@@ -101,7 +113,7 @@ fun LoginScreen(
         )
         ExtFloActionButton(
             AppDrawable.google,
-            label = AppText.google_icon,
+            label = AppText.continue_google,
             onClick = { onEvent(LoginEvent.OnGoogleClicked) }
         )
         Spacer(Modifier.weight(1f))
@@ -123,12 +135,32 @@ fun LoginScreen(
     }
 }
 
+@Composable
+fun AppIcon() {
+    Surface(
+        border = BorderStroke(
+            VERY_SMALL_PADDING,
+            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+        ),
+        shape = RoundedCornerShape(HIGH_PADDING),
+        color = MaterialTheme.colorScheme.background,
+        shadowElevation = SMALL_PADDING
+    ) {
+        Image(
+            painter = painterResource(id = AppDrawable.app_icon),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(HIGH_PADDING)
+                .size(LARGE_BUTTON_SIZE)
+        )
+    }
+}
 
 @Composable
 fun LoginHeader() {
     HeaderWrapper {
         Text(
-            text = stringResource(AppText.login_header),
+            text = stringResource(AppText.login_header), // TODO: FIX AFTER IDE RESTART
             style = MaterialTheme.typography.displaySmall
         )
         Text(

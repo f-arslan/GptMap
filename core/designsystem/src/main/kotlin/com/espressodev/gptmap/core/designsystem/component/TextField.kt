@@ -106,41 +106,37 @@ fun PasswordTextField(
 ) {
     val shouldShowPasswordVisibility by remember(value) { derivedStateOf { value.isNotEmpty() } }
     var passwordVisibility by remember(shouldShowPasswordVisibility) { mutableStateOf(false) }
-    Column {
-        Text(
-            text = stringResource(id = label),
-            style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.padding(start = MEDIUM_PADDING, bottom = MEDIUM_PADDING)
-        )
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = value,
-            trailingIcon = {
-                if (shouldShowPasswordVisibility)
-                    IconButton(
-                        onClick = { passwordVisibility = !passwordVisibility }
-                    ) {
-                        Icon(
-                            imageVector = if (passwordVisibility) GmIcons.VisibilityOnOutlined
-                            else GmIcons.VisibilityOffOutlined,
-                            contentDescription = null
-                        )
-                    }
-            },
-            leadingIcon = { Icon(imageVector = icon, contentDescription = null) },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next,
-                keyboardType = KeyboardType.Password
-            ),
-            keyboardActions = KeyboardActions(
-                onNext = { onConfirmClick() }
-            ),
-            shape = RoundedCornerShape(MEDIUM_PADDING),
-            onValueChange = { if (it.length < 30) onValueChange(it) },
-            visualTransformation = if (passwordVisibility) VisualTransformation.None
-            else PasswordVisualTransformation()
-        )
-    }
+
+    OutlinedTextField(
+        modifier = Modifier.fillMaxWidth(),
+        value = value,
+        trailingIcon = {
+            if (shouldShowPasswordVisibility)
+                IconButton(
+                    onClick = { passwordVisibility = !passwordVisibility }
+                ) {
+                    Icon(
+                        imageVector = if (passwordVisibility) GmIcons.VisibilityOnOutlined
+                        else GmIcons.VisibilityOffOutlined,
+                        contentDescription = null
+                    )
+                }
+        },
+        leadingIcon = { Icon(imageVector = icon, contentDescription = null) },
+        label = { Text(stringResource(id = label)) },
+        keyboardOptions = KeyboardOptions.Default.copy(
+            imeAction = ImeAction.Next,
+            keyboardType = KeyboardType.Password
+        ),
+        keyboardActions = KeyboardActions(
+            onNext = { onConfirmClick() }
+        ),
+        shape = RoundedCornerShape(MEDIUM_PADDING),
+        onValueChange = { if (it.length < 30) onValueChange(it) },
+        visualTransformation = if (passwordVisibility) VisualTransformation.None
+        else PasswordVisualTransformation()
+    )
+   
 }
 
 

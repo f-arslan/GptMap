@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
@@ -35,6 +36,7 @@ import com.espressodev.gptmap.core.designsystem.component.HyperlinkText
 import com.espressodev.gptmap.core.designsystem.component.PasswordTextField
 import com.espressodev.gptmap.core.google_auth.composable.OneTapLauncher
 import com.espressodev.gptmap.core.model.LoadingState
+import com.espressodev.gptmap.core.model.google.GoogleResponse
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
@@ -89,6 +91,7 @@ fun RegisterScreen(
     onAlreadyHaveAccountClicked: () -> Unit
 ) {
     AppWrapper {
+        RegisterHeader()
         DefaultTextField(
             value = uiState.fullName,
             label = AppText.full_name,
@@ -168,4 +171,19 @@ fun RegisterHeader() {
             textAlign = TextAlign.Center
         )
     }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun RegisterPreview() {
+    RegisterScreen(uiState = RegisterUiState(
+        fullName = "Beatriz Wells",
+        email = "whitney.brewer@example.com",
+        password = "sale",
+        confirmPassword = "mandamus",
+        verificationAlertState = LoadingState.Loading,
+        loadingState = LoadingState.Loading,
+        oneTapSignUpResponse = GoogleResponse.Success(null),
+        signUpWithGoogleResponse = GoogleResponse.Success(true)
+    ), onEvent = {}, onAlreadyHaveAccountClicked = {})
 }

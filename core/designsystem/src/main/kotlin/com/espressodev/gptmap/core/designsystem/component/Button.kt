@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -35,6 +36,7 @@ import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.NO_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
+import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -72,7 +74,7 @@ fun ExtFloActionButton(
     @StringRes label: Int,
     onClick: () -> Unit
 ) {
-    OutlinedButton(onClick = onClick, shape = RoundedCornerShape(HIGH_PADDING)) {
+    ExtendedFloatingActionButton(onClick = onClick) {
         Image(
             painter = painterResource(icon),
             contentDescription = null
@@ -93,10 +95,6 @@ fun DefaultButton(@StringRes text: Int, onClick: () -> Unit, modifier: Modifier 
             onClick()
         },
         shape = RoundedCornerShape(HIGH_PADDING),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-        )
     ) {
         Text(
             text = stringResource(id = text),
@@ -132,5 +130,7 @@ fun SquareButton(
 @Preview(showBackground = true)
 @Composable
 private fun ButtonPreview() {
-    MapSearchButton(onClick = {}, buttonEnabledState = true)
+   ExtFloActionButton(icon = AppDrawable.google, label = AppText.continue_google) {
+
+   }
 }

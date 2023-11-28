@@ -8,12 +8,15 @@ import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.Response
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
+
+@HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
     private val accountService: AccountService,
     private val resources: Resources,

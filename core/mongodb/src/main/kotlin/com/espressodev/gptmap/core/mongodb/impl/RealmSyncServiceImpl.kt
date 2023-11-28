@@ -7,7 +7,6 @@ import com.espressodev.gptmap.core.mongodb.module.RealmModule.realm
 import com.espressodev.gptmap.core.mongodb.module.RealmModule.user
 import io.realm.kotlin.UpdatePolicy
 
-
 class RealmSyncServiceImpl : RealmSyncService {
 
     override suspend fun addUser(realmUser: RealmUser): Result<Boolean> = runCatching {
