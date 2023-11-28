@@ -9,14 +9,15 @@ import javax.inject.Singleton
 
 @Singleton
 class RealmAccountServiceImpl : RealmAccountService {
-    override suspend fun loginWithEmail(token: String) {
-        try {
-            app.login(Credentials.jwt(token))
-            RealmModule.initRealm(app.currentUser!!)
-        } catch (e: Exception) {
-            Log.e(TAG, "loginWithEmail: ", e)
-        }
+    override suspend fun loginWithEmail(token: String): Result<Boolean> = runCatching {
+        app.login(Credentials.jwt(token))
+        RealmModule.initRealm(app.currentUser!!)
+        true
+    }.onFailure {
+        Log.e(TAG, "loginWithEmail: failure $it")
+        Result.failure<Throwable>(it)
     }
+
 
     override suspend fun logOut() {
         app.currentUser?.logOut()

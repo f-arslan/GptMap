@@ -4,11 +4,14 @@ import android.util.Log
 import com.espressodev.gptmap.core.model.realm.Hero
 import com.espressodev.gptmap.core.model.realm.RealmUser
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
+import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.espressodev.gptmap.core.mongodb.impl.RealmAccountServiceImpl
+import com.espressodev.gptmap.core.mongodb.impl.RealmSyncServiceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.components.SingletonComponent
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.log.LogLevel
@@ -22,6 +25,7 @@ import io.realm.kotlin.mongodb.sync.SyncSession
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Singleton
 
 private const val APP_ID = "gptmapapplication-giuno"
 private const val BASE_URL = "https://realm.mongodb.com"
@@ -60,9 +64,15 @@ object RealmModule {
 }
 
 @Module
-@InstallIn(ViewModelComponent::class)
+@InstallIn(SingletonComponent::class)
 object RealmServiceModule {
+    @Singleton
     @Provides
     fun bindRealmAccountService(): RealmAccountService =
         RealmAccountServiceImpl()
+
+    @Singleton
+    @Provides
+    fun bindRealmSyncService(): RealmSyncService =
+        RealmSyncServiceImpl()
 }

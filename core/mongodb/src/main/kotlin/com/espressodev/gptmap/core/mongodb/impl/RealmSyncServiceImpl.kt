@@ -10,23 +10,16 @@ import io.realm.kotlin.UpdatePolicy
 
 class RealmSyncServiceImpl : RealmSyncService {
 
-    override suspend fun addUser(realmUser: RealmUser) {
-        runCatching {
-            realm.write {
-                copyToRealm(realmUser.apply {
-                    userId = user!!.id
-                }, updatePolicy = UpdatePolicy.ALL)
-            }
-        }.onSuccess {
-            Log.d("RealmSyncServiceImpl", "addUser: success")
-        }.onFailure {
-            Log.d("RealmSyncServiceImpl", "addUser: failure $it")
+    override suspend fun addUser(realmUser: RealmUser): Result<Boolean> = runCatching {
+        realm.write {
+            copyToRealm(realmUser.apply {
+                userId = user.id
+            }, updatePolicy = UpdatePolicy.ALL)
         }
-
-    }
-
-    override fun close() {
-       realm.close()
+        true
+    }.onFailure {
+        Log.e("RealmSyncServiceImpl", "addUser: failure $it")
+        Result.failure<Throwable>(it)
     }
 }
 
