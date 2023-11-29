@@ -82,17 +82,11 @@ class GoogleAuthModule {
         signInRequest: BeginSignInRequest,
         @Named(SIGN_UP_REQUEST)
         signUpRequest: BeginSignInRequest,
-        firestoreService: FirestoreService,
-        realmAccountService: RealmAccountService,
-        realmSyncService: RealmSyncService
     ): GoogleAuthService = GoogleAuthServiceImpl(
         auth = auth,
         oneTapClient = oneTapClient,
         signInRequest = signInRequest,
         signUpRequest = signUpRequest,
-        firestoreService = firestoreService,
-        realmAccountService = realmAccountService,
-        realmSyncService = realmSyncService,
     )
 
     @Provides

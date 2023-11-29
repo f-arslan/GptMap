@@ -6,7 +6,6 @@ import com.google.firebase.auth.AuthResult
 
 
 typealias SendEmailVerificationResponse = Response<Boolean>
-typealias SignInResponse = Response<Boolean>
 typealias ReloadUserResponse = Response<Boolean>
 typealias SendPasswordResetEmailResponse = Response<Boolean>
 typealias RevokeAccessResponse = Response<Boolean>
@@ -18,7 +17,7 @@ interface AccountService {
 
     suspend fun sendEmailVerification(): SendEmailVerificationResponse
 
-    suspend fun firebaseSignInWithEmailAndPassword(email: String, password: String): SignInResponse
+    suspend fun firebaseSignInWithEmailAndPassword(email: String, password: String): AuthResult
 
     suspend fun reloadFirebaseUser(): ReloadUserResponse
 

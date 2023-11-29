@@ -11,6 +11,7 @@ dependencies {
     implementation(projects.core.mongodb)
     implementation(projects.core.model)
     implementation(projects.core.data)
+    implementation(projects.core.googleAuth)
 
     implementation(libs.firebase.auth)
     implementation(libs.firebase.bom)

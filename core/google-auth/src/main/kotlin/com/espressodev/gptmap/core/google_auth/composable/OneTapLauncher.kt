@@ -25,7 +25,7 @@ fun OneTapLauncher(
     oneTapClient: SignInClient,
     oneTapSignInUpResponse: OneTapSignInUpResponse,
     singInUpWithGoogleResponse: SignInUpWithGoogleResponse,
-    signInWithGoogle: (AuthCredential, String?) -> Job,
+    signInWithGoogle: (AuthCredential) -> Job,
     navigate: () -> Unit
 ) {
     val launcher =
@@ -36,7 +36,7 @@ fun OneTapLauncher(
                         oneTapClient.getSignInCredentialFromIntent(result.data)
                     val googleIdToken = credentials.googleIdToken
                     val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
-                    signInWithGoogle(googleCredentials, googleIdToken)
+                    signInWithGoogle(googleCredentials)
                 } catch (it: ApiException) {
                     print(it)
                 }

@@ -1,13 +1,11 @@
 package com.espressodev.gptmap.feature.login
 
-import android.util.Log
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.ext.isValidEmail
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
 import com.espressodev.gptmap.core.data.AccountService
-import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.data.LogService
-import com.espressodev.gptmap.core.google_auth.GoogleAuthService
+import com.espressodev.gptmap.core.domain.SignInUpWithGoogleUseCase
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.model.google.GoogleResponse
@@ -24,7 +22,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val accountService: AccountService,
-    private val googleAuthService: GoogleAuthService,
+    private val signInUpWithGoogleUseCase: SignInUpWithGoogleUseCase,
     val oneTapClient: SignInClient,
     logService: LogService
 ) : GmViewModel(logService) {
@@ -47,15 +45,14 @@ class LoginViewModel @Inject constructor(
     private fun onLoginClick(navigateToMap: () -> Unit) = launchCatching {
         if (!formValidation()) return@launchCatching
         onEvent(LoginEvent.OnLoadingStateChanged(LoadingState.Loading))
+
         accountService.firebaseSignInWithEmailAndPassword(email.trim(), password).apply {
-            Log.d("LoginViewModel", "onLoginClick: $this")
             when (this) {
                 is Response.Failure -> SnackbarManager.showMessage(AppText.email_or_password_error)
                 Response.Loading -> {}
                 is Response.Success -> {
                     accountService.reloadFirebaseUser()
                     if (accountService.isEmailVerified) {
-                        // TODO: ADD EMAIL VERIFICATION STATUS TO DB
                         navigateToMap()
                     } else {
                         SnackbarManager.showMessage(AppText.please_verify_email)
@@ -77,16 +74,18 @@ class LoginViewModel @Inject constructor(
 
     private fun oneTapSignIn() = launchCatching {
         _uiState.update { it.copy(oneTapSignInResponse = GoogleResponse.Loading) }
-        _uiState.update { it.copy(oneTapSignInResponse = googleAuthService.oneTapSignInWithGoogle()) }
+
+        val oneTapSignInResponse = signInUpWithGoogleUseCase.oneTapSignInWithGoogle()
+
+        _uiState.update { it.copy(oneTapSignInResponse = oneTapSignInResponse) }
     }
 
-    fun signInWithGoogle(googleCredential: AuthCredential, token: String?) = launchCatching {
+    fun signInWithGoogle(googleCredential: AuthCredential) = launchCatching {
         _uiState.update { it.copy(signInWithGoogleResponse = GoogleResponse.Loading) }
-        _uiState.update {
-            it.copy(
-                signInWithGoogleResponse = googleAuthService.firebaseSignInWithGoogle(
-                    googleCredential)
-            )
-        }
+
+        val signInWithGoogleResponse =
+            signInUpWithGoogleUseCase.firebaseSignInUpWithGoogle(googleCredential)
+
+        _uiState.update { it.copy(signInWithGoogleResponse = signInWithGoogleResponse) }
     }
 }
