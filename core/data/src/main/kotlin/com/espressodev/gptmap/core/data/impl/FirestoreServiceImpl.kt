@@ -11,7 +11,6 @@ import javax.inject.Inject
 
 class FirestoreServiceImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val accountService: AccountService
 ) : FirestoreService {
 
     override suspend fun saveUser(user: User) {
@@ -33,6 +32,18 @@ class FirestoreServiceImpl @Inject constructor(
             val user = getUserDocRef(userId).get().await().toObject(User::class.java)
                 ?: throw Exception("User is null")
             Result.success(user)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updateUserEmailVerification(
+        userId: String,
+        isEmailVerified: Boolean
+    ): Result<Boolean> = withContext(Dispatchers.IO) {
+        try {
+            getUserDocRef(userId).update(USER_IS_EMAIL_VERIFIED, isEmailVerified).await()
+            Result.success(true)
         } catch (e: Exception) {
             Result.failure(e)
         }

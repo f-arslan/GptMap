@@ -7,4 +7,5 @@ interface FirestoreService {
     suspend fun saveUser(user: User)
     suspend fun isUserInDatabase(userId: String): Result<Boolean>
     suspend fun getUser(userId: String): Result<User>
+    suspend fun updateUserEmailVerification(userId: String, isEmailVerified: Boolean): Result<Boolean>
 }

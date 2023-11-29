@@ -2,7 +2,11 @@ package com.espressodev.gptmap
 
 import android.content.res.Resources
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -15,13 +19,24 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
+import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun GmApp() {
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
         val appState = rememberAppState()
-        GmNavHost(appState = appState)
+        Scaffold(
+            snackbarHost = {
+                SnackbarHost(
+                    hostState = appState.snackbarHostState,
+                    modifier = Modifier.padding(MEDIUM_PADDING),
+                    snackbar = { snackbarData -> Snackbar(snackbarData) },
+                )
+            },
+        ) {
+            GmNavHost(appState = appState, modifier = Modifier.padding(it))
+        }
     }
 }
 

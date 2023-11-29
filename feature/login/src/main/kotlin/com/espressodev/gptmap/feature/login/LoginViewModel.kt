@@ -24,7 +24,6 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val accountService: AccountService,
-    private val firestoreService: FirestoreService,
     private val googleAuthService: GoogleAuthService,
     val oneTapClient: SignInClient,
     logService: LogService
@@ -49,6 +48,7 @@ class LoginViewModel @Inject constructor(
         if (!formValidation()) return@launchCatching
         onEvent(LoginEvent.OnLoadingStateChanged(LoadingState.Loading))
         accountService.firebaseSignInWithEmailAndPassword(email.trim(), password).apply {
+            Log.d("LoginViewModel", "onLoginClick: $this")
             when (this) {
                 is Response.Failure -> SnackbarManager.showMessage(AppText.email_or_password_error)
                 Response.Loading -> {}
@@ -63,6 +63,7 @@ class LoginViewModel @Inject constructor(
                 }
             }
         }
+        onEvent(LoginEvent.OnLoadingStateChanged(LoadingState.Idle))
     }
 
     private fun formValidation(): Boolean =
