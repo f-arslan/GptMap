@@ -7,7 +7,6 @@ import com.espressodev.gptmap.core.data.RevokeAccessResponse
 import com.espressodev.gptmap.core.data.SendEmailVerificationResponse
 import com.espressodev.gptmap.core.data.SendPasswordResetEmailResponse
 import com.espressodev.gptmap.core.data.SignInResponse
-import com.espressodev.gptmap.core.data.SignUpResponse
 import com.espressodev.gptmap.core.data.UpdatePasswordResponse
 import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.model.User
@@ -33,19 +32,8 @@ class AccountServiceImpl @Inject constructor(
         email: String,
         password: String,
         fullName: String
-    ): SignUpResponse {
-        return try {
-            val authResult = auth.createUserWithEmailAndPassword(email, password).await()
-
-            authResult.user?.uid?.let { userId ->
-                val user = User(userId = userId, fullName = fullName, email = email)
-                saveUserToDatabaseIfUserNotExist(user)
-            } ?: throw UserIdIsNullException()
-
-            Response.Success(true)
-        } catch (e: Exception) {
-            Response.Failure(e)
-        }
+    ): AuthResult {
+        return auth.createUserWithEmailAndPassword(email, password).await()
     }
 
     override suspend fun sendEmailVerification(): SendEmailVerificationResponse {

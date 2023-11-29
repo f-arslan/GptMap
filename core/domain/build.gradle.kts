@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.gptmap.android.library)
+    alias(libs.plugins.gptmap.android.hilt)
 }
 
 android {
@@ -7,5 +8,12 @@ android {
 }
 
 dependencies {
-    implementation(libs.maps.compose)
+    implementation(projects.core.mongodb)
+    implementation(projects.core.model)
+    implementation(projects.core.data)
+
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.bom)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.crashlytics)
 }

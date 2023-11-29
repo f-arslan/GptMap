@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.core.data.impl
 
-import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.model.User
 import com.google.firebase.firestore.FirebaseFirestore
@@ -18,13 +17,11 @@ class FirestoreServiceImpl @Inject constructor(
     }
 
     override suspend fun isUserInDatabase(userId: String): Result<Boolean> =
-        withContext(Dispatchers.IO) {
-            try {
-                val user = getUserDocRef(userId).get().await()
-                Result.success(user.exists())
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
+        try {
+            val user = getUserDocRef(userId).get().await()
+            Result.success(user.exists())
+        } catch (e: Exception) {
+            Result.failure(e)
         }
 
     override suspend fun getUser(userId: String): Result<User> = withContext(Dispatchers.IO) {

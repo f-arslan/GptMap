@@ -6,12 +6,11 @@ import com.espressodev.gptmap.core.common.ext.isValidName
 import com.espressodev.gptmap.core.common.ext.isValidPassword
 import com.espressodev.gptmap.core.common.ext.passwordMatches
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
-import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.data.LogService
+import com.espressodev.gptmap.core.domain.SignUpWithEmailAndPasswordUseCase
 import com.espressodev.gptmap.core.google_auth.GoogleAuthService
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.Response
-import com.espressodev.gptmap.core.model.User
 import com.espressodev.gptmap.core.model.google.GoogleResponse
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.AuthCredential
@@ -25,8 +24,8 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @HiltViewModel
 class RegisterScreenViewModel @Inject constructor(
-    private val accountService: AccountService,
     private val googleAuthService: GoogleAuthService,
+    private val signUpWithEmailAndPasswordUseCase: SignUpWithEmailAndPasswordUseCase,
     val oneTapClient: SignInClient,
     logService: LogService
 ) : GmViewModel(logService) {
@@ -51,7 +50,12 @@ class RegisterScreenViewModel @Inject constructor(
             is RegisterEvent.OnPasswordChanged -> _uiState.update { it.copy(password = event.password) }
             is RegisterEvent.OnConfirmPasswordChanged -> _uiState.update { it.copy(confirmPassword = event.confirmPassword) }
             is RegisterEvent.OnLoadingStateChanged -> _uiState.update { it.copy(loadingState = event.state) }
-            is RegisterEvent.OnVerificationAlertStateChanged -> _uiState.update { it.copy(verificationAlertState = event.state) }
+            is RegisterEvent.OnVerificationAlertStateChanged -> _uiState.update {
+                it.copy(
+                    verificationAlertState = event.state
+                )
+            }
+
             RegisterEvent.OnGoogleClicked -> oneTapSignUp()
             RegisterEvent.OnRegisterClicked -> onRegisterClick()
         }
@@ -70,19 +74,14 @@ class RegisterScreenViewModel @Inject constructor(
 
         if (!formValidation()) return@launchCatching
 
-        accountService.firebaseSignUpWithEmailAndPassword(email.trim(), password, fullName).apply {
-            when (this) {
-                is Response.Failure -> {
-                    e.message?.let { SnackbarManager.showMessage(it) }
-                }
-                Response.Loading -> {}
-                is Response.Success -> {
-                    accountService.sendEmailVerification()
-                    onEvent(RegisterEvent.OnLoadingStateChanged(LoadingState.Idle))
-                    onEvent(RegisterEvent.OnVerificationAlertStateChanged(LoadingState.Loading))
-                }
+        signUpWithEmailAndPasswordUseCase(email.trim(), password, fullName)
+            .onSuccess {
+                onEvent(RegisterEvent.OnLoadingStateChanged(LoadingState.Idle))
+                onEvent(RegisterEvent.OnVerificationAlertStateChanged(LoadingState.Loading))
             }
-        }
+            .onFailure {
+                it.message?.let { error -> SnackbarManager.showMessage(error) }
+            }
 
         onEvent(RegisterEvent.OnLoadingStateChanged(LoadingState.Idle))
     }
@@ -96,7 +95,9 @@ class RegisterScreenViewModel @Inject constructor(
         _uiState.update { it.copy(signUpWithGoogleResponse = GoogleResponse.Loading) }
         _uiState.update {
             it.copy(
-                signUpWithGoogleResponse = googleAuthService.firebaseSignInWithGoogle(googleCredential)
+                signUpWithGoogleResponse = googleAuthService.firebaseSignInWithGoogle(
+                    googleCredential
+                )
             )
         }
     }
