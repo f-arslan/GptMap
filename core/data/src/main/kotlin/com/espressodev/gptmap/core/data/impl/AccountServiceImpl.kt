@@ -1,9 +1,7 @@
 package com.espressodev.gptmap.core.data.impl
 
 import com.espressodev.gptmap.core.data.AccountService
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.tasks.await
-import javax.inject.Inject
+import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.data.ReloadUserResponse
 import com.espressodev.gptmap.core.data.RevokeAccessResponse
 import com.espressodev.gptmap.core.data.SendEmailVerificationResponse
@@ -12,26 +10,33 @@ import com.espressodev.gptmap.core.data.SignInResponse
 import com.espressodev.gptmap.core.data.SignUpResponse
 import com.espressodev.gptmap.core.data.UpdatePasswordResponse
 import com.espressodev.gptmap.core.model.Response
+import com.espressodev.gptmap.core.model.User
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
 class AccountServiceImpl @Inject constructor(
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
+    private val firestoreService: FirestoreService
 ) : AccountService {
-
-    override val currentUserId: String
-        get() = auth.currentUser?.uid.orEmpty()
 
     override val isEmailVerified: Boolean
         get() = auth.currentUser?.isEmailVerified ?: false
 
-    override val email: String
-        get() = auth.currentUser?.email.orEmpty()
 
     override suspend fun firebaseSignUpWithEmailAndPassword(
         email: String,
-        password: String
+        password: String,
+        fullName: String
     ): SignUpResponse {
         return try {
-            auth.createUserWithEmailAndPassword(email, password).await()
+            val authResult = auth.createUserWithEmailAndPassword(email, password).await()
+
+            authResult.user?.uid?.let { userId ->
+                val user = User(userId = userId, fullName = fullName, email = email)
+                saveUserToDatabaseIfUserNotExist(user)
+            } ?: throw Exception("User id is null")
+
             Response.Success(true)
         } catch (e: Exception) {
             Response.Failure(e)
@@ -49,13 +54,24 @@ class AccountServiceImpl @Inject constructor(
 
     override suspend fun firebaseSignInWithEmailAndPassword(
         email: String,
-        password: String
+        password: String,
     ): SignInResponse {
         return try {
-            auth.signInWithEmailAndPassword(email, password).await()
+            val authResult = auth.signInWithEmailAndPassword(email, password).await()
+            val isEmailVerified = authResult.user?.isEmailVerified ?: false
+            if (isEmailVerified) {
+
+            }
             Response.Success(true)
         } catch (e: Exception) {
             Response.Failure(e)
+        }
+    }
+
+    private suspend fun saveUserToDatabaseIfUserNotExist(user: User) {
+        firestoreService.isUserInDatabase(user.userId).onSuccess { isUserInDb ->
+            if (!isUserInDb)
+                firestoreService.saveUser(user)
         }
     }
 

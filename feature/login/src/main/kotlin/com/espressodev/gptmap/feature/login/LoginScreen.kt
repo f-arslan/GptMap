@@ -1,17 +1,14 @@
 package com.espressodev.gptmap.feature.login
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -26,10 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.LARGE_BUTTON_SIZE
-import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.VERY_SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.component.AppWrapper
 import com.espressodev.gptmap.core.designsystem.component.DayHeader
@@ -78,8 +72,7 @@ fun LoginScreen(
 ) {
     AppWrapper {
         AppIcon()
-        Spacer(modifier = Modifier.height(MEDIUM_PADDING))
-        LoginHeader()
+        // LoginHeader()
         DefaultTextField(
             value = uiState.email,
             label = AppText.email,
@@ -137,23 +130,15 @@ fun LoginScreen(
 
 @Composable
 fun AppIcon() {
-    Surface(
-        border = BorderStroke(
-            VERY_SMALL_PADDING,
-            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-        ),
-        shape = RoundedCornerShape(HIGH_PADDING),
-        color = MaterialTheme.colorScheme.background,
-        shadowElevation = SMALL_PADDING
-    ) {
-        Image(
-            painter = painterResource(id = AppDrawable.app_icon),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(HIGH_PADDING)
-                .size(LARGE_BUTTON_SIZE)
-        )
-    }
+
+    Image(
+        painter = painterResource(id = AppDrawable.app_icon_no_background),
+        contentDescription = null,
+        modifier = Modifier
+            .padding(HIGH_PADDING)
+            .size(LARGE_BUTTON_SIZE)
+    )
+
 }
 
 @Composable

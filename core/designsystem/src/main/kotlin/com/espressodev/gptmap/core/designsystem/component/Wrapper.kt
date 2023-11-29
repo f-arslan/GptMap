@@ -22,11 +22,10 @@ fun AppWrapper(modifier: Modifier = Modifier, content: @Composable ColumnScope.(
         modifier = modifier
             .fillMaxSize()
             .padding(HIGH_PADDING)
-            .padding(top = MAX_PADDING),
     ) {
         Column(
             modifier = Modifier.verticalScroll(scrollState),
-            verticalArrangement = Arrangement.spacedBy(MEDIUM_PADDING),
+            verticalArrangement = Arrangement.spacedBy(HIGH_PADDING),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             content()

@@ -65,7 +65,7 @@
     <string name="empty_password_error">Password cannot be empty.</string>
     <string name="please_verify_email">Please verify your email. Also check your spam folder as well.</string>
     <string name="email_or_password_error">Email or password is incorrect.</string>
-    <string name="login_header">Hello Again!</string>
+    <string name="login_header">Login to continue</string>
     <string name="login_sub_header">Welcome back you\'ve been missed</string>
 
     <!-- Forgot Password -->

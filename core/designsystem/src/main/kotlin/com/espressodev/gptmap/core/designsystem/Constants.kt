@@ -19,7 +19,7 @@ object Constants {
     val MARKER_SIZE = 72.dp
     val BUTTON_SIZE = 56.dp
     val BIG_BUTTON_SIZE = 64.dp
-    val LARGE_BUTTON_SIZE = 96.dp
+    val LARGE_BUTTON_SIZE = 120.dp
 
     // User Agreements
     const val PRIVACY_POLICY_DESC = "By signing up, you agree to accept our privacy policy and terms & conditions."

@@ -11,6 +11,7 @@ import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.google_auth.GoogleAuthService
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.Response
+import com.espressodev.gptmap.core.model.User
 import com.espressodev.gptmap.core.model.google.GoogleResponse
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.AuthCredential
@@ -39,6 +40,10 @@ class RegisterScreenViewModel @Inject constructor(
     private val password
         get() = uiState.value.password
 
+    private val fullName
+        get() = uiState.value.fullName
+
+
     fun onEvent(event: RegisterEvent) {
         when (event) {
             is RegisterEvent.OnFullNameChanged -> _uiState.update { it.copy(fullName = event.fullName) }
@@ -65,7 +70,7 @@ class RegisterScreenViewModel @Inject constructor(
 
         if (!formValidation()) return@launchCatching
 
-        accountService.firebaseSignUpWithEmailAndPassword(email.trim(), password).apply {
+        accountService.firebaseSignUpWithEmailAndPassword(email.trim(), password, fullName).apply {
             when (this) {
                 is Response.Failure -> {
                     e.message?.let { SnackbarManager.showMessage(it) }
@@ -75,7 +80,6 @@ class RegisterScreenViewModel @Inject constructor(
                     accountService.sendEmailVerification()
                     onEvent(RegisterEvent.OnLoadingStateChanged(LoadingState.Idle))
                     onEvent(RegisterEvent.OnVerificationAlertStateChanged(LoadingState.Loading))
-                    saveUserToDb()
                 }
             }
         }
@@ -83,11 +87,7 @@ class RegisterScreenViewModel @Inject constructor(
         onEvent(RegisterEvent.OnLoadingStateChanged(LoadingState.Idle))
     }
 
-    private suspend fun saveUserToDb() {
-
-    }
-
-    fun oneTapSignUp() = launchCatching {
+    private fun oneTapSignUp() = launchCatching {
         _uiState.update { it.copy(oneTapSignUpResponse = GoogleResponse.Loading) }
         _uiState.update { it.copy(oneTapSignUpResponse = googleAuthService.oneTapSignUpWithGoogle()) }
     }

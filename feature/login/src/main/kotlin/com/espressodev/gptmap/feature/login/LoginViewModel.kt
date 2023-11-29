@@ -80,7 +80,6 @@ class LoginViewModel @Inject constructor(
     }
 
     fun signInWithGoogle(googleCredential: AuthCredential, token: String?) = launchCatching {
-        Log.d("LoginViewModel", token.toString())
         _uiState.update { it.copy(signInWithGoogleResponse = GoogleResponse.Loading) }
         _uiState.update {
             it.copy(

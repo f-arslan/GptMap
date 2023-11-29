@@ -164,12 +164,6 @@ fun RegisterHeader() {
             text = stringResource(AppText.register_header),
             style = MaterialTheme.typography.displaySmall
         )
-        Text(
-            text = stringResource(AppText.register_sub_header),
-            minLines = 2,
-            style = MaterialTheme.typography.titleMedium,
-            textAlign = TextAlign.Center
-        )
     }
 }
 

@@ -4,9 +4,9 @@ import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.model.User
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.dataObjects
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class FirestoreServiceImpl @Inject constructor(
@@ -14,19 +14,28 @@ class FirestoreServiceImpl @Inject constructor(
     private val accountService: AccountService
 ) : FirestoreService {
 
-    override val user: Flow<User?>
-        get() = getUserDocRef(accountService.currentUserId).dataObjects<User>()
-
     override suspend fun saveUser(user: User) {
         userColRef.document(user.userId).set(user)
     }
 
-    override suspend fun updateUserProfilePictureUrl(userId: String, profilePictureUrl: String) {
-        getUserDocRef(userId).update(USER_PROFILE_PICTURE_URL, profilePictureUrl).await()
-    }
+    override suspend fun isUserInDatabase(userId: String): Result<Boolean> =
+        withContext(Dispatchers.IO) {
+            try {
+                val user = getUserDocRef(userId).get().await()
+                Result.success(user.exists())
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
 
-    override suspend fun updateUserEmailVerification(userId: String) {
-        getUserDocRef(userId).update(USER_IS_EMAIL_VERIFIED, true).await()
+    override suspend fun getUser(userId: String): Result<User> = withContext(Dispatchers.IO) {
+        try {
+            val user = getUserDocRef(userId).get().await().toObject(User::class.java)
+                ?: throw Exception("User is null")
+            Result.success(user)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
 
