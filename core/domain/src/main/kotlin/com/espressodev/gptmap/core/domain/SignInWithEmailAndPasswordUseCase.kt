@@ -21,11 +21,11 @@ class SignInWithEmailAndPasswordUseCase @Inject constructor(
     suspend operator fun invoke(email: String, password: String) = withContext(Dispatchers.IO) {
         try {
             val authResult = accountService.firebaseSignInWithEmailAndPassword(email, password)
+            accountService.reloadFirebaseUser()
 
             val isEmailVerified = authResult.user?.isEmailVerified ?: false
-
-            if (isEmailVerified)
-                updateUserIfEmailVerificationFieldIsFalse(authResult)
+            if (!isEmailVerified) throw EmailVerificationIsFalseException()
+            updateDatabaseIfUserEmailVerificationFieldIsFalse(authResult)
 
             loginToRealm(authResult)
 
@@ -43,19 +43,18 @@ class SignInWithEmailAndPasswordUseCase @Inject constructor(
         }
     }
 
-    private suspend fun updateUserIfEmailVerificationFieldIsFalse(authResult: AuthResult) {
-         authResult.user?.uid?.also { uid ->
-             firestoreService.getUser(uid).onSuccess { user ->
-                 if (!user.isEmailVerified) {
-                     firestoreService.updateUserEmailVerification(uid, true).onFailure {
-                         throw FailedToUpdateUserEmailVerificationException()
-                     }
-                 }
-                 realmSyncService.addUser(user.copy(isEmailVerified = true).toRealmUser())
-             }.onFailure {
-                 throw FailedToGetUserException()
-             }
-         }
+    private suspend fun updateDatabaseIfUserEmailVerificationFieldIsFalse(authResult: AuthResult) {
+        authResult.user?.uid?.also { uid ->
+            firestoreService.getUser(uid).onSuccess { user ->
+                if (!user.isEmailVerified) {
+                    firestoreService.updateUserEmailVerification(uid, true)
+                        .onFailure { throw FailedToUpdateUserEmailVerificationException() }
+                }
+                realmSyncService.addUser(user.copy(isEmailVerified = true).toRealmUser())
+            }.onFailure {
+                throw FailedToGetUserException()
+            }
+        }
     }
 
 }
@@ -63,3 +62,5 @@ class SignInWithEmailAndPasswordUseCase @Inject constructor(
 class FailedToGetUserException : Exception("Failed to get user")
 class FailedToUpdateUserEmailVerificationException :
     Exception("Failed to update user email verification")
+
+class EmailVerificationIsFalseException : Exception("Email verification is false")

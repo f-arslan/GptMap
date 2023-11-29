@@ -9,7 +9,6 @@ android {
 
 dependencies {
     implementation(projects.core.model)
-    implementation(projects.core.mongodb)
 
     implementation(libs.firebase.auth)
     implementation(libs.firebase.bom)

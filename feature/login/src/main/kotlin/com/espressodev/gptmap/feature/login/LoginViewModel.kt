@@ -3,11 +3,11 @@ package com.espressodev.gptmap.feature.login
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.ext.isValidEmail
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
-import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.data.LogService
+import com.espressodev.gptmap.core.domain.EmailVerificationIsFalseException
 import com.espressodev.gptmap.core.domain.SignInUpWithGoogleUseCase
+import com.espressodev.gptmap.core.domain.SignInWithEmailAndPasswordUseCase
 import com.espressodev.gptmap.core.model.LoadingState
-import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.model.google.GoogleResponse
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.AuthCredential
@@ -21,8 +21,8 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val accountService: AccountService,
     private val signInUpWithGoogleUseCase: SignInUpWithGoogleUseCase,
+    private val signInWithEmailAndPasswordUseCase: SignInWithEmailAndPasswordUseCase,
     val oneTapClient: SignInClient,
     logService: LogService
 ) : GmViewModel(logService) {
@@ -46,20 +46,17 @@ class LoginViewModel @Inject constructor(
         if (!formValidation()) return@launchCatching
         onEvent(LoginEvent.OnLoadingStateChanged(LoadingState.Loading))
 
-        accountService.firebaseSignInWithEmailAndPassword(email.trim(), password).apply {
-            when (this) {
-                is Response.Failure -> SnackbarManager.showMessage(AppText.email_or_password_error)
-                Response.Loading -> {}
-                is Response.Success -> {
-                    accountService.reloadFirebaseUser()
-                    if (accountService.isEmailVerified) {
-                        navigateToMap()
-                    } else {
-                        SnackbarManager.showMessage(AppText.please_verify_email)
-                    }
+        signInWithEmailAndPasswordUseCase(email, password)
+            .onSuccess {
+                navigateToMap()
+            }.onFailure {
+                if (it == EmailVerificationIsFalseException()) {
+                    SnackbarManager.showMessage(AppText.please_verify_email)
+                } else {
+                    it.message?.let { message -> SnackbarManager.showMessage(message) }
                 }
             }
-        }
+
         onEvent(LoginEvent.OnLoadingStateChanged(LoadingState.Idle))
     }
 

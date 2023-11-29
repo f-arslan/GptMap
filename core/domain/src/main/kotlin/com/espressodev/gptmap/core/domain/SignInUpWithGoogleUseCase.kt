@@ -1,18 +1,22 @@
 package com.espressodev.gptmap.core.domain
 
+import android.util.Log
 import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.google_auth.GoogleAuthService
 import com.espressodev.gptmap.core.google_auth.OneTapSignInUpResponse
 import com.espressodev.gptmap.core.google_auth.SignInUpWithGoogleResponse
 import com.espressodev.gptmap.core.model.Provider
 import com.espressodev.gptmap.core.model.User
+import com.espressodev.gptmap.core.model.ext.classTag
 import com.espressodev.gptmap.core.model.google.GoogleResponse
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -21,8 +25,12 @@ class SignInUpWithGoogleUseCase @Inject constructor(
     private val googleAuthService: GoogleAuthService,
     private val realmAccountService: RealmAccountService,
     private val realmSyncService: RealmSyncService,
-    private val firestoreService: FirestoreService
+    private val firestoreService: FirestoreService,
 ) {
+
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        Log.e(classTag(), "Exception: $throwable")
+    }
 
     suspend fun oneTapSignUpWithGoogle(): OneTapSignInUpResponse = withContext(Dispatchers.IO) {
         googleAuthService.oneTapSignUpWithGoogle()
@@ -39,7 +47,13 @@ class SignInUpWithGoogleUseCase @Inject constructor(
 
                 loginToRealm(authResult)
 
-                addUserToDatabaseIfUserIsNew(authResult)
+                launch {
+                    addUserToDatabaseIfUserIsNew(authResult)
+                }.invokeOnCompletion { throwable ->
+                    throwable?.also {
+                        Log.e(classTag(), "Failed to add user to database: $throwable")
+                    }
+                }
 
                 GoogleResponse.Success(true)
             } catch (e: Exception) {

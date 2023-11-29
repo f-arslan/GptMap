@@ -2,7 +2,6 @@ package com.espressodev.gptmap.core.google_auth.module
 
 import android.app.Application
 import android.content.Context
-import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.google_auth.BuildConfig.WEB_CLIENT_ID
 import com.espressodev.gptmap.core.google_auth.GoogleAuthService
 import com.espressodev.gptmap.core.google_auth.GoogleProfileService
@@ -10,8 +9,6 @@ import com.espressodev.gptmap.core.google_auth.impl.GoogleAuthServiceImpl
 import com.espressodev.gptmap.core.google_auth.impl.GoogleProfileServiceImpl
 import com.espressodev.gptmap.core.model.google.GoogleConstants.SIGN_IN_REQUEST
 import com.espressodev.gptmap.core.model.google.GoogleConstants.SIGN_UP_REQUEST
-import com.espressodev.gptmap.core.mongodb.RealmAccountService
-import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient

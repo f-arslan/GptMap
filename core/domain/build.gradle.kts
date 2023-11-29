@@ -17,4 +17,6 @@ dependencies {
     implementation(libs.firebase.bom)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.crashlytics)
+    implementation(libs.androidx.work.ktx)
+    implementation(libs.hilt.ext.work)
 }
