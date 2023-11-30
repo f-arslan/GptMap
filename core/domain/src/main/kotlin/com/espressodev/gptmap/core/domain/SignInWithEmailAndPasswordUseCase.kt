@@ -9,6 +9,7 @@ import com.espressodev.gptmap.core.domain.worker.UpdateDatabaseIfUserEmailVerifi
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
 import com.google.firebase.auth.AuthResult
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -27,10 +28,11 @@ class SignInWithEmailAndPasswordUseCase @Inject constructor(
             val isEmailVerified = authResult.user?.isEmailVerified ?: false
             if (!isEmailVerified) throw EmailVerificationIsFalseException()
 
-            updateDatabaseIfUserEmailVerificationFieldIsFalse(authResult)
-
             loginToRealm(authResult)
 
+            launch {
+                updateDatabaseIfUserEmailVerificationFieldIsFalse(authResult)
+            }
             Result.success(true)
         } catch (e: Exception) {
             Result.failure(e)

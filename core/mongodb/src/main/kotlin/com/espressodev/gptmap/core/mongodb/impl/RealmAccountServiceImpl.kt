@@ -5,13 +5,14 @@ import com.espressodev.gptmap.core.mongodb.RealmAccountService
 import com.espressodev.gptmap.core.mongodb.module.RealmModule
 import com.espressodev.gptmap.core.mongodb.module.RealmModule.app
 import io.realm.kotlin.mongodb.Credentials
-import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
-@Singleton
 class RealmAccountServiceImpl : RealmAccountService {
+    val scope = CoroutineScope(Dispatchers.IO)
     override suspend fun loginWithEmail(token: String): Result<Boolean> = runCatching {
-        app.login(Credentials.jwt(token))
-        RealmModule.initRealm(app.currentUser!!)
+        val user = app.login(Credentials.jwt(token))
+        RealmModule.initRealm(user)
         true
     }.onFailure {
         Log.e(TAG, "loginWithEmail: failure $it")

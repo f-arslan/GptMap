@@ -31,8 +31,6 @@ object FirebaseModule {
         return application.resources
     }
 
-
-
     @Singleton
     @Provides
     fun context(@ApplicationContext context: Context): Context {
