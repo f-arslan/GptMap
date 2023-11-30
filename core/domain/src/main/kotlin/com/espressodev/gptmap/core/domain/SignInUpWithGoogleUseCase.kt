@@ -16,7 +16,6 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -47,13 +46,7 @@ class SignInUpWithGoogleUseCase @Inject constructor(
 
                 loginToRealm(authResult)
 
-                launch {
-                    addUserToDatabaseIfUserIsNew(authResult)
-                }.invokeOnCompletion { throwable ->
-                    throwable?.also {
-                        Log.e(classTag(), "Failed to add user to database: $throwable")
-                    }
-                }
+                addUserToDatabaseIfUserIsNew(authResult)
 
                 GoogleResponse.Success(true)
             } catch (e: Exception) {

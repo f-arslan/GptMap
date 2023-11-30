@@ -1,9 +1,12 @@
 package com.espressodev.gptmap.core.domain
 
+import android.content.Context
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.espressodev.gptmap.core.data.AccountService
-import com.espressodev.gptmap.core.data.FirestoreService
+import com.espressodev.gptmap.core.domain.worker.UpdateDatabaseIfUserEmailVerificationIsFalseWorker
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
-import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.google.firebase.auth.AuthResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
@@ -13,11 +16,9 @@ import javax.inject.Inject
 
 class SignInWithEmailAndPasswordUseCase @Inject constructor(
     private val accountService: AccountService,
-    private val firestoreService: FirestoreService,
-    private val realmSyncService: RealmSyncService,
-    private val realmAccountService: RealmAccountService
+    private val realmAccountService: RealmAccountService,
+    private val applicationContext: Context
 ) {
-
     suspend operator fun invoke(email: String, password: String) = withContext(Dispatchers.IO) {
         try {
             val authResult = accountService.firebaseSignInWithEmailAndPassword(email, password)
@@ -25,6 +26,7 @@ class SignInWithEmailAndPasswordUseCase @Inject constructor(
 
             val isEmailVerified = authResult.user?.isEmailVerified ?: false
             if (!isEmailVerified) throw EmailVerificationIsFalseException()
+
             updateDatabaseIfUserEmailVerificationFieldIsFalse(authResult)
 
             loginToRealm(authResult)
@@ -43,24 +45,22 @@ class SignInWithEmailAndPasswordUseCase @Inject constructor(
         }
     }
 
-    private suspend fun updateDatabaseIfUserEmailVerificationFieldIsFalse(authResult: AuthResult) {
+    private fun updateDatabaseIfUserEmailVerificationFieldIsFalse(authResult: AuthResult) {
         authResult.user?.uid?.also { uid ->
-            firestoreService.getUser(uid).onSuccess { user ->
-                if (!user.isEmailVerified) {
-                    firestoreService.updateUserEmailVerification(uid, true)
-                        .onFailure { throw FailedToUpdateUserEmailVerificationException() }
-                }
-                realmSyncService.addUser(user.copy(isEmailVerified = true).toRealmUser())
-            }.onFailure {
-                throw FailedToGetUserException()
-            }
+            val workRequest =
+                OneTimeWorkRequestBuilder<UpdateDatabaseIfUserEmailVerificationIsFalseWorker>()
+                    .setInputData(workDataOf(USER_ID to uid))
+                    .build()
+
+            WorkManager.getInstance(applicationContext).enqueue(workRequest)
         }
     }
 
-}
 
-class FailedToGetUserException : Exception("Failed to get user")
-class FailedToUpdateUserEmailVerificationException :
-    Exception("Failed to update user email verification")
+    companion object {
+        const val USER_ID = "USER_ID"
+    }
+
+}
 
 class EmailVerificationIsFalseException : Exception("Email verification is false")

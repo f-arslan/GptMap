@@ -47,9 +47,12 @@ dependencies {
     implementation(projects.core.common)
     implementation(projects.core.data)
     implementation(projects.core.domain)
+    implementation(projects.core.mongodb)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.android.agent)
+    implementation(libs.androidx.work.ktx)
+    implementation(libs.hilt.ext.work)
 }

@@ -60,9 +60,7 @@ junit = "1.1.5"
 realm = "1.11.0"
 googleServices = "4.4.0"
 okhttp3Logging = "4.12.0"
-gradle = "8.1.4"
 googleGson = "2.10.1"
-material = "1.10.0"
 
 [libraries]
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
@@ -159,7 +157,7 @@ work-testing = { group = "androidx.work", name = "work-testing", version = "2.8.
 # End of it
 
 google-services = { group = "com.google.gms", name = "google-services", version.ref = "googleServices" }
-
+# End of it
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
@@ -183,5 +181,4 @@ gptmap-android-feature = { id = "gptmap.android.feature", version = "unspecified
 gptmap-android-hilt = { id = "gptmap.android.hilt", version = "unspecified" }
 gptmap-android-application-firebase = { id = "gptmap.android.application.firebase", version = "unspecified" }
 gptmap-jvm-library = { id = "gptmap.jvm.library", version = "unspecified" }
-gptmap-android-realm = { id = "gptmap.android.realm", version = "unspecified" }
 # End of it

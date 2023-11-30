@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.core.mongodb.module
 
+import android.content.Context
 import android.util.Log
 import com.espressodev.gptmap.core.model.realm.Hero
 import com.espressodev.gptmap.core.model.realm.RealmUser
@@ -11,6 +12,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
@@ -75,4 +77,8 @@ object RealmServiceModule {
     @Provides
     fun bindRealmSyncService(): RealmSyncService =
         RealmSyncServiceImpl()
+
+    @Singleton
+    @Provides
+    fun provideApplicationContext(@ApplicationContext context: Context): Context = context
 }
