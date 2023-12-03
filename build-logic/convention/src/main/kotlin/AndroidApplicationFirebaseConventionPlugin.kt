@@ -16,7 +16,6 @@ class AndroidApplicationFirebaseConventionPlugin : Plugin<Project> {
                 "implementation"(libs.findLibrary("firebase-firestore").get())
                 "implementation"(libs.findLibrary("firebase-crashlytics").get())
                 "implementation"(libs.findLibrary("firebase-analytics").get())
-                "implementation"(libs.findLibrary("firebase-messaging").get())
                 "implementation"(libs.findLibrary("play-services-auth").get())
                 "implementation"(libs.findLibrary("play-services-location").get())
                 "implementation"(libs.findLibrary("play-services-maps").get())
