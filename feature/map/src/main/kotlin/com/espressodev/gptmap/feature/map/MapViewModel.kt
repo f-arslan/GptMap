@@ -29,17 +29,26 @@ class MapViewModel @Inject constructor(
             )
         }
 
-        val response = chatgptService.getPrompt(uiState.value.searchValue)
-
-        _uiState.update {
-            it.copy(
-                location = response,
-                loadingState = LoadingState.Idle,
-                searchButtonEnabledState = true,
-                searchTextFieldEnabledState = true,
-                bottomState = MapBottomState.DETAIL,
-                searchValue = ""
-            )
+        chatgptService.getPrompt(uiState.value.searchValue).onSuccess { location ->
+            _uiState.update {
+                it.copy(
+                    location = location,
+                    loadingState = LoadingState.Idle,
+                    searchButtonEnabledState = true,
+                    searchTextFieldEnabledState = true,
+                    bottomState = MapBottomState.DETAIL,
+                    searchValue = ""
+                )
+            }
+        }.onFailure { exception ->
+            _uiState.update {
+                it.copy(
+                    loadingState = LoadingState.Idle,
+                    searchButtonEnabledState = true,
+                    searchTextFieldEnabledState = true,
+                )
+            }
+            throw exception
         }
     }
 

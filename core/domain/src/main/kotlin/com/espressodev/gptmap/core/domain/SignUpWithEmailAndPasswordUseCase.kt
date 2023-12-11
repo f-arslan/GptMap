@@ -43,6 +43,8 @@ class SignUpWithEmailAndPasswordUseCase @Inject constructor(
             }
         } ?: throw UserIdIsNullException()
     }
-}
 
-class UserIdIsNullException : Exception("User id is null")
+    companion object {
+        class UserIdIsNullException : Exception("User id is null")
+    }
+}

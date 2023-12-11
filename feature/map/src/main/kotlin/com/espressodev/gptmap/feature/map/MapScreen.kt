@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.feature.map
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -41,7 +40,6 @@ import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.component.MapSearchButton
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
 import com.espressodev.gptmap.core.model.LoadingState
-import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.feature.map.MapBottomState.DETAIL
 import com.espressodev.gptmap.feature.map.MapBottomState.SEARCH
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -79,45 +77,38 @@ private fun MapScreen(
     onStreetViewClick: () -> Unit,
     onFavouriteClick: () -> Unit
 ) {
-    with(uiState.location) {
-        when (this) {
-            is Response.Failure -> Log.d("MapScreen", "error: ${e.message}")
-            Response.Loading -> Log.d("MapScreen", "loading")
-            is Response.Success -> {
-                val latLng: LatLng = data.content.coordinates.let {
-                    LatLng(it.latitude, it.longitude)
-                }
-                val cameraPositionState = rememberCameraPositionState {
-                    position = CameraPosition.fromLatLngZoom(latLng, 15f)
-                }
-                LaunchedEffect(latLng) {
-                    if (data.id != "default")
-                        cameraPositionState.animate(CameraUpdateFactory.newLatLng(latLng))
-                }
-                Column(modifier = Modifier.fillMaxSize()) {
-                    MapSection(
-                        cameraPositionState = cameraPositionState,
-                        modifier = Modifier.weight(1f),
-                        loadingState = uiState.loadingState,
-                    )
-                    when (uiState.bottomState) {
-                        SEARCH -> {
-                            MapBottomBar(
-                                uiState = uiState,
-                                onValueChange = onSearchValueChange,
-                                onSearchClick = onSearchClick
-                            )
-                        }
 
-                        DETAIL -> DetailSheet(
-                            data.content,
-                            onDismiss = onDismiss,
-                            onStreetViewClick = onStreetViewClick,
-                            onFavouriteClick = onFavouriteClick
-                        )
-                    }
-                }
+    val latLng: LatLng = uiState.location.content.coordinates.let {
+        LatLng(it.latitude, it.longitude)
+    }
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(latLng, 15f)
+    }
+    LaunchedEffect(latLng) {
+        if (uiState.location.id != "default")
+            cameraPositionState.animate(CameraUpdateFactory.newLatLng(latLng))
+    }
+    Column(modifier = Modifier.fillMaxSize()) {
+        MapSection(
+            cameraPositionState = cameraPositionState,
+            modifier = Modifier.weight(1f),
+            loadingState = uiState.loadingState,
+        )
+        when (uiState.bottomState) {
+            SEARCH -> {
+                MapBottomBar(
+                    uiState = uiState,
+                    onValueChange = onSearchValueChange,
+                    onSearchClick = onSearchClick
+                )
             }
+
+            DETAIL -> DetailSheet(
+                uiState.location.content,
+                onDismiss = onDismiss,
+                onStreetViewClick = onStreetViewClick,
+                onFavouriteClick = onFavouriteClick
+            )
         }
     }
 }

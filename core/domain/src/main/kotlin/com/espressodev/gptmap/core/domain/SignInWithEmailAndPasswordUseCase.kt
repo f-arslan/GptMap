@@ -61,8 +61,7 @@ class SignInWithEmailAndPasswordUseCase @Inject constructor(
 
     companion object {
         const val USER_ID = "USER_ID"
+        class EmailVerificationIsFalseException : Exception("Email verification is false")
     }
-
 }
 
-class EmailVerificationIsFalseException : Exception("Email verification is false")

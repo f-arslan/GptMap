@@ -5,5 +5,5 @@ import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.model.chatgpt.ChatgptRequest
 
 interface ChatgptService {
-    suspend fun getPrompt(message: String): Response<Location>
+    suspend fun getPrompt(message: String): Result<Location>
 }

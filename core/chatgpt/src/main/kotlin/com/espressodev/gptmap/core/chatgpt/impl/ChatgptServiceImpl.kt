@@ -14,18 +14,17 @@ import javax.inject.Inject
 
 class ChatgptServiceImpl @Inject constructor(private val chatgptService: ChatgptApi) :
     ChatgptService {
-    override suspend fun getPrompt(message: String): Response<Location> =
+    override suspend fun getPrompt(message: String): Result<Location> =
         withContext(Dispatchers.IO) {
             try {
                 val request = ChatgptRequest(listOf(Message(message)))
                 val response =
                     chatgptService.getLocationInformation(request.mergeMessageWithPreText())
-
                 val content = response.choices[0].message.content
                 val location = response.toLocation(id = response.id, responseContent = content)
-                Response.Success(location)
+                Result.success(location)
             } catch (e: Exception) {
-                Response.Failure(e)
+                Result.failure(e)
             }
         }
 }

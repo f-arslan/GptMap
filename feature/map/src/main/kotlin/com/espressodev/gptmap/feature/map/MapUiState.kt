@@ -13,7 +13,7 @@ enum class MapBottomState {
 
 data class MapUiState(
     val searchValue: String = "",
-    val location: Response<Location>,
+    val location:Location,
     val loadingState: LoadingState = LoadingState.Idle,
     val searchButtonEnabledState: Boolean = true,
     val searchTextFieldEnabledState: Boolean = true,
@@ -21,7 +21,7 @@ data class MapUiState(
 ) {
     // TODO: THIS LOGIC WILL BE MOVE TO MONGODB
     constructor() : this(
-        location = Response.Success(
+        location =
             Location(
                 id = "default",
                 content = Content(
@@ -37,5 +37,4 @@ data class MapUiState(
                 )
             )
         )
-    )
 }

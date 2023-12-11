@@ -4,9 +4,9 @@ import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.ext.isValidEmail
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
 import com.espressodev.gptmap.core.data.LogService
-import com.espressodev.gptmap.core.domain.EmailVerificationIsFalseException
 import com.espressodev.gptmap.core.domain.SignInUpWithGoogleUseCase
 import com.espressodev.gptmap.core.domain.SignInWithEmailAndPasswordUseCase
+import com.espressodev.gptmap.core.domain.SignInWithEmailAndPasswordUseCase.Companion.EmailVerificationIsFalseException
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.google.GoogleResponse
 import com.google.android.gms.auth.api.identity.SignInClient
