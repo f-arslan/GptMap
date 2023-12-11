@@ -11,6 +11,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
     }
 }
 
@@ -31,3 +32,4 @@ include(":feature:register")
 include(":core:google-auth")
 include(":feature:forgot-password")
 include(":core:mongodb")
+include(":core:palm")
