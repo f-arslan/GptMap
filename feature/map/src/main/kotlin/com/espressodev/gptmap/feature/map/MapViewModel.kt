@@ -30,27 +30,28 @@ class MapViewModel @Inject constructor(
             )
         }
 
-        palmService.getLocationInfo(uiState.value.searchValue).onSuccess { location ->
-//            _uiState.update {
-//                it.copy(
-//                    location = location,
-//                    loadingState = LoadingState.Idle,
-//                    searchButtonEnabledState = true,
-//                    searchTextFieldEnabledState = true,
-//                    bottomState = MapBottomState.DETAIL,
-//                    searchValue = ""
-//                )
-//            }
-        }.onFailure { exception ->
-            _uiState.update {
-                it.copy(
-                    loadingState = LoadingState.Idle,
-                    searchButtonEnabledState = true,
-                    searchTextFieldEnabledState = true,
-                )
+        palmService.getLocationInfo(uiState.value.searchValue)
+            .onSuccess { location ->
+                _uiState.update {
+                    it.copy(
+                        location = location,
+                        loadingState = LoadingState.Idle,
+                        searchButtonEnabledState = true,
+                        searchTextFieldEnabledState = true,
+                        bottomState = MapBottomState.DETAIL,
+                        searchValue = ""
+                    )
+                }
+            }.onFailure { exception ->
+                _uiState.update {
+                    it.copy(
+                        loadingState = LoadingState.Idle,
+                        searchButtonEnabledState = true,
+                        searchTextFieldEnabledState = true,
+                    )
+                }
+                throw exception
             }
-            throw exception
-        }
     }
 
 
