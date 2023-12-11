@@ -12,7 +12,8 @@ android {
 dependencies {
     implementation(projects.core.chatgpt)
     implementation(projects.core.model)
+    implementation(projects.core.mongodb)
+    implementation(projects.core.palm)
 
     implementation(libs.maps.compose)
-    implementation(project(":core:mongodb"))
 }
