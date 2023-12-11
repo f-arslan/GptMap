@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.gptmap.android.hilt)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.secrets)
+    alias(libs.plugins.gptmap.ktor)
 }
 
 android {

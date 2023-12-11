@@ -4,6 +4,7 @@ import com.espressodev.gptmap.core.chatgpt.ChatgptService
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.model.LoadingState
+import com.espressodev.gptmap.core.palm.PalmService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,6 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MapViewModel @Inject constructor(
     private val chatgptService: ChatgptService,
+    private val palmService: PalmService,
     logService: LogService,
 ) : GmViewModel(logService) {
     private val _uiState = MutableStateFlow(MapUiState())
@@ -28,7 +30,7 @@ class MapViewModel @Inject constructor(
             )
         }
 
-        chatgptService.getPrompt(uiState.value.searchValue).onSuccess { location ->
+        palmService.getLocationInfo(uiState.value.searchValue).onSuccess { location ->
 //            _uiState.update {
 //                it.copy(
 //                    location = location,
