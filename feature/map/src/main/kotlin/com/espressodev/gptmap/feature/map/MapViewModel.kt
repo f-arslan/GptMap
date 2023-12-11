@@ -4,8 +4,6 @@ import com.espressodev.gptmap.core.chatgpt.ChatgptService
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.model.LoadingState
-import com.espressodev.gptmap.core.mongodb.RealmSyncService
-import com.espressodev.gptmap.core.palm.PalmService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

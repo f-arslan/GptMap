@@ -57,5 +57,9 @@ gradlePlugin {
             id = "gptmap.jvm.library"
             implementationClass = "JvmLibraryConventionPlugin"
         }
+        register("ktor") {
+            id = "gptmap.ktor"
+            implementationClass = "KtorConventionPlugin"
+        }
     }
 }

@@ -37,6 +37,8 @@ realm = "1.11.0"
 googleServices = "4.4.0"
 okhttp3Logging = "4.12.0"
 googleGson = "2.10.1"
+ktorVersion = "2.0.0"
+ktorLogging = "1.2.10"
 
 [libraries]
 
@@ -102,6 +104,14 @@ androidx-work-ktx = { group = "androidx.work", name = "work-runtime-ktx", versio
 android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugarJdkLibs" }  # Used in Kotlin VC
 # End of it
 
+# Ktor
+ktor-client-core = {  group = "io.ktor", name = "ktor-client-core", version.ref = "ktorVersion" }
+ktor-client-android = {  group = "io.ktor", name = "ktor-client-android", version.ref = "ktorVersion" }
+ktor-serialization-kotlinx-json = {  group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktorVersion" }
+ktor-client-logging = {  group = "io.ktor", name = "ktor-client-logging", version.ref = "ktorVersion" }
+ktor-client-content-negotiation = {  group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktorVersion" }
+logback-classic = {  group = "ch.qos.logback", name = "logback-classic", version.ref = "ktorLogging" }
+
 # Retrofit
 retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
@@ -109,18 +119,11 @@ okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "googleGson" }
 # End of it
 
-# New Relic
-agent-gradle-plugin = { module = "com.newrelic.agent.android:agent-gradle-plugin", version.ref = "agentGradlePlugin" }
-android-agent = { module = "com.newrelic.agent.android:android-agent", version.ref = "androidAgent" }
-# End of it
-
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 firebase-crashlytics-gradlePlugin = { group = "com.google.firebase", name = "firebase-crashlytics-gradle", version.ref = "firebaseCrashlyticsPlugin" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
-# End of it
-
 # End of it
 
 [plugins]
@@ -144,4 +147,5 @@ gptmap-android-feature = { id = "gptmap.android.feature", version = "unspecified
 gptmap-android-hilt = { id = "gptmap.android.hilt", version = "unspecified" }
 gptmap-android-application-firebase = { id = "gptmap.android.application.firebase", version = "unspecified" }
 gptmap-jvm-library = { id = "gptmap.jvm.library", version = "unspecified" }
+gptmap-ktor = { id = "gptmap.ktor", version = "unspecified" }
 # End of it

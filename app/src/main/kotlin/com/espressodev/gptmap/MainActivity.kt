@@ -10,7 +10,6 @@ import com.espressodev.gptmap.BuildConfig.NEWRELIC_API_KEY
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        NewRelic.withApplicationToken(NEWRELIC_API_KEY).start(this.applicationContext)
         super.onCreate(savedInstanceState)
         setContent {
             GptmapTheme { GmApp() }
