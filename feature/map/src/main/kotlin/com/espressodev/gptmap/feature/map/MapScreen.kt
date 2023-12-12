@@ -106,6 +106,7 @@ private fun MapScreen(
 
             DETAIL -> DetailSheet(
                 uiState.location.content,
+                uiState.location.locationImages,
                 onDismiss = onDismiss,
                 onStreetViewClick = onStreetViewClick,
                 onFavouriteClick = onFavouriteClick

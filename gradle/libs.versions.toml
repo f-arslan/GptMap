@@ -39,12 +39,12 @@ okhttp3Logging = "4.12.0"
 googleGson = "2.10.1"
 ktorVersion = "2.1.2"
 ktorLogging = "1.2.10"
-kotlin2 = "1.9.10"
 coreKtx = "1.12.0"
 junitVersion = "4.13.2"
 espressoCore = "3.5.1"
 appcompat = "1.6.1"
 material = "1.10.0"
+coilCompose = "2.5.0"
 
 [libraries]
 
@@ -125,6 +125,9 @@ okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "googleGson" }
 # End of it
 
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coilCompose" }
+
+
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 firebase-crashlytics-gradlePlugin = { group = "com.google.firebase", name = "firebase-crashlytics-gradle", version.ref = "firebaseCrashlyticsPlugin" }
@@ -159,5 +162,5 @@ gptmap-android-hilt = { id = "gptmap.android.hilt", version = "unspecified" }
 gptmap-android-application-firebase = { id = "gptmap.android.application.firebase", version = "unspecified" }
 gptmap-jvm-library = { id = "gptmap.jvm.library", version = "unspecified" }
 gptmap-ktor = { id = "gptmap.ktor", version = "unspecified" }
-jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin2" }
 # End of it
+

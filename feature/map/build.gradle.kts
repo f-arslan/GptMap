@@ -17,4 +17,5 @@ dependencies {
     implementation(projects.core.unsplashApi)
 
     implementation(libs.maps.compose)
+    implementation(libs.coil.compose)
 }
