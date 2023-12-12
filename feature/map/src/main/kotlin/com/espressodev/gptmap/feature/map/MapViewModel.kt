@@ -5,6 +5,8 @@ import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.palm.PalmService
+import com.espressodev.gptmap.core.unsplash_api.UnsplashApi
+import com.espressodev.gptmap.core.unsplash_api.UnsplashService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,6 +17,7 @@ import javax.inject.Inject
 class MapViewModel @Inject constructor(
     private val chatgptService: ChatgptService,
     private val palmService: PalmService,
+    private val unsplashService: UnsplashService,
     logService: LogService,
 ) : GmViewModel(logService) {
     private val _uiState = MutableStateFlow(MapUiState())
@@ -42,6 +45,7 @@ class MapViewModel @Inject constructor(
                         searchValue = ""
                     )
                 }
+                location.content.city.also { city -> unsplashService.getTwoPhotos(city) }
             }.onFailure { exception ->
                 _uiState.update {
                     it.copy(

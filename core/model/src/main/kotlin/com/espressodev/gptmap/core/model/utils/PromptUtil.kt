@@ -19,7 +19,8 @@ object PromptUtil {
         "normalDescription": ""
     }
     in the RESPONSE GIVE ONLY JSON object NOTHING ELSE (START WITH "{", END WITH "}")
-    DON'T FORGET MAKE JSON FORMAT ONLY, NOTHING ELSE 
+    DON'T FORGET MAKE JSON FORMAT ONLY, NOTHING ELSE
+    FORMAT MUST BE EXACTLY LIKE THE ABOVE
     USER PROMPT:
     
     """

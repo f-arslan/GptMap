@@ -10,10 +10,11 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.chatgpt)
+    implementation(projects.core.chatgptApi)
     implementation(projects.core.model)
     implementation(projects.core.mongodb)
-    implementation(projects.core.palm)
+    implementation(projects.core.palmApi)
+    implementation(projects.core.unsplashApi)
 
     implementation(libs.maps.compose)
 }
