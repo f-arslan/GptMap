@@ -4,5 +4,6 @@ import com.espressodev.gptmap.core.model.chatgpt.Content
 
 data class Location(
     val id: String,
-    val content: Content
+    val content: Content,
+    val locationImages: List<LocationImage> = emptyList()
 )

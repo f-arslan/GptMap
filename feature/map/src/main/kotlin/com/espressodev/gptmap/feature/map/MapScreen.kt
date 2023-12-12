@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.feature.map
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement

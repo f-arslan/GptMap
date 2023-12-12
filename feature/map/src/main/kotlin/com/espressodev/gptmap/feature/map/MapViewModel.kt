@@ -15,7 +15,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
-    private val chatgptService: ChatgptService,
     private val palmService: PalmService,
     private val unsplashService: UnsplashService,
     logService: LogService,
@@ -30,6 +29,7 @@ class MapViewModel @Inject constructor(
                 loadingState = LoadingState.Loading,
                 searchButtonEnabledState = false,
                 searchTextFieldEnabledState = false,
+                location = it.location.copy(locationImages = emptyList())
             )
         }
 
@@ -45,7 +45,13 @@ class MapViewModel @Inject constructor(
                         searchValue = ""
                     )
                 }
-                location.content.city.also { city -> unsplashService.getTwoPhotos(city) }
+
+                location.content.city.also { city ->
+                    unsplashService.getTwoPhotos(city).onSuccess { locationImages ->
+                        _uiState.update { it.copy(location = location.copy(locationImages = locationImages)) }
+                    }
+                }
+
             }.onFailure { exception ->
                 _uiState.update {
                     it.copy(

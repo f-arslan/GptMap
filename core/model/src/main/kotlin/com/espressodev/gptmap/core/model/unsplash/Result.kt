@@ -11,7 +11,7 @@ data class Result(
     val liked_by_user: Boolean?,
     val likes: Int?,
     val links: Links?,
-    val urls: Urls?,
-    val user: User?,
+    val urls: Urls,
+    val user: User,
     val width: Int?
 )
