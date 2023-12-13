@@ -177,7 +177,7 @@ fun shimmerBrush(showShimmer: Boolean = true, targetValue: Float = 1000f): Brush
 }
 
 @Composable
-fun BoxScope.UnsplashBanner() {
+fun BoxScope.UnsplashBanner(name: String) {
     Surface(
         modifier = Modifier
             .align(Alignment.BottomEnd)
@@ -186,7 +186,7 @@ fun BoxScope.UnsplashBanner() {
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
     ) {
         Text(
-            text = "Annie Spratt on Unsplash",
+            text = "$name on Unsplash",
             style = MaterialTheme.typography.labelSmall,
             fontSize = 8.sp,
             modifier = Modifier.padding(VERY_SMALL_PADDING)

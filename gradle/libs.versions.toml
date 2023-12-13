@@ -37,7 +37,7 @@ realm = "1.11.0"
 googleServices = "4.4.0"
 okhttp3Logging = "4.12.0"
 googleGson = "2.10.1"
-ktorVersion = "2.1.2"
+ktorVersion = "2.3.5"
 ktorLogging = "1.2.10"
 coreKtx = "1.12.0"
 junitVersion = "4.13.2"
@@ -45,6 +45,7 @@ espressoCore = "3.5.1"
 appcompat = "1.6.1"
 material = "1.10.0"
 coilCompose = "2.5.0"
+generativeai = "0.1.0"
 
 [libraries]
 
@@ -93,7 +94,7 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", v
 hilt-ext-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltExt" }
 hilt-ext-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hiltExt" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }  # Used in Android Feature VC
-# End of Hilt
+# End of it
 
 # Kotlin
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }  # Used in Android Feature VC
@@ -117,6 +118,7 @@ ktor-serialization-kotlinx-json = {  group = "io.ktor", name = "ktor-serializati
 ktor-client-logging = {  group = "io.ktor", name = "ktor-client-logging", version.ref = "ktorVersion" }
 ktor-client-content-negotiation = {  group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktorVersion" }
 logback-classic = {  group = "ch.qos.logback", name = "logback-classic", version.ref = "ktorLogging" }
+# End of it
 
 # Retrofit
 retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
@@ -126,6 +128,8 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "googleGso
 # End of it
 
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coilCompose" }
+
+generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
 
 
 # Dependencies of the included build-logic

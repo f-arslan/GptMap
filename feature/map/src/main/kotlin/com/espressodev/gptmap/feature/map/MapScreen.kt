@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.feature.map
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -79,6 +80,7 @@ private fun MapScreen(
     uiState: MapUiState,
     onEvent: (MapUiEvent) -> Unit,
 ) {
+    Log.d("MapScreen", "MapScreen: ${uiState.location.locationImages}")
     val latLng: LatLng = uiState.location.content.coordinates.let {
         LatLng(it.latitude, it.longitude)
     }
@@ -145,7 +147,7 @@ private fun ImageGallery(initialPage: Int, images: List<LocationImage>, onDismis
                     }
             ) {
                 ImageCard(image = images[page])
-                UnsplashBanner()
+                UnsplashBanner(name = images[page].imageAuthor)
             }
         }
     }
