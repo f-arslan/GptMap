@@ -1,11 +1,10 @@
 package com.espressodev.gptmap.feature.map
 
-import com.espressodev.gptmap.core.chatgpt.ChatgptService
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.model.LoadingState
+import com.espressodev.gptmap.core.model.emptyImagePlaceholder
 import com.espressodev.gptmap.core.palm.PalmService
-import com.espressodev.gptmap.core.unsplash_api.UnsplashApi
 import com.espressodev.gptmap.core.unsplash_api.UnsplashService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,15 +20,33 @@ class MapViewModel @Inject constructor(
 ) : GmViewModel(logService) {
     private val _uiState = MutableStateFlow(MapUiState())
     val uiState = _uiState.asStateFlow()
-    fun onSearchValueChange(text: String) = _uiState.update { it.copy(searchValue = text) }
 
-    fun onSearchClick() = launchCatching {
+
+    fun onEvent(event: MapUiEvent) {
+        when (event) {
+            is MapUiEvent.OnSearchValueChanged -> _uiState.update { it.copy(searchValue = event.text) }
+            is MapUiEvent.OnSearchClick -> onSearchClick()
+            is MapUiEvent.OnDismissBottomSheet -> _uiState.update { it.copy(bottomState = MapBottomState.SEARCH) }
+            is MapUiEvent.OnImageDismiss -> _uiState.update {
+                it.copy(imageGalleryState = Pair(0, false))
+            }
+
+            is MapUiEvent.OnImageClick -> _uiState.update {
+                it.copy(imageGalleryState = Pair(event.pos, true))
+            }
+
+            is MapUiEvent.OnFavouriteClick -> onFavouriteClick()
+            is MapUiEvent.OnStreetViewClick -> onStreetViewClick()
+        }
+    }
+
+    private fun onSearchClick() = launchCatching {
         _uiState.update {
             it.copy(
                 loadingState = LoadingState.Loading,
                 searchButtonEnabledState = false,
                 searchTextFieldEnabledState = false,
-                location = it.location.copy(locationImages = emptyList())
+                location = it.location.copy(locationImages = emptyImagePlaceholder)
             )
         }
 
@@ -65,15 +82,11 @@ class MapViewModel @Inject constructor(
     }
 
 
-    fun onDismissBottomSheet() {
-        _uiState.update { it.copy(bottomState = MapBottomState.SEARCH) }
-    }
-
-    fun onFavouriteClick() {
+    private fun onFavouriteClick() {
 
     }
 
-    private companion object {
-        const val TAG = "MapViewModel"
+    private fun onStreetViewClick() {
+
     }
 }

@@ -1,81 +1,65 @@
 package com.espressodev.gptmap.feature.map
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.espressodev.gptmap.core.common.ext.clipPolygon
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MAX_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
+import com.espressodev.gptmap.core.designsystem.Constants.VERY_SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.component.SquareButton
 import com.espressodev.gptmap.core.model.LocationImage
 import com.espressodev.gptmap.core.model.chatgpt.Content
 import com.espressodev.gptmap.feature.map.R.string as AppText
-import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 
 @Composable
 internal fun DetailSheet(
     content: Content,
     images: List<LocationImage>,
-    onDismiss: () -> Unit,
-    onStreetViewClick: () -> Unit,
-    onFavouriteClick: () -> Unit
+    onEvent: (MapUiEvent) -> Unit,
 ) {
-    BackHandler {
-        onDismiss()
-    }
+    BackHandler { onEvent(MapUiEvent.OnDismissBottomSheet) }
     Box(modifier = Modifier.clipPolygon(MaterialTheme.colorScheme.surface)) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -98,7 +82,10 @@ internal fun DetailSheet(
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(MEDIUM_PADDING))
-            DetailButtons(onStreetViewClick, onFavouriteClick)
+            DetailButtons(
+                onStreetViewClick = { onEvent(MapUiEvent.OnStreetViewClick) },
+                onFavouriteClick = { onEvent(MapUiEvent.OnFavouriteClick) }
+            )
             Text(
                 text = content.toPoeticDescWithDecor(),
                 textAlign = TextAlign.Center,
@@ -108,7 +95,7 @@ internal fun DetailSheet(
                 lineHeight = MAX_PADDING.value.sp
             )
             Spacer(modifier = Modifier.height(VERY_HIGH_PADDING))
-            LocationImages(images)
+            LocationImages(images, onClick = { onEvent(MapUiEvent.OnImageClick(it)) })
             Text(
                 text = content.normalDescription,
                 lineHeight = VERY_HIGH_PADDING.value.sp,
@@ -122,41 +109,82 @@ internal fun DetailSheet(
 }
 
 @Composable
-fun LocationImages(images: List<LocationImage>) {
-    LazyRow {
-        items(images) {
-            ImageCard()
+fun LocationImages(images: List<LocationImage>, onClick: (Int) -> Unit) {
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(MEDIUM_PADDING)) {
+        items(2) { index ->
+            ImageCard(images[index]) { onClick(index) }
         }
     }
 }
 
-val colors =
-    listOf(
-        Color(0xFFFF595A),
-        Color(0xFFFFC766),
-        Color(0xFF35A07F),
-        Color(0xFF35A07F),
-        Color(0xFFFFC766),
-        Color(0xFFFF595A)
-    )
-val brush = Brush.linearGradient(colors)
-
 @Composable
-fun ImageCard() {
-    Image(
-        painter = painterResource(id = AppDrawable.istanbul),
-        contentDescription = null,
+fun ImageCard(image: LocationImage, onClick: () -> Unit) {
+    val showShimmer = remember { mutableStateOf(true) }
+
+    Surface(
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
-            .aspectRatio(16 / 10f)
-            .border(
-                2.dp,
-                brush = brush,
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(1.dp),
-        contentScale = ContentScale.Crop
-    )
+            .clickable { if (!showShimmer.value) onClick() },
+    ) {
+        AsyncImage(
+            model = image.imageUrl,
+            modifier = Modifier
+                .background(shimmerBrush(targetValue = 1300f, showShimmer = showShimmer.value))
+                .size(160.dp, 100.dp),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            onSuccess = { showShimmer.value = false }
+        )
+    }
+}
+
+@Composable
+fun shimmerBrush(showShimmer: Boolean = true, targetValue: Float = 1000f): Brush {
+    return if (showShimmer) {
+        val shimmerColors = listOf(
+            Color(0xFFC2C2C2).copy(alpha = 0.8f),
+            Color(0xFFC2C2C2).copy(alpha = 0.1f),
+            Color(0xFFC2C2C2).copy(alpha = 0.8f),
+        )
+
+        val transition = rememberInfiniteTransition(label = "shimmer transition")
+        val translateAnimation = transition.animateFloat(
+            initialValue = 0f,
+            targetValue = targetValue,
+            animationSpec = infiniteRepeatable(
+                animation = tween(1000), repeatMode = RepeatMode.Reverse
+            ), label = "shimmer animation"
+        )
+        Brush.linearGradient(
+            colors = shimmerColors,
+            start = Offset.Zero,
+            end = Offset(x = translateAnimation.value, y = translateAnimation.value)
+        )
+    } else {
+        Brush.linearGradient(
+            colors = listOf(Color.Transparent, Color.Transparent),
+            start = Offset.Zero,
+            end = Offset.Zero
+        )
+    }
+}
+
+@Composable
+fun BoxScope.UnsplashBanner() {
+    Surface(
+        modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .padding(bottom = MEDIUM_PADDING, end = MEDIUM_PADDING),
+        shape = RoundedCornerShape(SMALL_PADDING),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
+    ) {
+        Text(
+            text = "Annie Spratt on Unsplash",
+            style = MaterialTheme.typography.labelSmall,
+            fontSize = 8.sp,
+            modifier = Modifier.padding(VERY_SMALL_PADDING)
+        )
+    }
 }
 
 @Composable
@@ -181,7 +209,12 @@ private fun DetailButtons(onStreetViewClick: () -> Unit, onFavouriteClick: () ->
 @Preview(showBackground = true)
 @Composable
 private fun DetailSheetPreview() {
-    ImageCard()
+    ImageCard(
+        image = LocationImage(
+            imageUrl = "https://search.yahoo.com/search?p=neglegentur",
+            imageAuthor = "tation"
+        ), onClick = {}
+    )
 }
 
 

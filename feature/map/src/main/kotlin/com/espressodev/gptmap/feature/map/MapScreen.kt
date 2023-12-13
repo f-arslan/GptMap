@@ -2,6 +2,7 @@ package com.espressodev.gptmap.feature.map
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -25,15 +28,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MARKER_SIZE
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
@@ -41,6 +47,7 @@ import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.component.MapSearchButton
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
 import com.espressodev.gptmap.core.model.LoadingState
+import com.espressodev.gptmap.core.model.LocationImage
 import com.espressodev.gptmap.feature.map.MapBottomState.DETAIL
 import com.espressodev.gptmap.feature.map.MapBottomState.SEARCH
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -61,24 +68,16 @@ fun MapRoute(viewModel: MapViewModel = hiltViewModel(), navigateToStreetView: ()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     MapScreen(
         uiState = uiState,
-        onSearchValueChange = viewModel::onSearchValueChange,
-        onSearchClick = viewModel::onSearchClick,
-        onDismiss = viewModel::onDismissBottomSheet,
-        onStreetViewClick = navigateToStreetView,
-        onFavouriteClick = viewModel::onFavouriteClick
+        onEvent = viewModel::onEvent
     )
 }
 
 @Composable
 private fun MapScreen(
     uiState: MapUiState,
-    onSearchValueChange: (String) -> Unit,
-    onSearchClick: () -> Unit,
-    onDismiss: () -> Unit,
-    onStreetViewClick: () -> Unit,
-    onFavouriteClick: () -> Unit
+    onEvent: (MapUiEvent) -> Unit,
 ) {
-
+    Log.d("MapScreen", "MapScreen: ${uiState.location}")
     val latLng: LatLng = uiState.location.content.coordinates.let {
         LatLng(it.latitude, it.longitude)
     }
@@ -89,6 +88,16 @@ private fun MapScreen(
         if (uiState.location.id != "default")
             cameraPositionState.animate(CameraUpdateFactory.newLatLng(latLng))
     }
+
+    uiState.imageGalleryState.apply {
+        if (second)
+            ImageGallery(
+                initialPage = first,
+                images = uiState.location.locationImages,
+                onDismiss = { onEvent(MapUiEvent.OnImageDismiss) }
+            )
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
         MapSection(
             cameraPositionState = cameraPositionState,
@@ -99,18 +108,29 @@ private fun MapScreen(
             SEARCH -> {
                 MapBottomBar(
                     uiState = uiState,
-                    onValueChange = onSearchValueChange,
-                    onSearchClick = onSearchClick
+                    onValueChange = { onEvent(MapUiEvent.OnSearchValueChanged(it)) },
+                    onSearchClick = { onEvent(MapUiEvent.OnSearchClick) }
                 )
             }
 
             DETAIL -> DetailSheet(
                 uiState.location.content,
                 uiState.location.locationImages,
-                onDismiss = onDismiss,
-                onStreetViewClick = onStreetViewClick,
-                onFavouriteClick = onFavouriteClick
+                onEvent = onEvent
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ImageGallery(initialPage: Int, images: List<LocationImage>, onDismiss: () -> Unit) {
+    val pagerState = rememberPagerState(pageCount = { 2 }, initialPage = initialPage)
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Dialog(onDismissRequest = onDismiss) {
+            HorizontalPager(state = pagerState) { page ->
+                AsyncImage(model = images[page].imageUrl, contentDescription = null)
+            }
         }
     }
 }

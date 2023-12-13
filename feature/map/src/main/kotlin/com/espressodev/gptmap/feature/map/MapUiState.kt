@@ -13,28 +13,20 @@ enum class MapBottomState {
 
 data class MapUiState(
     val searchValue: String = "",
-    val location:Location,
+    val location:Location = Location(),
     val loadingState: LoadingState = LoadingState.Idle,
     val searchButtonEnabledState: Boolean = true,
     val searchTextFieldEnabledState: Boolean = true,
-    val bottomState: MapBottomState = MapBottomState.SEARCH
-) {
-    // TODO: THIS LOGIC WILL BE MOVE TO MONGODB
-    constructor() : this(
-        location =
-            Location(
-                id = "default",
-                content = Content(
-                    coordinates = Coordinates(
-                        latitude = 41.0082,
-                        longitude = 28.9784
-                    ),
-                    city = "Istanbul",
-                    district = "Eminonu",
-                    country = "Turkey",
-                    poeticDescription = "Spires touch the sky, Bosphorus whispers tales—a city's heartbeat, where continents embrace, Istanbul's poetic dance.",
-                    normalDescription = "Enchanting Istanbul, where East meets West in a vibrant blend of culture and history."
-                )
-            )
-        )
+    val bottomState: MapBottomState = MapBottomState.SEARCH,
+    val imageGalleryState: Pair<Int, Boolean> = Pair(0, false)
+)
+
+sealed class MapUiEvent {
+    data class OnSearchValueChanged(val text: String) : MapUiEvent()
+    data object OnSearchClick : MapUiEvent()
+    data object OnDismissBottomSheet : MapUiEvent()
+    data object OnImageDismiss : MapUiEvent()
+    data class OnImageClick(val pos: Int) : MapUiEvent()
+    data object OnFavouriteClick : MapUiEvent()
+    data object OnStreetViewClick : MapUiEvent()
 }
