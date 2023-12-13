@@ -8,6 +8,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -110,27 +111,33 @@ internal fun DetailSheet(
 
 @Composable
 fun LocationImages(images: List<LocationImage>, onClick: (Int) -> Unit) {
-    LazyRow(horizontalArrangement = Arrangement.spacedBy(MEDIUM_PADDING)) {
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(MEDIUM_PADDING),
+        modifier = Modifier.padding(vertical = MEDIUM_PADDING)
+    ) {
         items(2) { index ->
-            ImageCard(images[index]) { onClick(index) }
+            ImageCard(images[index], modifier = Modifier.size(160.dp, 100.dp)) { onClick(index) }
         }
     }
 }
 
 @Composable
-fun ImageCard(image: LocationImage, onClick: () -> Unit) {
+fun ImageCard(image: LocationImage, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
     val showShimmer = remember { mutableStateOf(true) }
-
+    val interactionSource = remember { MutableInteractionSource() }
     Surface(
         modifier = Modifier
-            .clip(RoundedCornerShape(16.dp))
-            .clickable { if (!showShimmer.value) onClick() },
+            .clip(RoundedCornerShape(MEDIUM_PADDING))
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ) { if (!showShimmer.value) onClick() },
     ) {
         AsyncImage(
             model = image.imageUrl,
             modifier = Modifier
                 .background(shimmerBrush(targetValue = 1300f, showShimmer = showShimmer.value))
-                .size(160.dp, 100.dp),
+                .then(modifier),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             onSuccess = { showShimmer.value = false }

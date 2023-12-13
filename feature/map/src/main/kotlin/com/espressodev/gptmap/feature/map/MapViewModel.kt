@@ -3,6 +3,7 @@ package com.espressodev.gptmap.feature.map
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.model.LoadingState
+import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.emptyImagePlaceholder
 import com.espressodev.gptmap.core.palm.PalmService
 import com.espressodev.gptmap.core.unsplash_api.UnsplashService
@@ -46,7 +47,7 @@ class MapViewModel @Inject constructor(
                 loadingState = LoadingState.Loading,
                 searchButtonEnabledState = false,
                 searchTextFieldEnabledState = false,
-                location = it.location.copy(locationImages = emptyImagePlaceholder)
+                location = Location()
             )
         }
 

@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.feature.map
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -17,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,18 +28,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MARKER_SIZE
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
@@ -58,6 +59,7 @@ import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlin.math.absoluteValue
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 import com.espressodev.gptmap.feature.map.R.raw as AppRaw
@@ -77,7 +79,6 @@ private fun MapScreen(
     uiState: MapUiState,
     onEvent: (MapUiEvent) -> Unit,
 ) {
-    Log.d("MapScreen", "MapScreen: ${uiState.location}")
     val latLng: LatLng = uiState.location.content.coordinates.let {
         LatLng(it.latitude, it.longitude)
     }
@@ -89,14 +90,14 @@ private fun MapScreen(
             cameraPositionState.animate(CameraUpdateFactory.newLatLng(latLng))
     }
 
-    uiState.imageGalleryState.apply {
-        if (second)
-            ImageGallery(
-                initialPage = first,
-                images = uiState.location.locationImages,
-                onDismiss = { onEvent(MapUiEvent.OnImageDismiss) }
-            )
+    AnimatedVisibility(uiState.imageGalleryState.second) {
+        ImageGallery(
+            initialPage = uiState.imageGalleryState.first,
+            images = uiState.location.locationImages,
+            onDismiss = { onEvent(MapUiEvent.OnImageDismiss) }
+        )
     }
+
 
     Column(modifier = Modifier.fillMaxSize()) {
         MapSection(
@@ -126,15 +127,29 @@ private fun MapScreen(
 @Composable
 private fun ImageGallery(initialPage: Int, images: List<LocationImage>, onDismiss: () -> Unit) {
     val pagerState = rememberPagerState(pageCount = { 2 }, initialPage = initialPage)
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Dialog(onDismissRequest = onDismiss) {
-            HorizontalPager(state = pagerState) { page ->
-                AsyncImage(model = images[page].imageUrl, contentDescription = null)
+    Dialog(onDismissRequest = onDismiss) {
+        HorizontalPager(state = pagerState, pageSpacing = MEDIUM_PADDING) { page ->
+            Box(
+                Modifier
+                    .graphicsLayer {
+                        val pageOffset = (
+                                (pagerState.currentPage - page) + pagerState
+                                    .currentPageOffsetFraction
+                                ).absoluteValue
+
+                        alpha = lerp(
+                            start = 0.5f,
+                            stop = 1f,
+                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                        )
+                    }
+            ) {
+                ImageCard(image = images[page])
+                UnsplashBanner()
             }
         }
     }
 }
-
 
 @Composable
 private fun MapBottomBar(
