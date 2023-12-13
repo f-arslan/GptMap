@@ -2,10 +2,9 @@ package com.espressodev.gptmap.feature.map
 
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.data.LogService
+import com.espressodev.gptmap.core.gemini_api.GeminiService
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.Location
-import com.espressodev.gptmap.core.model.emptyImagePlaceholder
-import com.espressodev.gptmap.core.palm.PalmService
 import com.espressodev.gptmap.core.unsplash_api.UnsplashService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
-    private val palmService: PalmService,
+    private val geminiService: GeminiService,
     private val unsplashService: UnsplashService,
     logService: LogService,
 ) : GmViewModel(logService) {
@@ -51,7 +50,7 @@ class MapViewModel @Inject constructor(
             )
         }
 
-        palmService.getLocationInfo(uiState.value.searchValue)
+        geminiService.getLocationInfo(uiState.value.searchValue)
             .onSuccess { location ->
                 _uiState.update {
                     it.copy(

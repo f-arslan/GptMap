@@ -113,7 +113,7 @@ internal fun DetailSheet(
 fun LocationImages(images: List<LocationImage>, onClick: (Int) -> Unit) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(MEDIUM_PADDING),
-        modifier = Modifier.padding(vertical = MEDIUM_PADDING)
+        modifier = Modifier.padding(bottom = MEDIUM_PADDING)
     ) {
         items(2) { index ->
             ImageCard(images[index], modifier = Modifier.size(160.dp, 100.dp)) { onClick(index) }

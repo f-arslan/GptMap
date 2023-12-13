@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.core.palm.module
+package com.espressodev.gptmap.core.palm
 
 import com.espressodev.gptmap.core.model.palm.PalmText
 import com.espressodev.gptmap.core.model.palm.PalmTextPrompt

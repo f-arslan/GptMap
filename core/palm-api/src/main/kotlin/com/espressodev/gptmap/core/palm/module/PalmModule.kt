@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.core.palm.module
 
+import com.espressodev.gptmap.core.palm.PalmApi
 import com.espressodev.gptmap.core.palm.PalmService
 import com.espressodev.gptmap.core.palm.impl.PalmServiceImpl
 import dagger.Module
@@ -27,9 +28,6 @@ object PalmModule {
     @Provides
     @Singleton
     fun provideKtorClient() = HttpClient(Android) {
-        install(Logging) {
-            level = LogLevel.ALL
-        }
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true
