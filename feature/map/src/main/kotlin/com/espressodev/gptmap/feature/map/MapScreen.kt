@@ -236,10 +236,7 @@ private fun MapSection(
             }
         )
     }
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-    ) {
+    Box(modifier = modifier.fillMaxSize()) {
         if (!isMapLoaded) {
             LoadingAnimation()
         }
