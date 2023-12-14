@@ -76,7 +76,7 @@ internal fun DetailSheet(
             )
             Text(
                 text = content.toDistrictAndCountry().uppercase(),
-                modifier = Modifier.offset(y = SMALL_PADDING.times(-1)),
+                modifier = Modifier.offset(y = SMALL_PADDING * -1),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
@@ -123,7 +123,7 @@ fun LocationImages(images: List<LocationImage>, onClick: (Int) -> Unit) {
 
 @Composable
 fun ImageCard(image: LocationImage, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
-    val showShimmer = remember { mutableStateOf(true) }
+    val showShimmer = remember { mutableStateOf(value = true) }
     val interactionSource = remember { MutableInteractionSource() }
     Surface(
         modifier = Modifier

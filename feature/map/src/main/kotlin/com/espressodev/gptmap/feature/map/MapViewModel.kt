@@ -1,11 +1,11 @@
 package com.espressodev.gptmap.feature.map
 
+import com.espressodev.gptmap.api.gemini.GeminiService
+import com.espressodev.gptmap.api.unsplash.UnsplashService
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.data.LogService
-import com.espressodev.gptmap.core.gemini_api.GeminiService
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.Location
-import com.espressodev.gptmap.core.unsplash_api.UnsplashService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
