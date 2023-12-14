@@ -45,7 +45,7 @@ appcompat = "1.6.1"
 material = "1.10.0"
 coilCompose = "2.5.0"
 generativeai = "0.1.0"
-kotlin2 = "1.9.10"
+lottieCompose = "6.2.0"
 
 [libraries]
 
@@ -127,8 +127,8 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "googleGso
 # End of it
 
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coilCompose" }
-
 generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
+lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
 
 
 # Dependencies of the included build-logic
@@ -165,6 +165,5 @@ gptmap-android-hilt = { id = "gptmap.android.hilt", version = "unspecified" }
 gptmap-android-application-firebase = { id = "gptmap.android.application.firebase", version = "unspecified" }
 gptmap-jvm-library = { id = "gptmap.jvm.library", version = "unspecified" }
 gptmap-ktor = { id = "gptmap.ktor", version = "unspecified" }
-jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin2" }
 # End of it
 

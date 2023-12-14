@@ -15,6 +15,7 @@ dependencyResolutionManagement {
     }
 }
 
+
 rootProject.name = "gptmap"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

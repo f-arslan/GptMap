@@ -28,4 +28,5 @@ sealed class MapUiEvent {
     data object OnFavouriteClick : MapUiEvent()
 
     data class OnStreetViewClick(val latLng: LatLng) : MapUiEvent()
+
 }

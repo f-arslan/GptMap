@@ -90,16 +90,18 @@ class MapViewModel @Inject constructor(
 
     }
 
-    private fun onStreetViewClick(latLng: LatLng, navigateToStreetView: (LatLng) -> Unit) = launchCatching {
-        MapUtils.fetchStreetViewData(latLng).let { isStreetViewAvailable ->
-            when(isStreetViewAvailable) {
-                Status.OK -> {
-                    navigateToStreetView(latLng)
-                }
-                else -> {
-                    SnackbarManager.showMessage("Street View is not available for this location")
+    private fun onStreetViewClick(latLng: LatLng, navigateToStreetView: (LatLng) -> Unit) =
+        launchCatching {
+            MapUtils.fetchStreetViewData(latLng).let { isStreetViewAvailable ->
+                when (isStreetViewAvailable) {
+                    Status.OK -> {
+                        navigateToStreetView(latLng)
+                    }
+
+                    else -> {
+                        SnackbarManager.showMessage("Street View is not available for this location")
+                    }
                 }
             }
         }
-    }
 }

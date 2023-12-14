@@ -1,7 +1,9 @@
 package com.espressodev.gptmap.feature.map
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,6 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -39,6 +42,10 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MARKER_SIZE
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
@@ -60,7 +67,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import kotlin.math.absoluteValue
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
-import com.espressodev.gptmap.feature.map.R.raw as AppRaw
+import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 
 
 @Composable
@@ -113,6 +120,7 @@ private fun MapScreen(
             modifier = Modifier.weight(1f),
             loadingState = uiState.loadingState,
         )
+
         when (uiState.bottomState) {
             SEARCH -> {
                 MapBottomBar(
@@ -129,6 +137,24 @@ private fun MapScreen(
                 onStreetViewClick = { onEvent(MapUiEvent.OnStreetViewClick(cameraPositionState.position.target)) }
             )
         }
+    }
+}
+
+@Composable
+fun LoadingAnimation() {
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(AppRaw.transistor_traveling))
+    val progress by animateLottieCompositionAsState(composition)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .zIndex(2f), contentAlignment = Alignment.Center
+    ) {
+        LottieAnimation(
+            composition = composition,
+            progress = { progress },
+            modifier = Modifier.fillMaxSize(0.5f)
+        )
     }
 }
 
@@ -195,6 +221,7 @@ private fun MapSection(
 ) {
     val context = LocalContext.current
     val isSystemInDarkTheme = isSystemInDarkTheme()
+    var isMapLoaded by remember { mutableStateOf(value = false) }
     val mapProperties by remember(isSystemInDarkTheme) {
         mutableStateOf(
             if (isSystemInDarkTheme) {
@@ -213,15 +240,23 @@ private fun MapSection(
         modifier = modifier
             .fillMaxSize()
     ) {
+        if (!isMapLoaded) {
+            LoadingAnimation()
+        }
         LoadingDialog(loadingState)
         LocationPin()
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
-            properties = mapProperties
+            properties = mapProperties,
+            onMapLoaded = {
+                Log.d("MapSection", "onMapLoaded: ")
+                isMapLoaded = true
+            }
         )
     }
 }
+
 
 @Composable
 private fun BoxScope.LoadingDialog(loadingState: LoadingState) {

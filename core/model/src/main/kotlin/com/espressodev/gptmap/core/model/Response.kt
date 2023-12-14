@@ -9,5 +9,7 @@ sealed class Response<out T> {
 sealed interface LoadingState {
     data object Idle : LoadingState
     data object Loading : LoadingState
+
+    data object Loaded : LoadingState
 }
 

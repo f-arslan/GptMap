@@ -13,4 +13,5 @@ android {
 
 dependencies {
     implementation(libs.maps.compose)
+    implementation(libs.lottie.compose)
 }

@@ -8,11 +8,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.android.gms.maps.StreetViewPanoramaOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.streetview.StreetView
 import com.google.maps.android.ktx.MapsExperimentalFeature
-
+import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 
 @Composable
 fun StreetViewRoute(
@@ -33,13 +37,13 @@ fun StreetViewRoute(
     }
     StreetViewScreen(uiState)
 }
-
+val streetViewPanoramaOptions = StreetViewPanoramaOptions()
 @OptIn(MapsExperimentalFeature::class)
 @Composable
 fun StreetViewScreen(uiState: StreetViewUiState) {
     StreetView(
         streetViewPanoramaOptionsFactory = {
-            StreetViewPanoramaOptions().position(uiState.latLng)
+            streetViewPanoramaOptions.position(uiState.latLng)
         },
         isPanningGesturesEnabled = true,
         isStreetNamesEnabled = true,
