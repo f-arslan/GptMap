@@ -36,7 +36,6 @@ class MapViewModel @Inject constructor(
             }
 
             is MapUiEvent.OnFavouriteClick -> onFavouriteClick()
-            is MapUiEvent.OnStreetViewClick -> onStreetViewClick()
         }
     }
 

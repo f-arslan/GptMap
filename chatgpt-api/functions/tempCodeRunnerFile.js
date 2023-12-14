@@ -1,1 +1,0 @@
-onRequest(async (request, response)

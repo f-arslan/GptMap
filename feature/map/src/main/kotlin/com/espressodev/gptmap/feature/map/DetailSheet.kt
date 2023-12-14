@@ -59,6 +59,7 @@ internal fun DetailSheet(
     content: Content,
     images: List<LocationImage>,
     onEvent: (MapUiEvent) -> Unit,
+    navigateToStreetView: () -> Unit
 ) {
     BackHandler { onEvent(MapUiEvent.OnDismissBottomSheet) }
     Box(modifier = Modifier.clipPolygon(MaterialTheme.colorScheme.surface)) {
@@ -84,7 +85,7 @@ internal fun DetailSheet(
             )
             Spacer(modifier = Modifier.height(MEDIUM_PADDING))
             DetailButtons(
-                onStreetViewClick = { onEvent(MapUiEvent.OnStreetViewClick) },
+                onStreetViewClick = navigateToStreetView,
                 onFavouriteClick = { onEvent(MapUiEvent.OnFavouriteClick) }
             )
             Text(

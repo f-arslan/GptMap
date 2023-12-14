@@ -67,11 +67,16 @@ import com.espressodev.gptmap.feature.map.R.raw as AppRaw
 
 
 @Composable
-fun MapRoute(viewModel: MapViewModel = hiltViewModel(), navigateToStreetView: () -> Unit) {
+fun MapRoute(viewModel: MapViewModel = hiltViewModel(), navigateToStreetView: (Float, Float) -> Unit) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     MapScreen(
         uiState = uiState,
-        onEvent = viewModel::onEvent
+        onEvent = viewModel::onEvent,
+        navigateToStreetView = {
+            uiState.location.content.coordinates.apply {
+                navigateToStreetView(latitude.toFloat(), longitude.toFloat())
+            }
+        }
     )
 }
 
@@ -79,6 +84,7 @@ fun MapRoute(viewModel: MapViewModel = hiltViewModel(), navigateToStreetView: ()
 private fun MapScreen(
     uiState: MapUiState,
     onEvent: (MapUiEvent) -> Unit,
+    navigateToStreetView: () -> Unit
 ) {
     Log.d("MapScreen", "MapScreen: ${uiState.location.locationImages}")
     val latLng: LatLng = uiState.location.content.coordinates.let {
@@ -119,7 +125,8 @@ private fun MapScreen(
             DETAIL -> DetailSheet(
                 uiState.location.content,
                 uiState.location.locationImages,
-                onEvent = onEvent
+                onEvent = onEvent,
+                navigateToStreetView = navigateToStreetView
             )
         }
     }

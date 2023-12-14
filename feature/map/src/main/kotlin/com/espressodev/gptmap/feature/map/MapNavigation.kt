@@ -11,7 +11,7 @@ fun NavController.navigateToMap(navOptions: NavOptions? = null) {
     navigate(mapRoute, navOptions)
 }
 
-fun NavGraphBuilder.mapScreen(navigateToStreetView: () -> Unit) {
+fun NavGraphBuilder.mapScreen(navigateToStreetView: (Float, Float) -> Unit) {
     composable(mapRoute) {
         MapRoute(navigateToStreetView = navigateToStreetView)
     }

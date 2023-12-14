@@ -11,6 +11,8 @@ import com.espressodev.gptmap.feature.map.mapRoute
 import com.espressodev.gptmap.feature.map.mapScreen
 import com.espressodev.gptmap.feature.register.registerRoute
 import com.espressodev.gptmap.feature.register.registerScreen
+import com.espressodev.gptmap.feature.street_view.navigateToStreetView
+import com.espressodev.gptmap.feature.street_view.streetViewScreen
 
 @Composable
 fun GmNavHost(
@@ -23,7 +25,11 @@ fun GmNavHost(
         navController = appState.navController,
         startDestination = startDestination
     ) {
-        mapScreen(navigateToStreetView = {})
+        mapScreen(
+            navigateToStreetView = { latitude, longitude ->
+                appState.navController.navigateToStreetView(latitude, longitude)
+            }
+        )
         loginScreen(
             navigateToMap = { appState.clearAndNavigate(mapRoute) },
             navigateToRegister = { appState.navigate(registerRoute) },
@@ -34,5 +40,6 @@ fun GmNavHost(
             navigateToMap = { appState.clearAndNavigate(mapRoute) }
         )
         forgotPasswordScreen(navigateToLogin = { appState.clearAndNavigate(loginRoute) })
+        streetViewScreen(popUp = { appState.popUp() })
     }
 }

@@ -16,7 +16,6 @@ import com.espressodev.gptmap.api.gemini.BuildConfig.PALM_API_KEY
 @Module
 @InstallIn(SingletonComponent::class)
 object GeminiModule {
-
     private val harassmentSafety = SafetySetting(HarmCategory.HARASSMENT, BlockThreshold.ONLY_HIGH)
     private val hateSpeechSafety = SafetySetting(HarmCategory.HATE_SPEECH, BlockThreshold.MEDIUM_AND_ABOVE)
 
