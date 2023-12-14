@@ -18,5 +18,6 @@ class StreetViewViewModel @Inject constructor(logService: LogService): GmViewMod
 
     fun getStreetView(latitude: Double, longitude: Double) {
         _uiState.update { it.copy(latLng = LatLng(latitude, longitude)) }
+        
     }
 }

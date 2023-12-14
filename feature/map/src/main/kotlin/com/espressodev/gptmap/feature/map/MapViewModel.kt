@@ -3,9 +3,11 @@ package com.espressodev.gptmap.feature.map
 import com.espressodev.gptmap.api.gemini.GeminiService
 import com.espressodev.gptmap.api.unsplash.UnsplashService
 import com.espressodev.gptmap.core.common.GmViewModel
+import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.Location
+import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +24,7 @@ class MapViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
 
-    fun onEvent(event: MapUiEvent) {
+    fun onEvent(event: MapUiEvent, navigateToStreetView: (LatLng) -> Unit) {
         when (event) {
             is MapUiEvent.OnSearchValueChanged -> _uiState.update { it.copy(searchValue = event.text) }
             is MapUiEvent.OnSearchClick -> onSearchClick()
@@ -36,6 +38,9 @@ class MapViewModel @Inject constructor(
             }
 
             is MapUiEvent.OnFavouriteClick -> onFavouriteClick()
+            is MapUiEvent.OnStreetViewClick -> {
+                onStreetViewClick(event.latLng, navigateToStreetView)
+            }
         }
     }
 
@@ -85,7 +90,16 @@ class MapViewModel @Inject constructor(
 
     }
 
-    private fun onStreetViewClick() {
-
+    private fun onStreetViewClick(latLng: LatLng, navigateToStreetView: (LatLng) -> Unit) = launchCatching {
+        MapUtils.fetchStreetViewData(latLng).let { isStreetViewAvailable ->
+            when(isStreetViewAvailable) {
+                Status.OK -> {
+                    navigateToStreetView(latLng)
+                }
+                else -> {
+                    SnackbarManager.showMessage("Street View is not available for this location")
+                }
+            }
+        }
     }
 }

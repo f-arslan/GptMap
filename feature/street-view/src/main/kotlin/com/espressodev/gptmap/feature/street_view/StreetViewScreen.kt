@@ -8,7 +8,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.android.gms.maps.StreetViewPanoramaOptions
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.streetview.StreetView
+import com.google.maps.android.ktx.MapsExperimentalFeature
 
 
 @Composable
@@ -28,16 +31,26 @@ fun StreetViewRoute(
     BackHandler {
         popUp()
     }
+    StreetViewScreen(uiState)
 }
 
+@OptIn(MapsExperimentalFeature::class)
 @Composable
-fun StreetViewScreen() {
-
+fun StreetViewScreen(uiState: StreetViewUiState) {
+    StreetView(
+        streetViewPanoramaOptionsFactory = {
+            StreetViewPanoramaOptions().position(uiState.latLng)
+        },
+        isPanningGesturesEnabled = true,
+        isStreetNamesEnabled = true,
+        isUserNavigationEnabled = true,
+        isZoomGesturesEnabled = true
+    )
 }
 
 
 @Preview(showBackground = true)
 @Composable
 fun StreetViewPreview() {
-    StreetViewScreen()
+
 }

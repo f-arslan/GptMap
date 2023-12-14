@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.feature.map
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,7 +34,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
@@ -67,16 +64,21 @@ import com.espressodev.gptmap.feature.map.R.raw as AppRaw
 
 
 @Composable
-fun MapRoute(viewModel: MapViewModel = hiltViewModel(), navigateToStreetView: (Float, Float) -> Unit) {
+fun MapRoute(
+    viewModel: MapViewModel = hiltViewModel(),
+    navigateToStreetView: (Float, Float) -> Unit
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     MapScreen(
         uiState = uiState,
-        onEvent = viewModel::onEvent,
-        navigateToStreetView = {
-            uiState.location.content.coordinates.apply {
-                navigateToStreetView(latitude.toFloat(), longitude.toFloat())
-            }
-        }
+        onEvent = {
+            viewModel.onEvent(
+                event = it,
+                navigateToStreetView = { latLng ->
+                    navigateToStreetView(latLng.latitude.toFloat(), latLng.longitude.toFloat())
+                }
+            )
+        },
     )
 }
 
@@ -84,14 +86,12 @@ fun MapRoute(viewModel: MapViewModel = hiltViewModel(), navigateToStreetView: (F
 private fun MapScreen(
     uiState: MapUiState,
     onEvent: (MapUiEvent) -> Unit,
-    navigateToStreetView: () -> Unit
 ) {
-    Log.d("MapScreen", "MapScreen: ${uiState.location.locationImages}")
     val latLng: LatLng = uiState.location.content.coordinates.let {
         LatLng(it.latitude, it.longitude)
     }
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(latLng, 15f)
+        position = CameraPosition.fromLatLngZoom(latLng, 10f)
     }
     LaunchedEffect(latLng) {
         if (uiState.location.id != "default")
@@ -126,7 +126,7 @@ private fun MapScreen(
                 uiState.location.content,
                 uiState.location.locationImages,
                 onEvent = onEvent,
-                navigateToStreetView = navigateToStreetView
+                onStreetViewClick = { onEvent(MapUiEvent.OnStreetViewClick(cameraPositionState.position.target)) }
             )
         }
     }
@@ -209,7 +209,6 @@ private fun MapSection(
             }
         )
     }
-
     Box(
         modifier = modifier
             .fillMaxSize()

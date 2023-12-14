@@ -2,9 +2,7 @@ package com.espressodev.gptmap.feature.map
 
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.Location
-import com.espressodev.gptmap.core.model.Response
-import com.espressodev.gptmap.core.model.chatgpt.Content
-import com.espressodev.gptmap.core.model.chatgpt.Coordinates
+import com.google.android.gms.maps.model.LatLng
 
 enum class MapBottomState {
     SEARCH, DETAIL
@@ -28,4 +26,6 @@ sealed class MapUiEvent {
     data object OnImageDismiss : MapUiEvent()
     data class OnImageClick(val pos: Int) : MapUiEvent()
     data object OnFavouriteClick : MapUiEvent()
+
+    data class OnStreetViewClick(val latLng: LatLng) : MapUiEvent()
 }
