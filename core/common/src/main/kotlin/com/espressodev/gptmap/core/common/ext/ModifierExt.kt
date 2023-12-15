@@ -10,7 +10,6 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.unit.dp
-
 fun Modifier.clipPolygon(colour: Color): Modifier = drawBehind {
     val trianglePath = Path().apply {
         moveTo(-32f, 0f)
@@ -18,6 +17,7 @@ fun Modifier.clipPolygon(colour: Color): Modifier = drawBehind {
         lineTo(size.width + 32f, 0f)
         close()
     }
+
     drawRect(color = colour)
     drawIntoCanvas { canvas ->
         canvas.drawOutline(
