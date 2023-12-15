@@ -28,7 +28,6 @@ class MapViewModel @Inject constructor(
         when (event) {
             is MapUiEvent.OnSearchValueChanged -> _uiState.update { it.copy(searchValue = event.text) }
             is MapUiEvent.OnSearchClick -> onSearchClick()
-            is MapUiEvent.OnDismissBottomSheet -> _uiState.update { it.copy(bottomState = MapBottomState.SEARCH) }
             is MapUiEvent.OnImageDismiss -> _uiState.update {
                 it.copy(imageGalleryState = Pair(0, false))
             }

@@ -22,7 +22,6 @@ data class MapUiState(
 sealed class MapUiEvent {
     data class OnSearchValueChanged(val text: String) : MapUiEvent()
     data object OnSearchClick : MapUiEvent()
-    data object OnDismissBottomSheet : MapUiEvent()
     data object OnImageDismiss : MapUiEvent()
     data class OnImageClick(val pos: Int) : MapUiEvent()
     data object OnFavouriteClick : MapUiEvent()
