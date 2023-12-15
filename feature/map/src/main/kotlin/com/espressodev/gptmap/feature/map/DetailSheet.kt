@@ -53,6 +53,7 @@ import com.espressodev.gptmap.core.designsystem.component.SquareButton
 import com.espressodev.gptmap.core.model.LocationImage
 import com.espressodev.gptmap.core.model.chatgpt.Content
 import com.espressodev.gptmap.feature.map.R.string as AppText
+import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 
 @Composable
 internal fun DetailSheet(
@@ -202,13 +203,13 @@ private fun DetailButtons(onStreetViewClick: () -> Unit, onFavouriteClick: () ->
         modifier = Modifier.padding(bottom = HIGH_PADDING)
     ) {
         SquareButton(
-            icon = GmIcons.StreetViewDefault,
-            AppText.street_view,
+            iconId = AppDrawable.street_view,
+            contentDesc = AppText.street_view,
             onClick = onStreetViewClick
         )
         SquareButton(
             icon = GmIcons.FavouriteOutlined,
-            AppText.add_favourite,
+            contentDesc = AppText.add_favourite,
             onClick = onFavouriteClick
         )
     }

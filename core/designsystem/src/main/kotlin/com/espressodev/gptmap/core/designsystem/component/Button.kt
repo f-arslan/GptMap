@@ -105,7 +105,8 @@ fun DefaultButton(@StringRes text: Int, onClick: () -> Unit, modifier: Modifier 
 
 @Composable
 fun SquareButton(
-    icon: ImageVector,
+    icon: ImageVector? = null,
+    @DrawableRes iconId: Int? = null,
     @StringRes contentDesc: Int,
     onClick: () -> Unit,
     shape: RoundedCornerShape = RoundedCornerShape(HIGH_PADDING),
@@ -118,11 +119,18 @@ fun SquareButton(
             shape = shape,
             contentPadding = contentPaddings
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = stringResource(id = contentDesc),
-                modifier = Modifier.size(Constants.MAX_PADDING)
-            )
+            if (icon != null)
+                Icon(
+                    imageVector = icon,
+                    contentDescription = stringResource(id = contentDesc),
+                    modifier = Modifier.size(Constants.MAX_PADDING)
+                )
+            else if (iconId != null)
+                Icon(
+                    painter = painterResource(id = iconId),
+                    contentDescription = stringResource(id = contentDesc),
+                    modifier = Modifier.size(Constants.MAX_PADDING)
+                )
         }
     }
 }
@@ -130,7 +138,7 @@ fun SquareButton(
 @Preview(showBackground = true)
 @Composable
 private fun ButtonPreview() {
-   ExtFloActionButton(icon = AppDrawable.google, label = AppText.continue_google) {
+    ExtFloActionButton(icon = AppDrawable.google, label = AppText.continue_google) {
 
-   }
+    }
 }

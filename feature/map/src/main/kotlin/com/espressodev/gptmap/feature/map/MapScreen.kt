@@ -3,7 +3,7 @@ package com.espressodev.gptmap.feature.map
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,6 +27,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +39,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
@@ -44,12 +47,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MARKER_SIZE
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
+import com.espressodev.gptmap.core.designsystem.component.LoadingAnimation
 import com.espressodev.gptmap.core.designsystem.component.MapSearchButton
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
 import com.espressodev.gptmap.core.model.LoadingState
@@ -66,8 +71,8 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlin.math.absoluteValue
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
-import com.espressodev.gptmap.core.designsystem.R.string as AppText
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
+import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 
 @Composable
@@ -140,23 +145,6 @@ private fun MapScreen(
     }
 }
 
-@Composable
-fun LoadingAnimation() {
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(AppRaw.transistor_traveling))
-    val progress by animateLottieCompositionAsState(composition)
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .zIndex(2f), contentAlignment = Alignment.Center
-    ) {
-        LottieAnimation(
-            composition = composition,
-            progress = { progress },
-            modifier = Modifier.fillMaxSize(0.5f)
-        )
-    }
-}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -238,10 +226,10 @@ private fun MapSection(
     }
     Box(modifier = modifier.fillMaxSize()) {
         if (!isMapLoaded) {
-            LoadingAnimation()
+            LoadingAnimation(AppRaw.transistor_earth)
         }
         LoadingDialog(loadingState)
-        LocationPin()
+        LocationPin(cameraPositionState.isMoving)
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
@@ -281,26 +269,55 @@ private fun BoxScope.LoadingDialog(loadingState: LoadingState) {
 }
 
 @Composable
-private fun BoxScope.LocationPin() {
-    IconButton(
+private fun BoxScope.LocationPin(isCameraMoving: Boolean) {
+    Column(
         modifier = Modifier
             .align(Alignment.Center)
             .zIndex(1f)
             .size(MARKER_SIZE),
-        onClick = {}) {
-        Icon(
-            painter = painterResource(id = AppDrawable.location_pin),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.tertiary
+    ) {
+        val composition by rememberLottieComposition(
+            spec = LottieCompositionSpec.RawRes(resId = AppRaw.pin)
+        )
+
+        // Use a state to control the animation progress
+        var progress by remember { mutableStateOf(0f) }
+
+        // Use another state to control whether the animation should play
+        val isPlaying by remember { derivedStateOf { isCameraMoving || progress < 0.2f } }
+
+        // Animate the Lottie composition
+        val animatedProgress by animateLottieCompositionAsState(
+            composition = composition,
+            isPlaying = isPlaying,
+            iterations = LottieConstants.IterateForever
+        )
+
+        // Update the progress state when the animation is playing
+        LaunchedEffect(animatedProgress) {
+            progress = animatedProgress
+        }
+
+        // When isCameraMoving becomes false, set the progress to 0.2f if it's less than that
+        LaunchedEffect(isCameraMoving) {
+            if (!isCameraMoving && progress < 0.2f) {
+                progress = 0.2f
+            }
+        }
+
+        // Render the Lottie animation with the current progress
+        LottieAnimation(
+            modifier = Modifier.size(size = 120.dp),
+            composition = composition,
+            progress = { progress }
         )
     }
 }
-
 
 @Composable
 @Preview(showBackground = true)
 fun MapPreview() {
     Box {
-        LocationPin()
+        LocationPin(true)
     }
 }
