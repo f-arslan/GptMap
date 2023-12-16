@@ -110,7 +110,7 @@ internal fun BoxScope.DetailSheet(
                 lineHeight = VERY_HIGH_PADDING.value.sp,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyLarge,
-                maxLines = 7,
+                maxLines = 6,
                 overflow = TextOverflow.Ellipsis
             )
         }

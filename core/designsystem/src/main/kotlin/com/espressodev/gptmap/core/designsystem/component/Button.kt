@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -30,7 +31,9 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import com.espressodev.gptmap.core.designsystem.Constants
+import com.espressodev.gptmap.core.designsystem.Constants.BIG_BUTTON_SIZE
 import com.espressodev.gptmap.core.designsystem.Constants.BUTTON_SIZE
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
@@ -111,14 +114,18 @@ fun SquareButton(
     icon: ImageVector? = null,
     @DrawableRes iconId: Int? = null,
     shape: RoundedCornerShape = RoundedCornerShape(HIGH_PADDING),
-    contentPaddings: PaddingValues = PaddingValues(NO_PADDING)
+    contentPaddings: PaddingValues = PaddingValues(NO_PADDING),
+    size: Dp = BIG_BUTTON_SIZE
 ) {
     ElevatedButton(
         onClick = onClick,
         modifier = Modifier
-            .size(Constants.BIG_BUTTON_SIZE),
+            .size(size),
         shape = shape,
-        contentPadding = contentPaddings
+        contentPadding = contentPaddings,
+        colors = ButtonDefaults.elevatedButtonColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        )
     ) {
         if (icon != null)
             Icon(

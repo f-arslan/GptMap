@@ -9,9 +9,11 @@ import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.Location
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,7 +24,6 @@ class MapViewModel @Inject constructor(
 ) : GmViewModel(logService) {
     private val _uiState = MutableStateFlow(MapUiState())
     val uiState = _uiState.asStateFlow()
-
 
     fun onEvent(event: MapUiEvent, navigateToStreetView: (LatLng) -> Unit = {}) {
         when (event) {
@@ -43,13 +44,19 @@ class MapViewModel @Inject constructor(
 
             is MapUiEvent.OnExploreWithAiClick -> _uiState.update { it.copy(bottomSheetState = MapBottomSheetState.DETAIL_CARD) }
             is MapUiEvent.OnDetailSheetBackClick -> _uiState.update { it.copy(bottomSheetState = MapBottomSheetState.SMALL_INFORMATION_CARD) }
+            is MapUiEvent.OnBackClick -> _uiState.update {
+                it.copy(
+                    bottomSheetState = MapBottomSheetState.NOTHING,
+                    bottomSearchState = true
+                )
+            }
         }
     }
 
     private fun onSearchClick() = launchCatching {
         _uiState.update {
             it.copy(
-                loadingState = LoadingState.Loading,
+                componentLoadingState = ComponentLoadingState.MAP_LOADING,
                 searchButtonEnabledState = false,
                 searchTextFieldEnabledState = false,
                 location = Location()
@@ -61,7 +68,7 @@ class MapViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         location = location,
-                        loadingState = LoadingState.Idle,
+                        componentLoadingState = ComponentLoadingState.NOTHING,
                         searchButtonEnabledState = true,
                         searchTextFieldEnabledState = true,
                         bottomSheetState = MapBottomSheetState.SMALL_INFORMATION_CARD,
@@ -79,7 +86,7 @@ class MapViewModel @Inject constructor(
             }.onFailure { exception ->
                 _uiState.update {
                     it.copy(
-                        loadingState = LoadingState.Idle,
+                        componentLoadingState = ComponentLoadingState.NOTHING,
                         searchButtonEnabledState = true,
                         searchTextFieldEnabledState = true,
                         bottomSearchState = true
@@ -96,16 +103,22 @@ class MapViewModel @Inject constructor(
 
     private fun onStreetViewClick(latLng: LatLng, navigateToStreetView: (LatLng) -> Unit) =
         launchCatching {
-            MapUtils.fetchStreetViewData(latLng).let { isStreetViewAvailable ->
-                when (isStreetViewAvailable) {
-                    Status.OK -> {
-                        navigateToStreetView(latLng)
-                    }
+            _uiState.update { it.copy(componentLoadingState = ComponentLoadingState.STREET_VIEW_LOADING) }
 
-                    else -> {
-                        SnackbarManager.showMessage("Street View is not available for this location")
-                    }
+            val isStreetAvailable = withContext(Dispatchers.IO) {
+                MapUtils.fetchStreetViewData(latLng)
+            }
+
+            when (isStreetAvailable) {
+                Status.OK -> {
+                    navigateToStreetView(latLng)
+                }
+
+                else -> {
+                    SnackbarManager.showMessage("Street View is not available for this location")
                 }
             }
+
+            _uiState.update { it.copy(componentLoadingState = ComponentLoadingState.NOTHING) }
         }
 }

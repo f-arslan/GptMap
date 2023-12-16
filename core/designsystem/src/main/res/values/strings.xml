@@ -79,4 +79,7 @@
     <string name="reset_password">Reset Password</string>
     <string name="back_login">Back to Login</string>
 
+    <!-- Street View -->
+    <string name="street_view_loading_header">Preparing an immersive Street View experience for you!</string>
+    
 </resources>
