@@ -1,6 +1,7 @@
 package com.espressodev.gptmap.feature.map
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -128,7 +129,7 @@ private fun MapScreen(
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(latLng, 12f)
     }
-    AnimateCameraPosition(latLng, uiState.location, cameraPositionState)
+    AnimateCameraPosition(latLng, cameraPositionState)
     DisplayImageGallery(uiState.imageGalleryState, uiState.location, onEvent)
 
     Box {
@@ -137,6 +138,7 @@ private fun MapScreen(
         DisplayBottomSheet(uiState.bottomSheetState, uiState.location, cameraPositionState, onEvent)
     }
 }
+
 @ReadOnlyComposable
 private fun getLatLngFromLocation(location: Location): LatLng {
     return location.content.coordinates.let {
@@ -145,15 +147,21 @@ private fun getLatLngFromLocation(location: Location): LatLng {
 }
 
 @Composable
-private fun AnimateCameraPosition(latLng: LatLng, location: Location, cameraPositionState: CameraPositionState) {
+private fun AnimateCameraPosition(
+    latLng: LatLng,
+    cameraPositionState: CameraPositionState
+) {
     LaunchedEffect(latLng) {
-        if (location.id != "default")
-            cameraPositionState.animate(CameraUpdateFactory.newLatLng(latLng))
+        cameraPositionState.animate(CameraUpdateFactory.newLatLng(latLng))
     }
 }
 
 @Composable
-private fun DisplayImageGallery(imageGalleryState: Pair<Int, Boolean>, location: Location, onEvent: (MapUiEvent) -> Unit) {
+private fun DisplayImageGallery(
+    imageGalleryState: Pair<Int, Boolean>,
+    location: Location,
+    onEvent: (MapUiEvent) -> Unit
+) {
     if (imageGalleryState.second) {
         ImageGallery(
             initialPage = imageGalleryState.first,
@@ -258,37 +266,50 @@ private fun MapSection(cameraPositionState: CameraPositionState) {
     val context = LocalContext.current
     val isSystemInDarkTheme = isSystemInDarkTheme()
     var isMapLoaded by remember { mutableStateOf(value = false) }
-    val mapProperties by remember(isSystemInDarkTheme) {
-        mutableStateOf(
-            if (isSystemInDarkTheme) {
-                MapProperties(
-                    mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
-                        context,
-                        AppRaw.dark_map_style
-                    )
-                )
-            } else {
-                MapProperties()
-            }
-        )
-    }
+    val mapProperties = createMapProperties(context, isSystemInDarkTheme)
+
     Box(modifier = Modifier.fillMaxSize()) {
-        if (!isMapLoaded) {
-            LoadingAnimation(AppRaw.transistor_earth)
+        MapContent(isMapLoaded, cameraPositionState, mapProperties) {
+            isMapLoaded = true
         }
-        LocationPin(cameraPositionState.isMoving)
-        GoogleMap(
-            modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraPositionState,
-            uiSettings = MapUiSettings(zoomControlsEnabled = false),
-            properties = mapProperties,
-            onMapLoaded = {
-                isMapLoaded = true
-            }
-        )
     }
 }
 
+@Composable
+private fun createMapProperties(context: Context, isSystemInDarkTheme: Boolean): MapProperties {
+    return remember(isSystemInDarkTheme) {
+        if (isSystemInDarkTheme) {
+            MapProperties(
+                mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
+                    context,
+                    AppRaw.dark_map_style
+                )
+            )
+        } else {
+            MapProperties()
+        }
+    }
+}
+
+@Composable
+private fun BoxScope.MapContent(
+    isMapLoaded: Boolean,
+    cameraPositionState: CameraPositionState,
+    mapProperties: MapProperties,
+    onMapLoaded: () -> Unit
+) {
+    if (!isMapLoaded) {
+        LoadingAnimation(AppRaw.transistor_earth)
+    }
+    LocationPin(cameraPositionState.isMoving)
+    GoogleMap(
+        modifier = Modifier.fillMaxSize(),
+        cameraPositionState = cameraPositionState,
+        uiSettings = MapUiSettings(zoomControlsEnabled = false),
+        properties = mapProperties,
+        onMapLoaded = onMapLoaded
+    )
+}
 
 @Composable
 private fun BoxScope.LoadingDialog(loadingState: ComponentLoadingState) {

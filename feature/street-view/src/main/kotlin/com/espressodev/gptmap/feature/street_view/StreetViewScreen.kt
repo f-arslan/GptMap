@@ -58,16 +58,8 @@ fun StreetViewScreen(uiState: StreetViewUiState) {
 
         // StreetView composable doesn't have a callback for when the street view is loaded
         LaunchedEffect(key1 = uiState.latLng) {
-            delay(1500L)
+            delay(2000L)
             isStreetViewLoaded = true
         }
     }
-}
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun StreetViewPreview() {
-
 }

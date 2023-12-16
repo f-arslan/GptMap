@@ -5,8 +5,6 @@ import com.espressodev.gptmap.api.unsplash.UnsplashService
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
 import com.espressodev.gptmap.core.data.LogService
-import com.espressodev.gptmap.core.model.LoadingState
-import com.espressodev.gptmap.core.model.Location
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -59,7 +57,6 @@ class MapViewModel @Inject constructor(
                 componentLoadingState = ComponentLoadingState.MAP_LOADING,
                 searchButtonEnabledState = false,
                 searchTextFieldEnabledState = false,
-                location = Location()
             )
         }
 
