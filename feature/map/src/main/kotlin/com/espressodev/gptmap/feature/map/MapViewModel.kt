@@ -61,7 +61,7 @@ class MapViewModel @Inject constructor(
                         loadingState = LoadingState.Idle,
                         searchButtonEnabledState = true,
                         searchTextFieldEnabledState = true,
-                        bottomState = MapBottomState.DETAIL,
+                        bottomSheetState = true,
                         searchValue = ""
                     )
                 }

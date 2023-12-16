@@ -36,6 +36,12 @@
     <!-- Map -->
     <string name="map_text_field_placeholder">Whenever you ready…</string>
     <string name="loading_dialog_text">Discovering your dream place…</string>
+    <string name="street_view">Street View</string>
+    <string name="add_favourite">Add to Favourite</string>
+    <string name="discovering_your_dream_place">Discovering your dream place…</string>
+    <string name="info">Info</string>
+    <string name="back_to_info">Back to Info</string>
+    <string name="explore_with_ai">Explore more with AI</string>
 
     <!-- Register -->
     <string name="register">Register</string>

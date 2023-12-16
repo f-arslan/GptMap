@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -105,33 +106,32 @@ fun DefaultButton(@StringRes text: Int, onClick: () -> Unit, modifier: Modifier 
 
 @Composable
 fun SquareButton(
-    icon: ImageVector? = null,
-    @DrawableRes iconId: Int? = null,
     @StringRes contentDesc: Int,
     onClick: () -> Unit,
+    icon: ImageVector? = null,
+    @DrawableRes iconId: Int? = null,
     shape: RoundedCornerShape = RoundedCornerShape(HIGH_PADDING),
     contentPaddings: PaddingValues = PaddingValues(NO_PADDING)
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        ElevatedButton(
-            onClick = onClick,
-            modifier = Modifier.size(Constants.BIG_BUTTON_SIZE),
-            shape = shape,
-            contentPadding = contentPaddings
-        ) {
-            if (icon != null)
-                Icon(
-                    imageVector = icon,
-                    contentDescription = stringResource(id = contentDesc),
-                    modifier = Modifier.size(Constants.MAX_PADDING)
-                )
-            else if (iconId != null)
-                Icon(
-                    painter = painterResource(id = iconId),
-                    contentDescription = stringResource(id = contentDesc),
-                    modifier = Modifier.size(Constants.MAX_PADDING)
-                )
-        }
+    ElevatedButton(
+        onClick = onClick,
+        modifier = Modifier
+            .size(Constants.BIG_BUTTON_SIZE),
+        shape = shape,
+        contentPadding = contentPaddings
+    ) {
+        if (icon != null)
+            Icon(
+                imageVector = icon,
+                contentDescription = stringResource(id = contentDesc),
+                modifier = Modifier.size(Constants.MAX_PADDING)
+            )
+        else if (iconId != null)
+            Icon(
+                painter = painterResource(id = iconId),
+                contentDescription = stringResource(id = contentDesc),
+                modifier = Modifier.size(Constants.MAX_PADDING)
+            )
     }
 }
 

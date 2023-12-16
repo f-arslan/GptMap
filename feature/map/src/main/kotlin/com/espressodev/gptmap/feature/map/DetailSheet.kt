@@ -1,7 +1,6 @@
 package com.espressodev.gptmap.feature.map
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -9,7 +8,6 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,26 +26,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -62,25 +52,8 @@ import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.component.SquareButton
 import com.espressodev.gptmap.core.model.LocationImage
 import com.espressodev.gptmap.core.model.chatgpt.Content
-import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
-import com.espressodev.gptmap.feature.map.R.string as AppText
-
-
-class DetailSheetState(
-    initialOffsetY: Float,
-    maxOffsetY: Float
-) {
-    val offsetY = Animatable(initialOffsetY)
-    var maxOffsetY by mutableFloatStateOf(maxOffsetY)
-    var backPressed by mutableStateOf(value = false)
-
-    suspend fun onDrag(dragAmount: Float) {
-        val newValue = (offsetY.value + dragAmount).coerceIn(0f, maxOffsetY)
-        offsetY.snapTo(newValue)
-    }
-}
+import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @Composable
 internal fun DetailSheet(
@@ -89,92 +62,56 @@ internal fun DetailSheet(
     onEvent: (MapUiEvent) -> Unit,
     onStreetViewClick: () -> Unit,
 ) {
-    val detailSheetState = remember { DetailSheetState(0f, 0f) }
-    val scope = rememberCoroutineScope()
     BackHandler {
-        detailSheetState.backPressed = true
+
     }
-    LaunchedEffect(detailSheetState.backPressed) {
-        if (detailSheetState.backPressed) {
-            detailSheetState.offsetY.animateTo(detailSheetState.maxOffsetY, tween(300))
-            detailSheetState.backPressed = false
-        }
-    }
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .onSizeChanged { detailSheetState.maxOffsetY = it.height.toFloat() * 0.85f }
-        .offset {
-            IntOffset(
-                0,
-                detailSheetState.offsetY.value
-                    .roundToInt()
-                    .coerceIn(0, detailSheetState.maxOffsetY.roundToInt())
+    Box(
+        modifier = Modifier.fillMaxWidth().clipPolygon(MaterialTheme.colorScheme.surface)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(horizontal = HIGH_PADDING)
+                .padding(bottom = VERY_HIGH_PADDING)
+        ) {
+            Text(
+                text = content.city,
+                style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Bold),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = content.toDistrictAndCountry().uppercase(),
+                modifier = Modifier.offset(y = SMALL_PADDING * -1),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(modifier = Modifier.height(MEDIUM_PADDING))
+            DetailButtons(
+                onStreetViewClick = onStreetViewClick,
+                onFavouriteClick = { onEvent(MapUiEvent.OnFavouriteClick) }
+            )
+            Text(
+                text = content.toPoeticDescWithDecor(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 5,
+                overflow = TextOverflow.Ellipsis,
+                lineHeight = MAX_PADDING.value.sp
+            )
+            Spacer(modifier = Modifier.height(VERY_HIGH_PADDING))
+            LocationImages(images, onClick = { onEvent(MapUiEvent.OnImageClick(it)) })
+            Text(
+                text = content.normalDescription,
+                lineHeight = VERY_HIGH_PADDING.value.sp,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyLarge,
+                maxLines = 7,
+                overflow = TextOverflow.Ellipsis
             )
         }
-        .clipPolygon(MaterialTheme.colorScheme.surface)
-        .pointerInput(Unit) {
-            detectDragGestures { change, dragAmount ->
-                change.consume()
-                scope.launch {
-                    detailSheetState.onDrag(dragAmount.y)
-                }
-            }
-        }
-    ) {
-        DetailSheetContent(content, onStreetViewClick, onEvent, images)
-    }
-}
-
-@Composable
-private fun DetailSheetContent(
-    content: Content,
-    onStreetViewClick: () -> Unit,
-    onEvent: (MapUiEvent) -> Unit,
-    images: List<LocationImage>
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(horizontal = HIGH_PADDING)
-            .padding(bottom = VERY_HIGH_PADDING)
-    ) {
-        Text(
-            text = content.city,
-            style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Bold),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-        Text(
-            text = content.toDistrictAndCountry().uppercase(),
-            modifier = Modifier.offset(y = SMALL_PADDING * -1),
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-            fontWeight = FontWeight.Medium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-        Spacer(modifier = Modifier.height(MEDIUM_PADDING))
-        DetailButtons(
-            onStreetViewClick = onStreetViewClick,
-            onFavouriteClick = { onEvent(MapUiEvent.OnFavouriteClick) }
-        )
-        Text(
-            text = content.toPoeticDescWithDecor(),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleLarge,
-            maxLines = 5,
-            overflow = TextOverflow.Ellipsis,
-            lineHeight = MAX_PADDING.value.sp
-        )
-        Spacer(modifier = Modifier.height(VERY_HIGH_PADDING))
-        LocationImages(images, onClick = { onEvent(MapUiEvent.OnImageClick(it)) })
-        Text(
-            text = content.normalDescription,
-            lineHeight = VERY_HIGH_PADDING.value.sp,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyLarge,
-            maxLines = 7,
-            overflow = TextOverflow.Ellipsis
-        )
     }
 }
 

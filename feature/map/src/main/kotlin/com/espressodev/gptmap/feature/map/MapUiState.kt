@@ -5,7 +5,7 @@ import com.espressodev.gptmap.core.model.Location
 import com.google.android.gms.maps.model.LatLng
 
 enum class MapBottomState {
-    SEARCH, DETAIL
+    SEARCH, DETAIL_BOTTOM_BUTTONS, NOTHING
 }
 
 
@@ -13,6 +13,7 @@ data class MapUiState(
     val searchValue: String = "",
     val location:Location = Location(),
     val loadingState: LoadingState = LoadingState.Idle,
+    val bottomSheetState: Boolean = false,
     val searchButtonEnabledState: Boolean = true,
     val searchTextFieldEnabledState: Boolean = true,
     val bottomState: MapBottomState = MapBottomState.SEARCH,

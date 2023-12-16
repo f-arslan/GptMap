@@ -5,6 +5,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,14 +14,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +40,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
@@ -44,15 +55,20 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MARKER_SIZE
+import com.espressodev.gptmap.core.designsystem.Constants.MAX_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
+import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
+import com.espressodev.gptmap.core.designsystem.Constants.VERY_MAX_PADDING
+import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.component.LoadingAnimation
 import com.espressodev.gptmap.core.designsystem.component.MapSearchButton
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
+import com.espressodev.gptmap.core.designsystem.component.SquareButton
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.LocationImage
-import com.espressodev.gptmap.feature.map.MapBottomState.DETAIL
-import com.espressodev.gptmap.feature.map.MapBottomState.SEARCH
+import com.espressodev.gptmap.core.model.chatgpt.Content
+import com.espressodev.gptmap.feature.map.MapBottomState.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -64,7 +80,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import kotlin.math.absoluteValue
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
-
+import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 
 @Composable
 fun MapRoute(
@@ -109,24 +125,45 @@ private fun MapScreen(
         )
     }
 
+    Box {
+        Column(modifier = Modifier.fillMaxSize()) {
+            MapSection(
+                cameraPositionState = cameraPositionState,
+                modifier = Modifier.weight(1f),
+                loadingState = uiState.loadingState,
+            )
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        MapSection(
-            cameraPositionState = cameraPositionState,
-            modifier = Modifier.weight(1f),
-            loadingState = uiState.loadingState,
-        )
+            when (uiState.bottomState) {
+                SEARCH -> {
+                    MapBottomBar(
+                        uiState = uiState,
+                        onValueChange = { onEvent(MapUiEvent.OnSearchValueChanged(it)) },
+                        onSearchClick = { onEvent(MapUiEvent.OnSearchClick) }
+                    )
+                }
 
-        when (uiState.bottomState) {
-            SEARCH -> {
-                MapBottomBar(
-                    uiState = uiState,
-                    onValueChange = { onEvent(MapUiEvent.OnSearchValueChanged(it)) },
-                    onSearchClick = { onEvent(MapUiEvent.OnSearchClick) }
-                )
+                DETAIL_BOTTOM_BUTTONS -> {
+                    BottomDetailButtons(
+                        onStreetViewClick = {
+                            onEvent(
+                                MapUiEvent.OnStreetViewClick(
+                                    cameraPositionState.position.target
+                                )
+                            )
+                        },
+                        onInfoClick = {},
+                        backToSearchClick = {}
+                    )
+                }
+
+                NOTHING -> {}
             }
-
-            DETAIL -> DetailSheet(
+        }
+        AnimatedVisibility(
+            visible = uiState.bottomSheetState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) {
+            DetailSheet(
                 uiState.location.content,
                 uiState.location.locationImages,
                 onEvent = onEvent,
@@ -174,7 +211,7 @@ private fun MapBottomBar(
     Surface {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(MEDIUM_PADDING)
+            modifier = Modifier.padding(HIGH_PADDING)
         ) {
             MapTextField(
                 value = uiState.searchValue,
@@ -252,7 +289,7 @@ private fun BoxScope.LoadingDialog(loadingState: LoadingState) {
                 modifier = Modifier.padding(HIGH_PADDING)
             ) {
                 CircularProgressIndicator()
-                Text(text = stringResource(R.string.discovering_your_dream_place))
+                Text(text = stringResource(AppText.discovering_your_dream_place))
             }
         }
     }
@@ -285,3 +322,80 @@ private fun BoxScope.LocationPin(isCameraMoving: Boolean) {
         )
     }
 }
+
+@Composable
+fun BottomDetailButtons(
+    onStreetViewClick: () -> Unit,
+    onInfoClick: () -> Unit,
+    backToSearchClick: () -> Unit
+) {
+    Surface {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(HIGH_PADDING),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            SquareButton(
+                iconId = AppDrawable.street_view,
+                contentDesc = AppText.street_view,
+                onClick = onStreetViewClick
+            )
+            SquareButton(
+                icon = GmIcons.InfoFilled,
+                contentDesc = AppText.info,
+                onClick = onInfoClick
+            )
+            SquareButton(
+                icon = GmIcons.SearchDefault,
+                contentDesc = AppText.search,
+                onClick = backToSearchClick
+            )
+        }
+    }
+}
+
+
+@Composable
+@Preview(showBackground = true)
+fun SmallInformationCard(content: Content = Content()) {
+    Surface {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(HIGH_PADDING),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(MEDIUM_PADDING)
+        ) {
+            Text(
+                text = "${content.city}, ${content.country}",
+                style = MaterialTheme.typography.headlineMedium
+            )
+            Text(
+                text = content.toPoeticDescWithDecor(),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.titleLarge,
+                fontStyle = FontStyle.Italic
+            )
+            Surface(shadowElevation = SMALL_PADDING, shape = RoundedCornerShape(HIGH_PADDING)) {
+                OutlinedButton(
+                    onClick = {},
+                    shape = RoundedCornerShape(HIGH_PADDING)
+                ) {
+                    Image(
+                        painter = painterResource(id = AppDrawable.sparkling),
+                        contentDescription = null,
+                        modifier = Modifier.size(MAX_PADDING)
+                    )
+                    Spacer(modifier = Modifier.width(MEDIUM_PADDING))
+                    Text(text = stringResource(id = AppText.explore_with_ai))
+                }
+            }
+        }
+    }
+}
+
+
+
+
