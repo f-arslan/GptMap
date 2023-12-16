@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.feature.map
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
@@ -22,9 +23,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -78,23 +81,36 @@ import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MapRoute(
     viewModel: MapViewModel = hiltViewModel(),
     navigateToStreetView: (Float, Float) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    MapScreen(
-        uiState = uiState,
-        onEvent = {
-            viewModel.onEvent(
-                event = it,
-                navigateToStreetView = { latLng ->
-                    navigateToStreetView(latLng.latitude.toFloat(), latLng.longitude.toFloat())
-                }
-            )
-        },
-    )
+    Scaffold(bottomBar = {
+        MapBottomBar(
+            searchValue = uiState.searchValue,
+            searchTextFieldEnabledState = uiState.searchTextFieldEnabledState,
+            searchButtonEnabledState = uiState.searchButtonEnabledState,
+            bottomSearchState = uiState.bottomSearchState,
+            onValueChange = { viewModel.onEvent(MapUiEvent.OnSearchValueChanged(it)) },
+            onSearchClick = { viewModel.onEvent(MapUiEvent.OnSearchClick) }
+        )
+    }) {
+
+        MapScreen(
+            uiState = uiState,
+            onEvent = {
+                viewModel.onEvent(
+                    event = it,
+                    navigateToStreetView = { latLng ->
+                        navigateToStreetView(latLng.latitude.toFloat(), latLng.longitude.toFloat())
+                    }
+                )
+            },
+        )
+    }
 }
 
 @Composable
@@ -122,20 +138,10 @@ private fun MapScreen(
     }
 
     Box {
-        Column(modifier = Modifier.fillMaxSize()) {
-            MapSection(
-                cameraPositionState = cameraPositionState,
-                modifier = Modifier.weight(1f),
-                loadingState = uiState.loadingState,
-            )
-
-            if (uiState.bottomSearchState)
-                MapBottomBar(
-                    uiState = uiState,
-                    onValueChange = { onEvent(MapUiEvent.OnSearchValueChanged(it)) },
-                    onSearchClick = { onEvent(MapUiEvent.OnSearchClick) }
-                )
-        }
+        MapSection(
+            cameraPositionState = cameraPositionState,
+            loadingState = uiState.loadingState,
+        )
 
         when (uiState.bottomSheetState) {
             SMALL_INFORMATION_CARD -> {
@@ -190,34 +196,40 @@ private fun ImageGallery(initialPage: Int, images: List<LocationImage>, onDismis
 
 @Composable
 private fun MapBottomBar(
-    uiState: MapUiState,
+    searchValue: String,
+    searchTextFieldEnabledState: Boolean,
+    searchButtonEnabledState: Boolean,
+    bottomSearchState: Boolean,
     onValueChange: (String) -> Unit,
-    onSearchClick: () -> Unit
+    onSearchClick: () -> Unit,
 ) {
-    Surface {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = MEDIUM_PADDING, vertical = MEDIUM_HIGH_PADDING)
-        ) {
-            MapTextField(
-                value = uiState.searchValue,
-                textFieldEnabledState = uiState.searchTextFieldEnabledState,
-                placeholder = AppText.map_text_field_placeholder,
-                onValueChange = onValueChange,
-                modifier = Modifier.weight(1f)
-            )
-            Spacer(modifier = Modifier.width(MEDIUM_PADDING))
-            MapSearchButton(
-                buttonEnabledState = uiState.searchButtonEnabledState,
-                onClick = onSearchClick
-            )
+    if (bottomSearchState)
+        BottomAppBar {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(
+                    horizontal = MEDIUM_PADDING,
+                    vertical = MEDIUM_HIGH_PADDING
+                )
+            ) {
+                MapTextField(
+                    value = searchValue,
+                    textFieldEnabledState = searchTextFieldEnabledState,
+                    placeholder = AppText.map_text_field_placeholder,
+                    onValueChange = onValueChange,
+                    modifier = Modifier.weight(1f)
+                )
+                Spacer(modifier = Modifier.width(MEDIUM_PADDING))
+                MapSearchButton(
+                    buttonEnabledState = searchButtonEnabledState,
+                    onClick = onSearchClick
+                )
+            }
         }
-    }
 }
 
 @Composable
 private fun MapSection(
-    modifier: Modifier,
     cameraPositionState: CameraPositionState,
     loadingState: LoadingState,
 ) {
@@ -238,7 +250,7 @@ private fun MapSection(
             }
         )
     }
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize()) {
         if (!isMapLoaded) {
             LoadingAnimation(AppRaw.transistor_earth)
         }
@@ -315,7 +327,9 @@ fun BoxScope.SmallInformationCard(content: Content, onExploreWithAiClick: () -> 
     Surface(
         shape = RoundedCornerShape(HIGH_PADDING),
         shadowElevation = MEDIUM_PADDING,
-        modifier = Modifier.align(Alignment.BottomCenter)
+        modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .padding(MEDIUM_PADDING),
     ) {
         Column(
             modifier = Modifier
@@ -332,7 +346,7 @@ fun BoxScope.SmallInformationCard(content: Content, onExploreWithAiClick: () -> 
                 text = content.toPoeticDescWithDecor(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium,
                 fontStyle = FontStyle.Italic
             )
             Surface(

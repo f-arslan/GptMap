@@ -68,6 +68,7 @@ internal fun BoxScope.DetailSheet(
             .fillMaxWidth()
             .clipPolygon(MaterialTheme.colorScheme.surface)
             .align(Alignment.BottomCenter)
+
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

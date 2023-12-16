@@ -24,7 +24,7 @@ class MapViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
 
-    fun onEvent(event: MapUiEvent, navigateToStreetView: (LatLng) -> Unit) {
+    fun onEvent(event: MapUiEvent, navigateToStreetView: (LatLng) -> Unit = {}) {
         when (event) {
             is MapUiEvent.OnSearchValueChanged -> _uiState.update { it.copy(searchValue = event.text) }
             is MapUiEvent.OnSearchClick -> onSearchClick()
