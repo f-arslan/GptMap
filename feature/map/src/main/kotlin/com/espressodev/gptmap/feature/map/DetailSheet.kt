@@ -56,17 +56,18 @@ import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @Composable
-internal fun DetailSheet(
+internal fun BoxScope.DetailSheet(
     content: Content,
     images: List<LocationImage>,
     onEvent: (MapUiEvent) -> Unit,
     onStreetViewClick: () -> Unit,
 ) {
-    BackHandler {
-
-    }
+    BackHandler { onEvent(MapUiEvent.OnDetailSheetBackClick) }
     Box(
-        modifier = Modifier.fillMaxWidth().clipPolygon(MaterialTheme.colorScheme.surface)
+        modifier = Modifier
+            .fillMaxWidth()
+            .clipPolygon(MaterialTheme.colorScheme.surface)
+            .align(Alignment.BottomCenter)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

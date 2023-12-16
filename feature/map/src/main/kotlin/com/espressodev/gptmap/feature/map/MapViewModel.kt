@@ -40,6 +40,9 @@ class MapViewModel @Inject constructor(
             is MapUiEvent.OnStreetViewClick -> {
                 onStreetViewClick(event.latLng, navigateToStreetView)
             }
+
+            is MapUiEvent.OnExploreWithAiClick -> _uiState.update { it.copy(bottomSheetState = MapBottomSheetState.DETAIL_CARD) }
+            is MapUiEvent.OnDetailSheetBackClick -> _uiState.update { it.copy(bottomSheetState = MapBottomSheetState.SMALL_INFORMATION_CARD) }
         }
     }
 
@@ -61,7 +64,8 @@ class MapViewModel @Inject constructor(
                         loadingState = LoadingState.Idle,
                         searchButtonEnabledState = true,
                         searchTextFieldEnabledState = true,
-                        bottomSheetState = true,
+                        bottomSheetState = MapBottomSheetState.SMALL_INFORMATION_CARD,
+                        bottomSearchState = false,
                         searchValue = ""
                     )
                 }
@@ -78,6 +82,7 @@ class MapViewModel @Inject constructor(
                         loadingState = LoadingState.Idle,
                         searchButtonEnabledState = true,
                         searchTextFieldEnabledState = true,
+                        bottomSearchState = true
                     )
                 }
                 throw exception

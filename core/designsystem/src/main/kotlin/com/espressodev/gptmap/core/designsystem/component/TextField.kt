@@ -51,7 +51,9 @@ fun MapTextField(
         onValueChange = onValueChange,
         shape = shape,
         leadingIcon = { Icon(leadingIcon, stringResource(AppText.clear)) },
-        placeholder = { Text(text = stringResource(placeholder)) },
+        placeholder = {
+            Text(text = stringResource(placeholder), modifier = Modifier.fillMaxWidth())
+        },
         modifier = modifier,
         trailingIcon = {
             if (shouldShownClearIcon) {
@@ -136,7 +138,7 @@ fun PasswordTextField(
         visualTransformation = if (passwordVisibility) VisualTransformation.None
         else PasswordVisualTransformation()
     )
-   
+
 }
 
 
