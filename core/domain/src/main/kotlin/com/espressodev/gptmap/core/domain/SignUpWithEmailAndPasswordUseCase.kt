@@ -24,7 +24,7 @@ class SignUpWithEmailAndPasswordUseCase @Inject constructor(
 
                 accountService.sendEmailVerification()
 
-                Result.success(true)
+                Result.success(value = true)
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -37,10 +37,7 @@ class SignUpWithEmailAndPasswordUseCase @Inject constructor(
     ) {
         authResult.user?.uid?.let { userId ->
             val user = User(userId = userId, fullName = fullName, email = email)
-            firestoreService.isUserInDatabase(user.userId).onSuccess { isUserInDb ->
-                if (!isUserInDb)
-                    firestoreService.saveUser(user)
-            }
+            firestoreService.saveUser(user)
         } ?: throw UserIdIsNullException()
     }
 

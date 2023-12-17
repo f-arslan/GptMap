@@ -18,7 +18,7 @@ import com.espressodev.gptmap.feature.street_view.streetViewScreen
 fun GmNavHost(
     appState: GmAppState,
     modifier: Modifier = Modifier,
-    startDestination: String = mapRoute
+    startDestination: String = loginRoute
 ) {
     NavHost(
         modifier = modifier,

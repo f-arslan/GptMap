@@ -13,13 +13,13 @@ class FirestoreServiceImpl @Inject constructor(
 ) : FirestoreService {
 
     override suspend fun saveUser(user: User) {
-        userColRef.document(user.userId).set(user)
+        userColRef.document(user.userId).set(user).await()
     }
 
-    override suspend fun isUserInDatabase(userId: String): Result<Boolean> =
+    override suspend fun isUserInDatabase(email: String): Result<Boolean> =
         try {
-            val user = getUserDocRef(userId).get().await()
-            Result.success(user.exists())
+            val querySnapshot = userColRef.whereEqualTo("email", email).get().await()
+            Result.success(querySnapshot.size() > 0)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -34,18 +34,6 @@ class FirestoreServiceImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateUserEmailVerification(
-        userId: String,
-        isEmailVerified: Boolean
-    ): Result<Boolean> = withContext(Dispatchers.IO) {
-        try {
-            getUserDocRef(userId).update(USER_IS_EMAIL_VERIFIED, isEmailVerified).await()
-            Result.success(true)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
 
     private val userColRef by lazy { firestore.collection(USERS) }
     private fun getUserDocRef(id: String) = userColRef.document(id)
@@ -53,8 +41,5 @@ class FirestoreServiceImpl @Inject constructor(
 
     companion object {
         private const val USERS = "users"
-
-        private const val USER_PROFILE_PICTURE_URL = "profilePictureUrl"
-        private const val USER_IS_EMAIL_VERIFIED = "isEmailVerified"
     }
 }

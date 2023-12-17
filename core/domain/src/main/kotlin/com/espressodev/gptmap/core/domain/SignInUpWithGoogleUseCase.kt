@@ -41,7 +41,7 @@ class SignInUpWithGoogleUseCase @Inject constructor(
 
                 addUserToDatabaseIfUserIsNew(authResult)
 
-                GoogleResponse.Success(true)
+                GoogleResponse.Success(data = true)
             } catch (e: Exception) {
                 GoogleResponse.Failure(e)
             }
@@ -78,7 +78,6 @@ class SignInUpWithGoogleUseCase @Inject constructor(
             val user = User(
                 userId = uid,
                 fullName = displayName,
-                isEmailVerified = isEmailVerified,
                 email = email,
                 provider = provider.name,
                 profilePictureUrl = photoUrl.toString()

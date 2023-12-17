@@ -12,7 +12,6 @@ typealias RevokeAccessResponse = Response<Boolean>
 typealias UpdatePasswordResponse = Response<Boolean>
 
 interface AccountService {
-    val isEmailVerified: Boolean
     suspend fun firebaseSignUpWithEmailAndPassword(email: String, password: String, fullName: String): AuthResult
 
     suspend fun sendEmailVerification(): SendEmailVerificationResponse

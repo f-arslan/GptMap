@@ -15,12 +15,11 @@ open class RealmUser : RealmObject {
     var email: String = ""
     var profilePictureUrl: String = ""
     var fcmToken: String = ""
-    var isEmailVerified: Boolean = false
     var provider: String = Provider.DEFAULT.name
     var date: RealmInstant = RealmInstant.from(System.currentTimeMillis(), 0)
 
     override fun toString(): String =
-        "RealmUser(_id=$_id, userId='${userId}' firebaseId='$firebaseId', email='$email', profilePictureUrl='$profilePictureUrl', fcmToken='$fcmToken', isEmailVerified=$isEmailVerified, provider='$provider', date=$date)"
+        "RealmUser(_id=$_id, userId='${userId}' firebaseId='$firebaseId', email='$email', profilePictureUrl='$profilePictureUrl', fcmToken='$fcmToken', provider='$provider', date=$date)"
 
 }
 

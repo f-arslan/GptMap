@@ -16,10 +16,6 @@ class AccountServiceImpl @Inject constructor(
     private val auth: FirebaseAuth,
 ) : AccountService {
 
-    override val isEmailVerified: Boolean
-        get() = auth.currentUser?.isEmailVerified ?: false
-
-
     override suspend fun firebaseSignUpWithEmailAndPassword(
         email: String,
         password: String,

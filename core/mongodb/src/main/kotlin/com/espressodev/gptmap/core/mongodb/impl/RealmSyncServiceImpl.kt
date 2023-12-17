@@ -11,9 +11,11 @@ class RealmSyncServiceImpl : RealmSyncService {
 
     override suspend fun addUser(realmUser: RealmUser): Result<Boolean> = runCatching {
         realm.write {
-            copyToRealm(realmUser.apply {
-                userId = user.id
-            }, updatePolicy = UpdatePolicy.ALL)
+            copyToRealm(
+                realmUser.apply {
+                    userId = user.id
+                }, updatePolicy = UpdatePolicy.ALL
+            )
         }
         true
     }.onFailure {

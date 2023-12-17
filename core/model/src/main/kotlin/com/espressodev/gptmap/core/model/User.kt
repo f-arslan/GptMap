@@ -11,7 +11,6 @@ data class User(
     val email: String = "",
     val profilePictureUrl: String = "",
     val fcmToken: String = "",
-    val isEmailVerified: Boolean = false,
     val provider: String = Provider.DEFAULT.name
 ) {
     fun toRealmUser(): RealmUser = RealmUser().apply {
@@ -19,7 +18,6 @@ data class User(
         email = this@User.email
         profilePictureUrl = this@User.profilePictureUrl
         fcmToken = this@User.fcmToken
-        isEmailVerified = this@User.isEmailVerified
         provider = this@User.provider
     }
 }
