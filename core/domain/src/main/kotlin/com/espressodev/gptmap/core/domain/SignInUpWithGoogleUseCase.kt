@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.core.domain
 
+import android.util.Log
 import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.google_auth.GoogleAuthService
 import com.espressodev.gptmap.core.google_auth.OneTapSignInUpResponse
@@ -36,8 +37,8 @@ class SignInUpWithGoogleUseCase @Inject constructor(
         withContext(Dispatchers.IO) {
             try {
                 val authResult = googleAuthService.firebaseSignInWithGoogle(googleCredential)
-
-                loginToRealm(authResult)
+                // TODO: Currently, Realm is broken
+                // loginToRealm(authResult)
 
                 addUserToDatabaseIfUserIsNew(authResult)
 
@@ -53,15 +54,15 @@ class SignInUpWithGoogleUseCase @Inject constructor(
             realmAccountService.loginWithEmail(it).onFailure { throwable ->
                 throw Exception(throwable)
             }
-        }
+        } ?: throw UserIdIsNullException()
     }
 
     private suspend fun addUserToDatabaseIfUserIsNew(authResult: AuthResult) {
         authResult.additionalUserInfo?.isNewUser?.also {
             if (it)
                 authResult.user?.also { user ->
-                    addUserToDatabase(user, Provider.GOOGLE).onFailure {
-                        throw Exception("Failed to add user to database")
+                    addUserToDatabase(user, Provider.GOOGLE).onFailure { throwable ->
+                        throw Exception(throwable)
                     }
                 }
         }
@@ -83,7 +84,12 @@ class SignInUpWithGoogleUseCase @Inject constructor(
                 profilePictureUrl = photoUrl.toString()
             )
             firestoreService.saveUser(user)
-            return realmSyncService.addUser(user.toRealmUser())
+            realmSyncService.saveUser(user.toRealmUser())
         }
+        return Result.success(value = true)
+    }
+
+    companion object {
+        class UserIdIsNullException : Exception("User id is null")
     }
 }

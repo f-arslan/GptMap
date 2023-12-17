@@ -12,8 +12,8 @@ class FirestoreServiceImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
 ) : FirestoreService {
 
-    override suspend fun saveUser(user: User) {
-        userColRef.document(user.userId).set(user).await()
+    override fun saveUser(user: User) {
+        userColRef.document(user.userId).set(user)
     }
 
     override suspend fun isUserInDatabase(email: String): Result<Boolean> =

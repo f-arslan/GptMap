@@ -1,7 +1,6 @@
 package com.espressodev.gptmap.core.mongodb.module
 
 import android.util.Log
-import com.espressodev.gptmap.core.model.realm.Hero
 import com.espressodev.gptmap.core.model.realm.RealmUser
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
@@ -39,9 +38,8 @@ object RealmModule {
     lateinit var user: User
     lateinit var realm: Realm
     fun initRealm(currentUser: User) {
-        val config = SyncConfiguration.Builder(currentUser, setOf(Hero::class, RealmUser::class))
+        val config = SyncConfiguration.Builder(currentUser, setOf(RealmUser::class))
             .initialSubscriptions { realm: Realm ->
-                add(realm.query<Hero>("owner_id == $0", currentUser.id))
                 add(realm.query<RealmUser>("userId == $0", currentUser.id))
             }
             .errorHandler { _: SyncSession, error: SyncException ->

@@ -9,7 +9,7 @@ import io.realm.kotlin.UpdatePolicy
 
 class RealmSyncServiceImpl : RealmSyncService {
 
-    override suspend fun addUser(realmUser: RealmUser): Result<Boolean> = runCatching {
+    override suspend fun saveUser(realmUser: RealmUser): Result<Boolean> = runCatching {
         realm.write {
             copyToRealm(
                 realmUser.apply {

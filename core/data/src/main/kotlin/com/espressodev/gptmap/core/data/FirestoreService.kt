@@ -4,7 +4,7 @@ import com.espressodev.gptmap.core.model.User
 import kotlinx.coroutines.flow.Flow
 
 interface FirestoreService {
-    suspend fun saveUser(user: User)
+    fun saveUser(user: User)
     suspend fun isUserInDatabase(email: String): Result<Boolean>
     suspend fun getUser(userId: String): Result<User>
 }

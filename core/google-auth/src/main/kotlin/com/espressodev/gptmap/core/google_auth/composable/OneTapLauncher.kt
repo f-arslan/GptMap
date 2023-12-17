@@ -30,6 +30,7 @@ fun OneTapLauncher(
 ) {
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+            Log.d("OneTapLauncher", "OneTapSignInUpResponse: $result")
             if (result.resultCode == Activity.RESULT_OK) {
                 try {
                     val credentials =
@@ -45,16 +46,21 @@ fun OneTapLauncher(
 
     fun launch(signInResult: BeginSignInResult) {
         val intent = IntentSenderRequest.Builder(signInResult.pendingIntent.intentSender).build()
+        Log.d("OneTapLauncher", "OneTapSignInUpResponse: $intent")
         launcher.launch(intent)
     }
 
     OneTapSignInUp(oneTapSignInUpResponse, launch = { launch(it) })
 
-    SignInUpWithGoogle(singInUpWithGoogleResponse, navigateToHomeScreen = { signedIn ->
-        if (signedIn) {
-            navigate()
+    Log.d("OneTapLauncher", "OneTapSignInUpResponse: $oneTapSignInUpResponse")
+    SignInUpWithGoogle(
+        signUpWithGoogleResponse = singInUpWithGoogleResponse,
+        navigateToHomeScreen = { signedIn ->
+            if (signedIn) {
+                navigate()
+            }
         }
-    })
+    )
 }
 
 @Composable

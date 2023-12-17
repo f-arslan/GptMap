@@ -20,17 +20,4 @@ open class RealmUser : RealmObject {
 
     override fun toString(): String =
         "RealmUser(_id=$_id, userId='${userId}' firebaseId='$firebaseId', email='$email', profilePictureUrl='$profilePictureUrl', fcmToken='$fcmToken', provider='$provider', date=$date)"
-
-}
-
-class Hero(): RealmObject {
-    @PrimaryKey
-    var _id: ObjectId = ObjectId()
-    var name: String = ""
-    var power: String = ""
-    var owner_id: String = ""
-
-    constructor(ownerId: String = "") : this() {
-        owner_id = ownerId
-    }
 }
