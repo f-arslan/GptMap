@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.core.common
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
@@ -17,6 +18,7 @@ open class GmViewModel(private val logService: LogService) : ViewModel() {
                     SnackbarManager.showMessage(throwable.toSnackbarMessage())
                 }
                 logService.logNonFatalCrash(throwable)
+                Log.e("GmViewModel", "launchCatching: ", throwable)
             },
             block = block,
         )

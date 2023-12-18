@@ -1,27 +1,30 @@
 package com.espressodev.gptmap.core.domain
 
-import com.espressodev.gptmap.core.Exceptions
+import android.util.Log
 import com.espressodev.gptmap.core.data.AccountService
+import com.espressodev.gptmap.core.data.FirestoreService
+import com.espressodev.gptmap.core.model.ext.classTag
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.espressodev.gptmap.core.mongodb.module.RealmModule.realmUser
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class AddDatabaseIfUserIsNewUseCase @Inject constructor(
     private val accountService: AccountService,
+    private val firestoreService: FirestoreService,
     private val realmSyncService: RealmSyncService
 ) {
     suspend operator fun invoke(): Result<Boolean> = withContext(Dispatchers.IO) {
-        val isUserInRealmDb = realmSyncService.isUserInDatabase(realmUser.id)
+        val isUserInRealmDb = async { realmSyncService.isUserInDatabase(realmUser.id) }.await()
         if (isUserInRealmDb) {
             return@withContext Result.success(value = true)
         }
-
-        val user = accountService.currentUser ?: throw Exceptions.UserIdIsNullException()
-
-
-
+        val realmUser = firestoreService.getUser(accountService.currentUser.uid).toRealmUser()
+        realmSyncService.saveUser(realmUser).onFailure {
+            throw Exception(it)
+        }
         Result.success(value = true)
     }
 }

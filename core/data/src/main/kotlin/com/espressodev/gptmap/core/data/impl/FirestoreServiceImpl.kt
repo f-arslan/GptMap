@@ -24,15 +24,9 @@ class FirestoreServiceImpl @Inject constructor(
             Result.failure(e)
         }
 
-    override suspend fun getUser(userId: String): Result<User> = withContext(Dispatchers.IO) {
-        try {
-            val user = getUserDocRef(userId).get().await().toObject(User::class.java)
-                ?: throw Exception("User is null")
-            Result.success(user)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
+    override suspend fun getUser(userId: String): User =
+        getUserDocRef(userId).get().await().toObject(User::class.java)
+            ?: throw Exception("Firebase: User is null")
 
 
     private val userColRef by lazy { firestore.collection(USERS) }

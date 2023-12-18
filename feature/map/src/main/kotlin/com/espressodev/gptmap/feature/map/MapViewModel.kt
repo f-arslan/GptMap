@@ -5,6 +5,7 @@ import com.espressodev.gptmap.api.unsplash.UnsplashService
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
 import com.espressodev.gptmap.core.data.LogService
+import com.espressodev.gptmap.core.domain.AddDatabaseIfUserIsNewUseCase
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -18,10 +19,17 @@ import javax.inject.Inject
 class MapViewModel @Inject constructor(
     private val geminiService: GeminiService,
     private val unsplashService: UnsplashService,
+    private val addDatabaseIfUserIsNewUseCase: AddDatabaseIfUserIsNewUseCase,
     logService: LogService,
 ) : GmViewModel(logService) {
     private val _uiState = MutableStateFlow(MapUiState())
     val uiState = _uiState.asStateFlow()
+
+    init {
+        launchCatching {
+            addDatabaseIfUserIsNewUseCase()
+        }
+    }
 
     fun onEvent(event: MapUiEvent, navigateToStreetView: (LatLng) -> Unit = {}) {
         when (event) {

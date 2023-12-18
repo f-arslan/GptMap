@@ -9,7 +9,6 @@ import com.espressodev.gptmap.core.model.Provider
 import com.espressodev.gptmap.core.model.User
 import com.espressodev.gptmap.core.model.google.GoogleResponse
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
-import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
@@ -21,7 +20,6 @@ import javax.inject.Inject
 class SignInUpWithGoogleUseCase @Inject constructor(
     private val googleAuthService: GoogleAuthService,
     private val realmAccountService: RealmAccountService,
-    private val realmSyncService: RealmSyncService,
     private val firestoreService: FirestoreService,
 ) {
 
@@ -37,11 +35,10 @@ class SignInUpWithGoogleUseCase @Inject constructor(
         withContext(Dispatchers.IO) {
             try {
                 val authResult = googleAuthService.firebaseSignInWithGoogle(googleCredential)
-                // TODO: Currently, Realm is broken
-                 loginToRealm(authResult)
 
-                // authResult.additionalUserInfo.providerId
-                // addUserToDatabaseIfUserIsNew(authResult)
+                loginToRealm(authResult)
+
+                addUserToDatabaseIfUserIsNew(authResult)
 
                 GoogleResponse.Success(data = true)
             } catch (e: Exception) {
@@ -58,21 +55,18 @@ class SignInUpWithGoogleUseCase @Inject constructor(
         } ?: throw UserIdIsNullException()
     }
 
-    private suspend fun addUserToDatabaseIfUserIsNew(authResult: AuthResult) {
+    private fun addUserToDatabaseIfUserIsNew(authResult: AuthResult) {
         authResult.additionalUserInfo?.isNewUser?.also {
             if (it)
                 authResult.user?.also { user ->
-                    addUserToDatabase(user, Provider.GOOGLE).onFailure { throwable ->
+                    addUserToFirestore(user).onFailure { throwable ->
                         throw Exception(throwable)
                     }
                 }
         }
     }
 
-    private suspend fun addUserToDatabase(
-        firebaseUser: FirebaseUser,
-        provider: Provider
-    ): Result<Boolean> {
+    private fun addUserToFirestore(firebaseUser: FirebaseUser): Result<Boolean> {
         firebaseUser.apply {
             val displayName = displayName ?: throw Exception("Display name is null")
             val email = email ?: throw Exception("Email is null")
@@ -81,11 +75,10 @@ class SignInUpWithGoogleUseCase @Inject constructor(
                 userId = uid,
                 fullName = displayName,
                 email = email,
-                provider = provider.name,
+                provider = Provider.GOOGLE.name,
                 profilePictureUrl = photoUrl.toString()
             )
             firestoreService.saveUser(user)
-            // realmSyncService.saveUser(user.toRealmUser())
         }
         return Result.success(value = true)
     }

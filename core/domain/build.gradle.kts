@@ -19,4 +19,6 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(libs.androidx.work.ktx)
     implementation(libs.hilt.ext.work)
+    implementation(libs.realm.library.base)
+    implementation(libs.realm.library.sync)
 }

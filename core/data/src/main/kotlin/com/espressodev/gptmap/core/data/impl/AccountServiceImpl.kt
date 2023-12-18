@@ -16,8 +16,8 @@ import javax.inject.Inject
 class AccountServiceImpl @Inject constructor(
     private val auth: FirebaseAuth,
 ) : AccountService {
-    override val currentUser: FirebaseUser?
-        get() = auth.currentUser
+    override val currentUser: FirebaseUser
+        get() = auth.currentUser ?: throw Exception("Firebase: User id is null")
 
     override suspend fun firebaseSignUpWithEmailAndPassword(
         email: String,

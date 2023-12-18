@@ -6,6 +6,7 @@ import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.espressodev.gptmap.core.mongodb.module.RealmModule
 import com.espressodev.gptmap.core.mongodb.module.RealmModule.realm
 import io.realm.kotlin.UpdatePolicy
+import io.realm.kotlin.ext.asFlow
 import io.realm.kotlin.ext.query
 
 class RealmSyncServiceImpl : RealmSyncService {
@@ -25,7 +26,7 @@ class RealmSyncServiceImpl : RealmSyncService {
     }
 
     override fun isUserInDatabase(userId: String): Boolean =
-        realm.query<RealmUser>("_id == $0", userId).first().find() != null
+        realm.query<RealmUser>("userId == $0", userId).first().find() != null
 
 }
 

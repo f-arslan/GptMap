@@ -14,7 +14,7 @@ typealias UpdatePasswordResponse = Response<Boolean>
 
 interface AccountService {
 
-    val currentUser: FirebaseUser?
+    val currentUser: FirebaseUser
 
     suspend fun firebaseSignUpWithEmailAndPassword(email: String, password: String, fullName: String): AuthResult
 
