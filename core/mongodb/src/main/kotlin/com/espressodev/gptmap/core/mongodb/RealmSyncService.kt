@@ -4,4 +4,5 @@ import com.espressodev.gptmap.core.model.realm.RealmUser
 
 interface RealmSyncService {
     suspend fun saveUser(realmUser: RealmUser): Result<Boolean>
+    fun isUserInDatabase(userId: String): Boolean
 }

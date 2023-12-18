@@ -1,5 +1,7 @@
 package com.espressodev.gptmap.core.domain
 
+import com.espressodev.gptmap.core.Exceptions.UserIdIsNullException
+import com.espressodev.gptmap.core.Exceptions.EmailVerificationIsFalseException
 import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
 import com.google.firebase.auth.AuthResult
@@ -37,9 +39,5 @@ class SignInWithEmailAndPasswordUseCase @Inject constructor(
         } ?: throw UserIdIsNullException()
     }
 
-    companion object {
-        class EmailVerificationIsFalseException : Exception("Email verification is false")
-        class UserIdIsNullException : Exception("User id is null")
-    }
 }
 

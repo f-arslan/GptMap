@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.core.domain
 
+import com.espressodev.gptmap.core.Exceptions.UserIdIsNullException
 import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.model.User
@@ -44,7 +45,4 @@ class SignUpWithEmailAndPasswordUseCase @Inject constructor(
         } ?: throw UserIdIsNullException()
     }
 
-    companion object {
-        class UserIdIsNullException : Exception("User id is null")
-    }
 }

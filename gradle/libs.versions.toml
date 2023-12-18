@@ -1,14 +1,12 @@
 [versions]
-agentGradlePlugin = "7.0.0"
-androidAgent = "6.10.0"
 androidDesugarJdkLibs = "2.0.4"
 androidGradlePlugin = "8.2.0"
-androidxActivity = "1.8.1"
+androidxActivity = "1.8.2"
 androidxComposeBom = "2023.10.01"
 androidxComposeCompiler = "1.5.3"  # Compose VC
 androidxHiltNavigationCompose = "1.1.0"
 androidxLifecycle = "2.6.2"
-androidxNavigation = "2.7.5"
+androidxNavigation = "2.7.6"
 androidxTestExt = "1.1.5"
 androidxTestRunner = "1.5.2"
 androidxWork = "2.9.0"

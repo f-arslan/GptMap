@@ -3,9 +3,10 @@ package com.espressodev.gptmap.core.mongodb.impl
 import android.util.Log
 import com.espressodev.gptmap.core.model.realm.RealmUser
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
+import com.espressodev.gptmap.core.mongodb.module.RealmModule
 import com.espressodev.gptmap.core.mongodb.module.RealmModule.realm
-import com.espressodev.gptmap.core.mongodb.module.RealmModule.user
 import io.realm.kotlin.UpdatePolicy
+import io.realm.kotlin.ext.query
 
 class RealmSyncServiceImpl : RealmSyncService {
 
@@ -13,7 +14,7 @@ class RealmSyncServiceImpl : RealmSyncService {
         realm.write {
             copyToRealm(
                 realmUser.apply {
-                    userId = user.id
+                    userId = RealmModule.realmUser.id
                 }, updatePolicy = UpdatePolicy.ALL
             )
         }
@@ -22,6 +23,10 @@ class RealmSyncServiceImpl : RealmSyncService {
         Log.e("RealmSyncServiceImpl", "addUser: failure $it")
         Result.failure<Throwable>(it)
     }
+
+    override fun isUserInDatabase(userId: String): Boolean =
+        realm.query<RealmUser>("_id == $0", userId).first().find() != null
+
 }
 
 

@@ -3,6 +3,7 @@ package com.espressodev.gptmap.core.data
 import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.model.User
 import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseUser
 
 
 typealias SendEmailVerificationResponse = Response<Boolean>
@@ -12,6 +13,9 @@ typealias RevokeAccessResponse = Response<Boolean>
 typealias UpdatePasswordResponse = Response<Boolean>
 
 interface AccountService {
+
+    val currentUser: FirebaseUser?
+
     suspend fun firebaseSignUpWithEmailAndPassword(email: String, password: String, fullName: String): AuthResult
 
     suspend fun sendEmailVerification(): SendEmailVerificationResponse

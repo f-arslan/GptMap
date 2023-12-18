@@ -35,7 +35,7 @@ object RealmModule {
             .baseUrl(BASE_URL)
             .build()
     )
-    lateinit var user: User
+    lateinit var realmUser: User
     lateinit var realm: Realm
     fun initRealm(currentUser: User) {
         val config = SyncConfiguration.Builder(currentUser, setOf(RealmUser::class))
@@ -49,7 +49,7 @@ object RealmModule {
             .waitForInitialRemoteData()
             .build()
         realm = Realm.open(config)
-        user = currentUser
+        realmUser = currentUser
         Log.d(
             TAG,
             "Successfully opened synced realm: ${realm.configuration.name}"

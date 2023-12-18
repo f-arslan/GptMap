@@ -9,12 +9,15 @@ import com.espressodev.gptmap.core.data.UpdatePasswordResponse
 import com.espressodev.gptmap.core.model.Response
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class AccountServiceImpl @Inject constructor(
     private val auth: FirebaseAuth,
 ) : AccountService {
+    override val currentUser: FirebaseUser?
+        get() = auth.currentUser
 
     override suspend fun firebaseSignUpWithEmailAndPassword(
         email: String,

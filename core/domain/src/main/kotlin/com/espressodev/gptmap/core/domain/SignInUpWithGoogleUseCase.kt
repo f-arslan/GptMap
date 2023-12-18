@@ -1,6 +1,6 @@
 package com.espressodev.gptmap.core.domain
 
-import android.util.Log
+import com.espressodev.gptmap.core.Exceptions.UserIdIsNullException
 import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.google_auth.GoogleAuthService
 import com.espressodev.gptmap.core.google_auth.OneTapSignInUpResponse
@@ -38,9 +38,10 @@ class SignInUpWithGoogleUseCase @Inject constructor(
             try {
                 val authResult = googleAuthService.firebaseSignInWithGoogle(googleCredential)
                 // TODO: Currently, Realm is broken
-                // loginToRealm(authResult)
+                 loginToRealm(authResult)
 
-                addUserToDatabaseIfUserIsNew(authResult)
+                // authResult.additionalUserInfo.providerId
+                // addUserToDatabaseIfUserIsNew(authResult)
 
                 GoogleResponse.Success(data = true)
             } catch (e: Exception) {
@@ -84,12 +85,8 @@ class SignInUpWithGoogleUseCase @Inject constructor(
                 profilePictureUrl = photoUrl.toString()
             )
             firestoreService.saveUser(user)
-            realmSyncService.saveUser(user.toRealmUser())
+            // realmSyncService.saveUser(user.toRealmUser())
         }
         return Result.success(value = true)
-    }
-
-    companion object {
-        class UserIdIsNullException : Exception("User id is null")
     }
 }
