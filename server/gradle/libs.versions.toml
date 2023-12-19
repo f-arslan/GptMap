@@ -2,7 +2,7 @@
 ktor = "2.3.7"
 kotlin = "1.9.21"
 logback = "1.4.11"
-koin = "3.5.2"
+koin = "3.5.1"
 googleSecretManager = "2.32.0"
 
 [libraries]
@@ -14,7 +14,7 @@ ktor-server-netty-jvm = { group = "io.ktor", name = "ktor-server-netty-jvm", ver
 logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
 ktor-server-tests-jvm = { group = "io.ktor", name = "ktor-server-tests-jvm", version.ref = "ktor" }
 kotlin-test-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlin" }
-koin-ktor = { group = "io.insert-koin", name = "koin-ktor", version = "koin" }
+koin-ktor = { group = "io.insert-koin", name = "koin-ktor", version.ref = "koin" }
 google-cloud-secretmanager = { group = "com.google.cloud", name = "google-cloud-secretmanager", version.ref = "googleSecretManager" }
 
 [plugins]
