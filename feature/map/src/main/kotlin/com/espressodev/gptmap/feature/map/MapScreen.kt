@@ -35,6 +35,8 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -267,18 +269,7 @@ private fun MapSection(cameraPositionState: CameraPositionState) {
     val context = LocalContext.current
     val isSystemInDarkTheme = isSystemInDarkTheme()
     var isMapLoaded by remember { mutableStateOf(value = false) }
-    val mapProperties = createMapProperties(context, isSystemInDarkTheme)
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        MapContent(isMapLoaded, cameraPositionState, mapProperties) {
-            isMapLoaded = true
-        }
-    }
-}
-
-@Composable
-private fun createMapProperties(context: Context, isSystemInDarkTheme: Boolean): MapProperties {
-    return remember(isSystemInDarkTheme) {
+    val mapProperties = remember {
         if (isSystemInDarkTheme) {
             MapProperties(
                 mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
@@ -288,6 +279,12 @@ private fun createMapProperties(context: Context, isSystemInDarkTheme: Boolean):
             )
         } else {
             MapProperties()
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        MapContent(isMapLoaded, cameraPositionState, mapProperties) {
+            isMapLoaded = true
         }
     }
 }
