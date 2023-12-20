@@ -15,6 +15,14 @@ logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.
 ktor-server-tests-jvm = { group = "io.ktor", name = "ktor-server-tests-jvm", version.ref = "ktor" }
 kotlin-test-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlin" }
 koin-ktor = { group = "io.insert-koin", name = "koin-ktor", version.ref = "koin" }
+ktor-serialization-gson = { group = "io.ktor", name = "ktor-serialization-gson", version.ref = "ktor" }
+
+# Ktor Client
+ktor-client-core = {  group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-client-logging = {  group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
+ktor-client-content-negotiation = {  group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+# End of it
+
 google-cloud-secretmanager = { group = "com.google.cloud", name = "google-cloud-secretmanager", version.ref = "googleSecretManager" }
 
 [plugins]

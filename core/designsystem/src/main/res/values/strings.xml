@@ -34,7 +34,7 @@
 
 
     <!-- Map -->
-    <string name="map_text_field_placeholder">Whenever you ready…</string>
+    <string name="map_text_field_placeholder">Type anything…</string>
     <string name="loading_dialog_text">Discovering your dream place…</string>
     <string name="street_view">Street View</string>
     <string name="add_favourite">Add to Favourite</string>
@@ -71,7 +71,7 @@
     <string name="empty_password_error">Password cannot be empty.</string>
     <string name="please_verify_email">Please verify your email. Also check your spam folder as well.</string>
     <string name="email_or_password_error">Email or password is incorrect.</string>
-    <string name="login_header">Login to continue</string>
+    <string name="login_header">Login</string>
     <string name="login_sub_header">Welcome back you\'ve been missed</string>
 
     <!-- Forgot Password -->

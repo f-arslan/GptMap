@@ -23,7 +23,13 @@ dependencies {
     implementation(libs.logback.classic)
     implementation(libs.ktor.server.tests.jvm)
     implementation(libs.kotlin.test.junit)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.logging)
+    implementation(libs.ktor.serialization.gson)
     implementation(libs.koin.ktor)
     implementation(libs.google.cloud.secretmanager)
+    implementation("io.ktor:ktor-client-okhttp-jvm:2.3.7")
+    implementation("io.ktor:ktor-client-logging-jvm:2.3.7")
 }
 

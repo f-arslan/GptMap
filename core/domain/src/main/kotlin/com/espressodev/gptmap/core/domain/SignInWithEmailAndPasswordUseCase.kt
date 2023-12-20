@@ -23,7 +23,7 @@ class SignInWithEmailAndPasswordUseCase @Inject constructor(
             val isEmailVerified = authResult.user?.isEmailVerified == true
             if (!isEmailVerified) throw EmailVerificationIsFalseException()
 
-            loginToRealm(authResult)
+            // loginToRealm(authResult)
 
             Result.success(value = true)
         } catch (e: Exception) {

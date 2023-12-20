@@ -37,7 +37,8 @@ class SignUpWithEmailAndPasswordUseCase @Inject constructor(
         fullName: String
     ) {
         authResult.additionalUserInfo?.isNewUser?.let {
-            val user = User(fullName = fullName, email = email)
+            val id = authResult.user?.uid ?: throw UserIdIsNullException()
+            val user = User(userId = id, fullName = fullName, email = email)
             firestoreService.saveUser(user)
         } ?: throw UserIdIsNullException()
     }

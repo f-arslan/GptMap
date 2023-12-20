@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.feature.map
 
+import android.util.Log
 import com.espressodev.gptmap.api.gemini.GeminiService
 import com.espressodev.gptmap.api.unsplash.UnsplashService
 import com.espressodev.gptmap.core.common.GmViewModel
@@ -27,7 +28,7 @@ class MapViewModel @Inject constructor(
 
     init {
         launchCatching {
-            addDatabaseIfUserIsNewUseCase()
+            // addDatabaseIfUserIsNewUseCase()
         }
     }
 
@@ -113,7 +114,7 @@ class MapViewModel @Inject constructor(
             val isStreetAvailable = withContext(Dispatchers.IO) {
                 MapUtils.fetchStreetViewData(latLng)
             }
-
+            Log.d("StreetView", "isStreetAvailable: $isStreetAvailable")
             when (isStreetAvailable) {
                 Status.OK -> {
                     navigateToStreetView(latLng)

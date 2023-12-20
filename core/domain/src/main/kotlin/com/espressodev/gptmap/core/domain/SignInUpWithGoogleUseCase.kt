@@ -36,7 +36,7 @@ class SignInUpWithGoogleUseCase @Inject constructor(
             try {
                 val authResult = googleAuthService.firebaseSignInWithGoogle(googleCredential)
 
-                loginToRealm(authResult)
+                // loginToRealm(authResult)
 
                 addUserToDatabaseIfUserIsNew(authResult)
 

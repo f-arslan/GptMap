@@ -71,8 +71,8 @@ fun LoginScreen(
     onForgotPasswordClick: () -> Unit
 ) {
     AppWrapper {
-        AppIcon()
-        // LoginHeader()
+        // AppIcon()
+        LoginHeader()
         DefaultTextField(
             value = uiState.email,
             label = AppText.email,
