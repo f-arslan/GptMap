@@ -1,5 +1,8 @@
 package espressodev.gptmap.model.unsplash
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Urls(
     val full: String,
     val raw: String,

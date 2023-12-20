@@ -1,10 +1,13 @@
 package espressodev.gptmap.model.unsplash
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Result(
     val blur_hash: String?,
     val color: String?,
     val created_at: String?,
-    val current_user_collections: List<Any>,
+    // val current_user_collections: List<Any>,
     val description: String?,
     val height: Int?,
     val id: String?,

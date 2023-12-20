@@ -12,9 +12,9 @@ fun Application.configureRouting() {
     val unsplashService by inject<UnsplashService>()
     routing {
         route("/photos") {
-            get("/{query}") {
-                val query = call.parameters["query"] ?: run {
-                    call.respondText("Missing query parameter", status = HttpStatusCode.BadRequest)
+            get {
+                val query = call.request.queryParameters["query"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest, "Missing query parameter")
                     return@get
                 }
                 unsplashService.getTwoPhotos(query)

@@ -1,7 +1,7 @@
 package espressodev.gptmap.plugins
 
 import espressodev.gptmap.api.unsplash.UnsplashService
-import espressodev.gptmap.api.unsplash.impl.UnsplashServiceImpl
+import espressodev.gptmap.api.unsplash.UnsplashServiceImpl
 import io.ktor.server.application.*
 import org.koin.core.context.startKoin
 import org.koin.dsl.module

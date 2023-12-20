@@ -1,8 +1,10 @@
 package espressodev.gptmap.model.unsplash
 
 import espressodev.gptmap.model.LocationImage
+import kotlinx.serialization.Serializable
 
 
+@Serializable
 data class UnsplashResponse(
     val results: List<Result>,
     val total: Int,

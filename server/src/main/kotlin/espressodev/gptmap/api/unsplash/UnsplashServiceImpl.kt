@@ -1,6 +1,5 @@
-package espressodev.gptmap.api.unsplash.impl
+package espressodev.gptmap.api.unsplash
 
-import espressodev.gptmap.api.unsplash.UnsplashService
 import espressodev.gptmap.model.LocationImage
 import espressodev.gptmap.model.unsplash.UnsplashResponse
 import espressodev.gptmap.secret_manager.SecretManager.Companion.secretManager
