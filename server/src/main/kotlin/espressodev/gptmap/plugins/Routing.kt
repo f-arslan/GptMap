@@ -19,7 +19,7 @@ fun Application.configureRouting() {
                 }
                 unsplashService.getTwoPhotos(query)
                     .onSuccess {
-                        call.respond(it)
+                        call.respond(status = HttpStatusCode.OK, it)
                     }.onFailure {
                         call.respond(HttpStatusCode.InternalServerError, it.message ?: "Unknown error")
                     }

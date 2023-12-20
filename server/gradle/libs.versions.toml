@@ -17,6 +17,9 @@ kotlin-test-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit"
 koin-ktor = { group = "io.insert-koin", name = "koin-ktor", version.ref = "koin" }
 ktor-serialization-gson = { group = "io.ktor", name = "ktor-serialization-gson", version.ref = "ktor" }
 
+ktor-client-okhttp = {  group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-logging-jvm = {  group = "io.ktor", name = "ktor-client-logging-jvm", version.ref = "ktor" }
+
 # Ktor Client
 ktor-client-core = {  group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-client-logging = {  group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
