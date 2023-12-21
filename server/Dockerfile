@@ -4,11 +4,23 @@ FROM adoptopenjdk:11-jdk-hotspot
 # Set the working directory inside the container
 WORKDIR /server
 
+# Copy the gradlew file and the gradle directory to the container
+COPY gradlew .
+COPY gradle ./gradle
+
+# Give execute permission to gradlew
+RUN chmod +x ./gradlew
+
 # Copy the build.gradle.kts and settings.gradle.kts files to the container
-COPY build.gradle.kts settings.gradle.kts /server/
+COPY build.gradle.kts settings.gradle.kts ./
 
 # Copy the source code to the container
-COPY src /server/src
+COPY src ./src
+
+# Copy the Google Cloud credentials to the container
+COPY keyfile.json ./keyfile.json
+
+ENV GOOGLE_APPLICATION_CREDENTIALS=/server/keyfile.json
 
 # Build the application using Gradle
 RUN ./gradlew build
@@ -17,4 +29,4 @@ RUN ./gradlew build
 EXPOSE 8080
 
 # Start the application when the container starts
-CMD ["java", "-jar", "build/libs/your-application.jar"]
+CMD ["java", "-jar", "build/libs/server-all.jar"]

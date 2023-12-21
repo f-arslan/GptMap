@@ -14,6 +14,10 @@ application {
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
+tasks {
+    create("stage").dependsOn("installDist")
+}
+
 dependencies {
     implementation(libs.ktor.server.core.jvm)
     implementation(libs.ktor.server.auth.jvm)

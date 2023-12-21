@@ -7,7 +7,7 @@ import retrofit2.http.Query
 
 interface UnsplashApi {
 
-    @GET("/search/photos?page=1&per_page=2&orientation=landscape")
+    @GET("/photos")
     suspend fun getTwoPhotos(
         @Query("query") query: String
     ): Response<UnsplashResponse>

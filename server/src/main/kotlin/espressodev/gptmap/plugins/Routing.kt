@@ -25,5 +25,10 @@ fun Application.configureRouting() {
                     }
             }
         }
+        route("/") {
+            get {
+                call.respondText("Hello World!")
+            }
+        }
     }
 }

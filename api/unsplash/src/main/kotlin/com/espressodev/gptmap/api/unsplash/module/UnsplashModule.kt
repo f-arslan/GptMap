@@ -17,14 +17,13 @@ import com.espressodev.gptmap.api.unsplash.BuildConfig.UNSPLASH_API_KEY
 @Module
 @InstallIn(SingletonComponent::class)
 object UnsplashModule {
-    private const val BASE_URL = "https://api.unsplash.com/"
+    private const val BASE_URL = "http://127.0.0.1:8080/"
 
     private val client: OkHttpClient = OkHttpClient.Builder().addInterceptor { chain ->
         val newRequest: Request =
             chain.request().newBuilder()
                 .addHeader("Content-Type", "application/json")
-                .addHeader("Authorization", "Client-ID $UNSPLASH_API_KEY")
-                .addHeader("Accept-Version", "v1").build()
+                .build()
         chain.proceed(newRequest)
     }.build()
 
@@ -35,5 +34,6 @@ object UnsplashModule {
 
     @Provides
     @Singleton
-    fun provideUnsplashService(unsplashApi: UnsplashApi): UnsplashService = UnsplashServiceImpl(unsplashApi)
+    fun provideUnsplashService(unsplashApi: UnsplashApi): UnsplashService =
+        UnsplashServiceImpl(unsplashApi)
 }
