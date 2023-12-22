@@ -19,5 +19,6 @@ dependencies {
     implementation(libs.retrofit.converter.gson)
     implementation(libs.okhttp3.logging.interceptor)
     implementation(libs.gson)
+    implementation(libs.firebase.auth)
     implementation(libs.kotlinx.serialization.json)
 }

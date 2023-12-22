@@ -1,7 +1,6 @@
 package com.espressodev.gptmap.feature.map
 
 import android.annotation.SuppressLint
-import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -35,9 +34,6 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.SaverScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,7 +69,7 @@ import com.espressodev.gptmap.core.designsystem.component.MapSearchButton
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
 import com.espressodev.gptmap.core.designsystem.component.SquareButton
 import com.espressodev.gptmap.core.model.Location
-import com.espressodev.gptmap.core.model.LocationImage
+import com.espressodev.gptmap.core.model.unsplash.LocationImage
 import com.espressodev.gptmap.core.model.chatgpt.Content
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.DETAIL_CARD
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.NOTHING
