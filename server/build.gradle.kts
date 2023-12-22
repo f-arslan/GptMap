@@ -14,8 +14,8 @@ application {
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
-tasks {
-    create("stage").dependsOn("installDist")
+tasks.shadowJar {
+    mergeServiceFiles()
 }
 
 dependencies {
@@ -35,5 +35,10 @@ dependencies {
     implementation(libs.google.cloud.secretmanager)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.client.logging)
+    implementation(libs.firebase.admin)
+    implementation(libs.grpc.netty.shaded)
+    implementation(libs.grpc.protobuf)
+    implementation(libs.grpc.stub)
+    implementation(libs.ktor.server.rate.limit)
 }
 

@@ -12,6 +12,8 @@ fun main() {
 
 fun Application.module() {
     configureKoin()
+    configureFirebase()
+    configureSecurity()
     configureSerialization()
     configureRouting()
 }

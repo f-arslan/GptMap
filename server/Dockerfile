@@ -2,7 +2,7 @@
 FROM adoptopenjdk:11-jdk-hotspot
 
 # Set the working directory inside the container
-WORKDIR /server
+WORKDIR /app
 
 # Copy the gradlew file and the gradle directory to the container
 COPY gradlew .
@@ -20,7 +20,7 @@ COPY src ./src
 # Copy the Google Cloud credentials to the container
 COPY keyfile.json ./keyfile.json
 
-ENV GOOGLE_APPLICATION_CREDENTIALS=/server/keyfile.json
+ENV GOOGLE_APPLICATION_CREDENTIALS=/app/keyfile.json
 
 # Build the application using Gradle
 RUN ./gradlew build

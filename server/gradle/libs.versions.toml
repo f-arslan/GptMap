@@ -1,9 +1,11 @@
 [versions]
 ktor = "2.3.7"
 kotlin = "1.9.21"
-logback = "1.4.11"
+logback = "1.4.12"
 koin = "3.5.1"
 googleSecretManager = "2.32.0"
+firebase = "9.2.0"
+grpc = "1.60.0"
 
 [libraries]
 ktor-server-core-jvm = { group = "io.ktor", name = "ktor-server-core-jvm", version.ref = "ktor" }
@@ -20,6 +22,10 @@ ktor-serialization-gson = { group = "io.ktor", name = "ktor-serialization-gson",
 ktor-client-okhttp = {  group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-logging-jvm = {  group = "io.ktor", name = "ktor-client-logging-jvm", version.ref = "ktor" }
 
+grpc-netty-shaded = { group = "io.grpc", name = "grpc-netty-shaded", version.ref = "grpc" }
+grpc-protobuf = { group = "io.grpc", name = "grpc-protobuf", version.ref = "grpc" }
+grpc-stub = { group = "io.grpc", name = "grpc-stub", version.ref = "grpc" }
+
 # Ktor Client
 ktor-client-core = {  group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-client-logging = {  group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
@@ -27,6 +33,8 @@ ktor-client-content-negotiation = {  group = "io.ktor", name = "ktor-client-cont
 # End of it
 
 google-cloud-secretmanager = { group = "com.google.cloud", name = "google-cloud-secretmanager", version.ref = "googleSecretManager" }
+firebase-admin = { group = "com.google.firebase", name = "firebase-admin", version.ref = "firebase" }
+ktor-server-rate-limit = { group = "io.ktor", name = "ktor-server-rate-limit", version.ref = "ktor" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
