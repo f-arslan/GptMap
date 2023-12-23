@@ -8,7 +8,7 @@ enum class MapBottomSheetState {
 }
 
 enum class ComponentLoadingState {
-    STREET_VIEW_LOADING, MAP_LOADING, NOTHING
+    STREET_VIEW, MAP, NOTHING
 }
 
 data class MapUiState(
@@ -32,5 +32,4 @@ sealed class MapUiEvent {
     data object OnBackClick: MapUiEvent()
     data object OnExploreWithAiClick: MapUiEvent()
     data class OnStreetViewClick(val latLng: LatLng) : MapUiEvent()
-
 }

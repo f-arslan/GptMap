@@ -8,6 +8,7 @@ import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.domain.AddDatabaseIfUserIsNewUseCase
 import com.espressodev.gptmap.core.domain.SaveImageToInternalStorageUseCase
+import com.espressodev.gptmap.core.model.ext.classTag
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -65,7 +66,7 @@ class MapViewModel @Inject constructor(
     private fun onSearchClick() = launchCatching {
         _uiState.update {
             it.copy(
-                componentLoadingState = ComponentLoadingState.MAP_LOADING,
+                componentLoadingState = ComponentLoadingState.MAP,
                 searchButtonEnabledState = false,
                 searchTextFieldEnabledState = false,
             )
@@ -106,24 +107,25 @@ class MapViewModel @Inject constructor(
 
 
     private fun onFavouriteClick() = launchCatching {
-        _uiState.update { it.copy(componentLoadingState = ComponentLoadingState.MAP_LOADING) }
         uiState.value.location.also { location ->
-            saveImageToInternalStorageUseCase.invoke(
+            saveImageToInternalStorageUseCase(
                 location.locationImages[0].imageUrl,
                 location.id
-            )
+            ).onSuccess {
+                _uiState.update { state -> state.copy(location = state.location.copy(addToFavouriteButtonState = false)) }
+            }.onFailure {
+                throw it
+            }
         }
-        _uiState.update { it.copy(componentLoadingState = ComponentLoadingState.NOTHING) }
     }
 
     private fun onStreetViewClick(latLng: LatLng, navigateToStreetView: (LatLng) -> Unit) =
         launchCatching {
-            _uiState.update { it.copy(componentLoadingState = ComponentLoadingState.STREET_VIEW_LOADING) }
+            _uiState.update { it.copy(componentLoadingState = ComponentLoadingState.STREET_VIEW) }
 
             val isStreetAvailable = withContext(Dispatchers.IO) {
                 MapUtils.fetchStreetViewData(latLng)
             }
-            Log.d("StreetView", "isStreetAvailable: $isStreetAvailable")
             when (isStreetAvailable) {
                 Status.OK -> {
                     navigateToStreetView(latLng)

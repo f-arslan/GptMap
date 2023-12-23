@@ -5,15 +5,16 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Streetview
 import androidx.compose.material.icons.filled.TravelExplore
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Face
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.LocationCity
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.MarkEmailUnread
+import androidx.compose.material.icons.outlined.MyLocation
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 
@@ -32,4 +33,6 @@ object GmIcons {
     val ArrowBackOutlined = Icons.Outlined.ArrowBack
     val FingerPrintFilled = Icons.Filled.Fingerprint
     val InfoFilled = Icons.Filled.Info
+    val LocationCityOutlined = Icons.Outlined.LocationCity
+    val MyLocationOutlined = Icons.Outlined.MyLocation
 }

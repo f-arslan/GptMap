@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.core.data.impl
 
-import android.util.Log
 import com.espressodev.gptmap.core.data.LogService
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase

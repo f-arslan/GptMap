@@ -1,6 +1,7 @@
 package com.espressodev.gptmap.feature.map
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -50,6 +51,7 @@ import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.VERY_SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.component.SquareButton
+import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
 import com.espressodev.gptmap.core.model.chatgpt.Content
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
@@ -57,8 +59,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @Composable
 internal fun BoxScope.DetailSheet(
-    content: Content,
-    images: List<LocationImage>,
+    location: Location,
     onEvent: (MapUiEvent) -> Unit,
     onStreetViewClick: () -> Unit,
 ) {
@@ -77,13 +78,13 @@ internal fun BoxScope.DetailSheet(
                 .padding(bottom = VERY_HIGH_PADDING)
         ) {
             Text(
-                text = content.city,
+                text = location.content.city,
                 style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Bold),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = content.toDistrictAndCountry().uppercase(),
+                text = location.content.toDistrictAndCountry().uppercase(),
                 modifier = Modifier.offset(y = SMALL_PADDING * -1),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                 fontWeight = FontWeight.Medium,
@@ -92,11 +93,12 @@ internal fun BoxScope.DetailSheet(
             )
             Spacer(modifier = Modifier.height(MEDIUM_PADDING))
             DetailButtons(
+                addToFavouriteButtonState = location.addToFavouriteButtonState,
                 onStreetViewClick = onStreetViewClick,
                 onFavouriteClick = { onEvent(MapUiEvent.OnFavouriteClick) }
             )
             Text(
-                text = content.toPoeticDescWithDecor(),
+                text = location.content.toPoeticDescWithDecor(),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
                 maxLines = 5,
@@ -104,9 +106,11 @@ internal fun BoxScope.DetailSheet(
                 lineHeight = MAX_PADDING.value.sp
             )
             Spacer(modifier = Modifier.height(VERY_HIGH_PADDING))
-            LocationImages(images, onClick = { onEvent(MapUiEvent.OnImageClick(it)) })
+            LocationImages(
+                location.locationImages,
+                onClick = { onEvent(MapUiEvent.OnImageClick(it)) })
             Text(
-                text = content.normalDescription,
+                text = location.content.normalDescription,
                 lineHeight = VERY_HIGH_PADDING.value.sp,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyLarge,
@@ -203,7 +207,11 @@ fun BoxScope.UnsplashBanner(name: String) {
 }
 
 @Composable
-private fun DetailButtons(onStreetViewClick: () -> Unit, onFavouriteClick: () -> Unit) {
+private fun DetailButtons(
+    addToFavouriteButtonState: Boolean,
+    onStreetViewClick: () -> Unit,
+    onFavouriteClick: () -> Unit
+) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(HIGH_PADDING),
         modifier = Modifier.padding(bottom = HIGH_PADDING)
@@ -213,10 +221,12 @@ private fun DetailButtons(onStreetViewClick: () -> Unit, onFavouriteClick: () ->
             contentDesc = AppText.street_view,
             onClick = onStreetViewClick
         )
-        SquareButton(
-            icon = GmIcons.FavouriteOutlined,
-            contentDesc = AppText.add_favourite,
-            onClick = onFavouriteClick
-        )
+        AnimatedVisibility(addToFavouriteButtonState) {
+            SquareButton(
+                icon = GmIcons.FavouriteOutlined,
+                contentDesc = AppText.add_favourite,
+                onClick = onFavouriteClick
+            )
+        }
     }
 }

@@ -71,6 +71,7 @@ import com.espressodev.gptmap.core.designsystem.component.SquareButton
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
 import com.espressodev.gptmap.core.model.chatgpt.Content
+import com.espressodev.gptmap.feature.map.ComponentLoadingState.*
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.DETAIL_CARD
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.NOTHING
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.SMALL_INFORMATION_CARD
@@ -189,8 +190,7 @@ private fun BoxScope.DisplayBottomSheet(
 
         DETAIL_CARD -> {
             DetailSheet(
-                location.content,
-                location.locationImages,
+                location,
                 onEvent = onEvent,
                 onStreetViewClick = { onEvent(MapUiEvent.OnStreetViewClick(cameraPositionState.position.target)) }
             )
@@ -314,8 +314,12 @@ private fun BoxScope.LoadingDialog(loadingState: ComponentLoadingState) {
             .zIndex(1f)
             .align(Alignment.TopCenter)
     ) {
-        val textId =
-            if (loadingState == ComponentLoadingState.MAP_LOADING) AppText.discovering_your_dream_place else AppText.street_view_loading_header
+        val textId: Int =
+            when (loadingState) {
+                STREET_VIEW -> AppText.street_view_loading_header
+                MAP -> AppText.discovering_your_dream_place
+                ComponentLoadingState.NOTHING -> AppText.info
+            }
         Surface(
             shape = RoundedCornerShape(HIGH_PADDING),
             color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)

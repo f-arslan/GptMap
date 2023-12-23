@@ -9,5 +9,6 @@ val emptyImagePlaceholder = List(2) { LocationImage("", "") }
 data class Location(
     val id: String = "default",
     val content: Content = Content(),
-    val locationImages: List<LocationImage> = emptyImagePlaceholder
+    val locationImages: List<LocationImage> = emptyImagePlaceholder,
+    val addToFavouriteButtonState: Boolean = true
 )
