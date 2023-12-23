@@ -26,7 +26,7 @@ class SignInWithEmailAndPasswordUseCase @Inject constructor(
 
             FirebaseAuth.getInstance().currentUser?.getIdToken(false)?.result?.token.also(::println)
 
-            // loginToRealm(authResult)
+            loginToRealm(authResult)
 
             Result.success(value = true)
         } catch (e: Exception) {

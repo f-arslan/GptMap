@@ -28,9 +28,7 @@ sealed class MapUiEvent {
     data object OnImageDismiss : MapUiEvent()
     data class OnImageClick(val pos: Int) : MapUiEvent()
     data object OnFavouriteClick : MapUiEvent()
-
     data object OnDetailSheetBackClick: MapUiEvent()
-
     data object OnBackClick: MapUiEvent()
     data object OnExploreWithAiClick: MapUiEvent()
     data class OnStreetViewClick(val latLng: LatLng) : MapUiEvent()

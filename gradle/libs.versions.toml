@@ -44,6 +44,7 @@ material = "1.10.0"
 coilCompose = "2.5.0"
 generativeai = "0.1.0"
 lottieCompose = "6.2.0"
+kotlin2 = "1.9.10"
 
 [libraries]
 
@@ -163,5 +164,6 @@ gptmap-android-hilt = { id = "gptmap.android.hilt", version = "unspecified" }
 gptmap-android-application-firebase = { id = "gptmap.android.application.firebase", version = "unspecified" }
 gptmap-jvm-library = { id = "gptmap.jvm.library", version = "unspecified" }
 gptmap-ktor = { id = "gptmap.ktor", version = "unspecified" }
+jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin2" }
 # End of it
 

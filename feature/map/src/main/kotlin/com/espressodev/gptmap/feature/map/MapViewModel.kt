@@ -7,6 +7,7 @@ import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.domain.AddDatabaseIfUserIsNewUseCase
+import com.espressodev.gptmap.core.domain.SaveImageToInternalStorageUseCase
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +22,7 @@ class MapViewModel @Inject constructor(
     private val geminiService: GeminiService,
     private val unsplashService: UnsplashService,
     private val addDatabaseIfUserIsNewUseCase: AddDatabaseIfUserIsNewUseCase,
+    private val saveImageToInternalStorageUseCase: SaveImageToInternalStorageUseCase,
     logService: LogService,
 ) : GmViewModel(logService) {
     private val _uiState = MutableStateFlow(MapUiState())
@@ -103,8 +105,15 @@ class MapViewModel @Inject constructor(
     }
 
 
-    private fun onFavouriteClick() {
-
+    private fun onFavouriteClick() = launchCatching {
+        _uiState.update { it.copy(componentLoadingState = ComponentLoadingState.MAP_LOADING) }
+        uiState.value.location.also { location ->
+            saveImageToInternalStorageUseCase.invoke(
+                location.locationImages[0].imageUrl,
+                location.id
+            )
+        }
+        _uiState.update { it.copy(componentLoadingState = ComponentLoadingState.NOTHING) }
     }
 
     private fun onStreetViewClick(latLng: LatLng, navigateToStreetView: (LatLng) -> Unit) =
