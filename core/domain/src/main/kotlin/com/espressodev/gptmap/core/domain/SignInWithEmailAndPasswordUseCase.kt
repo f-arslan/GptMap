@@ -5,7 +5,6 @@ import com.espressodev.gptmap.core.Exceptions.EmailVerificationIsFalseException
 import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
 import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -23,8 +22,6 @@ class SignInWithEmailAndPasswordUseCase @Inject constructor(
 
             val isEmailVerified = authResult.user?.isEmailVerified == true
             if (!isEmailVerified) throw EmailVerificationIsFalseException()
-
-            FirebaseAuth.getInstance().currentUser?.getIdToken(false)?.result?.token.also(::println)
 
             loginToRealm(authResult)
 

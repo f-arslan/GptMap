@@ -1,9 +1,7 @@
 package com.espressodev.gptmap.core.domain
 
-import android.util.Log
 import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.data.FirestoreService
-import com.espressodev.gptmap.core.model.ext.classTag
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.espressodev.gptmap.core.mongodb.module.RealmModule.realmUser
 import kotlinx.coroutines.Dispatchers
