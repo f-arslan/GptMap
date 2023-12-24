@@ -6,7 +6,6 @@ plugins {
 
 android {
     namespace = "com.espressodev.gptmap.core.mongodb"
-
 }
 
 dependencies {

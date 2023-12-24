@@ -7,6 +7,7 @@ import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.domain.AddDatabaseIfUserIsNewUseCase
+import com.espressodev.gptmap.core.domain.SaveImageToFirebaseStorageUseCase
 import com.espressodev.gptmap.core.domain.SaveImageToInternalStorageUseCase
 import com.espressodev.gptmap.core.model.ext.classTag
 import com.google.android.gms.maps.model.LatLng
@@ -22,8 +23,7 @@ import javax.inject.Inject
 class MapViewModel @Inject constructor(
     private val geminiService: GeminiService,
     private val unsplashService: UnsplashService,
-    private val addDatabaseIfUserIsNewUseCase: AddDatabaseIfUserIsNewUseCase,
-    private val saveImageToInternalStorageUseCase: SaveImageToInternalStorageUseCase,
+    private val saveImageToFirebaseStorageUseCase: SaveImageToFirebaseStorageUseCase,
     logService: LogService,
 ) : GmViewModel(logService) {
     private val _uiState = MutableStateFlow(MapUiState())
@@ -108,10 +108,7 @@ class MapViewModel @Inject constructor(
 
     private fun onFavouriteClick() = launchCatching {
         uiState.value.location.also { location ->
-            saveImageToInternalStorageUseCase(
-                location.locationImages[0].imageUrl,
-                location.id
-            ).onSuccess {
+            saveImageToFirebaseStorageUseCase(location).onSuccess {
                 _uiState.update { state -> state.copy(location = state.location.copy(addToFavouriteButtonState = false)) }
             }.onFailure {
                 throw it

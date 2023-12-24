@@ -4,6 +4,7 @@ import com.espressodev.gptmap.core.Exceptions.UserIdIsNullException
 import com.espressodev.gptmap.core.Exceptions.EmailVerificationIsFalseException
 import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
+import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.google.firebase.auth.AuthResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
@@ -14,6 +15,7 @@ import javax.inject.Inject
 class SignInWithEmailAndPasswordUseCase @Inject constructor(
     private val accountService: AccountService,
     private val realmAccountService: RealmAccountService,
+    private val realmSyncService: RealmSyncService,
 ) {
     suspend operator fun invoke(email: String, password: String) = withContext(Dispatchers.IO) {
         try {
@@ -24,6 +26,9 @@ class SignInWithEmailAndPasswordUseCase @Inject constructor(
             if (!isEmailVerified) throw EmailVerificationIsFalseException()
 
             loginToRealm(authResult)
+            realmSyncService.saveHero().onFailure {
+                throw it
+            }
 
             Result.success(value = true)
         } catch (e: Exception) {

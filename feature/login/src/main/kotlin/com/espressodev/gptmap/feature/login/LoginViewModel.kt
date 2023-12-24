@@ -27,7 +27,7 @@ class LoginViewModel @Inject constructor(
     val oneTapClient: SignInClient,
     logService: LogService
 ) : GmViewModel(logService) {
-    private val _uiState = MutableStateFlow(LoginUiState())
+    private val _uiState = MutableStateFlow(LoginUiState(email = "fatiharslan2634@gmail.com", password = "Mkal858858"))
     val uiState = _uiState.asStateFlow()
 
     private val email get() = uiState.value.email

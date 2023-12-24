@@ -53,7 +53,6 @@ import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.component.SquareButton
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
-import com.espressodev.gptmap.core.model.chatgpt.Content
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
@@ -108,7 +107,8 @@ internal fun BoxScope.DetailSheet(
             Spacer(modifier = Modifier.height(VERY_HIGH_PADDING))
             LocationImages(
                 location.locationImages,
-                onClick = { onEvent(MapUiEvent.OnImageClick(it)) })
+                onClick = { onEvent(MapUiEvent.OnImageClick(it)) }
+            )
             Text(
                 text = location.content.normalDescription,
                 lineHeight = VERY_HIGH_PADDING.value.sp,
