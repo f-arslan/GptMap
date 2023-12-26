@@ -1,14 +1,18 @@
 package com.espressodev.gptmap.core.mongodb.impl
 
 import android.util.Log
+import com.espressodev.gptmap.core.model.Favourite
 import com.espressodev.gptmap.core.model.realm.RealmFavourite
 import com.espressodev.gptmap.core.model.realm.RealmUser
+import com.espressodev.gptmap.core.model.realm.toFavourite
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.espressodev.gptmap.core.mongodb.module.RealmModule
 import com.espressodev.gptmap.core.mongodb.module.RealmModule.realm
 import com.espressodev.gptmap.core.mongodb.module.RealmModule.realmUser
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class RealmSyncServiceImpl : RealmSyncService {
 
@@ -26,20 +30,25 @@ class RealmSyncServiceImpl : RealmSyncService {
         Result.failure<Throwable>(it)
     }
 
-    override suspend fun saveLocation(realmLocation: RealmFavourite): Result<Boolean> = runCatching {
-        realm.write {
-            copyToRealm(
-                realmLocation.apply {
-                    userId = realmUser.id
-                }, updatePolicy = UpdatePolicy.ALL
-            )
+    override suspend fun saveLocation(realmLocation: RealmFavourite): Result<Boolean> =
+        runCatching {
+            realm.write {
+                copyToRealm(
+                    realmLocation.apply {
+                        userId = realmUser.id
+                    }, updatePolicy = UpdatePolicy.ALL
+                )
+            }
+            true
+        }.onFailure {
+            Log.e("RealmSyncServiceImpl", "addLocation: failure $it")
+            Result.failure<Throwable>(it)
         }
-        true
-    }.onFailure {
-        Log.e("RealmSyncServiceImpl", "addLocation: failure $it")
-        Result.failure<Throwable>(it)
-    }
 
+    override fun getFavourites(): Flow<List<Favourite>> =
+        realm.query<RealmFavourite>("userId == $0", realmUser.id).find().asFlow().map {
+            it.list.map { realmFavourite -> realmFavourite.toFavourite() }
+        }
 
 
     override fun isUserInDatabase(): Boolean =

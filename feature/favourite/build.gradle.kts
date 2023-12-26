@@ -8,5 +8,6 @@ android {
 }
 
 dependencies {
-
+    implementation(projects.core.mongodb)
+    implementation(libs.coil.compose)
 }

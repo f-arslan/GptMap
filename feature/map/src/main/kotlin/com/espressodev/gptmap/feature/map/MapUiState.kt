@@ -19,6 +19,7 @@ data class MapUiState(
     val searchButtonEnabledState: Boolean = true,
     val searchTextFieldEnabledState: Boolean = true,
     val bottomSearchState: Boolean = true,
+    val isFavouriteButtonPlaying: Boolean = false,
     val imageGalleryState: Pair<Int, Boolean> = Pair(0, false)
 )
 

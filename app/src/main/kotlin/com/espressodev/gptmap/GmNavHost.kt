@@ -3,6 +3,8 @@ package com.espressodev.gptmap
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
+import com.espressodev.gptmap.feature.favourite.favouriteRoute
+import com.espressodev.gptmap.feature.favourite.favouriteScreen
 import com.espressodev.gptmap.feature.forgot_password.forgotPasswordRoute
 import com.espressodev.gptmap.feature.forgot_password.forgotPasswordScreen
 import com.espressodev.gptmap.feature.login.loginRoute
@@ -28,7 +30,8 @@ fun GmNavHost(
         mapScreen(
             navigateToStreetView = { latitude, longitude ->
                 appState.navController.navigateToStreetView(latitude, longitude)
-            }
+            },
+            navigateToFavourite = { appState.navigate(favouriteRoute) }
         )
         loginScreen(
             navigateToMap = { appState.clearAndNavigate(mapRoute) },
@@ -40,6 +43,7 @@ fun GmNavHost(
             navigateToMap = { appState.clearAndNavigate(mapRoute) }
         )
         forgotPasswordScreen(navigateToLogin = { appState.clearAndNavigate(loginRoute) })
-        streetViewScreen(popUp = { appState.popUp() })
+        streetViewScreen(popUp = appState::popUp)
+        favouriteScreen(popUp = appState::popUp)
     }
 }

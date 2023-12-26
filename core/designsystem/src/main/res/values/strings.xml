@@ -81,5 +81,8 @@
 
     <!-- Street View -->
     <string name="street_view_loading_header">Preparing an immersive Street View experience for you!</string>
-    
+
+
+    <!-- Favourite -->
+    <string name="favourite">Favourite</string>
 </resources>

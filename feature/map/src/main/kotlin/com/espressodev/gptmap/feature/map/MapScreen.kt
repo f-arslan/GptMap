@@ -7,6 +7,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,11 +26,15 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ReadOnlyComposable
@@ -46,6 +53,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
@@ -89,11 +97,12 @@ import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapRoute(
     viewModel: MapViewModel = hiltViewModel(),
-    navigateToStreetView: (Float, Float) -> Unit
+    navigateToStreetView: (Float, Float) -> Unit,
+    navigateToFavourite: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
@@ -108,14 +117,16 @@ fun MapRoute(
 
         MapScreen(
             uiState = uiState,
-            onEvent = {
+            onEvent = { event ->
                 viewModel.onEvent(
-                    event = it,
+                    event = event,
                     navigateToStreetView = { latLng ->
                         navigateToStreetView(latLng.latitude.toFloat(), latLng.longitude.toFloat())
                     }
                 )
             },
+            modifier = Modifier.padding(it),
+            navigateToFavourite = navigateToFavourite
         )
     }
 }
@@ -124,6 +135,8 @@ fun MapRoute(
 private fun MapScreen(
     uiState: MapUiState,
     onEvent: (MapUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+    navigateToFavourite: () -> Unit,
 ) {
     val latLng = getLatLngFromLocation(uiState.location)
     val cameraPositionState = rememberCameraPositionState {
@@ -132,11 +145,33 @@ private fun MapScreen(
     AnimateCameraPosition(latLng, cameraPositionState)
     DisplayImageGallery(uiState.imageGalleryState, uiState.location, onEvent)
 
-    Box {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .then(modifier)
+    ) {
+        FavouriteButton(isPlaying = uiState.isFavouriteButtonPlaying, onClick = navigateToFavourite)
         LoadingDialog(uiState.componentLoadingState)
         MapSection(cameraPositionState = cameraPositionState)
         DisplayBottomSheet(uiState.bottomSheetState, uiState.location, cameraPositionState, onEvent)
     }
+}
+
+
+@Composable
+fun FavouriteButton(isPlaying: Boolean, onClick: () -> Unit) {
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(AppRaw.favourite_anim))
+    val progress by animateLottieCompositionAsState(composition, isPlaying = isPlaying)
+
+    LottieAnimation(
+        composition = composition,
+        progress = { progress },
+        modifier = Modifier
+            .size(BUTTON_SIZE)
+            .clickable { onClick() },
+        contentScale = ContentScale.Crop
+    )
+
 }
 
 @ReadOnlyComposable
@@ -222,7 +257,11 @@ private fun ImageGallery(initialPage: Int, images: List<LocationImage>, onDismis
                         )
                     }
             ) {
-                ImageCard(image = images[page])
+                ImageCard(
+                    image = images[page], modifier = Modifier
+                        .fillMaxWidth()
+                        .height(240.dp)
+                )
                 UnsplashBanner(name = images[page].imageAuthor)
             }
         }

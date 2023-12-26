@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -138,7 +139,7 @@ fun ImageCard(image: LocationImage, modifier: Modifier = Modifier, onClick: () -
     val showShimmer = remember { mutableStateOf(value = true) }
     val interactionSource = remember { MutableInteractionSource() }
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(MEDIUM_PADDING))
             .clickable(
                 interactionSource = interactionSource,
@@ -148,6 +149,7 @@ fun ImageCard(image: LocationImage, modifier: Modifier = Modifier, onClick: () -
         AsyncImage(
             model = image.imageUrl,
             modifier = Modifier
+                .fillMaxSize()
                 .background(shimmerBrush(targetValue = 1300f, showShimmer = showShimmer.value))
                 .then(modifier),
             contentDescription = null,
