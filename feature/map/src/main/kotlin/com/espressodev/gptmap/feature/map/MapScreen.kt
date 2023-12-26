@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.feature.map
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -8,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,15 +25,11 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
-import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ReadOnlyComposable
@@ -77,9 +72,10 @@ import com.espressodev.gptmap.core.designsystem.component.MapSearchButton
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
 import com.espressodev.gptmap.core.designsystem.component.SquareButton
 import com.espressodev.gptmap.core.model.Location
-import com.espressodev.gptmap.core.model.unsplash.LocationImage
 import com.espressodev.gptmap.core.model.chatgpt.Content
-import com.espressodev.gptmap.feature.map.ComponentLoadingState.*
+import com.espressodev.gptmap.core.model.unsplash.LocationImage
+import com.espressodev.gptmap.feature.map.ComponentLoadingState.MAP
+import com.espressodev.gptmap.feature.map.ComponentLoadingState.STREET_VIEW
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.DETAIL_CARD
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.NOTHING
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.SMALL_INFORMATION_CARD
@@ -97,7 +93,6 @@ import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapRoute(
     viewModel: MapViewModel = hiltViewModel(),
@@ -159,19 +154,20 @@ private fun MapScreen(
 
 
 @Composable
-fun FavouriteButton(isPlaying: Boolean, onClick: () -> Unit) {
+fun BoxScope.FavouriteButton(isPlaying: Boolean, onClick: () -> Unit) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(AppRaw.favourite_anim))
     val progress by animateLottieCompositionAsState(composition, isPlaying = isPlaying)
-
+    val interactionSource = remember { MutableInteractionSource() }
     LottieAnimation(
         composition = composition,
         progress = { progress },
         modifier = Modifier
             .size(BUTTON_SIZE)
-            .clickable { onClick() },
+            .align(Alignment.TopEnd)
+            .zIndex(2f)
+            .clickable(interactionSource = interactionSource, indication = null) { onClick() },
         contentScale = ContentScale.Crop
     )
-
 }
 
 @ReadOnlyComposable
@@ -491,4 +487,3 @@ fun BoxScope.SmallInformationCard(
         }
     }
 }
-

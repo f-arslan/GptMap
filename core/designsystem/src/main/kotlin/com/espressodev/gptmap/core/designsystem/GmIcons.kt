@@ -2,6 +2,7 @@ package com.espressodev.gptmap.core.designsystem
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
@@ -23,6 +24,7 @@ object GmIcons {
     val ClearDefault = Icons.Default.Clear
     val SearchDefault = Icons.Default.Search
     val FavouriteOutlined = Icons.Outlined.FavoriteBorder
+    val FavouriteFilled = Icons.Filled.Favorite
     val CancelOutlined = Icons.Outlined.Cancel
     val VisibilityOnOutlined = Icons.Outlined.Visibility
     val VisibilityOffOutlined = Icons.Outlined.VisibilityOff
@@ -32,7 +34,6 @@ object GmIcons {
     val MarkEmailUnreadOutlined = Icons.Outlined.MarkEmailUnread
     val ArrowBackOutlined = Icons.Outlined.ArrowBack
     val FingerPrintFilled = Icons.Filled.Fingerprint
-    val InfoFilled = Icons.Filled.Info
     val LocationCityOutlined = Icons.Outlined.LocationCity
     val MyLocationOutlined = Icons.Outlined.MyLocation
 }

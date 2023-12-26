@@ -1,30 +1,28 @@
 package com.espressodev.gptmap.feature.favourite
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.ElevatedCard
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,8 +30,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_HIGH_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
@@ -54,7 +50,11 @@ fun FavouriteRoute(popUp: () -> Unit, viewModel: FavouriteViewModel = hiltViewMo
 fun FavouriteScreen(popUp: () -> Unit, favourites: List<Favourite>) {
     Scaffold(
         topBar = {
-            GmTopAppBar(title = AppText.favourite, onBackClick = popUp)
+            GmTopAppBar(
+                title = AppText.favourite,
+                icon = GmIcons.FavouriteFilled,
+                onBackClick = popUp
+            )
         }
     ) {
         LazyColumn(
@@ -75,7 +75,11 @@ fun FavouriteScreen(popUp: () -> Unit, favourites: List<Favourite>) {
 
 @Composable
 fun FavouriteCard(favourite: Favourite) {
-    ElevatedCard {
+    Surface(
+        color = MaterialTheme.colorScheme.tertiaryContainer,
+        shape = RoundedCornerShape(16.dp),
+        shadowElevation = 4.dp
+    ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             AsyncImage(
                 model = favourite.placeholderImageUrl,
@@ -88,21 +92,19 @@ fun FavouriteCard(favourite: Favourite) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(MEDIUM_PADDING),
+                    .padding(HIGH_PADDING),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
-                    modifier = Modifier
-                        .weight(3f)
-                        .padding(end = MEDIUM_PADDING),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(SMALL_PADDING)
                 ) {
                     Icon(
                         imageVector = GmIcons.LocationCityOutlined,
                         contentDescription = null,
-                        modifier = Modifier.size(HIGH_PADDING)
+                        modifier = Modifier.size(HIGH_PADDING),
+                        tint = MaterialTheme.colorScheme.tertiary
                     )
                     Text(
                         text = favourite.placeholderTitle,
@@ -111,23 +113,24 @@ fun FavouriteCard(favourite: Favourite) {
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                Row(
-                    modifier = Modifier.weight(2f),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(SMALL_PADDING),
-                ) {
-                    Spacer(modifier = Modifier.weight(1f))
-                    Icon(
-                        imageVector = GmIcons.MyLocationOutlined,
-                        contentDescription = null,
-                        modifier = Modifier.size(MEDIUM_HIGH_PADDING),
-                        tint = MaterialTheme.colorScheme.tertiary
-                    )
-                    Text(
-                        text = favourite.placeholderCoordinates,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.tertiary,
-                    )
+                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.BottomEnd) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(SMALL_PADDING),
+                    ) {
+                        Icon(
+                            imageVector = GmIcons.MyLocationOutlined,
+                            contentDescription = null,
+                            modifier = Modifier.size(HIGH_PADDING),
+                            tint = MaterialTheme.colorScheme.tertiary
+                        )
+                        Text(
+                            text = favourite.placeholderCoordinates,
+                            style = MaterialTheme.typography.titleMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
                 }
             }
         }
