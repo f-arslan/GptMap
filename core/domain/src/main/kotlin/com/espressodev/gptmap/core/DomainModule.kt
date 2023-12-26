@@ -11,10 +11,8 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DomainModule {
-
     @Singleton
     @Provides
     fun provideDownloadAndCompressImageUseCase(): DownloadAndCompressImageUseCase =
         DownloadAndCompressImageUseCase()
-
 }

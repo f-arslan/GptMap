@@ -1,14 +1,13 @@
 package com.espressodev.gptmap.core.mongodb.impl
 
 import android.util.Log
-import com.espressodev.gptmap.core.model.realm.Hero
 import com.espressodev.gptmap.core.model.realm.RealmLocation
 import com.espressodev.gptmap.core.model.realm.RealmUser
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.espressodev.gptmap.core.mongodb.module.RealmModule
 import com.espressodev.gptmap.core.mongodb.module.RealmModule.realm
+import com.espressodev.gptmap.core.mongodb.module.RealmModule.realmUser
 import io.realm.kotlin.UpdatePolicy
-import io.realm.kotlin.ext.asFlow
 import io.realm.kotlin.ext.query
 
 class RealmSyncServiceImpl : RealmSyncService {
@@ -31,7 +30,7 @@ class RealmSyncServiceImpl : RealmSyncService {
         realm.write {
             copyToRealm(
                 realmLocation.apply {
-                    userId = RealmModule.realmUser.id
+                    userId = realmUser.id
                 }, updatePolicy = UpdatePolicy.ALL
             )
         }
@@ -41,25 +40,10 @@ class RealmSyncServiceImpl : RealmSyncService {
         Result.failure<Throwable>(it)
     }
 
-    override suspend fun saveHero(): Result<Boolean> {
-        return runCatching {
-            realm.write {
-                copyToRealm(
-                   Hero().apply {
-                       userId = RealmModule.realmUser.id
-                       name = "Hero"
-                   }, updatePolicy = UpdatePolicy.ALL
-                )
-            }
-            true
-        }.onFailure {
-            Log.e("RealmSyncServiceImpl", "addHero: failure $it")
-            Result.failure<Throwable>(it)
-        }
-    }
 
-    override fun isUserInDatabase(userId: String): Boolean =
-        realm.query<RealmUser>("userId == $0", userId).first().find() != null
+
+    override fun isUserInDatabase(): Boolean =
+        realm.query<RealmUser>("userId == $0", realmUser.id).first().find() != null
 
 }
 

@@ -24,6 +24,7 @@ class MapViewModel @Inject constructor(
     private val geminiService: GeminiService,
     private val unsplashService: UnsplashService,
     private val saveImageToFirebaseStorageUseCase: SaveImageToFirebaseStorageUseCase,
+    private val addDatabaseIfUserIsNewUseCase: AddDatabaseIfUserIsNewUseCase,
     logService: LogService,
 ) : GmViewModel(logService) {
     private val _uiState = MutableStateFlow(MapUiState())
@@ -31,7 +32,7 @@ class MapViewModel @Inject constructor(
 
     init {
         launchCatching {
-            // addDatabaseIfUserIsNewUseCase()
+            addDatabaseIfUserIsNewUseCase()
         }
     }
 

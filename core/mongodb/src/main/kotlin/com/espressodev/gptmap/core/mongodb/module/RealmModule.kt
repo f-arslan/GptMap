@@ -1,7 +1,6 @@
 package com.espressodev.gptmap.core.mongodb.module
 
 import android.util.Log
-import com.espressodev.gptmap.core.model.realm.Hero
 import com.espressodev.gptmap.core.model.realm.RealmContent
 import com.espressodev.gptmap.core.model.realm.RealmLocation
 import com.espressodev.gptmap.core.model.realm.RealmLocationImage
@@ -49,7 +48,6 @@ object RealmModule {
                 RealmLocation::class,
                 RealmContent::class,
                 RealmLocationImage::class,
-                Hero::class
             )
         )
             .maxNumberOfActiveVersions(15)
@@ -58,11 +56,6 @@ object RealmModule {
                 add(
                     realm.query<RealmLocation>("userId == $0", currentUser.id),
                     name = "location sub",
-                    updateExisting = true
-                )
-                add(
-                    realm.query<Hero>("userId == $0", currentUser.id),
-                    name = "hero sub",
                     updateExisting = true
                 )
             }

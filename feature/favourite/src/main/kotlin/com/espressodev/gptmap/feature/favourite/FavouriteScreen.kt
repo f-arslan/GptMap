@@ -41,7 +41,6 @@ fun FavouriteRoute() {
 @Composable
 fun FavouriteScreen() {
     Scaffold {
-
     }
 }
 

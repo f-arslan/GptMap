@@ -1,6 +1,6 @@
 package com.espressodev.gptmap.core.domain
 
-import com.espressodev.gptmap.core.Exceptions.UserIdIsNullException
+import com.espressodev.gptmap.core.Exceptions.FirebaseUserIdIsNullException
 import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.model.User
@@ -37,10 +37,10 @@ class SignUpWithEmailAndPasswordUseCase @Inject constructor(
         fullName: String
     ) {
         authResult.additionalUserInfo?.isNewUser?.let {
-            val id = authResult.user?.uid ?: throw UserIdIsNullException()
+            val id = authResult.user?.uid ?: throw FirebaseUserIdIsNullException()
             val user = User(userId = id, fullName = fullName, email = email)
             firestoreService.saveUser(user)
-        } ?: throw UserIdIsNullException()
+        } ?: throw FirebaseUserIdIsNullException()
     }
 
 }

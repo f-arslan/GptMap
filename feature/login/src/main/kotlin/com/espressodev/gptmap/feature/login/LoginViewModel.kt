@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.feature.login
 
-import android.util.Log
 import com.espressodev.gptmap.core.Exceptions
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.ext.isValidEmail
@@ -51,7 +50,7 @@ class LoginViewModel @Inject constructor(
             .onSuccess {
                 navigateToMap()
             }.onFailure {
-                if (it == Exceptions.EmailVerificationIsFalseException()) {
+                if (it == Exceptions.FirebaseEmailVerificationIsFalseException()) {
                     SnackbarManager.showMessage(AppText.please_verify_email)
                 } else {
                     it.message?.let { message -> SnackbarManager.showMessage(message) }

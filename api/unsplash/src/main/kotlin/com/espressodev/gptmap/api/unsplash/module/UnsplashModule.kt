@@ -17,8 +17,6 @@ import com.espressodev.gptmap.api.unsplash.BuildConfig.UNSPLASH_BASE_URL
 @Module
 @InstallIn(ViewModelComponent::class)
 object UnsplashModule {
-    private const val BASE_URL = "http://127.0.0.1:8080/"
-
     private val client: OkHttpClient = OkHttpClient.Builder().addInterceptor { chain ->
         val newRequest: Request =
             chain.request().newBuilder()

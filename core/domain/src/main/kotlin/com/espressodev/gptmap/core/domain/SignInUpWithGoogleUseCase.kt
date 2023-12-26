@@ -1,6 +1,6 @@
 package com.espressodev.gptmap.core.domain
 
-import com.espressodev.gptmap.core.Exceptions.UserIdIsNullException
+import com.espressodev.gptmap.core.Exceptions.FirebaseUserIdIsNullException
 import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.google_auth.GoogleAuthService
 import com.espressodev.gptmap.core.google_auth.OneTapSignInUpResponse
@@ -52,7 +52,7 @@ class SignInUpWithGoogleUseCase @Inject constructor(
             realmAccountService.loginWithEmail(it).onFailure { throwable ->
                 throw Exception(throwable)
             }
-        } ?: throw UserIdIsNullException()
+        } ?: throw FirebaseUserIdIsNullException()
     }
 
     private fun addUserToDatabaseIfUserIsNew(authResult: AuthResult) {

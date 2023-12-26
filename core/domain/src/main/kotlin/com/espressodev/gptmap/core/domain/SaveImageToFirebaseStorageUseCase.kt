@@ -12,20 +12,21 @@ class SaveImageToFirebaseStorageUseCase @Inject constructor(
     private val realmSyncService: RealmSyncService,
     private val downloadAndCompressImageUseCase: DownloadAndCompressImageUseCase
 ) {
-    suspend operator fun invoke(location: Location) =
-        withContext(Dispatchers.IO) {
-            try {
-                downloadAndCompressImageUseCase(location.locationImages[0].imageUrl)
-                    .onSuccess { imageData ->
-                        storageService.uploadImage(imageData, location.id)
-                        saveImageUrlToRealm(location.locationImages[0].imageUrl, location)
+    suspend operator fun invoke(location: Location) = withContext(Dispatchers.IO) {
+        require(location.locationImages.isNotEmpty()) { "No images found for location" }
+
+        downloadAndCompressImageUseCase(location.locationImages[0].imageUrl)
+            .onSuccess { imageData ->
+                storageService.uploadImage(imageData, location.id)
+                    .onSuccess { imageUrl ->
+                        saveImageUrlToRealm(imageUrl, location)
                     }.onFailure {
                         throw it
                     }
-            } catch (e: Exception) {
-                Result.failure(e)
+            }.onFailure {
+                throw it
             }
-        }
+    }
 
     private suspend fun saveImageUrlToRealm(imageUrl: String, location: Location) {
         val realmLocation = location.toRealmLocation().apply {

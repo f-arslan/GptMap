@@ -3,7 +3,6 @@ package com.espressodev.gptmap.core.domain
 import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
-import com.espressodev.gptmap.core.mongodb.module.RealmModule.realmUser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
@@ -15,7 +14,7 @@ class AddDatabaseIfUserIsNewUseCase @Inject constructor(
     private val realmSyncService: RealmSyncService
 ) {
     suspend operator fun invoke(): Result<Boolean> = withContext(Dispatchers.IO) {
-        val isUserInRealmDb = async { realmSyncService.isUserInDatabase(realmUser.id) }.await()
+        val isUserInRealmDb = async { realmSyncService.isUserInDatabase() }.await()
         if (isUserInRealmDb) {
             return@withContext Result.success(value = true)
         }

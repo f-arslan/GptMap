@@ -8,6 +8,5 @@ interface RealmSyncService {
 
     suspend fun saveLocation(realmLocation: RealmLocation): Result<Boolean>
 
-    suspend fun saveHero(): Result<Boolean>
-    fun isUserInDatabase(userId: String): Boolean
+    fun isUserInDatabase(): Boolean
 }
