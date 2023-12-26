@@ -1,7 +1,7 @@
 package com.espressodev.gptmap.core.model
 
 import com.espressodev.gptmap.core.model.chatgpt.Content
-import com.espressodev.gptmap.core.model.realm.RealmLocation
+import com.espressodev.gptmap.core.model.realm.RealmFavourite
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
 import io.realm.kotlin.ext.toRealmList
 
@@ -14,8 +14,8 @@ data class Location(
     val locationImages: List<LocationImage> = emptyImagePlaceholder,
     val addToFavouriteButtonState: Boolean = true
 ) {
-    fun toRealmLocation(): RealmLocation = RealmLocation().apply {
-        locationId = id
+    fun toRealmLocation(): RealmFavourite = RealmFavourite().apply {
+        favouriteId = id
         content = this@Location.content.toRealmContent()
         locationImages = this@Location.locationImages.map { it.toRealmLocationImage() }.toRealmList()
     }

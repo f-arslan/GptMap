@@ -2,7 +2,7 @@ package com.espressodev.gptmap.core.mongodb.module
 
 import android.util.Log
 import com.espressodev.gptmap.core.model.realm.RealmContent
-import com.espressodev.gptmap.core.model.realm.RealmLocation
+import com.espressodev.gptmap.core.model.realm.RealmFavourite
 import com.espressodev.gptmap.core.model.realm.RealmLocationImage
 import com.espressodev.gptmap.core.model.realm.RealmUser
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
@@ -45,7 +45,7 @@ object RealmModule {
             currentUser,
             setOf(
                 RealmUser::class,
-                RealmLocation::class,
+                RealmFavourite::class,
                 RealmContent::class,
                 RealmLocationImage::class,
             )
@@ -54,7 +54,7 @@ object RealmModule {
             .initialSubscriptions { realm: Realm ->
                 add(realm.query<RealmUser>("userId == $0", currentUser.id))
                 add(
-                    realm.query<RealmLocation>("userId == $0", currentUser.id),
+                    realm.query<RealmFavourite>("userId == $0", currentUser.id),
                     name = "location sub",
                     updateExisting = true
                 )

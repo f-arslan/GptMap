@@ -1,7 +1,7 @@
 package com.espressodev.gptmap.core.mongodb.impl
 
 import android.util.Log
-import com.espressodev.gptmap.core.model.realm.RealmLocation
+import com.espressodev.gptmap.core.model.realm.RealmFavourite
 import com.espressodev.gptmap.core.model.realm.RealmUser
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.espressodev.gptmap.core.mongodb.module.RealmModule
@@ -26,7 +26,7 @@ class RealmSyncServiceImpl : RealmSyncService {
         Result.failure<Throwable>(it)
     }
 
-    override suspend fun saveLocation(realmLocation: RealmLocation): Result<Boolean> = runCatching {
+    override suspend fun saveLocation(realmLocation: RealmFavourite): Result<Boolean> = runCatching {
         realm.write {
             copyToRealm(
                 realmLocation.apply {
