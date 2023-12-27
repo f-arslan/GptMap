@@ -15,4 +15,11 @@ data class Favourite(
 ) {
     val placeholderTitle = "${content.city}, ${content.country}"
     val placeholderCoordinates = "${"%.2f".format(content.latitude)}°, ${"%.2f".format(content.longitude)}°"
+
+    fun toLocation(): Location = Location(
+        id = id,
+        content = content.toChatgptContent(),
+        locationImages = locationImages,
+        addToFavouriteButtonState = false
+    )
 }

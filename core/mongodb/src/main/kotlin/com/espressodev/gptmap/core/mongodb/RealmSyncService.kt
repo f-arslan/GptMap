@@ -14,4 +14,6 @@ interface RealmSyncService {
     fun isUserInDatabase(): Boolean
 
     fun getFavourites(): Flow<List<Favourite>>
+
+    fun getFavourite(id: String): Favourite
 }

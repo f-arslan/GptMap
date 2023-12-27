@@ -1,6 +1,7 @@
 package com.espressodev.gptmap.core.mongodb.impl
 
 import android.util.Log
+import com.espressodev.gptmap.core.model.Exceptions.RealmFavouriteNotFoundException
 import com.espressodev.gptmap.core.model.Favourite
 import com.espressodev.gptmap.core.model.realm.RealmFavourite
 import com.espressodev.gptmap.core.model.realm.RealmUser
@@ -50,6 +51,12 @@ class RealmSyncServiceImpl : RealmSyncService {
             it.list.map { realmFavourite -> realmFavourite.toFavourite() }
         }
 
+    override fun getFavourite(id: String): Favourite =
+        realm.query<RealmFavourite>("userId == $0 AND favouriteId == $1", realmUser.id, id)
+            .also { println(id) }
+            .find()
+            .first()
+            .toFavourite()
 
     override fun isUserInDatabase(): Boolean =
         realm.query<RealmUser>("userId == $0", realmUser.id).first().find() != null

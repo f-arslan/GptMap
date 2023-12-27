@@ -40,14 +40,22 @@ import java.time.LocalDateTime
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @Composable
-fun FavouriteRoute(popUp: () -> Unit, viewModel: FavouriteViewModel = hiltViewModel()) {
+fun FavouriteRoute(
+    popUp: () -> Unit,
+    navigateToMap: (String) -> Unit,
+    viewModel: FavouriteViewModel = hiltViewModel()
+) {
     val favourites by viewModel.favourites.collectAsStateWithLifecycle()
-    FavouriteScreen(popUp, favourites)
+    FavouriteScreen(
+        popUp = popUp,
+        onCardClick = navigateToMap,
+        favourites = favourites
+    )
 }
 
 
 @Composable
-fun FavouriteScreen(popUp: () -> Unit, favourites: List<Favourite>) {
+fun FavouriteScreen(popUp: () -> Unit, onCardClick: (String) -> Unit, favourites: List<Favourite>) {
     Scaffold(
         topBar = {
             GmTopAppBar(
@@ -66,7 +74,7 @@ fun FavouriteScreen(popUp: () -> Unit, favourites: List<Favourite>) {
             contentPadding = PaddingValues(HIGH_PADDING)
         ) {
             items(favourites, key = { key -> key.id }) { favourite ->
-                FavouriteCard(favourite)
+                FavouriteCard(favourite, onClick = { onCardClick(favourite.favouriteId) })
             }
         }
     }
@@ -74,11 +82,12 @@ fun FavouriteScreen(popUp: () -> Unit, favourites: List<Favourite>) {
 
 
 @Composable
-fun FavouriteCard(favourite: Favourite) {
+fun FavouriteCard(favourite: Favourite, onClick: () -> Unit) {
     Surface(
         color = MaterialTheme.colorScheme.tertiaryContainer,
         shape = RoundedCornerShape(16.dp),
-        shadowElevation = 4.dp
+        shadowElevation = 4.dp,
+        onClick = onClick
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             AsyncImage(
@@ -160,7 +169,8 @@ fun FavouritePreview() {
                     normalDescription = "molestie"
                 ),
                 date = LocalDateTime.now()
-            )
+            ),
+            {}
         )
     }
 }

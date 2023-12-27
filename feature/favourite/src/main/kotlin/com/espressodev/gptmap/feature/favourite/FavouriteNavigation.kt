@@ -11,8 +11,8 @@ fun NavController.navigateToFavourite(navOptions: NavOptions? = null) {
     navigate(favouriteRoute, navOptions)
 }
 
-fun NavGraphBuilder.favouriteScreen(popUp: () -> Unit) {
+fun NavGraphBuilder.favouriteScreen(popUp: () -> Unit, navigateToMap: (String) -> Unit) {
     composable(favouriteRoute) {
-        FavouriteRoute(popUp = popUp)
+        FavouriteRoute(popUp = popUp, navigateToMap = navigateToMap)
     }
 }

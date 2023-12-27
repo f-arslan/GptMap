@@ -2,23 +2,34 @@ package com.espressodev.gptmap.feature.map
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 
 const val mapRoute = "map_route"
-
-fun NavController.navigateToMap(navOptions: NavOptions? = null) {
-    navigate(mapRoute, navOptions)
+const val FAVOURITE_ID = "favouriteId"
+fun NavController.navigateToMap(favouriteId: String = "default") {
+    navigate("$mapRoute/$favouriteId") {
+        launchSingleTop = true
+        popUpTo(mapRoute) {
+            inclusive = true
+        }
+    }
 }
 
 fun NavGraphBuilder.mapScreen(
     navigateToStreetView: (Float, Float) -> Unit,
     navigateToFavourite: () -> Unit
 ) {
-    composable(mapRoute) {
+    composable(
+        route = "$mapRoute/{$FAVOURITE_ID}",
+        arguments = listOf(navArgument(FAVOURITE_ID) { type = NavType.StringType })
+    ) {
+        val favouriteId = it.arguments?.getString(FAVOURITE_ID) ?: "default"
         MapRoute(
             navigateToStreetView = navigateToStreetView,
-            navigateToFavourite = navigateToFavourite
+            navigateToFavourite = navigateToFavourite,
+            favouriteId = favouriteId
         )
     }
 }

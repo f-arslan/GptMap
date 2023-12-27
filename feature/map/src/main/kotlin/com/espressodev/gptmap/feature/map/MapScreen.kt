@@ -97,7 +97,8 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 fun MapRoute(
     viewModel: MapViewModel = hiltViewModel(),
     navigateToStreetView: (Float, Float) -> Unit,
-    navigateToFavourite: () -> Unit
+    navigateToFavourite: () -> Unit,
+    favouriteId: String
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
@@ -109,7 +110,6 @@ fun MapRoute(
             )
         }
     ) {
-
         MapScreen(
             uiState = uiState,
             onEvent = { event ->
@@ -123,6 +123,11 @@ fun MapRoute(
             modifier = Modifier.padding(it),
             navigateToFavourite = navigateToFavourite
         )
+    }
+
+    LaunchedEffect(favouriteId) {
+        if (favouriteId != "default")
+            viewModel.loadLocationFromFavourite(favouriteId)
     }
 }
 

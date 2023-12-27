@@ -1,7 +1,7 @@
 package com.espressodev.gptmap.core.domain
 
-import com.espressodev.gptmap.core.Exceptions.FirebaseUserIdIsNullException
-import com.espressodev.gptmap.core.Exceptions.FirebaseEmailVerificationIsFalseException
+import com.espressodev.gptmap.core.model.Exceptions.FirebaseUserIdIsNullException
+import com.espressodev.gptmap.core.model.Exceptions.FirebaseEmailVerificationIsFalseException
 import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
 import com.google.firebase.auth.AuthResult

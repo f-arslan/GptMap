@@ -1,6 +1,6 @@
 package com.espressodev.gptmap.feature.login
 
-import com.espressodev.gptmap.core.Exceptions
+import com.espressodev.gptmap.core.model.Exceptions
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.ext.isValidEmail
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
@@ -12,6 +12,7 @@ import com.espressodev.gptmap.core.model.google.GoogleResponse
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.AuthCredential
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -48,6 +49,8 @@ class LoginViewModel @Inject constructor(
 
         signInWithEmailAndPasswordUseCase(email, password)
             .onSuccess {
+                onEvent(LoginEvent.OnLoadingStateChanged(LoadingState.Idle))
+                delay(100L)
                 navigateToMap()
             }.onFailure {
                 if (it == Exceptions.FirebaseEmailVerificationIsFalseException()) {
@@ -55,9 +58,8 @@ class LoginViewModel @Inject constructor(
                 } else {
                     it.message?.let { message -> SnackbarManager.showMessage(message) }
                 }
+                onEvent(LoginEvent.OnLoadingStateChanged(LoadingState.Idle))
             }
-
-        onEvent(LoginEvent.OnLoadingStateChanged(LoadingState.Idle))
     }
 
     private fun formValidation(): Boolean =

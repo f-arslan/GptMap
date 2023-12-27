@@ -10,6 +10,7 @@ import com.espressodev.gptmap.core.domain.AddDatabaseIfUserIsNewUseCase
 import com.espressodev.gptmap.core.domain.SaveImageToFirebaseStorageUseCase
 import com.espressodev.gptmap.core.domain.SaveImageToInternalStorageUseCase
 import com.espressodev.gptmap.core.model.ext.classTag
+import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +26,7 @@ class MapViewModel @Inject constructor(
     private val unsplashService: UnsplashService,
     private val saveImageToFirebaseStorageUseCase: SaveImageToFirebaseStorageUseCase,
     private val addDatabaseIfUserIsNewUseCase: AddDatabaseIfUserIsNewUseCase,
+    private val realmSyncService: RealmSyncService,
     logService: LogService,
 ) : GmViewModel(logService) {
     private val _uiState = MutableStateFlow(MapUiState())
@@ -143,4 +145,18 @@ class MapViewModel @Inject constructor(
 
             _uiState.update { it.copy(componentLoadingState = ComponentLoadingState.NOTHING) }
         }
+
+    fun loadLocationFromFavourite(favouriteId: String) = launchCatching {
+        val location = withContext(Dispatchers.IO) {
+            realmSyncService.getFavourite(favouriteId)
+        }.toLocation()
+
+        _uiState.update {
+            it.copy(
+                location = location,
+                bottomSearchState = false,
+                bottomSheetState = MapBottomSheetState.SMALL_INFORMATION_CARD,
+            )
+        }
+    }
 }

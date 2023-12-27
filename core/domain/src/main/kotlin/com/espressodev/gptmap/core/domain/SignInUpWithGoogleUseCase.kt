@@ -1,6 +1,6 @@
 package com.espressodev.gptmap.core.domain
 
-import com.espressodev.gptmap.core.Exceptions.FirebaseUserIdIsNullException
+import com.espressodev.gptmap.core.model.Exceptions.FirebaseUserIdIsNullException
 import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.google_auth.GoogleAuthService
 import com.espressodev.gptmap.core.google_auth.OneTapSignInUpResponse
