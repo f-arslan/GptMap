@@ -11,9 +11,7 @@ const val FAVOURITE_ID = "favouriteId"
 fun NavController.navigateToMap(favouriteId: String = "default") {
     navigate("$mapRoute/$favouriteId") {
         launchSingleTop = true
-        popUpTo(mapRoute) {
-            inclusive = true
-        }
+        popUpTo(0) { inclusive = true }
     }
 }
 

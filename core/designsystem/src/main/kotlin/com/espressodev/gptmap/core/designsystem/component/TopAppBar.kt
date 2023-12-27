@@ -42,7 +42,7 @@ fun GmTopAppBar(@StringRes title: Int, icon: ImageVector, onBackClick: () -> Uni
                 imageVector = icon,
                 contentDescription = null,
                 modifier = Modifier.padding(end = 8.dp),
-                tint = MaterialTheme.colorScheme.primary
+                tint = MaterialTheme.colorScheme.primaryContainer
             )
         }
     )

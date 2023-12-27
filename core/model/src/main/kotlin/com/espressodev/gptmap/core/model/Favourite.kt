@@ -14,7 +14,7 @@ data class Favourite(
     val date: LocalDateTime
 ) {
     val placeholderTitle = "${content.city}, ${content.country}"
-    val placeholderCoordinates = "${"%.2f".format(content.latitude)}°, ${"%.2f".format(content.longitude)}°"
+    val placeholderCoordinates = "${"%.4f".format(content.latitude)}°, ${"%.4f".format(content.longitude)}°"
 
     fun toLocation(): Location = Location(
         id = id,
