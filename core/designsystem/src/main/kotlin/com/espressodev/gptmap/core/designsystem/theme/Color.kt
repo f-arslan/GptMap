@@ -1,6 +1,11 @@
 package com.espressodev.gptmap.core.designsystem.theme
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import javax.annotation.concurrent.Immutable
 
 val md_theme_light_primary = Color(0xFF006B56)
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)
@@ -66,3 +71,47 @@ val md_theme_dark_scrim = Color(0xFF000000)
 
 
 val seed = Color(0xFF00DDB3)
+
+val lightBottomBarGradient = listOf(
+    md_theme_light_primaryContainer,
+    md_theme_light_surface,
+)
+
+val darkBottomBarGradient = listOf(
+    md_theme_dark_primaryContainer,
+    md_theme_dark_surface,
+)
+
+val lightBottomBrush = Brush.linearGradient(colors = lightBottomBarGradient)
+
+val darkBottomBrush = Brush.linearGradient(colors = darkBottomBarGradient)
+
+val LightGmColorsPalette = GmColorPalette(
+    bottomBarBrush = lightBottomBrush
+)
+
+val DarkGmColorsPalette = GmColorPalette(
+    bottomBarBrush = darkBottomBrush
+)
+
+val LocalGmColorsPalette = staticCompositionLocalOf { GmColorPalette() }
+
+@Immutable
+data class GmColorPalette(
+    val bottomBarBrush: Brush = lightBottomBrush
+)
+
+val MaterialTheme.gmColorsPalette: GmColorPalette
+    @Composable
+    get() = LocalGmColorsPalette.current
+
+
+
+
+
+
+
+
+
+
+

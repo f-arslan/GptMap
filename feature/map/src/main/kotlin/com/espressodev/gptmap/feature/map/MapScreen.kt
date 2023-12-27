@@ -1,13 +1,14 @@
 package com.espressodev.gptmap.feature.map
 
+import android.content.res.Resources
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,7 +25,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -39,7 +41,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -48,6 +52,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.window.Dialog
@@ -71,6 +76,7 @@ import com.espressodev.gptmap.core.designsystem.component.LoadingAnimation
 import com.espressodev.gptmap.core.designsystem.component.MapSearchButton
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
 import com.espressodev.gptmap.core.designsystem.component.SquareButton
+import com.espressodev.gptmap.core.designsystem.theme.gmColorsPalette
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.chatgpt.Content
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
@@ -144,13 +150,16 @@ private fun MapScreen(
     }
     AnimateCameraPosition(latLng, cameraPositionState)
     DisplayImageGallery(uiState.imageGalleryState, uiState.location, onEvent)
-
     Box(
         modifier = Modifier
             .fillMaxSize()
             .then(modifier)
     ) {
-        FavouriteButton(isPlaying = uiState.isFavouriteButtonPlaying, onClick = navigateToFavourite)
+        MapTopButtons(
+            isPlaying = uiState.isFavouriteButtonPlaying,
+            onFavouriteClick = navigateToFavourite,
+            onCameraClick = { onEvent(MapUiEvent.OnTakeScreenshotClick) }
+        )
         LoadingDialog(uiState.componentLoadingState)
         MapSection(cameraPositionState = cameraPositionState)
         DisplayBottomSheet(uiState.bottomSheetState, uiState.location, cameraPositionState, onEvent)
@@ -159,20 +168,44 @@ private fun MapScreen(
 
 
 @Composable
-fun BoxScope.FavouriteButton(isPlaying: Boolean, onClick: () -> Unit) {
+fun BoxScope.MapTopButtons(
+    isPlaying: Boolean,
+    onFavouriteClick: () -> Unit,
+    onCameraClick: () -> Unit
+) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(AppRaw.favourite_anim))
     val progress by animateLottieCompositionAsState(composition, isPlaying = isPlaying)
-    val interactionSource = remember { MutableInteractionSource() }
-    LottieAnimation(
-        composition = composition,
-        progress = { progress },
+    Column(
         modifier = Modifier
-            .size(BUTTON_SIZE)
             .align(Alignment.TopEnd)
             .zIndex(2f)
-            .clickable(interactionSource = interactionSource, indication = null) { onClick() },
-        contentScale = ContentScale.Crop
-    )
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        FloatingActionButton(
+            onClick = onFavouriteClick,
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+        ) {
+            LottieAnimation(
+                composition = composition,
+                progress = { progress },
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.size(56.dp)
+            )
+        }
+        FloatingActionButton(
+            onClick = onCameraClick,
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
+        ) {
+            Icon(
+                imageVector = GmIcons.CameraFilled,
+                contentDescription = stringResource(id = AppText.camera),
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.size(48.dp)
+            )
+        }
+    }
+
 }
 
 @ReadOnlyComposable
@@ -276,13 +309,15 @@ private fun MapBottomBar(
     onSearchClick: () -> Unit,
 ) {
     if (uiState.bottomSearchState)
-        BottomAppBar {
+        Box(modifier = Modifier.padding(8.dp)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(
-                    horizontal = MEDIUM_PADDING,
-                    vertical = MEDIUM_HIGH_PADDING
-                )
+                modifier = Modifier
+                    .background(brush = MaterialTheme.gmColorsPalette.bottomBarBrush)
+                    .padding(
+                        horizontal = MEDIUM_PADDING,
+                        vertical = MEDIUM_HIGH_PADDING
+                    )
             ) {
                 MapTextField(
                     value = uiState.searchValue,

@@ -50,7 +50,7 @@ class LoginViewModel @Inject constructor(
         signInWithEmailAndPasswordUseCase(email, password)
             .onSuccess {
                 onEvent(LoginEvent.OnLoadingStateChanged(LoadingState.Idle))
-                delay(100L)
+                delay(25L)
                 navigateToMap()
             }.onFailure {
                 if (it == Exceptions.FirebaseEmailVerificationIsFalseException()) {

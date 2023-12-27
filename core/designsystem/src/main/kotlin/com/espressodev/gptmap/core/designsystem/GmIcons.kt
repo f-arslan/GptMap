@@ -1,6 +1,7 @@
 package com.espressodev.gptmap.core.designsystem
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Fingerprint
@@ -36,4 +37,5 @@ object GmIcons {
     val FingerPrintFilled = Icons.Filled.Fingerprint
     val LocationCityOutlined = Icons.Outlined.LocationCity
     val MyLocationOutlined = Icons.Outlined.MyLocation
+    val CameraFilled = Icons.Filled.Camera
 }

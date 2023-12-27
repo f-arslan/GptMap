@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.feature.map
 
-import android.util.Log
 import com.espressodev.gptmap.api.gemini.GeminiService
 import com.espressodev.gptmap.api.unsplash.UnsplashService
 import com.espressodev.gptmap.core.common.GmViewModel
@@ -8,8 +7,6 @@ import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.domain.AddDatabaseIfUserIsNewUseCase
 import com.espressodev.gptmap.core.domain.SaveImageToFirebaseStorageUseCase
-import com.espressodev.gptmap.core.domain.SaveImageToInternalStorageUseCase
-import com.espressodev.gptmap.core.model.ext.classTag
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -63,6 +60,8 @@ class MapViewModel @Inject constructor(
                     bottomSearchState = true
                 )
             }
+
+            is MapUiEvent.OnTakeScreenshotClick -> _uiState.update { it.copy(takeScreenshotState = true) }
         }
     }
 
