@@ -41,7 +41,24 @@ import com.espressodev.gptmap.core.designsystem.Constants.NO_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
-
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -104,6 +121,78 @@ fun DefaultButton(@StringRes text: Int, onClick: () -> Unit, modifier: Modifier 
             text = stringResource(id = text),
             style = MaterialTheme.typography.titleMedium,
         )
+    }
+}
+
+
+
+@Composable
+fun GmDraggableButton(icon: ImageVector, onClick: () -> Unit) {
+    val localDensity = LocalDensity.current
+    val screenWidth = with(localDensity) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
+    val screenHeight = with(localDensity) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
+    val buttonSizePx = with(localDensity) { 56.dp.toPx() } // Assuming 56.dp is the FAB size
+    val marginPx = with(localDensity) { 8.dp.toPx() }
+    val scope = rememberCoroutineScope()
+
+    val initialXOffsetPx = screenWidth - buttonSizePx - marginPx
+    val initialYOffsetPx = (screenHeight - buttonSizePx) / 2
+
+    val offset = remember(localDensity) {
+        Animatable(
+            Offset(
+                x = initialXOffsetPx.coerceIn(0f, screenWidth - buttonSizePx),
+                y = initialYOffsetPx.coerceIn(0f, screenHeight - buttonSizePx)
+            ),
+            Offset.VectorConverter
+        )
+    }
+
+    Box(
+        contentAlignment = Alignment.TopStart,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        FloatingActionButton(
+            onClick = onClick,
+            modifier = Modifier
+                .offset { IntOffset(offset.value.x.roundToInt(), offset.value.y.roundToInt()) }
+                .pointerInput(Unit) {
+                    detectDragGestures(
+                        onDragEnd = {
+                            val leftDistance = offset.value.x
+                            val rightDistance = screenWidth - offset.value.x - buttonSizePx
+
+                            val targetX = if (leftDistance < rightDistance) {
+                                marginPx
+                            } else {
+                                screenWidth - buttonSizePx - marginPx
+                            }
+
+                            scope.launch {
+                                offset.animateTo(
+                                    targetValue = Offset(targetX, offset.value.y),
+                                    animationSpec = spring()
+                                )
+                            }
+                        }
+                    ) { change, dragAmount ->
+                        change.consume()
+                        val newX = (offset.value.x + dragAmount.x).coerceIn(
+                            marginPx,
+                            screenWidth - buttonSizePx - marginPx
+                        )
+                        val newY = (offset.value.y + dragAmount.y).coerceIn(
+                            marginPx,
+                            screenHeight - buttonSizePx - marginPx
+                        )
+                        scope.launch {
+                            offset.snapTo(Offset(newX, newY))
+                        }
+                    }
+                }
+        ) {
+            Icon(imageVector = icon, contentDescription = null)
+        }
     }
 }
 
