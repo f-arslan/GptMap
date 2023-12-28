@@ -1,6 +1,7 @@
 package com.espressodev.gptmap
 
 import android.content.res.Resources
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -28,8 +29,8 @@ import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.component.GmDraggableButton
-import com.espressodev.gptmap.feature.favourite.favouriteRoute
 import com.espressodev.gptmap.feature.map.mapRoute
+import com.espressodev.gptmap.feature.street_view.streetViewRoute
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -37,8 +38,8 @@ fun GmApp() {
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
         val appState = rememberAppState()
         val currentBackStackEntry by appState.navController.currentBackStackEntryAsState()
-        val currentDestination = currentBackStackEntry?.destination?.route.also(::println)
-        var screenshotButtonState by remember { mutableStateOf(false) }
+        val currentDestination = currentBackStackEntry?.destination?.route
+        var screenshotButtonState by remember { mutableStateOf(value = false) }
         LaunchedEffect(currentDestination) {
             screenshotButtonState = currentDestination?.isScreenshotButtonInDestination() == true
         }
@@ -57,14 +58,15 @@ fun GmApp() {
                     .padding(it)
             ) {
                 GmNavHost(appState = appState, modifier = Modifier.padding(it))
-                if (screenshotButtonState)
+                AnimatedVisibility(screenshotButtonState) {
                     GmDraggableButton(icon = GmIcons.CameraFilled, onClick = {})
+                }
             }
         }
     }
 }
 
-val screenshotAvailableRoutes = listOf(mapRoute, favouriteRoute)
+val screenshotAvailableRoutes = listOf(mapRoute, streetViewRoute)
 
 private fun String.isScreenshotButtonInDestination() =
     screenshotAvailableRoutes.any { route -> this.contains(route, ignoreCase = true) }
