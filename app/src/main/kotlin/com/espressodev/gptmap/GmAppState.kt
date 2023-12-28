@@ -36,6 +36,8 @@ class GmAppState(
         navController.navigate(route)
     }
 
+    val currentDestination get() = navController.currentDestination?.route
+
     fun navigateAndPopUp(route: String, popUp: String) {
         navController.navigate(route) {
             launchSingleTop = true

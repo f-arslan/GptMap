@@ -46,6 +46,7 @@ import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.FloatingActionButton
@@ -57,6 +58,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -127,22 +129,24 @@ fun DefaultButton(@StringRes text: Int, onClick: () -> Unit, modifier: Modifier 
 
 
 @Composable
-fun GmDraggableButton(icon: ImageVector, onClick: () -> Unit) {
+fun BoxScope.GmDraggableButton(icon: ImageVector, onClick: () -> Unit) {
     val localDensity = LocalDensity.current
     val screenWidth = with(localDensity) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
     val screenHeight = with(localDensity) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
     val buttonSizePx = with(localDensity) { 56.dp.toPx() } // Assuming 56.dp is the FAB size
-    val marginPx = with(localDensity) { 8.dp.toPx() }
+    val marginPx = with(localDensity) { 16.dp.toPx() }
     val scope = rememberCoroutineScope()
 
     val initialXOffsetPx = screenWidth - buttonSizePx - marginPx
     val initialYOffsetPx = (screenHeight - buttonSizePx) / 2
+    val bottomMarginPx = with(localDensity) { 160.dp.toPx() }
+
 
     val offset = remember(localDensity) {
         Animatable(
             Offset(
                 x = initialXOffsetPx.coerceIn(0f, screenWidth - buttonSizePx),
-                y = initialYOffsetPx.coerceIn(0f, screenHeight - buttonSizePx)
+                y = initialYOffsetPx.coerceIn(0f, screenHeight - buttonSizePx - bottomMarginPx)
             ),
             Offset.VectorConverter
         )
@@ -150,10 +154,12 @@ fun GmDraggableButton(icon: ImageVector, onClick: () -> Unit) {
 
     Box(
         contentAlignment = Alignment.TopStart,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().zIndex(4f),
     ) {
         FloatingActionButton(
             onClick = onClick,
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
             modifier = Modifier
                 .offset { IntOffset(offset.value.x.roundToInt(), offset.value.y.roundToInt()) }
                 .pointerInput(Unit) {
@@ -183,7 +189,7 @@ fun GmDraggableButton(icon: ImageVector, onClick: () -> Unit) {
                         )
                         val newY = (offset.value.y + dragAmount.y).coerceIn(
                             marginPx,
-                            screenHeight - buttonSizePx - marginPx
+                            screenHeight - buttonSizePx - bottomMarginPx
                         )
                         scope.launch {
                             offset.snapTo(Offset(newX, newY))
@@ -191,7 +197,7 @@ fun GmDraggableButton(icon: ImageVector, onClick: () -> Unit) {
                     }
                 }
         ) {
-            Icon(imageVector = icon, contentDescription = null)
+            Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(48.dp))
         }
     }
 }

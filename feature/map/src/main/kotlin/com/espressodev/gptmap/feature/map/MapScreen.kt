@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.feature.map
 
-import android.content.res.Resources
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -8,7 +7,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,7 +24,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -41,9 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -52,7 +47,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.window.Dialog
@@ -158,7 +152,6 @@ private fun MapScreen(
         MapTopButtons(
             isPlaying = uiState.isFavouriteButtonPlaying,
             onFavouriteClick = navigateToFavourite,
-            onCameraClick = { onEvent(MapUiEvent.OnTakeScreenshotClick) }
         )
         LoadingDialog(uiState.componentLoadingState)
         MapSection(cameraPositionState = cameraPositionState)
@@ -171,7 +164,6 @@ private fun MapScreen(
 fun BoxScope.MapTopButtons(
     isPlaying: Boolean,
     onFavouriteClick: () -> Unit,
-    onCameraClick: () -> Unit
 ) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(AppRaw.favourite_anim))
     val progress by animateLottieCompositionAsState(composition, isPlaying = isPlaying)
@@ -191,17 +183,6 @@ fun BoxScope.MapTopButtons(
                 progress = { progress },
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(56.dp)
-            )
-        }
-        FloatingActionButton(
-            onClick = onCameraClick,
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
-        ) {
-            Icon(
-                imageVector = GmIcons.CameraFilled,
-                contentDescription = stringResource(id = AppText.camera),
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.size(48.dp)
             )
         }
     }
