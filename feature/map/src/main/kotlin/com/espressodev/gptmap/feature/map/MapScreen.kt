@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.feature.map
 
+import android.graphics.Bitmap
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -38,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -80,6 +82,7 @@ import com.espressodev.gptmap.feature.map.ComponentLoadingState.STREET_VIEW
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.DETAIL_CARD
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.NOTHING
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.SMALL_INFORMATION_CARD
+import com.espressodev.gptmap.feature.screenshot.ScreenshotCaptureArea
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -143,6 +146,7 @@ private fun MapScreen(
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(latLng, 12f)
     }
+    var capturedBitmap by remember { mutableStateOf<Bitmap?>(null) }
     AnimateCameraPosition(latLng, cameraPositionState)
     DisplayImageGallery(uiState.imageGalleryState, uiState.location, onEvent)
     Box(
@@ -154,6 +158,22 @@ private fun MapScreen(
             isPlaying = uiState.isFavouriteButtonPlaying,
             onFavouriteClick = navigateToFavourite,
         )
+        ScreenshotCaptureArea(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(4f),
+            onImageCaptured = {
+                capturedBitmap = it
+            }
+        )
+        if (capturedBitmap != null) {
+            Image(
+                bitmap = capturedBitmap!!.asImageBitmap(),
+                contentDescription = "Captured Image",
+                modifier = Modifier
+                    .size(200.dp).zIndex(5f)
+            )
+        }
         GmDraggableButton(icon = GmIcons.CameraFilled, onClick = {})
         LoadingDialog(uiState.componentLoadingState)
         MapSection(cameraPositionState = cameraPositionState)

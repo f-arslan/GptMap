@@ -134,7 +134,7 @@ fun BoxScope.GmDraggableButton(icon: ImageVector, onClick: () -> Unit) {
     val screenWidth = with(localDensity) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
     val screenHeight = with(localDensity) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
     val buttonSizePx = with(localDensity) { 56.dp.toPx() } // Assuming 56.dp is the FAB size
-    val marginPx = with(localDensity) { 16.dp.toPx() }
+    val marginPx = with(localDensity) { 8.dp.toPx() }
     val scope = rememberCoroutineScope()
 
     val initialXOffsetPx = screenWidth - buttonSizePx - marginPx
