@@ -37,12 +37,6 @@ import kotlinx.coroutines.CoroutineScope
 fun GmApp() {
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
         val appState = rememberAppState()
-        val currentBackStackEntry by appState.navController.currentBackStackEntryAsState()
-        val currentDestination = currentBackStackEntry?.destination?.route
-        var screenshotButtonState by remember { mutableStateOf(value = false) }
-        LaunchedEffect(currentDestination) {
-            screenshotButtonState = currentDestination?.isScreenshotButtonInDestination() == true
-        }
         Scaffold(
             snackbarHost = {
                 SnackbarHost(
@@ -52,24 +46,10 @@ fun GmApp() {
                 )
             },
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it)
-            ) {
-                GmNavHost(appState = appState, modifier = Modifier.padding(it))
-                AnimatedVisibility(screenshotButtonState) {
-                    GmDraggableButton(icon = GmIcons.CameraFilled, onClick = {})
-                }
-            }
+            GmNavHost(appState = appState, modifier = Modifier.padding(it))
         }
     }
 }
-
-val screenshotAvailableRoutes = listOf(mapRoute, streetViewRoute)
-
-private fun String.isScreenshotButtonInDestination() =
-    screenshotAvailableRoutes.any { route -> this.contains(route, ignoreCase = true) }
 
 @Composable
 @ReadOnlyComposable

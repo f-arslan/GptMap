@@ -6,11 +6,9 @@ plugins {
 
 android {
     namespace = "com.espressodev.gptmap.feature.street_view"
-    buildFeatures {
-        buildConfig = true
-    }
 }
 
 dependencies {
     implementation(libs.maps.compose)
+    implementation(projects.feature.screenshot)
 }

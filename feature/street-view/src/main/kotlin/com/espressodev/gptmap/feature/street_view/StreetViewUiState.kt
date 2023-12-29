@@ -4,5 +4,7 @@ import com.google.android.gms.maps.model.LatLng
 
 
 data class StreetViewUiState(
-    val latLng: LatLng = LatLng(0.0, 0.0)
+    val latLng: LatLng = LatLng(0.0, 0.0),
+    val screenshotState: Boolean = false,
+    val cameraButtonState: Boolean = true
 )

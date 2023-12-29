@@ -1,6 +1,7 @@
 package com.espressodev.gptmap.feature.street_view
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -10,10 +11,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.espressodev.gptmap.core.designsystem.GmIcons
+import com.espressodev.gptmap.core.designsystem.component.GmDraggableButton
 import com.espressodev.gptmap.core.designsystem.component.LoadingAnimation
+import com.espressodev.gptmap.feature.screenshot.ScreenshotScreen
 import com.google.android.gms.maps.StreetViewPanoramaOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.streetview.StreetView
@@ -34,19 +38,25 @@ fun StreetViewRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle(
         initialValue = StreetViewUiState(LatLng(latitude, longitude))
     )
-    BackHandler {
-        popUp()
-    }
-    StreetViewScreen(uiState)
+    BackHandler { popUp() }
+    StreetViewScreen(uiState, onCameraButtonClick = viewModel::onCameraButtonClick)
 }
 
 
 @OptIn(MapsExperimentalFeature::class)
 @Composable
-fun StreetViewScreen(uiState: StreetViewUiState) {
-    var isStreetViewLoaded by remember { mutableStateOf(false) }
+fun StreetViewScreen(uiState: StreetViewUiState, onCameraButtonClick: (Boolean) -> Unit) {
+    var isStreetViewLoaded by remember { mutableStateOf(value = false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
+
+        if (uiState.screenshotState)
+            ScreenshotScreen()
+
+        AnimatedVisibility(visible = uiState.cameraButtonState, modifier = Modifier.zIndex(4f)) {
+            GmDraggableButton(icon = GmIcons.CameraFilled, onClick = { onCameraButtonClick(true) })
+        }
+
         StreetView(
             streetViewPanoramaOptionsFactory = {
                 StreetViewPanoramaOptions().position(uiState.latLng)
@@ -55,7 +65,6 @@ fun StreetViewScreen(uiState: StreetViewUiState) {
         if (!isStreetViewLoaded) {
             LoadingAnimation(AppRaw.earth_orbit)
         }
-
         // StreetView composable doesn't have a callback for when the street view is loaded
         LaunchedEffect(key1 = uiState.latLng) {
             delay(2000L)

@@ -153,8 +153,7 @@ fun BoxScope.GmDraggableButton(icon: ImageVector, onClick: () -> Unit) {
     }
 
     Box(
-        contentAlignment = Alignment.TopStart,
-        modifier = Modifier.fillMaxSize().zIndex(4f),
+        modifier = Modifier.fillMaxSize(),
     ) {
         FloatingActionButton(
             onClick = onClick,

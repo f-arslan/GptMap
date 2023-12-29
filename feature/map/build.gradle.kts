@@ -14,6 +14,7 @@ dependencies {
     implementation(projects.core.mongodb)
     implementation(projects.api.unsplash)
     implementation(projects.api.gemini)
+    implementation(projects.feature.screenshot)
 
     implementation(libs.maps.compose)
     implementation(libs.coil.compose)

@@ -66,6 +66,7 @@ import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
+import com.espressodev.gptmap.core.designsystem.component.GmDraggableButton
 import com.espressodev.gptmap.core.designsystem.component.LoadingAnimation
 import com.espressodev.gptmap.core.designsystem.component.MapSearchButton
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
@@ -153,6 +154,7 @@ private fun MapScreen(
             isPlaying = uiState.isFavouriteButtonPlaying,
             onFavouriteClick = navigateToFavourite,
         )
+        GmDraggableButton(icon = GmIcons.CameraFilled, onClick = {})
         LoadingDialog(uiState.componentLoadingState)
         MapSection(cameraPositionState = cameraPositionState)
         DisplayBottomSheet(uiState.bottomSheetState, uiState.location, cameraPositionState, onEvent)

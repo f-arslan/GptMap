@@ -18,6 +18,9 @@ class StreetViewViewModel @Inject constructor(logService: LogService): GmViewMod
 
     fun getStreetView(latitude: Double, longitude: Double) {
         _uiState.update { it.copy(latLng = LatLng(latitude, longitude)) }
-        
+    }
+
+    fun onCameraButtonClick(state: Boolean) {
+        _uiState.update { it.copy(screenshotState = state, cameraButtonState = false) }
     }
 }

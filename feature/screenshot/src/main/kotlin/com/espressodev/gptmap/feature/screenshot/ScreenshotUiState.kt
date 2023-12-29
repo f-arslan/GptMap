@@ -13,4 +13,4 @@ data class ScreenshotUiState(
     val bitmapState: Bitmap? = null,
     val dialogState: Boolean = false,
     val callback: (() -> Unit)? = null
-) 
+)

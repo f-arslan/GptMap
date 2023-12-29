@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -41,6 +42,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.Dispatchers
@@ -89,6 +91,7 @@ private fun ScreenshotField(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .zIndex(5f)
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
                     change.consume()
@@ -118,7 +121,6 @@ private fun ScreenshotField(
                 }
             }
         }
-        Text(text = "Hello AGAIN", modifier = Modifier.align(Alignment.Center))
         ScreenshotSquare(
             modifier = Modifier
                 .offset {
@@ -133,6 +135,9 @@ private fun ScreenshotField(
             onBitmapStateChange = onBitmapStateChange,
             onCallbackStateChange = onCallbackStateChange
         )
+        FloatingActionButton(onClick = {}) {
+            Text(text = "Capture")
+        }
     }
 }
 
