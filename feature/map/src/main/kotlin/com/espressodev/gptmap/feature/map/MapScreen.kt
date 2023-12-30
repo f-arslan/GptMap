@@ -1,6 +1,15 @@
 package com.espressodev.gptmap.feature.map
 
+import android.app.Activity.RESULT_OK
+import android.content.Context
+import android.content.Context.MEDIA_PROJECTION_SERVICE
+import android.content.Intent
 import android.graphics.Bitmap
+import android.media.projection.MediaProjectionManager
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -77,6 +86,7 @@ import com.espressodev.gptmap.core.designsystem.theme.gmColorsPalette
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.chatgpt.Content
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
+import com.espressodev.gptmap.core.screen_capture.ScreenCaptureService
 import com.espressodev.gptmap.feature.map.ComponentLoadingState.MAP
 import com.espressodev.gptmap.feature.map.ComponentLoadingState.STREET_VIEW
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.DETAIL_CARD
@@ -146,7 +156,6 @@ private fun MapScreen(
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(latLng, 12f)
     }
-    var capturedBitmap by remember { mutableStateOf<Bitmap?>(null) }
     AnimateCameraPosition(latLng, cameraPositionState)
     DisplayImageGallery(uiState.imageGalleryState, uiState.location, onEvent)
     Box(
@@ -158,27 +167,40 @@ private fun MapScreen(
             isPlaying = uiState.isFavouriteButtonPlaying,
             onFavouriteClick = navigateToFavourite,
         )
-        ScreenshotCaptureArea(
-            modifier = Modifier
-                .fillMaxSize()
-                .zIndex(4f),
-            onImageCaptured = {
-                capturedBitmap = it
-            }
-        )
-        if (capturedBitmap != null) {
-            Image(
-                bitmap = capturedBitmap!!.asImageBitmap(),
-                contentDescription = "Captured Image",
-                modifier = Modifier
-                    .size(200.dp).zIndex(5f)
-            )
-        }
-        GmDraggableButton(icon = GmIcons.CameraFilled, onClick = {})
+        ScreenCapture()
         LoadingDialog(uiState.componentLoadingState)
         MapSection(cameraPositionState = cameraPositionState)
         DisplayBottomSheet(uiState.bottomSheetState, uiState.location, cameraPositionState, onEvent)
     }
+}
+
+@Composable
+fun BoxScope.ScreenCapture() {
+    val context = LocalContext.current
+    val mediaProjectionManager = context.getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+    val screenCaptureIntent = remember { mediaProjectionManager.createScreenCaptureIntent() }
+    val screenCaptureLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val data = result.data
+                context.startService(
+                    data?.let { intent ->
+                        ScreenCaptureService.getStartIntent(
+                            context,
+                            result.resultCode,
+                            intent
+                        )
+                    }
+                )
+            }
+        }
+
+    GmDraggableButton(
+        icon = GmIcons.CameraFilled,
+        onClick = {
+            screenCaptureLauncher.launch(screenCaptureIntent)
+        }
+    )
 }
 
 
