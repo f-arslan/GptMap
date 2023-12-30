@@ -1,6 +1,7 @@
 package com.espressodev.gptmap.feature.map
 
 import com.espressodev.gptmap.api.gemini.GeminiService
+import com.espressodev.gptmap.api.gemini.impl.GeminiServiceImpl
 import com.espressodev.gptmap.api.unsplash.UnsplashService
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
