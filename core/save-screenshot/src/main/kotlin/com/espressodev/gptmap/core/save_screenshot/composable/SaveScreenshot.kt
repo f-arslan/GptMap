@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -17,7 +18,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.component.GmDraggableButton
 import com.espressodev.gptmap.core.save_screenshot.SaveScreenshotService
-import com.espressodev.gptmap.core.save_screenshot.composable.SaveScreenshotUiState.*
 
 
 @Composable
@@ -25,12 +25,11 @@ fun SaveScreenshot(
     viewModel: ScreenshotViewModel = hiltViewModel(),
     onSuccess: () -> Unit
 ) {
-
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    when (uiState) {
-        Idle -> {}
-        Success -> {
+    LaunchedEffect(key1 = uiState.screenState) {
+        if (uiState.screenState == ScreenState.Success) {
             onSuccess()
+            viewModel.resetScreenState()
         }
     }
 
@@ -55,11 +54,12 @@ fun SaveScreenshot(
         }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        GmDraggableButton(
-            icon = GmIcons.CameraFilled,
-            onClick = {
-                screenCaptureLauncher.launch(screenCaptureIntent)
-            }
-        )
+        if (uiState.isButtonVisible)
+            GmDraggableButton(
+                icon = GmIcons.CameraFilled,
+                onClick = {
+                    screenCaptureLauncher.launch(screenCaptureIntent)
+                }
+            )
     }
 }

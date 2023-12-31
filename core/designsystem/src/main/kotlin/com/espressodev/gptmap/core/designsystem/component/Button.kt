@@ -2,12 +2,15 @@ package com.espressodev.gptmap.core.designsystem.component
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,23 +18,30 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.espressodev.gptmap.core.designsystem.Constants
 import com.espressodev.gptmap.core.designsystem.Constants.BIG_BUTTON_SIZE
 import com.espressodev.gptmap.core.designsystem.Constants.BUTTON_SIZE
@@ -39,28 +49,10 @@ import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.NO_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
-import com.espressodev.gptmap.core.designsystem.R.string as AppText
-import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.VectorConverter
-import androidx.compose.animation.core.spring
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
+import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -127,9 +119,8 @@ fun DefaultButton(@StringRes text: Int, onClick: () -> Unit, modifier: Modifier 
 }
 
 
-
 @Composable
-fun BoxScope.GmDraggableButton(icon: ImageVector, onClick: () -> Unit) {
+fun GmDraggableButton(icon: ImageVector, onClick: () -> Unit) {
     val localDensity = LocalDensity.current
     val screenWidth = with(localDensity) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
     val screenHeight = with(localDensity) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
@@ -152,53 +143,51 @@ fun BoxScope.GmDraggableButton(icon: ImageVector, onClick: () -> Unit) {
         )
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize().zIndex(4f),
-    ) {
-        FloatingActionButton(
-            onClick = onClick,
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier
-                .offset { IntOffset(offset.value.x.roundToInt(), offset.value.y.roundToInt()) }
-                .pointerInput(Unit) {
-                    detectDragGestures(
-                        onDragEnd = {
-                            val leftDistance = offset.value.x
-                            val rightDistance = screenWidth - offset.value.x - buttonSizePx
+    FloatingActionButton(
+        onClick = onClick,
+        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        modifier = Modifier
+            .zIndex(4f)
+            .offset { IntOffset(offset.value.x.roundToInt(), offset.value.y.roundToInt()) }
+            .pointerInput(Unit) {
+                detectDragGestures(
+                    onDragEnd = {
+                        val leftDistance = offset.value.x
+                        val rightDistance = screenWidth - offset.value.x - buttonSizePx
 
-                            val targetX = if (leftDistance < rightDistance) {
-                                marginPx
-                            } else {
-                                screenWidth - buttonSizePx - marginPx
-                            }
-
-                            scope.launch {
-                                offset.animateTo(
-                                    targetValue = Offset(targetX, offset.value.y),
-                                    animationSpec = spring()
-                                )
-                            }
-                        }
-                    ) { change, dragAmount ->
-                        change.consume()
-                        val newX = (offset.value.x + dragAmount.x).coerceIn(
-                            marginPx,
+                        val targetX = if (leftDistance < rightDistance) {
+                            marginPx
+                        } else {
                             screenWidth - buttonSizePx - marginPx
-                        )
-                        val newY = (offset.value.y + dragAmount.y).coerceIn(
-                            marginPx,
-                            screenHeight - buttonSizePx - bottomMarginPx
-                        )
+                        }
+
                         scope.launch {
-                            offset.snapTo(Offset(newX, newY))
+                            offset.animateTo(
+                                targetValue = Offset(targetX, offset.value.y),
+                                animationSpec = spring()
+                            )
                         }
                     }
+                ) { change, dragAmount ->
+                    change.consume()
+                    val newX = (offset.value.x + dragAmount.x).coerceIn(
+                        marginPx,
+                        screenWidth - buttonSizePx - marginPx
+                    )
+                    val newY = (offset.value.y + dragAmount.y).coerceIn(
+                        marginPx,
+                        screenHeight - buttonSizePx - bottomMarginPx
+                    )
+                    scope.launch {
+                        offset.snapTo(Offset(newX, newY))
+                    }
                 }
-        ) {
-            Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(48.dp))
-        }
+            }
+    ) {
+        Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(48.dp))
     }
+
 }
 
 @Composable

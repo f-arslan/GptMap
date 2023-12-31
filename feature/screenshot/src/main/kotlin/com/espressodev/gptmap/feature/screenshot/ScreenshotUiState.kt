@@ -6,21 +6,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 
 
-enum class TakingScreenshotProgress {
-    Idle, OnProgress
-}
-
 enum class ScreenState {
     Initial, AfterSelectingTheField
 }
 
-data class ScreenCaptureUiState(
+data class ScreenshotUiState(
     val isCameraButtonVisible: Boolean = true,
-    val takingScreenshotProgress: TakingScreenshotProgress = TakingScreenshotProgress.Idle,
     val bitmap: Bitmap? = null,
-    val screenState: ScreenState = ScreenState.Initial
+    val screenState: ScreenState = ScreenState.Initial,
+    val imageResult: ImageResult = ImageResult.Initial,
+    val callback: (() -> Unit)? = null
 )
 
+sealed class ScreenshotUiEvent {
+    data class OnBitmapChanged(val bitmap: Bitmap?) : ScreenshotUiEvent()
+    data class OnCallbackChanged(val callback: (() -> Unit)?) : ScreenshotUiEvent()
+
+    data class OnImageResultChanged(val imageResult: ImageResult) : ScreenshotUiEvent()
+    data object OnCaptureClicked: ScreenshotUiEvent()
+
+    data object OnSaveClicked: ScreenshotUiEvent()
+}
 
 sealed class ImageResult {
     data object Initial : ImageResult()

@@ -43,6 +43,7 @@ dependencies {
     implementation(projects.feature.forgotPassword)
     implementation(projects.feature.streetView)
     implementation(projects.feature.favourite)
+    implementation(projects.feature.screenshot)
 
     implementation(projects.core.designsystem)
     implementation(projects.core.common)

@@ -15,6 +15,8 @@ import com.espressodev.gptmap.feature.map.mapScreen
 import com.espressodev.gptmap.feature.map.navigateToMap
 import com.espressodev.gptmap.feature.register.registerRoute
 import com.espressodev.gptmap.feature.register.registerScreen
+import com.espressodev.gptmap.feature.screenshot.screenshotRoute
+import com.espressodev.gptmap.feature.screenshot.screenshotScreen
 import com.espressodev.gptmap.feature.street_view.navigateToStreetView
 import com.espressodev.gptmap.feature.street_view.streetViewScreen
 
@@ -33,7 +35,8 @@ fun GmNavHost(
             navigateToStreetView = { latitude, longitude ->
                 appState.navController.navigateToStreetView(latitude, longitude)
             },
-            navigateToFavourite = { appState.navigate(favouriteRoute) }
+            navigateToFavourite = { appState.navigate(favouriteRoute) },
+            navigateToScreenshot = { appState.navigate(screenshotRoute) }
         )
         loginScreen(
             navigateToMap = { appState.navController.navigateToMap() },
@@ -52,5 +55,6 @@ fun GmNavHost(
                 appState.navController.navigateToMap(favouriteId)
             }
         )
+        screenshotScreen(popUp = appState::popUp)
     }
 }

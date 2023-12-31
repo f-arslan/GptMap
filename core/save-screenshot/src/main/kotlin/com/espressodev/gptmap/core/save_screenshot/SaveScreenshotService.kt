@@ -161,7 +161,7 @@ class SaveScreenshotService : Service() {
 
             // Create a virtual display for the media projection after a delay
             serviceScope.launch {
-                delay(500)
+                delay(250)
                 createVirtualDisplay(mediaProjection)
             }
         } ?: run {
@@ -197,9 +197,9 @@ class SaveScreenshotService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        sendBroadcast(Intent(ACTION_SERVICE_STOPPED))
         releaseResources()
         serviceScope.cancel()
+        sendBroadcast(Intent(ACTION_SERVICE_STOPPED))
     }
 
     companion object {

@@ -10,13 +10,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -69,7 +71,6 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 @Composable
 fun ScreenshotScreen(viewModel: ScreenshotViewModel = hiltViewModel(), popUp: () -> Unit) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    Log.i("ScreenShot", "uiState: $uiState")
 
     Scaffold(
         topBar = {
@@ -78,44 +79,74 @@ fun ScreenshotScreen(viewModel: ScreenshotViewModel = hiltViewModel(), popUp: ()
                 icon = GmIcons.ScreenshotDefault,
                 onBackClick = popUp
             )
+        },
+        bottomBar = {
+            BottomAppBar {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    when (uiState.screenState) {
+                        Initial -> InitialBottomBar(onClick = { viewModel.onEvent(ScreenshotUiEvent.OnCaptureClicked) })
+                        AfterSelectingTheField -> AfterBottomBar(
+                            onCancelClick = popUp,
+                            onSaveClick = { viewModel.onEvent(ScreenshotUiEvent.OnSaveClicked) }
+                        )
+                    }
+                }
+            }
         }
     ) {
         ScreenCaptureScreen(
             uiState = uiState,
-            onCancelClick = popUp,
-            onDoneClick = { },
-            modifier = Modifier.padding(it)
+            modifier = Modifier.padding(it),
+            onEvent = viewModel::onEvent
         )
     }
 }
 
+
+@Composable
+private fun InitialBottomBar(onClick: () -> Unit) {
+    ExtendedFloatingActionButton(onClick = onClick) {
+        Text(text = stringResource(id = R.string.capture))
+    }
+}
+
+@Composable
+private fun AfterBottomBar(onCancelClick: () -> Unit, onSaveClick: () -> Unit) {
+    OutlinedButton(onClick = onCancelClick) {
+        Icon(imageVector = GmIcons.CancelOutlined, stringResource(id = R.string.cancel))
+    }
+    Spacer(modifier = Modifier.width(16.dp))
+    Button(onClick = onSaveClick) {
+        Icon(imageVector = GmIcons.DoneDefault, stringResource(id = R.string.done))
+    }
+}
+
+
 @Composable
 private fun ScreenCaptureScreen(
-    uiState: ScreenCaptureUiState,
-    onCancelClick: () -> Unit,
-    onDoneClick: () -> Unit,
-    modifier: Modifier = Modifier
+    uiState: ScreenshotUiState,
+    modifier: Modifier = Modifier,
+    onEvent: (ScreenshotUiEvent) -> Unit
 ) {
-    val screenshotState = rememberScreenshotState()
-
     when (uiState.screenState) {
         Initial -> {
             ScreenshotGallery(
-                screenshotState = screenshotState,
                 bitmap = uiState.bitmap,
-                modifier = modifier
+                modifier = modifier,
+                onEvent = onEvent,
+                screenState = uiState.screenState
             )
         }
 
         AfterSelectingTheField -> {
-            uiState.bitmap?.also { bitmap ->
-                EditScreenshot(
-                    bitmap = bitmap,
-                    onCancelClick = onCancelClick,
-                    onDoneClick = onDoneClick,
-                    modifier = modifier
-                )
-            }
+            EditScreenshot(
+                imageResult = uiState.imageResult,
+                modifier = modifier
+            )
         }
     }
 }
@@ -123,38 +154,33 @@ private fun ScreenCaptureScreen(
 @Composable
 fun EditScreenshot(
     modifier: Modifier = Modifier,
-    bitmap: Bitmap,
-    onCancelClick: () -> Unit,
-    onDoneClick: () -> Unit
+    imageResult: ImageResult,
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .padding(horizontal = 16.dp)
             .then(modifier)
-            .zIndex(4f), contentAlignment = Alignment.Center
+            .zIndex(4f),
+        contentAlignment = Alignment.Center
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        if (imageResult is ImageResult.Success) {
             Image(
-                bitmap = bitmap.asImageBitmap(),
-                contentDescription = stringResource(id = R.string.selected_image)
+                bitmap = imageResult.data.asImageBitmap(),
+                contentDescription = stringResource(id = R.string.selected_image),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxWidth()
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                OutlinedButton(onClick = onCancelClick) {
-                    Icon(imageVector = GmIcons.CancelOutlined, stringResource(id = R.string.cancel))
-                }
-                Button(onClick = onDoneClick) {
-                    Icon(imageVector = GmIcons.DoneDefault, stringResource(id = R.string.done))
-                }
-            }
         }
     }
 }
 
 @Composable
 fun ScreenshotGallery(
-    screenshotState: ScreenshotState,
     bitmap: Bitmap?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onEvent: (ScreenshotUiEvent) -> Unit,
+    screenState: ScreenState
 ) {
     val size = 300.dp
     val localDensity = LocalDensity.current
@@ -218,30 +244,25 @@ fun ScreenshotGallery(
                     )
                 }
                 .size(size),
-            screenshotState = screenshotState
+            onEvent = onEvent,
+            screenState = screenState
         )
-        ExtendedFloatingActionButton(
-            onClick = { screenshotState.capture() },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
-        ) {
-            Text(text = stringResource(id = R.string.capture))
-        }
     }
 }
 
 @Composable
 fun ScreenshotBox(
     modifier: Modifier = Modifier,
-    screenshotState: ScreenshotState,
+    onEvent: (ScreenshotUiEvent) -> Unit,
+    screenState: ScreenState,
 ) {
     val view: View = LocalView.current
     var composableBounds by remember { mutableStateOf<Rect?>(null) }
+    Log.i("ScreenShot", "composableBounds: $composableBounds")
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(screenshotState) {
-        screenshotState.callback = {
+    LaunchedEffect(screenState) {
+        onEvent(ScreenshotUiEvent.OnCallbackChanged {
             composableBounds?.let { bounds ->
                 if (bounds.width == 0f || bounds.height == 0f) return@let
                 scope.launch {
@@ -249,20 +270,19 @@ fun ScreenshotBox(
                     val imageResult = withContext(Dispatchers.IO) {
                         view.screenshot(bounds)
                     }
-                    screenshotState.imageState.value = imageResult
-
+                    onEvent(ScreenshotUiEvent.OnImageResultChanged(imageResult))
                     if (imageResult is ImageResult.Success) {
-                        screenshotState.bitmapState.value = imageResult.data
+                        onEvent(ScreenshotUiEvent.OnBitmapChanged(imageResult.data))
                     }
                 }
             }
-        }
+        })
     }
 
     DisposableEffect(Unit) {
         onDispose {
-            screenshotState.bitmapState.value = null
-            screenshotState.callback = null
+            onEvent(ScreenshotUiEvent.OnBitmapChanged(null))
+            onEvent(ScreenshotUiEvent.OnCallbackChanged(null))
         }
     }
 

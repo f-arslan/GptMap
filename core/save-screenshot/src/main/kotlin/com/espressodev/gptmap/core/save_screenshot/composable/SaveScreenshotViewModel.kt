@@ -11,33 +11,44 @@ import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.save_screenshot.SaveScreenshotService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 
-enum class SaveScreenshotUiState {
+enum class ScreenState {
     Idle, Success
 }
+
+data class SaveScreenshotUiState(
+    val screenState: ScreenState = ScreenState.Idle,
+    val isButtonVisible: Boolean = true
+)
+
 @HiltViewModel
 class ScreenshotViewModel @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
     logService: LogService
 ) : GmViewModel(logService) {
 
-    private val _uiState = MutableStateFlow(SaveScreenshotUiState.Idle)
+    private val _uiState = MutableStateFlow(SaveScreenshotUiState())
     val uiState = _uiState.asStateFlow()
 
     private val serviceStateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
+                SaveScreenshotService.ACTION_SERVICE_STARTED -> {
+                    _uiState.update { it.copy(isButtonVisible = false) }
+                }
                 SaveScreenshotService.ACTION_SERVICE_STOPPED -> {
-                    _uiState.update { SaveScreenshotUiState.Success }
+                    _uiState.update { it.copy(screenState = ScreenState.Success) }
                 }
             }
         }
     }
+
 
     init {
         initializeScreenCaptureBroadcastReceiver()
@@ -59,5 +70,9 @@ class ScreenshotViewModel @Inject constructor(
         } else {
             applicationContext.registerReceiver(serviceStateReceiver, filter)
         }
+    }
+
+    fun resetScreenState() {
+        _uiState.update { it.copy(screenState = ScreenState.Idle, isButtonVisible = true) }
     }
 }
