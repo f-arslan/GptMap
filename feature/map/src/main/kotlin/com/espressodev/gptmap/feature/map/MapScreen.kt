@@ -73,7 +73,7 @@ import com.espressodev.gptmap.core.designsystem.theme.gmColorsPalette
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.chatgpt.Content
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
-import com.espressodev.gptmap.core.screen_capture.composable.ScreenCapture
+import com.espressodev.gptmap.feature.screenshot.ScreenCapture
 import com.espressodev.gptmap.feature.map.ComponentLoadingState.MAP
 import com.espressodev.gptmap.feature.map.ComponentLoadingState.STREET_VIEW
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.DETAIL_CARD
@@ -124,7 +124,6 @@ fun MapRoute(
 private fun MapScreen(
     uiState: MapUiState,
     onEvent: (MapUiEvent) -> Unit,
-    modifier: Modifier = Modifier,
     navigateToFavourite: () -> Unit,
 ) {
     val latLng = getLatLngFromLocation(uiState.location)
@@ -136,7 +135,6 @@ private fun MapScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .then(modifier)
     ) {
         MapTopButtons(
             isPlaying = uiState.isFavouriteButtonPlaying,

@@ -3,9 +3,9 @@ package com.espressodev.gptmap.core.designsystem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Fingerprint
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.TravelExplore
 import androidx.compose.material.icons.outlined.ArrowBack
@@ -38,4 +38,5 @@ object GmIcons {
     val LocationCityOutlined = Icons.Outlined.LocationCity
     val MyLocationOutlined = Icons.Outlined.MyLocation
     val CameraFilled = Icons.Filled.Camera
+    val DoneDefault = Icons.Default.Done
 }

@@ -47,10 +47,9 @@ suspend fun View.screenshot(bounds: Rect): ImageResult = suspendCancellableCorou
                     else -> continuation.resumeWithException(ScreenshotError.UnknownError())
                 }
             },
-            Handler(Looper.getMainLooper()) // need a handler for PixelCopy callback
+            Handler(Looper.getMainLooper()) //need a handler for PixelCopy callback
         )
     } catch (e: Exception) {
         continuation.resumeWithException(e)
     }
 }
-

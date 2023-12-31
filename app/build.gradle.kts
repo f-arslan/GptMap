@@ -49,7 +49,6 @@ dependencies {
     implementation(projects.core.data)
     implementation(projects.core.domain)
     implementation(projects.core.mongodb)
-    implementation(projects.core.screenCapture)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)

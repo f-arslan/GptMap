@@ -23,8 +23,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.component.GmDraggableButton
 import com.espressodev.gptmap.core.designsystem.component.LoadingAnimation
-import com.espressodev.gptmap.feature.screenshot.ScreenshotCaptureArea
-import com.espressodev.gptmap.feature.screenshot.ScreenshotScreen
 import com.google.android.gms.maps.StreetViewPanoramaOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.streetview.StreetView
@@ -45,29 +43,6 @@ fun StreetViewRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle(
         initialValue = StreetViewUiState(LatLng(latitude, longitude))
     )
-    var capturedBitmap by remember { mutableStateOf<Bitmap?>(null) }
-    Log.d("StreetViewRoute", "capturedBitmap: ${capturedBitmap?.density}")
-    BackHandler { popUp() }
-    ScreenshotCaptureArea(
-        modifier = Modifier
-            .fillMaxSize()
-            .zIndex(4f),
-        onImageCaptured = {
-            capturedBitmap = it
-        }
-    )
-    // Display the captured bitmap if available
-    Box(modifier = Modifier.fillMaxSize().zIndex(5f)) {
-
-        capturedBitmap?.let { bitmap ->
-            Image(
-                bitmap = bitmap.asImageBitmap(),
-                contentDescription = "Captured Image",
-                modifier = Modifier
-                    .size(200.dp)
-            )
-        }
-    }
     StreetViewScreen(uiState, onCameraButtonClick = viewModel::onCameraButtonClick)
 }
 

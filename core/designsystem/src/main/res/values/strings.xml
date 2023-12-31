@@ -33,6 +33,8 @@
     <string name="back_arrow">Back Arrow</string>
     <string name="camera">Camera</string>
     <string name="capture">Capture</string>
+    <string name="done">Done</string>
+    <string name="selected_image">Selected image</string>
 
 
     <!-- Map -->

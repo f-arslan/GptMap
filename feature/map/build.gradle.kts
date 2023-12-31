@@ -15,7 +15,6 @@ dependencies {
     implementation(projects.api.unsplash)
     implementation(projects.api.gemini)
     implementation(projects.feature.screenshot)
-    implementation(projects.core.screenCapture)
 
     implementation(libs.maps.compose)
     implementation(libs.coil.compose)

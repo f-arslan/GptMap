@@ -11,5 +11,4 @@ android {
 dependencies {
     implementation(libs.maps.compose)
     implementation(projects.feature.screenshot)
-    implementation(projects.core.screenCapture)
 }
