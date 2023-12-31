@@ -101,6 +101,7 @@ class ScreenCaptureService : Service() {
             intent.getParcelableExtra(DATA)
         }
         startProjection(resultCode, data)
+        sendBroadcast(Intent(ACTION_SERVICE_STARTED))
         return START_NOT_STICKY
     }
 
@@ -160,7 +161,7 @@ class ScreenCaptureService : Service() {
 
             // Create a virtual display for the media projection after a delay
             serviceScope.launch {
-                delay(500) // Delay in milliseconds
+                delay(500)
                 createVirtualDisplay(mediaProjection)
             }
         } ?: run {
@@ -196,6 +197,7 @@ class ScreenCaptureService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        sendBroadcast(Intent(ACTION_SERVICE_STOPPED))
         releaseResources()
         serviceScope.cancel()
     }
@@ -205,6 +207,8 @@ class ScreenCaptureService : Service() {
         private const val RESULT_CODE = "RESULT_CODE"
         private const val DATA = "DATA"
         private const val SCREEN_CAP_NAME = "screen_cap"
+        const val ACTION_SERVICE_STARTED = "com.espressodev.gptmap.core.screen_capture.SERVICE_STARTED"
+        const val ACTION_SERVICE_STOPPED = "com.espressodev.gptmap.core.screen_capture.SERVICE_STOPPED"
 
         /**
          * Creates an Intent to start the ScreenCaptureService.

@@ -1,14 +1,9 @@
 package com.espressodev.gptmap.feature.map
 
 import android.app.Activity.RESULT_OK
-import android.content.Context
 import android.content.Context.MEDIA_PROJECTION_SERVICE
-import android.content.Intent
-import android.graphics.Bitmap
 import android.media.projection.MediaProjectionManager
-import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
@@ -36,7 +31,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,7 +42,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -86,13 +79,13 @@ import com.espressodev.gptmap.core.designsystem.theme.gmColorsPalette
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.chatgpt.Content
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
+import com.espressodev.gptmap.core.screen_capture.ScreenCapture
 import com.espressodev.gptmap.core.screen_capture.ScreenCaptureService
 import com.espressodev.gptmap.feature.map.ComponentLoadingState.MAP
 import com.espressodev.gptmap.feature.map.ComponentLoadingState.STREET_VIEW
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.DETAIL_CARD
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.NOTHING
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.SMALL_INFORMATION_CARD
-import com.espressodev.gptmap.feature.screenshot.ScreenshotCaptureArea
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -115,29 +108,18 @@ fun MapRoute(
     favouriteId: String
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    Scaffold(
-        bottomBar = {
-            MapBottomBar(
-                uiState = uiState,
-                onValueChange = { viewModel.onEvent(MapUiEvent.OnSearchValueChanged(it)) },
-                onSearchClick = { viewModel.onEvent(MapUiEvent.OnSearchClick) }
+    MapScreen(
+        uiState = uiState,
+        onEvent = { event ->
+            viewModel.onEvent(
+                event = event,
+                navigateToStreetView = { latLng ->
+                    navigateToStreetView(latLng.latitude.toFloat(), latLng.longitude.toFloat())
+                }
             )
-        }
-    ) {
-        MapScreen(
-            uiState = uiState,
-            onEvent = { event ->
-                viewModel.onEvent(
-                    event = event,
-                    navigateToStreetView = { latLng ->
-                        navigateToStreetView(latLng.latitude.toFloat(), latLng.longitude.toFloat())
-                    }
-                )
-            },
-            modifier = Modifier.padding(it),
-            navigateToFavourite = navigateToFavourite
-        )
-    }
+        },
+        navigateToFavourite = navigateToFavourite
+    )
 
     LaunchedEffect(favouriteId) {
         if (favouriteId != "default")
@@ -171,37 +153,15 @@ private fun MapScreen(
         LoadingDialog(uiState.componentLoadingState)
         MapSection(cameraPositionState = cameraPositionState)
         DisplayBottomSheet(uiState.bottomSheetState, uiState.location, cameraPositionState, onEvent)
+        MapBottomBar(
+            uiState = uiState,
+            onValueChange = { onEvent(MapUiEvent.OnSearchValueChanged(it)) },
+            onSearchClick = { onEvent(MapUiEvent.OnSearchClick) },
+        )
     }
 }
 
-@Composable
-fun BoxScope.ScreenCapture() {
-    val context = LocalContext.current
-    val mediaProjectionManager = context.getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-    val screenCaptureIntent = remember { mediaProjectionManager.createScreenCaptureIntent() }
-    val screenCaptureLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val data = result.data
-                context.startService(
-                    data?.let { intent ->
-                        ScreenCaptureService.getStartIntent(
-                            context,
-                            result.resultCode,
-                            intent
-                        )
-                    }
-                )
-            }
-        }
 
-    GmDraggableButton(
-        icon = GmIcons.CameraFilled,
-        onClick = {
-            screenCaptureLauncher.launch(screenCaptureIntent)
-        }
-    )
-}
 
 
 @Composable
@@ -328,13 +288,13 @@ private fun ImageGallery(initialPage: Int, images: List<LocationImage>, onDismis
 }
 
 @Composable
-private fun MapBottomBar(
+private fun BoxScope.MapBottomBar(
     uiState: MapUiState,
     onValueChange: (String) -> Unit,
     onSearchClick: () -> Unit,
 ) {
     if (uiState.bottomSearchState)
-        Box(modifier = Modifier.padding(8.dp)) {
+        Surface(modifier = Modifier.align(Alignment.BottomCenter)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
