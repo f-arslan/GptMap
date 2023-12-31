@@ -1,10 +1,5 @@
 package com.espressodev.gptmap.feature.map
 
-import android.app.Activity.RESULT_OK
-import android.content.Context.MEDIA_PROJECTION_SERVICE
-import android.media.projection.MediaProjectionManager
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -70,7 +65,6 @@ import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
-import com.espressodev.gptmap.core.designsystem.component.GmDraggableButton
 import com.espressodev.gptmap.core.designsystem.component.LoadingAnimation
 import com.espressodev.gptmap.core.designsystem.component.MapSearchButton
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
@@ -79,8 +73,7 @@ import com.espressodev.gptmap.core.designsystem.theme.gmColorsPalette
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.chatgpt.Content
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
-import com.espressodev.gptmap.core.screen_capture.ScreenCapture
-import com.espressodev.gptmap.core.screen_capture.ScreenCaptureService
+import com.espressodev.gptmap.core.screen_capture.composable.ScreenCapture
 import com.espressodev.gptmap.feature.map.ComponentLoadingState.MAP
 import com.espressodev.gptmap.feature.map.ComponentLoadingState.STREET_VIEW
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.DETAIL_CARD
