@@ -20,7 +20,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object FirebaseModule {
-
     @Provides
     fun auth(): FirebaseAuth = Firebase.auth
 
@@ -30,16 +29,4 @@ object FirebaseModule {
     @Singleton
     @Provides
     fun storage(): FirebaseStorage = Firebase.storage
-
-    @Singleton
-    @Provides
-    fun provideResources(application: Application): Resources {
-        return application.resources
-    }
-
-    @Singleton
-    @Provides
-    fun context(@ApplicationContext context: Context): Context {
-        return context.applicationContext
-    }
 }

@@ -19,9 +19,8 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
     private val accountService: AccountService,
-    private val resources: Resources,
     logService: LogService
-): GmViewModel(logService) {
+) : GmViewModel(logService) {
     private val _email = MutableStateFlow("")
     val email = _email.asStateFlow()
 
@@ -32,13 +31,13 @@ class ForgotPasswordViewModel @Inject constructor(
         _email.update { newEmail }
     }
 
-    fun onLoadingStateChange(newLoadingState: LoadingState) {
+    private fun onLoadingStateChange(newLoadingState: LoadingState) {
         _loadingState.update { newLoadingState }
     }
 
     fun sendPasswordResetEmail(clearAndNavigateLogin: () -> Unit) {
         if (!email.value.isValidEmail()) {
-            SnackbarManager.showMessage(resources.getString(AppText.email_error))
+            SnackbarManager.showMessage(AppText.email_error)
             return
         }
         launchCatching {
@@ -50,7 +49,8 @@ class ForgotPasswordViewModel @Inject constructor(
                 clearAndNavigateLogin()
             } else if (response is Response.Failure) {
                 SnackbarManager.showMessage(
-                    response.e.message ?: resources.getString(AppText.email_error)
+                    response.e.message
+                        ?: "Your password reset email could not be sent. Please try again."
                 )
             }
             onLoadingStateChange(LoadingState.Idle)

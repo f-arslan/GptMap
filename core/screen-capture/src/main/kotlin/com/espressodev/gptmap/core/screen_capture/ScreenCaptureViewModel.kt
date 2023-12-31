@@ -24,7 +24,6 @@ data class ScreenCaptureUiState(
     val takingScreenshotProgress: TakingScreenshotProgress = TakingScreenshotProgress.Idle
 )
 
-@SuppressLint("UnspecifiedRegisterReceiverFlag")
 @HiltViewModel
 class ScreenCaptureViewModel @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
@@ -51,6 +50,7 @@ class ScreenCaptureViewModel @Inject constructor(
         initializeScreenCaptureBroadcastReceiver()
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     private fun initializeScreenCaptureBroadcastReceiver() {
         val filter = IntentFilter().apply {
             addAction(ScreenCaptureService.ACTION_SERVICE_STARTED)
