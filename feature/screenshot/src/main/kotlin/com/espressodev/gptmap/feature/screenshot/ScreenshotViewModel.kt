@@ -27,35 +27,9 @@ class ScreenshotViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ScreenCaptureUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val serviceStateReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            when (intent.action) {
-                SaveScreenshotService.ACTION_SERVICE_STARTED -> {
-                    _uiState.update {
-                        it.copy(
-                            takingScreenshotProgress = TakingScreenshotProgress.OnProgress,
-                            isCameraButtonVisible = false
-                        )
-                    }
-                }
-
-                SaveScreenshotService.ACTION_SERVICE_STOPPED -> {
-                    _uiState.update {
-                        it.copy(
-                            takingScreenshotProgress = TakingScreenshotProgress.Idle,
-                            bitmap = loadBitmapFromFile(),
-                            screenState = ScreenState.AfterTakingScreenshot
-                        )
-                    }
-                }
-            }
-        }
-    }
-
     init {
-        initializeScreenCaptureBroadcastReceiver()
+        loadBitmapFromFile()
     }
-
 
     fun onImageCaptured(bitmap: Bitmap) {
         _uiState.update {
@@ -66,32 +40,17 @@ class ScreenshotViewModel @Inject constructor(
         }
     }
 
-    @SuppressLint("UnspecifiedRegisterReceiverFlag")
-    private fun initializeScreenCaptureBroadcastReceiver() = launchCatching {
-        val filter = IntentFilter().apply {
-            addAction(SaveScreenshotService.ACTION_SERVICE_STARTED)
-            addAction(SaveScreenshotService.ACTION_SERVICE_STOPPED)
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            applicationContext.registerReceiver(
-                serviceStateReceiver,
-                filter,
-                Context.RECEIVER_NOT_EXPORTED
-            )
-        } else {
-            applicationContext.registerReceiver(serviceStateReceiver, filter)
-        }
-    }
-
-    fun loadBitmapFromFile(): Bitmap =
-        applicationContext.getExternalFilesDir(null)?.let { dir ->
+    private fun loadBitmapFromFile() = launchCatching {
+        applicationContext.getExternalFilesDir(null)?.also { dir ->
             val filePath = "${dir.absolutePath}/screenshots/screenshot.png"
-            BitmapFactory.decodeFile(filePath)
-        } ?: throw Exception("Failed to load bitmap from file")
-
-
-    override fun onCleared() {
-        applicationContext.unregisterReceiver(serviceStateReceiver)
-        super.onCleared()
+            BitmapFactory.decodeFile(filePath)?.also { bitmap ->
+                _uiState.update {
+                    it.copy(
+                        bitmap = bitmap,
+                        screenState = ScreenState.AfterSelectingTheField
+                    )
+                }
+            }
+        }
     }
 }

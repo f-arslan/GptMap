@@ -73,6 +73,7 @@ import com.espressodev.gptmap.core.designsystem.theme.gmColorsPalette
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.chatgpt.Content
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
+import com.espressodev.gptmap.core.save_screenshot.composable.SaveScreenshot
 import com.espressodev.gptmap.feature.screenshot.Screenshot
 import com.espressodev.gptmap.feature.map.ComponentLoadingState.MAP
 import com.espressodev.gptmap.feature.map.ComponentLoadingState.STREET_VIEW
@@ -98,6 +99,7 @@ fun MapRoute(
     viewModel: MapViewModel = hiltViewModel(),
     navigateToStreetView: (Float, Float) -> Unit,
     navigateToFavourite: () -> Unit,
+    navigateToScreenshot: () -> Unit,
     favouriteId: String
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -113,6 +115,10 @@ fun MapRoute(
         },
         navigateToFavourite = navigateToFavourite
     )
+
+    SaveScreenshot {
+        navigateToScreenshot()
+    }
 
     LaunchedEffect(favouriteId) {
         if (favouriteId != "default")

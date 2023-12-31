@@ -1,13 +1,8 @@
 package com.espressodev.gptmap.feature.screenshot
 
-import android.app.Activity
-import android.content.Context
 import android.graphics.Bitmap
-import android.media.projection.MediaProjectionManager
 import android.util.Log
 import android.view.View
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.foundation.Canvas
@@ -15,7 +10,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,6 +21,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -52,7 +47,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -63,79 +57,54 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.R
-import com.espressodev.gptmap.core.designsystem.component.GmDraggableButton
-import com.espressodev.gptmap.core.save_screenshot.SaveScreenshotService
+import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
+import com.espressodev.gptmap.feature.screenshot.ScreenState.AfterSelectingTheField
+import com.espressodev.gptmap.feature.screenshot.ScreenState.Initial
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
-import com.espressodev.gptmap.feature.screenshot.ScreenState.AfterTakingScreenshot
-import com.espressodev.gptmap.feature.screenshot.ScreenState.Initial
-import com.espressodev.gptmap.feature.screenshot.ScreenState.AfterSelectingTheField
+import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @Composable
-fun BoxScope.Screenshot(viewModel: ScreenshotViewModel = hiltViewModel()) {
+fun ScreenshotScreen(viewModel: ScreenshotViewModel = hiltViewModel(), popUp: () -> Unit) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var isScreenOpen by remember { mutableStateOf(true) }
-    if (!isScreenOpen) return
     Log.i("ScreenShot", "uiState: $uiState")
 
-    ScreenCaptureScreen(
-        uiState = uiState,
-        onImageCaptured = viewModel::onImageCaptured,
-        onCancelClick = { isScreenOpen = false },
-        onDoneClick = { }
-    )
+    Scaffold(
+        topBar = {
+            GmTopAppBar(
+                title = AppText.edit_screenshot,
+                icon = GmIcons.ScreenshotDefault,
+                onBackClick = popUp
+            )
+        }
+    ) {
+        ScreenCaptureScreen(
+            uiState = uiState,
+            onCancelClick = popUp,
+            onDoneClick = { },
+            modifier = Modifier.padding(it)
+        )
+    }
 }
 
 @Composable
-private fun BoxScope.ScreenCaptureScreen(
+private fun ScreenCaptureScreen(
     uiState: ScreenCaptureUiState,
-    onImageCaptured: (Bitmap) -> Unit,
     onCancelClick: () -> Unit,
-    onDoneClick: () -> Unit
+    onDoneClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-    val mediaProjectionManager =
-        context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-    val screenCaptureIntent = remember { mediaProjectionManager.createScreenCaptureIntent() }
     val screenshotState = rememberScreenshotState()
-    val screenCaptureLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val data = result.data
-                context.startService(
-                    data?.let { intent ->
-                        SaveScreenshotService.getStartIntent(
-                            context,
-                            result.resultCode,
-                            intent
-                        )
-                    }
-                )
-            }
-        }
-
-    LaunchedEffect(screenshotState.imageState.value) {
-        screenshotState.imageState.value.also { imageResult ->
-            if (imageResult is ImageResult.Success)
-                onImageCaptured(imageResult.data)
-        }
-    }
-
 
     when (uiState.screenState) {
         Initial -> {
-            GmDraggableButton(
-                icon = GmIcons.CameraFilled,
-                onClick = {
-                    screenCaptureLauncher.launch(screenCaptureIntent)
-                }
+            ScreenshotGallery(
+                screenshotState = screenshotState,
+                bitmap = uiState.bitmap,
+                modifier = modifier
             )
-        }
-
-        AfterTakingScreenshot -> {
-            ScreenshotGallery(screenshotState = screenshotState, uiState.bitmap)
         }
 
         AfterSelectingTheField -> {
@@ -143,7 +112,8 @@ private fun BoxScope.ScreenCaptureScreen(
                 EditScreenshot(
                     bitmap = bitmap,
                     onCancelClick = onCancelClick,
-                    onDoneClick = onDoneClick
+                    onDoneClick = onDoneClick,
+                    modifier = modifier
                 )
             }
         }
@@ -151,10 +121,18 @@ private fun BoxScope.ScreenCaptureScreen(
 }
 
 @Composable
-fun EditScreenshot(bitmap: Bitmap, onCancelClick: () -> Unit, onDoneClick: () -> Unit) {
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .zIndex(4f), contentAlignment = Alignment.Center) {
+fun EditScreenshot(
+    modifier: Modifier = Modifier,
+    bitmap: Bitmap,
+    onCancelClick: () -> Unit,
+    onDoneClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .then(modifier)
+            .zIndex(4f), contentAlignment = Alignment.Center
+    ) {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Image(
                 bitmap = bitmap.asImageBitmap(),
@@ -173,7 +151,11 @@ fun EditScreenshot(bitmap: Bitmap, onCancelClick: () -> Unit, onDoneClick: () ->
 }
 
 @Composable
-fun ScreenshotGallery(screenshotState: ScreenshotState, bitmap: Bitmap?) {
+fun ScreenshotGallery(
+    screenshotState: ScreenshotState,
+    bitmap: Bitmap?,
+    modifier: Modifier = Modifier
+) {
     val size = 300.dp
     val localDensity = LocalDensity.current
     val squareSizePx = with(localDensity) { size.toPx() }
@@ -186,6 +168,7 @@ fun ScreenshotGallery(screenshotState: ScreenshotState, bitmap: Bitmap?) {
         modifier = Modifier
             .fillMaxSize()
             .zIndex(4f)
+            .then(modifier)
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
                     change.consume()

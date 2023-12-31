@@ -35,6 +35,7 @@
     <string name="capture">Capture</string>
     <string name="done">Done</string>
     <string name="selected_image">Selected image</string>
+    <string name="edit_screenshot">Edit Screenshot</string>
 
 
     <!-- Map -->

@@ -11,7 +11,7 @@ enum class TakingScreenshotProgress {
 }
 
 enum class ScreenState {
-    Initial, AfterTakingScreenshot, AfterSelectingTheField
+    Initial, AfterSelectingTheField
 }
 
 data class ScreenCaptureUiState(
