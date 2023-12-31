@@ -32,7 +32,7 @@
         </activity>
 
         <service
-            android:name=".core.screen_capture.ScreenCaptureService"
+            android:name=".core.save_screenshot.SaveScreenshotService"
             android:foregroundServiceType="mediaProjection" />
     </application>
 

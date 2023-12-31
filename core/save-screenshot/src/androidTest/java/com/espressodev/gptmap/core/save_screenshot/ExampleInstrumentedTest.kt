@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.core.screen_capture
+package com.espressodev.gptmap.core.save_screenshot
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.espressodev.gptmap.core.screen_capture.test", appContext.packageName)
+        assertEquals("com.espressodev.gptmap.core.save_screenshot.test", appContext.packageName)
     }
 }

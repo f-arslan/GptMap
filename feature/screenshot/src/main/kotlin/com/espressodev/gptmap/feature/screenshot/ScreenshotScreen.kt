@@ -64,7 +64,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.R
 import com.espressodev.gptmap.core.designsystem.component.GmDraggableButton
-import com.espressodev.gptmap.core.screen_capture.ScreenCaptureService
+import com.espressodev.gptmap.core.save_screenshot.SaveScreenshotService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -74,15 +74,17 @@ import com.espressodev.gptmap.feature.screenshot.ScreenState.Initial
 import com.espressodev.gptmap.feature.screenshot.ScreenState.AfterSelectingTheField
 
 @Composable
-fun BoxScope.ScreenCapture(viewModel: ScreenshotViewModel = hiltViewModel()) {
+fun BoxScope.Screenshot(viewModel: ScreenshotViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    Log.i("ScreenCapture", "uiState: $uiState")
+    var isScreenOpen by remember { mutableStateOf(true) }
+    if (!isScreenOpen) return
+    Log.i("ScreenShot", "uiState: $uiState")
 
     ScreenCaptureScreen(
         uiState = uiState,
         onImageCaptured = viewModel::onImageCaptured,
-        onCancelClick = { return@ScreenCaptureScreen },
-        onDoneClick = {}
+        onCancelClick = { isScreenOpen = false },
+        onDoneClick = { }
     )
 }
 
@@ -104,7 +106,7 @@ private fun BoxScope.ScreenCaptureScreen(
                 val data = result.data
                 context.startService(
                     data?.let { intent ->
-                        ScreenCaptureService.getStartIntent(
+                        SaveScreenshotService.getStartIntent(
                             context,
                             result.resultCode,
                             intent
@@ -150,7 +152,9 @@ private fun BoxScope.ScreenCaptureScreen(
 
 @Composable
 fun EditScreenshot(bitmap: Bitmap, onCancelClick: () -> Unit, onDoneClick: () -> Unit) {
-    Box(modifier = Modifier.fillMaxSize().zIndex(4f), contentAlignment = Alignment.Center) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .zIndex(4f), contentAlignment = Alignment.Center) {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Image(
                 bitmap = bitmap.asImageBitmap(),

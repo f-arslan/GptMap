@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.core.screen_capture
+package com.espressodev.gptmap.core.save_screenshot
 
 import android.app.Activity
 import android.app.Notification
@@ -28,7 +28,7 @@ import java.io.FileOutputStream
 /**
  * Service for capturing the device's screen.
  */
-class ScreenCaptureService : Service() {
+class SaveScreenshotService : Service() {
     private var mMediaProjection: MediaProjection? = null
     private var mStoreDir: String? = null
     private var mImageReader: ImageReader? = null
@@ -214,7 +214,7 @@ class ScreenCaptureService : Service() {
          * Creates an Intent to start the ScreenCaptureService.
          */
         fun getStartIntent(context: Context, resultCode: Int, data: Intent): Intent {
-            return Intent(context, ScreenCaptureService::class.java).apply {
+            return Intent(context, SaveScreenshotService::class.java).apply {
                 putExtra(RESULT_CODE, resultCode)
                 putExtra(DATA, data)
             }

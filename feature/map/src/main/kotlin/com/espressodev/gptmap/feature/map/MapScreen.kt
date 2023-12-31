@@ -73,7 +73,7 @@ import com.espressodev.gptmap.core.designsystem.theme.gmColorsPalette
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.chatgpt.Content
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
-import com.espressodev.gptmap.feature.screenshot.ScreenCapture
+import com.espressodev.gptmap.feature.screenshot.Screenshot
 import com.espressodev.gptmap.feature.map.ComponentLoadingState.MAP
 import com.espressodev.gptmap.feature.map.ComponentLoadingState.STREET_VIEW
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.DETAIL_CARD
@@ -140,7 +140,7 @@ private fun MapScreen(
             isPlaying = uiState.isFavouriteButtonPlaying,
             onFavouriteClick = navigateToFavourite,
         )
-        ScreenCapture()
+        Screenshot()
         LoadingDialog(uiState.componentLoadingState)
         MapSection(cameraPositionState = cameraPositionState)
         DisplayBottomSheet(uiState.bottomSheetState, uiState.location, cameraPositionState, onEvent)

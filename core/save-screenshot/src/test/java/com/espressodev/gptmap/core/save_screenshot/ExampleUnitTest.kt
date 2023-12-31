@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.core.screen_capture
+package com.espressodev.gptmap.core.save_screenshot
 
 import org.junit.Test
 

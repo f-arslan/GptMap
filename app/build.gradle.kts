@@ -49,6 +49,7 @@ dependencies {
     implementation(projects.core.data)
     implementation(projects.core.domain)
     implementation(projects.core.mongodb)
+    implementation(projects.core.saveScreenshot)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)

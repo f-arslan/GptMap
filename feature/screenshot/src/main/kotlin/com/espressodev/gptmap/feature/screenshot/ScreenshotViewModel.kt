@@ -10,7 +10,7 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.data.LogService
-import com.espressodev.gptmap.core.screen_capture.ScreenCaptureService
+import com.espressodev.gptmap.core.save_screenshot.SaveScreenshotService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +30,7 @@ class ScreenshotViewModel @Inject constructor(
     private val serviceStateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
-                ScreenCaptureService.ACTION_SERVICE_STARTED -> {
+                SaveScreenshotService.ACTION_SERVICE_STARTED -> {
                     _uiState.update {
                         it.copy(
                             takingScreenshotProgress = TakingScreenshotProgress.OnProgress,
@@ -39,7 +39,7 @@ class ScreenshotViewModel @Inject constructor(
                     }
                 }
 
-                ScreenCaptureService.ACTION_SERVICE_STOPPED -> {
+                SaveScreenshotService.ACTION_SERVICE_STOPPED -> {
                     _uiState.update {
                         it.copy(
                             takingScreenshotProgress = TakingScreenshotProgress.Idle,
@@ -50,7 +50,6 @@ class ScreenshotViewModel @Inject constructor(
                 }
             }
         }
-
     }
 
     init {
@@ -70,8 +69,8 @@ class ScreenshotViewModel @Inject constructor(
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     private fun initializeScreenCaptureBroadcastReceiver() = launchCatching {
         val filter = IntentFilter().apply {
-            addAction(ScreenCaptureService.ACTION_SERVICE_STARTED)
-            addAction(ScreenCaptureService.ACTION_SERVICE_STOPPED)
+            addAction(SaveScreenshotService.ACTION_SERVICE_STARTED)
+            addAction(SaveScreenshotService.ACTION_SERVICE_STOPPED)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             applicationContext.registerReceiver(
