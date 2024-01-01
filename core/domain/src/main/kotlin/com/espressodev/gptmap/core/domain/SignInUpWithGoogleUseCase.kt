@@ -49,9 +49,7 @@ class SignInUpWithGoogleUseCase @Inject constructor(
 
     private suspend fun loginToRealm(authResult: AuthResult) {
         authResult.user?.getIdToken(true)?.await()?.token?.let {
-            realmAccountService.loginWithEmail(it).onFailure { throwable ->
-                throw Exception(throwable)
-            }
+            realmAccountService.loginWithEmail(it).getOrThrow()
         } ?: throw FirebaseUserIdIsNullException()
     }
 
@@ -59,9 +57,7 @@ class SignInUpWithGoogleUseCase @Inject constructor(
         authResult.additionalUserInfo?.isNewUser?.also {
             if (it)
                 authResult.user?.also { user ->
-                    addUserToFirestore(user).onFailure { throwable ->
-                        throw Exception(throwable)
-                    }
+                    addUserToFirestore(user).getOrThrow()
                 }
         }
     }

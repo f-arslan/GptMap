@@ -19,9 +19,7 @@ class AddDatabaseIfUserIsNewUseCase @Inject constructor(
             return@withContext Result.success(value = true)
         }
         val realmUser = firestoreService.getUser(accountService.currentUser.uid).toRealmUser()
-        realmSyncService.saveUser(realmUser).onFailure {
-            throw Exception(it)
-        }
+        realmSyncService.saveUser(realmUser).getOrThrow()
         Result.success(value = true)
     }
 }

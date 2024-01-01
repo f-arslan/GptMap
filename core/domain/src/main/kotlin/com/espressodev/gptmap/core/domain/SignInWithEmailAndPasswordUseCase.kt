@@ -33,9 +33,7 @@ class SignInWithEmailAndPasswordUseCase @Inject constructor(
 
     private suspend fun loginToRealm(authResult: AuthResult) {
         authResult.user?.getIdToken(true)?.await()?.token?.let {
-            realmAccountService.loginWithEmail(it).onFailure { throwable ->
-                throw Exception(throwable)
-            }
+            realmAccountService.loginWithEmail(it).getOrThrow()
         } ?: throw FirebaseUserIdIsNullException()
     }
 

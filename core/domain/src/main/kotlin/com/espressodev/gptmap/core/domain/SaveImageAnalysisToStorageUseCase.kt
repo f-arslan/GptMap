@@ -19,14 +19,10 @@ class SaveImageAnalysisToStorageUseCase @Inject constructor(
         try {
             val byteArray = bitmapToByteArray(bitmap)
             val imageId = UUID.randomUUID().toString()
-            storageService.uploadImage(byteArray, imageId, ANALYSIS_IMAGE_REFERENCE)
-                .onSuccess { imageUrl ->
-                    saveImageAnalysisToRealm(imageId, imageUrl)
-                    Result.success(true)
-                }
-                .onFailure {
-                    throw it
-                }
+            val uploadImageResult = storageService.uploadImage(byteArray, imageId, ANALYSIS_IMAGE_REFERENCE).getOrThrow()
+
+            saveImageAnalysisToRealm(imageId, uploadImageResult)
+            Result.success(true)
         } catch (e: Exception) {
             Result.failure(e)
         }

@@ -11,16 +11,10 @@ class SaveImageToInternalStorageUseCase @Inject constructor(
     private val downloadAndCompressImageUseCase: DownloadAndCompressImageUseCase
 ) {
     suspend operator fun invoke(imageUrl: String, fileId: String) = withContext(Dispatchers.IO) {
-        try {
-            downloadAndCompressImageUseCase(imageUrl).onSuccess {
-                saveToInternalStorage(it, fileId)
-            }.onFailure {
-                throw it
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        val imageData = downloadAndCompressImageUseCase(imageUrl).getOrThrow()
+        saveToInternalStorage(imageData, fileId)
     }
+
     private fun saveToInternalStorage(imageData: ByteArray, filename: String) {
         context.openFileOutput(filename, Context.MODE_PRIVATE).use { fos ->
             fos.write(imageData)
