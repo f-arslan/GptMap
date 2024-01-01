@@ -1,8 +1,8 @@
 package com.espressodev.gptmap.core.mongodb.impl
 
 import android.util.Log
-import com.espressodev.gptmap.core.model.Exceptions.RealmFavouriteNotFoundException
 import com.espressodev.gptmap.core.model.Favourite
+import com.espressodev.gptmap.core.model.RealmImageAnalysis
 import com.espressodev.gptmap.core.model.realm.RealmFavourite
 import com.espressodev.gptmap.core.model.realm.RealmUser
 import com.espressodev.gptmap.core.model.realm.toFavourite
@@ -31,11 +31,11 @@ class RealmSyncServiceImpl : RealmSyncService {
         Result.failure<Throwable>(it)
     }
 
-    override suspend fun saveLocation(realmLocation: RealmFavourite): Result<Boolean> =
+    override suspend fun saveFavourite(realmFavourite: RealmFavourite): Result<Boolean> =
         runCatching {
             realm.write {
                 copyToRealm(
-                    realmLocation.apply {
+                    realmFavourite.apply {
                         userId = realmUser.id
                     }, updatePolicy = UpdatePolicy.ALL
                 )
@@ -45,6 +45,22 @@ class RealmSyncServiceImpl : RealmSyncService {
             Log.e("RealmSyncServiceImpl", "addLocation: failure $it")
             Result.failure<Throwable>(it)
         }
+
+    override suspend fun saveImageAnalysis(realmImageAnalysis: RealmImageAnalysis): Result<Boolean> {
+        return runCatching {
+            realm.write {
+                copyToRealm(
+                    realmImageAnalysis.apply {
+                        userId = realmUser.id
+                    }, updatePolicy = UpdatePolicy.ALL
+                )
+            }
+            true
+        }.onFailure {
+            Log.e("RealmSyncServiceImpl", "addImageAnalysis: failure $it")
+            Result.failure<Throwable>(it)
+        }
+    }
 
     override fun getFavourites(): Flow<List<Favourite>> =
         realm.query<RealmFavourite>("userId == $0", realmUser.id).find().asFlow().map {

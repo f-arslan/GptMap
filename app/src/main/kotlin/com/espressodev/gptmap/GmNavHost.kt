@@ -8,6 +8,7 @@ import com.espressodev.gptmap.feature.favourite.favouriteRoute
 import com.espressodev.gptmap.feature.favourite.favouriteScreen
 import com.espressodev.gptmap.feature.forgot_password.forgotPasswordRoute
 import com.espressodev.gptmap.feature.forgot_password.forgotPasswordScreen
+import com.espressodev.gptmap.feature.image_analysis.imageAnalysisScreen
 import com.espressodev.gptmap.feature.login.loginRoute
 import com.espressodev.gptmap.feature.login.loginScreen
 import com.espressodev.gptmap.feature.map.mapRoute
@@ -56,5 +57,6 @@ fun GmNavHost(
             }
         )
         screenshotScreen(popUp = appState::popUp)
+        imageAnalysisScreen(popUp = appState::popUp)
     }
 }

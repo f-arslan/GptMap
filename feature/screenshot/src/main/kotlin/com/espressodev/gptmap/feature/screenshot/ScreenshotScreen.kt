@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.feature.screenshot
 
-import android.graphics.Bitmap
 import android.util.Log
 import android.view.View
 import androidx.compose.animation.core.Animatable
@@ -22,6 +21,7 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -49,6 +49,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -57,6 +58,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.R
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
@@ -109,7 +112,7 @@ fun ScreenshotScreen(viewModel: ScreenshotViewModel = hiltViewModel(), popUp: ()
 
 @Composable
 private fun InitialBottomBar(onClick: () -> Unit) {
-    ExtendedFloatingActionButton(onClick = onClick) {
+    Button(onClick = onClick) {
         Text(text = stringResource(id = R.string.capture))
     }
 }
@@ -135,7 +138,6 @@ private fun ScreenCaptureScreen(
     when (uiState.screenState) {
         Initial -> {
             ScreenshotGallery(
-                bitmap = uiState.bitmap,
                 modifier = modifier,
                 onEvent = onEvent,
                 screenState = uiState.screenState
@@ -157,11 +159,9 @@ fun EditScreenshot(
     imageResult: ImageResult,
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .then(modifier)
-            .zIndex(4f),
+            .padding(horizontal = 16.dp),
         contentAlignment = Alignment.Center
     ) {
         if (imageResult is ImageResult.Success) {
@@ -177,7 +177,6 @@ fun EditScreenshot(
 
 @Composable
 fun ScreenshotGallery(
-    bitmap: Bitmap?,
     modifier: Modifier = Modifier,
     onEvent: (ScreenshotUiEvent) -> Unit,
     screenState: ScreenState
@@ -186,15 +185,15 @@ fun ScreenshotGallery(
     val localDensity = LocalDensity.current
     val squareSizePx = with(localDensity) { size.toPx() }
     val scope = rememberCoroutineScope()
-
-    // State to hold the position of the square
+    val context = LocalContext.current
+    val imagePath = remember {
+        context.getExternalFilesDir(null)?.absolutePath?.let { "${it}/screenshots/screenshot.png" }
+    }
     val offset = remember { Animatable(Offset(0f, 0f), Offset.VectorConverter) }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
-            .zIndex(4f)
-            .then(modifier)
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
                     change.consume()
@@ -209,12 +208,14 @@ fun ScreenshotGallery(
                 }
             }
     ) {
-        bitmap?.let {
-            Image(
-                bitmap = bitmap.asImageBitmap(),
-                null,
-                modifier = Modifier.fillMaxWidth(),
-                contentScale = ContentScale.Crop
+        imagePath?.let {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(imagePath)
+                    .build(),
+                contentDescription = stringResource(id = R.string.selected_image),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxWidth()
             )
         }
         Canvas(
@@ -258,7 +259,6 @@ fun ScreenshotBox(
 ) {
     val view: View = LocalView.current
     var composableBounds by remember { mutableStateOf<Rect?>(null) }
-    Log.i("ScreenShot", "composableBounds: $composableBounds")
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(screenState) {

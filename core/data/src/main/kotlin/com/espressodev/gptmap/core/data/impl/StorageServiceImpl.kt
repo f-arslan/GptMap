@@ -8,7 +8,11 @@ import javax.inject.Inject
 class StorageServiceImpl @Inject constructor(private val storage: FirebaseStorage) :
     StorageService {
 
-    override suspend fun uploadImage(image: ByteArray, imageName: String): Result<String> =
+    override suspend fun uploadImage(
+        image: ByteArray,
+        imageName: String,
+        bucketName: String
+    ): Result<String> =
         try {
             val imageReference = storage.reference.child(IMAGE_REFERENCE).child(imageName)
             imageReference.putBytes(image).await()
@@ -19,6 +23,7 @@ class StorageServiceImpl @Inject constructor(private val storage: FirebaseStorag
 
 
     companion object {
-        private const val IMAGE_REFERENCE = "images"
+        const val IMAGE_REFERENCE = "images"
+        const val ANALYSIS_IMAGE_REFERENCE = "analysis"
     }
 }

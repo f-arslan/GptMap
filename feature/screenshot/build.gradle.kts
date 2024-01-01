@@ -10,4 +10,5 @@ android {
 
 dependencies {
     implementation(projects.core.saveScreenshot)
+    implementation(libs.coil.compose)
 }

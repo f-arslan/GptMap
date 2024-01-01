@@ -7,6 +7,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -223,7 +224,10 @@ private fun DetailButtons(
             contentDesc = AppText.street_view,
             onClick = onStreetViewClick
         )
-        AnimatedVisibility(addToFavouriteButtonState) {
+        AnimatedVisibility(
+            addToFavouriteButtonState,
+            exit = slideOutVertically(targetOffsetY = { fullHeight: Int -> -fullHeight })
+        ) {
             SquareButton(
                 icon = GmIcons.FavouriteOutlined,
                 contentDesc = AppText.add_favourite,

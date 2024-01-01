@@ -61,8 +61,6 @@ fun MapSearchButton(
     icon: ImageVector = GmIcons.SearchDefault,
     shape: Shape = RoundedCornerShape(HIGH_PADDING),
     buttonEnabledState: Boolean,
-    containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
-    contentColor: Color = MaterialTheme.colorScheme.onPrimaryContainer
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     Button(
@@ -73,10 +71,6 @@ fun MapSearchButton(
             onClick()
         },
         modifier = Modifier.size(BUTTON_SIZE),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = containerColor,
-            contentColor = contentColor
-        ),
         contentPadding = PaddingValues(NO_PADDING)
     ) {
         Icon(icon, stringResource(id = AppText.search))

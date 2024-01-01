@@ -44,6 +44,7 @@ dependencies {
     implementation(projects.feature.streetView)
     implementation(projects.feature.favourite)
     implementation(projects.feature.screenshot)
+    implementation(projects.feature.imageAnalysis)
 
     implementation(projects.core.designsystem)
     implementation(projects.core.common)
@@ -55,6 +56,4 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.work.ktx)
-    implementation(libs.hilt.ext.work)
 }

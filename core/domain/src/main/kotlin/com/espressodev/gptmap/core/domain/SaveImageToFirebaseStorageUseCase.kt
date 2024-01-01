@@ -1,6 +1,7 @@
 package com.espressodev.gptmap.core.domain
 
 import com.espressodev.gptmap.core.data.StorageService
+import com.espressodev.gptmap.core.data.impl.StorageServiceImpl.Companion.IMAGE_REFERENCE
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +18,7 @@ class SaveImageToFirebaseStorageUseCase @Inject constructor(
 
         downloadAndCompressImageUseCase(location.locationImages[0].imageUrl)
             .onSuccess { imageData ->
-                storageService.uploadImage(imageData, location.id)
+                storageService.uploadImage(imageData, location.id, IMAGE_REFERENCE)
                     .onSuccess { imageUrl ->
                         saveImageUrlToRealm(imageUrl, location)
                     }.onFailure {
@@ -32,6 +33,6 @@ class SaveImageToFirebaseStorageUseCase @Inject constructor(
         val realmLocation = location.toRealmLocation().apply {
             placeholderImageUrl = imageUrl
         }
-        realmSyncService.saveLocation(realmLocation).onFailure { throw it }
+        realmSyncService.saveFavourite(realmLocation).onFailure { throw it }
     }
 }

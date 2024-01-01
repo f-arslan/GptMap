@@ -30,24 +30,5 @@ sealed class ScreenshotUiEvent {
 
 sealed class ImageResult {
     data object Initial : ImageResult()
-    data class Error(val exception: Exception) : ImageResult()
     data class Success(val data: Bitmap) : ImageResult()
-}
-
-
-@Composable
-fun rememberScreenshotState() = remember {
-    ScreenshotState()
-}
-
-class ScreenshotState {
-    val imageState = mutableStateOf<ImageResult>(ImageResult.Initial)
-
-    val bitmapState = mutableStateOf<Bitmap?>(null)
-
-    internal var callback: (() -> Unit)? = null
-
-    fun capture() {
-        callback?.invoke()
-    }
 }
