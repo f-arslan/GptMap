@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 
 enum class ScreenState {
-    Idle, Success
+    Idle, Started, Finished
 }
 
 data class SaveScreenshotUiState(
@@ -40,10 +40,16 @@ class ScreenshotViewModel @Inject constructor(
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
                 SaveScreenshotService.ACTION_SERVICE_STARTED -> {
-                    _uiState.update { it.copy(isButtonVisible = false) }
+                    _uiState.update {
+                        it.copy(
+                            isButtonVisible = false,
+                            screenState = ScreenState.Started
+                        )
+                    }
                 }
+
                 SaveScreenshotService.ACTION_SERVICE_STOPPED -> {
-                    _uiState.update { it.copy(screenState = ScreenState.Success) }
+                    _uiState.update { it.copy(screenState = ScreenState.Finished) }
                 }
             }
         }

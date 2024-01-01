@@ -25,6 +25,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -107,7 +108,9 @@ fun MapRoute(
             if (uiState.bottomSearchState) {
                 BottomAppBar {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
@@ -136,9 +139,13 @@ fun MapRoute(
         )
     }
 
-    SaveScreenshot {
-        navigateToScreenshot()
-    }
+    SaveScreenshot(
+        onSuccess = {
+            navigateToScreenshot()
+            viewModel.reset()
+        },
+        onProcessStarted = { viewModel.onEvent(MapUiEvent.OnScreenshotProcessStarted) }
+    )
 
     LaunchedEffect(favouriteId) {
         if (favouriteId != "default")
@@ -155,22 +162,20 @@ private fun MapScreen(
 ) {
     val latLng = getLatLngFromLocation(uiState.location)
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(latLng, 12f)
+        position = CameraPosition.fromLatLngZoom(latLng, 13f)
     }
     AnimateCameraPosition(latLng, cameraPositionState)
     DisplayImageGallery(uiState.imageGalleryState, uiState.location, onEvent)
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-    ) {
+    Box(modifier = modifier.fillMaxSize()) {
         MapTopButtons(
             isPlaying = uiState.isFavouriteButtonPlaying,
+            isVisible = uiState.isTopButtonsVisible,
             onFavouriteClick = navigateToFavourite,
+            onImageAnalysisGalleryClick = {}
         )
         LoadingDialog(uiState.componentLoadingState)
         MapSection(cameraPositionState = cameraPositionState)
         DisplayBottomSheet(uiState.bottomSheetState, uiState.location, cameraPositionState, onEvent)
-
     }
 }
 
@@ -178,30 +183,45 @@ private fun MapScreen(
 @Composable
 fun BoxScope.MapTopButtons(
     isPlaying: Boolean,
+    isVisible: Boolean,
     onFavouriteClick: () -> Unit,
+    onImageAnalysisGalleryClick: () -> Unit,
 ) {
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(AppRaw.favourite_anim))
-    val progress by animateLottieCompositionAsState(composition, isPlaying = isPlaying)
-    Column(
+    AnimatedVisibility(
+        visible = isVisible,
         modifier = Modifier
             .align(Alignment.TopEnd)
             .zIndex(2f)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(8.dp)
     ) {
-        FloatingActionButton(
-            onClick = onFavouriteClick,
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(AppRaw.favourite_anim))
+        val progress by animateLottieCompositionAsState(composition, isPlaying = isPlaying)
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            LottieAnimation(
-                composition = composition,
-                progress = { progress },
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.size(56.dp)
-            )
+            FloatingActionButton(
+                onClick = onFavouriteClick,
+                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+            ) {
+                LottieAnimation(
+                    composition = composition,
+                    progress = { progress },
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(56.dp)
+                )
+            }
+            FloatingActionButton(
+                onClick = onImageAnalysisGalleryClick,
+                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+            ) {
+                Icon(
+                    painter = painterResource(id = AppDrawable.gallery_thumbnail),
+                    null,
+                    modifier = Modifier.size(48.dp)
+                )
+            }
         }
     }
-
 }
 
 @ReadOnlyComposable

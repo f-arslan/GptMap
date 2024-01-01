@@ -1,6 +1,7 @@
 package com.espressodev.gptmap.core.designsystem
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BrowseGallery
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Done

@@ -2,13 +2,13 @@ package com.espressodev.gptmap
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import com.espressodev.gptmap.feature.favourite.favouriteRoute
 import com.espressodev.gptmap.feature.favourite.favouriteScreen
 import com.espressodev.gptmap.feature.forgot_password.forgotPasswordRoute
 import com.espressodev.gptmap.feature.forgot_password.forgotPasswordScreen
 import com.espressodev.gptmap.feature.image_analysis.imageAnalysisScreen
+import com.espressodev.gptmap.feature.image_analysis.navigateToImageAnalysis
 import com.espressodev.gptmap.feature.login.loginRoute
 import com.espressodev.gptmap.feature.login.loginScreen
 import com.espressodev.gptmap.feature.map.mapRoute
@@ -27,20 +27,21 @@ fun GmNavHost(
     modifier: Modifier = Modifier,
     startDestination: String = loginRoute
 ) {
+    val navController = appState.navController
     NavHost(
         modifier = modifier,
-        navController = appState.navController,
+        navController = navController,
         startDestination = startDestination
     ) {
         mapScreen(
             navigateToStreetView = { latitude, longitude ->
-                appState.navController.navigateToStreetView(latitude, longitude)
+                navController.navigateToStreetView(latitude, longitude)
             },
             navigateToFavourite = { appState.navigate(favouriteRoute) },
             navigateToScreenshot = { appState.navigate(screenshotRoute) }
         )
         loginScreen(
-            navigateToMap = { appState.navController.navigateToMap() },
+            navigateToMap = { navController.navigateToMap() },
             navigateToRegister = { appState.navigate(registerRoute) },
             navigateToForgotPassword = { appState.navigate(forgotPasswordRoute) }
         )
@@ -56,7 +57,15 @@ fun GmNavHost(
                 appState.navController.navigateToMap(favouriteId)
             }
         )
-        screenshotScreen(popUp = appState::popUp)
+        screenshotScreen(
+            popUp = appState::popUp,
+            navigateToImageAnalysis = {
+                navController.navigateToImageAnalysis {
+                    launchSingleTop = true
+                    popUpTo(mapRoute) { inclusive = false }
+                }
+            }
+        )
         imageAnalysisScreen(popUp = appState::popUp)
     }
 }

@@ -62,6 +62,9 @@ class MapViewModel @Inject constructor(
             }
 
             is MapUiEvent.OnTakeScreenshotClick -> _uiState.update { it.copy(takeScreenshotState = true) }
+            is MapUiEvent.OnScreenshotProcessStarted -> _uiState.update {
+                it.copy(isTopButtonsVisible = false)
+            }
         }
     }
 
@@ -123,6 +126,10 @@ class MapViewModel @Inject constructor(
                 throw it
             }
         }
+    }
+
+    fun reset() = launchCatching {
+        _uiState.update { it.copy(isTopButtonsVisible = true) }
     }
 
     private fun onStreetViewClick(latLng: LatLng, navigateToStreetView: (LatLng) -> Unit) =

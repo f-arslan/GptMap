@@ -19,6 +19,7 @@ data class MapUiState(
     val searchButtonEnabledState: Boolean = true,
     val searchTextFieldEnabledState: Boolean = true,
     val bottomSearchState: Boolean = true,
+    val isTopButtonsVisible: Boolean = true,
     val isFavouriteButtonPlaying: Boolean = false,
     val takeScreenshotState: Boolean = false,
     val imageGalleryState: Pair<Int, Boolean> = Pair(0, false)
@@ -33,7 +34,7 @@ sealed class MapUiEvent {
     data object OnDetailSheetBackClick: MapUiEvent()
     data object OnBackClick: MapUiEvent()
     data object OnExploreWithAiClick: MapUiEvent()
-
+    data object OnScreenshotProcessStarted: MapUiEvent()
     data object OnTakeScreenshotClick: MapUiEvent()
     data class OnStreetViewClick(val latLng: LatLng) : MapUiEvent()
 }

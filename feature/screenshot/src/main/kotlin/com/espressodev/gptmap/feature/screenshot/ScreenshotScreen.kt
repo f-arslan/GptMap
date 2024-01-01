@@ -72,7 +72,11 @@ import kotlin.math.roundToInt
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @Composable
-fun ScreenshotScreen(viewModel: ScreenshotViewModel = hiltViewModel(), popUp: () -> Unit) {
+fun ScreenshotScreen(
+    viewModel: ScreenshotViewModel = hiltViewModel(),
+    popUp: () -> Unit,
+    navigateToImageAnalysis: () -> Unit
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
@@ -104,7 +108,7 @@ fun ScreenshotScreen(viewModel: ScreenshotViewModel = hiltViewModel(), popUp: ()
         ScreenCaptureScreen(
             uiState = uiState,
             modifier = Modifier.padding(it),
-            onEvent = viewModel::onEvent
+            onEvent = { viewModel.onEvent(it, navigateToImageAnalysis = navigateToImageAnalysis) }
         )
     }
 }
