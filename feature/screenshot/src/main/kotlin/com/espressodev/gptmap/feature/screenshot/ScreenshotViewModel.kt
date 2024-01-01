@@ -7,6 +7,7 @@ import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.data.StorageService
 import com.espressodev.gptmap.core.data.impl.StorageServiceImpl.Companion.ANALYSIS_IMAGE_REFERENCE
+import com.espressodev.gptmap.core.domain.SaveImageAnalysisToStorageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ScreenshotViewModel @Inject constructor(
-    private val storageService: StorageService,
+    private val saveImageAnalysisToStorageUseCase: SaveImageAnalysisToStorageUseCase,
     logService: LogService
 ) : GmViewModel(logService) {
     private val _uiState = MutableStateFlow(ScreenshotUiState())
@@ -56,28 +57,10 @@ class ScreenshotViewModel @Inject constructor(
         withContext(Dispatchers.IO) {
             uiState.value.imageResult.let { image ->
                 if (image is ImageResult.Success) {
-                    val imageId = UUID.randomUUID().toString()
-                    val byteArray = bitmapToByteArray(image.data)
-                    storageService.uploadImage(byteArray, imageId, ANALYSIS_IMAGE_REFERENCE)
-                        .onSuccess { imageUrl ->
-                            saveImageToRealm(imageUrl)
-                        }
-                        .onFailure {
-                            throw it
-                        }
+                    saveImageAnalysisToStorageUseCase(image.data)
                 }
             }
         }
-    }
-
-    private fun saveImageToRealm(imageUrl: String) {
-
-    }
-
-    private fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
-        val stream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-        return stream.toByteArray()
     }
 
     private fun onCaptureClick() = launchCatching {

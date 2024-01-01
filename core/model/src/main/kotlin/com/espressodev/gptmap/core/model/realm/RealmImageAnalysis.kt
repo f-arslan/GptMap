@@ -1,6 +1,8 @@
 package com.espressodev.gptmap.core.model.realm
 
+import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.EmbeddedRealmObject
+import io.realm.kotlin.types.RealmInstant
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
@@ -13,10 +15,11 @@ open class RealmImageAnalysis: RealmObject {
     var userId: String = ""
     var imageUrl: String = ""
     var title: String = ""
-    var messages: RealmList<RealmImageMessage>? = null
+    var messages: RealmList<RealmImageMessage>? = realmListOf()
 }
 
 open class RealmImageMessage: EmbeddedRealmObject {
     var request: String = ""
     var response: String = ""
+    var date: RealmInstant = RealmInstant.from(System.currentTimeMillis(), 0)
 }

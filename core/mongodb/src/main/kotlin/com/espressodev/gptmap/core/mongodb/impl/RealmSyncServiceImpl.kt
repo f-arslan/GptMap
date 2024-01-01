@@ -7,7 +7,6 @@ import com.espressodev.gptmap.core.model.realm.RealmImageAnalysis
 import com.espressodev.gptmap.core.model.realm.RealmUser
 import com.espressodev.gptmap.core.model.realm.toFavourite
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
-import com.espressodev.gptmap.core.mongodb.module.RealmModule
 import com.espressodev.gptmap.core.mongodb.module.RealmModule.realm
 import com.espressodev.gptmap.core.mongodb.module.RealmModule.realmUser
 import io.realm.kotlin.UpdatePolicy
@@ -17,11 +16,14 @@ import kotlinx.coroutines.flow.map
 
 class RealmSyncServiceImpl : RealmSyncService {
 
+    private val realmUserId: String
+        get() = realmUser.id
+
     override suspend fun saveUser(realmUser: RealmUser): Result<Boolean> = runCatching {
         realm.write {
             copyToRealm(
                 realmUser.apply {
-                    userId = RealmModule.realmUser.id
+                    userId = realmUserId
                 }, updatePolicy = UpdatePolicy.ALL
             )
         }
@@ -36,7 +38,7 @@ class RealmSyncServiceImpl : RealmSyncService {
             realm.write {
                 copyToRealm(
                     realmFavourite.apply {
-                        userId = realmUser.id
+                        userId = realmUserId
                     }, updatePolicy = UpdatePolicy.ALL
                 )
             }
@@ -51,7 +53,7 @@ class RealmSyncServiceImpl : RealmSyncService {
             realm.write {
                 copyToRealm(
                     realmImageAnalysis.apply {
-                        userId = realmUser.id
+                        userId = realmUserId
                     }, updatePolicy = UpdatePolicy.ALL
                 )
             }
@@ -63,18 +65,18 @@ class RealmSyncServiceImpl : RealmSyncService {
     }
 
     override fun getFavourites(): Flow<List<Favourite>> =
-        realm.query<RealmFavourite>("userId == $0", realmUser.id).find().asFlow().map {
+        realm.query<RealmFavourite>("userId == $0", realmUserId).find().asFlow().map {
             it.list.map { realmFavourite -> realmFavourite.toFavourite() }
         }
 
     override fun getFavourite(id: String): Favourite =
-        realm.query<RealmFavourite>("userId == $0 AND favouriteId == $1", realmUser.id, id)
+        realm.query<RealmFavourite>("userId == $0 AND favouriteId == $1", realmUserId, id)
             .find()
             .first()
             .toFavourite()
 
     override fun isUserInDatabase(): Boolean =
-        realm.query<RealmUser>("userId == $0", realmUser.id).first().find() != null
+        realm.query<RealmUser>("userId == $0", realmUserId).first().find() != null
 
 }
 
