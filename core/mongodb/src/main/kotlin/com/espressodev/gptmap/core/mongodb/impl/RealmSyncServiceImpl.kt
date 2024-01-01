@@ -2,8 +2,8 @@ package com.espressodev.gptmap.core.mongodb.impl
 
 import android.util.Log
 import com.espressodev.gptmap.core.model.Favourite
-import com.espressodev.gptmap.core.model.RealmImageAnalysis
 import com.espressodev.gptmap.core.model.realm.RealmFavourite
+import com.espressodev.gptmap.core.model.realm.RealmImageAnalysis
 import com.espressodev.gptmap.core.model.realm.RealmUser
 import com.espressodev.gptmap.core.model.realm.toFavourite
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
@@ -69,7 +69,6 @@ class RealmSyncServiceImpl : RealmSyncService {
 
     override fun getFavourite(id: String): Favourite =
         realm.query<RealmFavourite>("userId == $0 AND favouriteId == $1", realmUser.id, id)
-            .also { println(id) }
             .find()
             .first()
             .toFavourite()

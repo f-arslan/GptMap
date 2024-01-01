@@ -1,8 +1,8 @@
 package com.espressodev.gptmap.core.mongodb
 
 import com.espressodev.gptmap.core.model.Favourite
-import com.espressodev.gptmap.core.model.RealmImageAnalysis
 import com.espressodev.gptmap.core.model.realm.RealmFavourite
+import com.espressodev.gptmap.core.model.realm.RealmImageAnalysis
 import com.espressodev.gptmap.core.model.realm.RealmUser
 import kotlinx.coroutines.flow.Flow
 
