@@ -50,6 +50,8 @@ junitJunit = "4.13.2"
 espressoCoreVersion = "3.5.1"
 appcompatVersion = "1.6.1"
 material = "1.11.0"
+detekt = "1.23.3"
+detektCompose = "0.3.8"
 
 [libraries]
 
@@ -134,7 +136,9 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "googleGso
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coilCompose" }
 generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
-
+detekt-gradlePlugin = { group = "io.gitlab.arturbosch.detekt", name = "detekt-gradle-plugin", version.ref = "detekt" }
+detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
+detekt-compose = { group = "io.nlopez.compose.rules", name = "detekt", version.ref = "detektCompose" }
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -159,6 +163,7 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
 realm-kotlin = { id = "io.realm.kotlin", version.ref = "realm" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 
 # Plugins defined by this project
 gptmap-android-application = { id = "gptmap.android.application", version = "unspecified" }
@@ -170,6 +175,7 @@ gptmap-android-hilt = { id = "gptmap.android.hilt", version = "unspecified" }
 gptmap-android-application-firebase = { id = "gptmap.android.application.firebase", version = "unspecified" }
 gptmap-jvm-library = { id = "gptmap.jvm.library", version = "unspecified" }
 gptmap-ktor = { id = "gptmap.ktor", version = "unspecified" }
+gptmap-android-detekt = { id = "gptmap.android.detekt", version = "unspecified" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin2" }
 # End of it
 

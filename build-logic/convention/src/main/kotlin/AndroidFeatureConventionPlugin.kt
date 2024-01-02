@@ -9,6 +9,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             pluginManager.apply {
                 apply("gptmap.android.library")
                 apply("gptmap.android.hilt")
+                // apply("gptmap.android.detekt")
             }
 
             dependencies {

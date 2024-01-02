@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.ir.backend.js.compile
 
 plugins {
     `kotlin-dsl`
@@ -21,6 +22,7 @@ dependencies {
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.ksp.gradlePlugin)
     compileOnly(libs.android.gradlePlugin)
+    compileOnly(libs.detekt.gradlePlugin)
 }
 
 gradlePlugin {
@@ -60,6 +62,10 @@ gradlePlugin {
         register("ktor") {
             id = "gptmap.ktor"
             implementationClass = "KtorConventionPlugin"
+        }
+        register("androidDetekt") {
+            id = "gptmap.android.detekt"
+            implementationClass = "AndroidDetektConventionPlugin"
         }
     }
 }

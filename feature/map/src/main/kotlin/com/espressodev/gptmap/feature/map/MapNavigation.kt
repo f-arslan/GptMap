@@ -18,7 +18,8 @@ fun NavController.navigateToMap(favouriteId: String = "default") {
 fun NavGraphBuilder.mapScreen(
     navigateToStreetView: (Float, Float) -> Unit,
     navigateToFavourite: () -> Unit,
-    navigateToScreenshot: () -> Unit
+    navigateToScreenshot: () -> Unit,
+    navigateToImageAnalyses: () -> Unit,
 ) {
     composable(
         route = "$mapRoute/{$FAVOURITE_ID}",
@@ -29,7 +30,8 @@ fun NavGraphBuilder.mapScreen(
             navigateToStreetView = navigateToStreetView,
             navigateToFavourite = navigateToFavourite,
             favouriteId = favouriteId,
-            navigateToScreenshot = navigateToScreenshot
+            navigateToScreenshot = navigateToScreenshot,
+            navigateToImageAnalyses = navigateToImageAnalyses
         )
     }
 }

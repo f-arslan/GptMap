@@ -7,6 +7,8 @@ import com.espressodev.gptmap.feature.favourite.favouriteRoute
 import com.espressodev.gptmap.feature.favourite.favouriteScreen
 import com.espressodev.gptmap.feature.forgot_password.forgotPasswordRoute
 import com.espressodev.gptmap.feature.forgot_password.forgotPasswordScreen
+import com.espressodev.gptmap.feature.image_analyses.imageAnalysesRoute
+import com.espressodev.gptmap.feature.image_analyses.imageAnalysesScreen
 import com.espressodev.gptmap.feature.image_analysis.imageAnalysisScreen
 import com.espressodev.gptmap.feature.image_analysis.navigateToImageAnalysis
 import com.espressodev.gptmap.feature.login.loginRoute
@@ -38,7 +40,8 @@ fun GmNavHost(
                 navController.navigateToStreetView(latitude, longitude)
             },
             navigateToFavourite = { appState.navigate(favouriteRoute) },
-            navigateToScreenshot = { appState.navigate(screenshotRoute) }
+            navigateToScreenshot = { appState.navigate(screenshotRoute) },
+            navigateToImageAnalyses = { appState.navigate(imageAnalysesRoute) }
         )
         loginScreen(
             navigateToMap = { navController.navigateToMap() },
@@ -67,5 +70,6 @@ fun GmNavHost(
             }
         )
         imageAnalysisScreen(popUp = appState::popUp)
+        imageAnalysesScreen(popUp = appState::popUp)
     }
 }

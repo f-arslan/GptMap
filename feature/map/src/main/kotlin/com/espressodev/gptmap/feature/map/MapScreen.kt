@@ -100,6 +100,7 @@ fun MapRoute(
     navigateToStreetView: (Float, Float) -> Unit,
     navigateToFavourite: () -> Unit,
     navigateToScreenshot: () -> Unit,
+    navigateToImageAnalyses: () -> Unit,
     favouriteId: String
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -135,6 +136,7 @@ fun MapRoute(
                 )
             },
             navigateToFavourite = navigateToFavourite,
+            navigateToImageAnalyses = navigateToImageAnalyses,
             modifier = Modifier.padding(it)
         )
     }
@@ -158,6 +160,7 @@ private fun MapScreen(
     uiState: MapUiState,
     onEvent: (MapUiEvent) -> Unit,
     navigateToFavourite: () -> Unit,
+    navigateToImageAnalyses: () -> Unit,
     modifier: Modifier
 ) {
     val latLng = getLatLngFromLocation(uiState.location)
@@ -171,7 +174,7 @@ private fun MapScreen(
             isPlaying = uiState.isFavouriteButtonPlaying,
             isVisible = uiState.isTopButtonsVisible,
             onFavouriteClick = navigateToFavourite,
-            onImageAnalysisGalleryClick = {}
+            onImageAnalysesClick = navigateToImageAnalyses
         )
         LoadingDialog(uiState.componentLoadingState)
         MapSection(cameraPositionState = cameraPositionState)
@@ -185,7 +188,7 @@ fun BoxScope.MapTopButtons(
     isPlaying: Boolean,
     isVisible: Boolean,
     onFavouriteClick: () -> Unit,
-    onImageAnalysisGalleryClick: () -> Unit,
+    onImageAnalysesClick: () -> Unit,
 ) {
     AnimatedVisibility(
         visible = isVisible,
@@ -211,7 +214,7 @@ fun BoxScope.MapTopButtons(
                 )
             }
             FloatingActionButton(
-                onClick = onImageAnalysisGalleryClick,
+                onClick = onImageAnalysesClick,
                 containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
             ) {
                 Icon(
