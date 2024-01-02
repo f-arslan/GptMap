@@ -74,11 +74,12 @@ fun DefaultTextField(
     @StringRes label: Int,
     leadingIcon: ImageVector,
     onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
     val showClearIcon by remember(value) { derivedStateOf { value.isNotEmpty() } }
     OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         value = value,
         enabled = enabled,
         label = { Text(text = stringResource(id = label)) },
@@ -105,25 +106,28 @@ fun PasswordTextField(
     icon: ImageVector,
     @StringRes label: Int,
     onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
     onConfirmClick: () -> Unit = {}
 ) {
     val shouldShowPasswordVisibility by remember(value) { derivedStateOf { value.isNotEmpty() } }
     var passwordVisibility by remember(shouldShowPasswordVisibility) { mutableStateOf(false) }
 
     OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         value = value,
         trailingIcon = {
-            if (shouldShowPasswordVisibility)
+            if (shouldShowPasswordVisibility) {
                 IconButton(
                     onClick = { passwordVisibility = !passwordVisibility }
                 ) {
                     Icon(
-                        imageVector = if (passwordVisibility) GmIcons.VisibilityOnOutlined
+                        imageVector =
+                        if (passwordVisibility) GmIcons.VisibilityOnOutlined
                         else GmIcons.VisibilityOffOutlined,
                         contentDescription = null
                     )
                 }
+            }
         },
         leadingIcon = { Icon(imageVector = icon, contentDescription = null) },
         label = { Text(stringResource(id = label)) },
@@ -139,9 +143,7 @@ fun PasswordTextField(
         visualTransformation = if (passwordVisibility) VisualTransformation.None
         else PasswordVisualTransformation()
     )
-
 }
-
 
 @Composable
 @Preview(showBackground = true)

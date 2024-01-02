@@ -22,8 +22,14 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GmTopAppBar(@StringRes title: Int, icon: ImageVector, onBackClick: () -> Unit) {
+fun GmTopAppBar(
+    @StringRes title: Int,
+    icon: ImageVector,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     TopAppBar(
+        modifier = modifier,
         title = {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Text(text = stringResource(id = title), fontWeight = FontWeight.Medium)

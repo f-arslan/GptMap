@@ -128,14 +128,14 @@ complexity:
     threshold: 600
   LongMethod:
     active: true
-    threshold: 60
+    threshold: 70
   LongParameterList:
     active: true
-    functionThreshold: 6
+    functionThreshold: 60
     constructorThreshold: 7
-    ignoreDefaultParameters: false
+    ignoreDefaultParameters: true
     ignoreDataClasses: true
-    ignoreAnnotatedParameter: []
+    ignoreAnnotatedParameter: ['Composable', 'Preview']
   MethodOverloading:
     active: false
     threshold: 6
@@ -331,7 +331,7 @@ naming:
   FunctionNaming:
     active: true
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
-    functionPattern: '[a-z][a-zA-Z0-9]*'
+    functionPattern: '[a-zA-Z][a-zA-Z0-9]*'
     excludeClassPattern: '$^'
   FunctionParameterNaming:
     active: true
@@ -607,7 +607,7 @@ style:
     active: true
     maxJumpCount: 1
   MagicNumber:
-    active: true
+    active: false
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**', '**/*.kts']
     ignoreNumbers:
       - '-1'
@@ -615,7 +615,7 @@ style:
       - '1'
       - '2'
     ignoreHashCodeFunction: true
-    ignorePropertyDeclaration: false
+    ignorePropertyDeclaration: true
     ignoreLocalVariableDeclaration: false
     ignoreConstantDeclaration: true
     ignoreCompanionObjectPropertyDeclaration: true
@@ -737,7 +737,7 @@ style:
     active: true
   UnusedPrivateMember:
     active: true
-    allowedNames: ''
+    allowedNames: '.*Preview$'
   UnusedPrivateProperty:
     active: true
     allowedNames: '_|ignored|expected|serialVersionUID'
@@ -889,7 +889,7 @@ formatting:
     active: true
     autoCorrect: true
   MultiLineIfElse:
-    active: true
+    active: false
     autoCorrect: true
     indentSize: 4
   MultilineExpressionWrapping:
@@ -1051,3 +1051,89 @@ formatting:
     autoCorrect: true
     indentSize: 4
     maxLineLength: 120
+
+Compose:
+  ComposableAnnotationNaming:
+    active: true
+  ComposableNaming:
+    active: true
+    # -- You can optionally disable the checks in this rule for regex matches against the composable name (e.g. molecule presenters)
+    # allowedComposableFunctionNames: .*Presenter,.*MoleculePresenter
+  ComposableParamOrder:
+    active: true
+    # -- You can optionally have a list of types to be treated as lambdas (e.g. typedefs or fun interfaces not picked up automatically)
+    # treatAsLambda: MyLambdaType
+  CompositionLocalAllowlist:
+    active: true
+    allowedCompositionLocals: LocalGmColorsPalette
+    # -- You can optionally define a list of CompositionLocals that are allowed here
+    # allowedCompositionLocals: LocalSomething,LocalSomethingElse
+  CompositionLocalNaming:
+    active: true
+  ContentEmitterReturningValues:
+    active: true
+    # -- You can optionally add your own composables here
+    # contentEmitters: MyComposable,MyOtherComposable
+  DefaultsVisibility:
+    active: true
+  ModifierClickableOrder:
+    active: true
+    # -- You can optionally add your own Modifier types
+    # customModifiers: BananaModifier,PotatoModifier
+  ModifierComposable:
+    active: true
+    # -- You can optionally add your own Modifier types
+    # customModifiers: BananaModifier,PotatoModifier
+  ModifierMissing:
+    active: true
+    # -- You can optionally control the visibility of which composables to check for here
+    # -- Possible values are: `only_public`, `public_and_internal` and `all` (default is `only_public`)
+    # checkModifiersForVisibility: only_public
+    # -- You can optionally add your own Modifier types
+    # customModifiers: BananaModifier,PotatoModifier
+  ModifierNaming:
+    active: true
+    # -- You can optionally add your own Modifier types
+    # customModifiers: BananaModifier,PotatoModifier
+  ModifierNotUsedAtRoot:
+    active: true
+    # -- You can optionally add your own composables here
+    # contentEmitters: MyComposable,MyOtherComposable
+    # -- You can optionally add your own Modifier types
+    # customModifiers: BananaModifier,PotatoModifier
+  ModifierReused:
+    active: true
+    # -- You can optionally add your own Modifier types
+    # customModifiers: BananaModifier,PotatoModifier
+  ModifierWithoutDefault:
+    active: true
+  MultipleEmitters:
+    active: true
+    # -- You can optionally add your own composables here that will count as content emitters
+    # contentEmitters: MyComposable,MyOtherComposable
+    # -- You can add composables here that you don't want to count as content emitters (e.g. custom dialogs or modals)
+    # contentEmittersDenylist: MyNonEmitterComposable
+  MutableParams:
+    active: true
+  MutableStateParam:
+    active: true
+  PreviewAnnotationNaming:
+    active: true
+  PreviewPublic:
+    active: true
+  RememberMissing:
+    active: true
+  RememberContentMissing:
+    active: true
+  UnstableCollections:
+    active: true
+  ViewModelForwarding:
+    active: true
+    # -- You can optionally use this rule on things other than types ending in "ViewModel" or "Presenter" (which are the defaults). You can add your own via a regex here:
+    # allowedStateHolderNames: .*ViewModel,.*Presenter
+    # -- You can optionally add an allowlist for Composable names that won't be affected by this rule
+    # allowedForwarding: .*Content,.*FancyStuff
+  ViewModelInjection:
+    active: true
+    # -- You can optionally add your own ViewModel factories here
+    # viewModelFactories: hiltViewModel,potatoViewModel

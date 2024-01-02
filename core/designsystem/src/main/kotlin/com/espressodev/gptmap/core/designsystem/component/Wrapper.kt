@@ -12,11 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.MAX_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 
 @Composable
-fun AppWrapper(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+fun AppWrapper(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit = {}) {
     val scrollState = rememberScrollState()
     Box(
         modifier = modifier
@@ -34,10 +33,11 @@ fun AppWrapper(modifier: Modifier = Modifier, content: @Composable ColumnScope.(
 }
 
 @Composable
-fun HeaderWrapper(content: @Composable () -> Unit) {
+fun HeaderWrapper(modifier: Modifier = Modifier, content: @Composable () -> Unit = {}) {
     Column(
         verticalArrangement = Arrangement.spacedBy(MEDIUM_PADDING),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
     ) {
         content()
     }

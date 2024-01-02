@@ -3,7 +3,6 @@ package com.espressodev.gptmap.core.save_screenshot.composable
 import android.app.Activity
 import android.content.Context
 import android.media.projection.MediaProjectionManager
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -17,7 +16,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espressodev.gptmap.core.designsystem.GmIcons
-import com.espressodev.gptmap.core.designsystem.component.GmCircularIndicator
 import com.espressodev.gptmap.core.designsystem.component.GmDraggableButton
 import com.espressodev.gptmap.core.save_screenshot.SaveScreenshotService
 

@@ -11,4 +11,5 @@ dependencies {
     implementation(projects.core.googleAuth)
     implementation(libs.play.services.auth)
     implementation(libs.firebase.auth)
+    implementation(libs.kotlinx.collections.immutable)
 }

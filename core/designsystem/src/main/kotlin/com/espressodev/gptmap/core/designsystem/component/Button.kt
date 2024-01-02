@@ -28,7 +28,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
@@ -37,7 +36,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -51,16 +49,16 @@ import com.espressodev.gptmap.core.designsystem.Constants.NO_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
-import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MapSearchButton(
     onClick: () -> Unit,
+    buttonEnabledState: Boolean,
+    modifier: Modifier = Modifier,
     icon: ImageVector = GmIcons.SearchDefault,
     shape: Shape = RoundedCornerShape(HIGH_PADDING),
-    buttonEnabledState: Boolean,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     Button(
@@ -70,7 +68,7 @@ fun MapSearchButton(
             keyboardController?.hide()
             onClick()
         },
-        modifier = Modifier.size(BUTTON_SIZE),
+        modifier = modifier.size(BUTTON_SIZE),
         contentPadding = PaddingValues(NO_PADDING)
     ) {
         Icon(icon, stringResource(id = AppText.search))
@@ -81,9 +79,10 @@ fun MapSearchButton(
 fun ExtFloActionButton(
     @DrawableRes icon: Int,
     @StringRes label: Int,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    ExtendedFloatingActionButton(onClick = onClick) {
+    ExtendedFloatingActionButton(onClick = onClick, modifier = modifier) {
         Image(
             painter = painterResource(icon),
             contentDescription = null
@@ -95,7 +94,11 @@ fun ExtFloActionButton(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun DefaultButton(@StringRes text: Int, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun DefaultButton(
+    @StringRes text: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val keyboardController = LocalSoftwareKeyboardController.current
     Button(
         modifier = modifier.defaultMinSize(BUTTON_SIZE),
@@ -112,9 +115,8 @@ fun DefaultButton(@StringRes text: Int, onClick: () -> Unit, modifier: Modifier 
     }
 }
 
-
 @Composable
-fun GmDraggableButton(icon: ImageVector, onClick: () -> Unit) {
+fun GmDraggableButton(icon: ImageVector, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
     val localDensity = LocalDensity.current
     val screenWidth = with(localDensity) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
     val screenHeight = with(localDensity) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
@@ -125,7 +127,6 @@ fun GmDraggableButton(icon: ImageVector, onClick: () -> Unit) {
     val initialXOffsetPx = screenWidth - buttonSizePx - marginPx
     val initialYOffsetPx = (screenHeight - buttonSizePx) / 2
     val bottomMarginPx = with(localDensity) { 160.dp.toPx() }
-
 
     val offset = remember(localDensity) {
         Animatable(
@@ -141,7 +142,7 @@ fun GmDraggableButton(icon: ImageVector, onClick: () -> Unit) {
         onClick = onClick,
         containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        modifier = Modifier
+        modifier = modifier
             .zIndex(4f)
             .offset { IntOffset(offset.value.x.roundToInt(), offset.value.y.roundToInt()) }
             .pointerInput(Unit) {
@@ -181,13 +182,13 @@ fun GmDraggableButton(icon: ImageVector, onClick: () -> Unit) {
     ) {
         Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(48.dp))
     }
-
 }
 
 @Composable
 fun SquareButton(
     @StringRes contentDesc: Int,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     @DrawableRes iconId: Int? = null,
     shape: RoundedCornerShape = RoundedCornerShape(HIGH_PADDING),
@@ -196,33 +197,25 @@ fun SquareButton(
 ) {
     ElevatedButton(
         onClick = onClick,
-        modifier = Modifier
-            .size(size),
+        modifier = modifier.size(size),
         shape = shape,
         contentPadding = contentPaddings,
         colors = ButtonDefaults.elevatedButtonColors(
             containerColor = MaterialTheme.colorScheme.surface,
         )
     ) {
-        if (icon != null)
+        if (icon != null) {
             Icon(
                 imageVector = icon,
                 contentDescription = stringResource(id = contentDesc),
                 modifier = Modifier.size(Constants.MAX_PADDING)
             )
-        else if (iconId != null)
+        } else if (iconId != null) {
             Icon(
                 painter = painterResource(id = iconId),
                 contentDescription = stringResource(id = contentDesc),
                 modifier = Modifier.size(Constants.MAX_PADDING)
             )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ButtonPreview() {
-    ExtFloActionButton(icon = AppDrawable.google, label = AppText.continue_google) {
-
+        }
     }
 }

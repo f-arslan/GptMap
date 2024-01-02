@@ -17,26 +17,29 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 
-
 @Composable
-fun GmCircularIndicator() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+fun GmCircularIndicator(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
         CircularProgressIndicator()
     }
 }
 
 @Composable
-fun LoadingAnimation(@RawRes animId: Int) {
+fun LoadingAnimation(@RawRes animId: Int, modifier: Modifier = Modifier) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(animId))
     val progress by animateLottieCompositionAsState(
         composition,
         iterations = LottieConstants.IterateForever
     )
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .zIndex(2f), contentAlignment = Alignment.Center
+            .zIndex(2f),
+        contentAlignment = Alignment.Center
     ) {
         LottieAnimation(
             composition = composition,

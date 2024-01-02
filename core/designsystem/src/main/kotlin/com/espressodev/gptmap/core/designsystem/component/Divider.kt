@@ -19,11 +19,12 @@ import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 @Composable
 fun DayHeader(
     dayString: String,
+    modifier: Modifier = Modifier,
     style: TextStyle = MaterialTheme.typography.labelSmall,
     height: Dp = HIGH_PADDING
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .padding(vertical = MEDIUM_PADDING, horizontal = HIGH_PADDING)
             .height(height)
     ) {
@@ -39,9 +40,9 @@ fun DayHeader(
 }
 
 @Composable
-private fun RowScope.DayHeaderLine() {
+private fun RowScope.DayHeaderLine(modifier: Modifier = Modifier) {
     Divider(
-        modifier = Modifier
+        modifier = modifier
             .weight(1f)
             .align(Alignment.CenterVertically),
         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)

@@ -6,6 +6,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -18,6 +19,7 @@ fun AppAlertDialog(
     @StringRes text: Int,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     AlertDialog(
         icon = { Icon(icon, null) },
@@ -31,6 +33,7 @@ fun AppAlertDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text(stringResource(AppText.dismiss)) }
-        }
+        },
+        modifier = modifier
     )
 }

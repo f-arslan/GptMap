@@ -52,7 +52,7 @@ appcompatVersion = "1.6.1"
 material = "1.11.0"
 detekt = "1.23.3"
 detektCompose = "0.3.8"
-
+kotlinxCollectionsImmutable = "0.3.6"
 [libraries]
 
 # Compose
@@ -139,6 +139,8 @@ lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "
 detekt-gradlePlugin = { group = "io.gitlab.arturbosch.detekt", name = "detekt-gradle-plugin", version.ref = "detekt" }
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
 detekt-compose = { group = "io.nlopez.compose.rules", name = "detekt", version.ref = "detektCompose" }
+kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
+
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }

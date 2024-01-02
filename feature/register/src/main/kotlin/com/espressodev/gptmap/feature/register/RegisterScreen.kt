@@ -37,6 +37,8 @@ import com.espressodev.gptmap.core.designsystem.component.PasswordTextField
 import com.espressodev.gptmap.core.google_auth.composable.OneTapLauncher
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.google.GoogleResponse
+import kotlinx.collections.immutable.immutableMapOf
+import kotlinx.collections.immutable.persistentMapOf
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
@@ -117,7 +119,7 @@ fun RegisterScreen(
             onValueChange = { onEvent(RegisterEvent.OnConfirmPasswordChanged(it)) }
         )
         HyperlinkText(
-            fullText = PRIVACY_POLICY_DESC, mapOf(
+            fullText = PRIVACY_POLICY_DESC, persistentMapOf(
                 PRIVACY_POLICY.lowercase() to PRIVACY_POLICY_LINK,
                 TERMS_CONDITIONS.lowercase() to TERMS_CONDITIONS_LINK
             ),
@@ -129,8 +131,8 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth()
         )
         DayHeader(
-            stringResource(AppText.or),
-            MaterialTheme.typography.titleMedium,
+            dayString = stringResource(AppText.or),
+            style = MaterialTheme.typography.titleMedium,
             height = VERY_HIGH_PADDING
         )
         ExtFloActionButton(
