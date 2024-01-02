@@ -2,10 +2,12 @@ package com.espressodev.gptmap.core.mongodb.impl
 
 import android.util.Log
 import com.espressodev.gptmap.core.model.Favourite
+import com.espressodev.gptmap.core.model.ImageAnalysis
 import com.espressodev.gptmap.core.model.realm.RealmFavourite
 import com.espressodev.gptmap.core.model.realm.RealmImageAnalysis
 import com.espressodev.gptmap.core.model.realm.RealmUser
 import com.espressodev.gptmap.core.model.realm.toFavourite
+import com.espressodev.gptmap.core.model.realm.toImageAnalysis
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.espressodev.gptmap.core.mongodb.module.RealmModule.realm
 import com.espressodev.gptmap.core.mongodb.module.RealmModule.realmUser
@@ -74,6 +76,12 @@ class RealmSyncServiceImpl : RealmSyncService {
             .find()
             .first()
             .toFavourite()
+
+    override fun getImageAnalyses(): Flow<List<ImageAnalysis>> =
+        realm.query<RealmImageAnalysis>("userId == $0", realmUserId).find().asFlow().map {
+            it.list.map { realmImageAnalysis -> realmImageAnalysis.toImageAnalysis() }
+        }
+
 
     override fun isUserInDatabase(): Boolean =
         realm.query<RealmUser>("userId == $0", realmUserId).first().find() != null

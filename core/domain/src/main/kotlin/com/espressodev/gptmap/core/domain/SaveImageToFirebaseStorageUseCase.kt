@@ -18,6 +18,7 @@ class SaveImageToFirebaseStorageUseCase @Inject constructor(
         val imageData = downloadAndCompressImageUseCase(location.locationImages[0].imageUrl).getOrThrow()
         val imageUrl = storageService.uploadImage(imageData, location.id, IMAGE_REFERENCE).getOrThrow()
         saveImageUrlToRealm(imageUrl, location)
+        Result.success(imageUrl)
     }
 
     private suspend fun saveImageUrlToRealm(imageUrl: String, location: Location) {

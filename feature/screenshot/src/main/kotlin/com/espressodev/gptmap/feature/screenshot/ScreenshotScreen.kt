@@ -212,16 +212,14 @@ fun ScreenshotGallery(
                 }
             }
     ) {
-        imagePath?.let {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(imagePath)
-                    .build(),
-                contentDescription = stringResource(id = R.string.selected_image),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        AsyncImage(
+            model = ImageRequest.Builder(context)
+                .data(imagePath)
+                .build(),
+            contentDescription = stringResource(id = R.string.selected_image),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxWidth()
+        )
         Canvas(
             modifier = Modifier
                 .matchParentSize()

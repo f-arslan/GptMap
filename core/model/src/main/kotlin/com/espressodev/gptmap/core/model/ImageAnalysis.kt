@@ -1,18 +1,21 @@
 package com.espressodev.gptmap.core.model
 
+import java.time.LocalDateTime
+
 data class ImageAnalysis(
     val id: String,
     val imageId: String,
     val userId: String,
     val imageUrl: String,
     val title: String,
-    val messages: List<ImageMessage>
+    val messages: List<ImageMessage>,
+    val date: LocalDateTime
 )
 
 data class ImageMessage(
-    val id: String,
-    val message: String,
-    val score: Double
+    val request: String,
+    val response: String,
+    val date: LocalDateTime
 )
 
 

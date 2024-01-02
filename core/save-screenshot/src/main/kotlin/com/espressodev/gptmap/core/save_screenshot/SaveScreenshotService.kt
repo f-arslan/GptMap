@@ -63,7 +63,7 @@ class SaveScreenshotService : Service() {
                         bitmap?.copyPixelsFromBuffer(buffer)
 
                         fos = FileOutputStream("$mStoreDir/screenshot.png")
-                        bitmap?.compress(Bitmap.CompressFormat.PNG, 100, fos!!)
+                        bitmap?.compress(Bitmap.CompressFormat.PNG, 80, fos!!)
                         Log.e(TAG, "Screenshot captured")
                     }
                 } catch (e: Exception) {
