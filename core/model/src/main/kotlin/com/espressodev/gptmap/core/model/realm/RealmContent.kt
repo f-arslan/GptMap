@@ -3,7 +3,7 @@ package com.espressodev.gptmap.core.model.realm
 import com.espressodev.gptmap.core.model.Content
 import io.realm.kotlin.types.EmbeddedRealmObject
 
-open class RealmContent: EmbeddedRealmObject {
+open class RealmContent : EmbeddedRealmObject {
     var latitude: Double = 0.0
     var longitude: Double = 0.0
     var city: String = ""

@@ -5,15 +5,17 @@ import com.espressodev.gptmap.core.model.Favourite
 import io.realm.kotlin.types.RealmInstant
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
+import io.realm.kotlin.types.annotations.PersistedName
 import io.realm.kotlin.types.annotations.PrimaryKey
 import org.mongodb.kbson.ObjectId
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-open class RealmFavourite: RealmObject {
+open class RealmFavourite : RealmObject {
     @PrimaryKey
-    var _id: ObjectId = ObjectId()
+    @PersistedName("_id")
+    var id: ObjectId = ObjectId()
     var userId: String = ""
     var favouriteId: String = ""
     var title: String = ""
@@ -30,8 +32,9 @@ fun RealmInstant.toJavaInstant(): Instant {
 fun Instant.toLocalDateTime(): LocalDateTime {
     return this.atZone(ZoneId.systemDefault()).toLocalDateTime()
 }
+
 fun RealmFavourite.toFavourite(): Favourite = Favourite(
-    id = this._id.toHexString(),
+    id = this.id.toHexString(),
     userId = this.userId,
     favouriteId = this.favouriteId,
     title = this.title,
@@ -40,6 +43,3 @@ fun RealmFavourite.toFavourite(): Favourite = Favourite(
     content = this.content?.toContent() ?: Content(),
     date = this.date.toJavaInstant().toLocalDateTime()
 )
-
-
-

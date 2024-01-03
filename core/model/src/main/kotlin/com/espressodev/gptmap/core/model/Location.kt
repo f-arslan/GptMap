@@ -15,7 +15,7 @@ data class Location(
     val addToFavouriteButtonState: Boolean = true
 ) {
     fun toRealmLocation(): RealmFavourite = RealmFavourite().apply {
-        favouriteId = id
+        favouriteId = this@Location.id
         content = this@Location.content.toRealmContent()
         locationImages = this@Location.locationImages.map { it.toRealmLocationImage() }.toRealmList()
     }

@@ -3,7 +3,6 @@ package com.espressodev.gptmap.core.model.chatgpt
 import com.espressodev.gptmap.core.model.realm.RealmContent
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 data class Content(
     val coordinates: Coordinates = Coordinates(),
@@ -29,5 +28,3 @@ data class Content(
 
     fun toPoeticDescWithDecor() = "\"$poeticDescription\""
 }
-
-

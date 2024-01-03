@@ -17,5 +17,3 @@ data class ImageMessage(
     val response: String,
     val date: LocalDateTime
 )
-
-

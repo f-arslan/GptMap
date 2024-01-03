@@ -8,4 +8,5 @@ data class Choice(
     @SerializedName("index")
     val index: Int,
     @SerializedName("message")
-    val message: Message)
+    val message: Message
+)

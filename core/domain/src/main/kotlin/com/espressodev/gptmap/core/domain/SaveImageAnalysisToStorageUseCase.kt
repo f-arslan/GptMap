@@ -33,7 +33,7 @@ class SaveImageAnalysisToStorageUseCase @Inject constructor(
             this.imageId = imageId
             this.imageUrl = imageUrl
         }
-        realmSyncService.saveImageAnalysis(realmImageAnalysis).onFailure { throw it }
+        realmSyncService.saveImageAnalysis(realmImageAnalysis).getOrThrow()
     }
 
 

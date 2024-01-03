@@ -7,12 +7,14 @@ import io.realm.kotlin.types.EmbeddedRealmObject
 import io.realm.kotlin.types.RealmInstant
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
+import io.realm.kotlin.types.annotations.PersistedName
 import io.realm.kotlin.types.annotations.PrimaryKey
 import org.mongodb.kbson.ObjectId
 
-open class RealmImageAnalysis: RealmObject {
+open class RealmImageAnalysis : RealmObject {
     @PrimaryKey
-    var _id: ObjectId = ObjectId()
+    @PersistedName("_id")
+    var id: ObjectId = ObjectId()
     var imageId: String = ""
     var userId: String = ""
     var imageUrl: String = ""
@@ -22,7 +24,7 @@ open class RealmImageAnalysis: RealmObject {
 }
 
 fun RealmImageAnalysis.toImageAnalysis() = ImageAnalysis(
-    id = _id.toHexString(),
+    id = id.toHexString(),
     imageId = imageId,
     userId = userId,
     imageUrl = imageUrl,
@@ -31,7 +33,7 @@ fun RealmImageAnalysis.toImageAnalysis() = ImageAnalysis(
     date = date.toJavaInstant().toLocalDateTime()
 )
 
-open class RealmImageMessage: EmbeddedRealmObject {
+open class RealmImageMessage : EmbeddedRealmObject {
     var request: String = ""
     var response: String = ""
     var date: RealmInstant = RealmInstant.from(System.currentTimeMillis(), 0)
