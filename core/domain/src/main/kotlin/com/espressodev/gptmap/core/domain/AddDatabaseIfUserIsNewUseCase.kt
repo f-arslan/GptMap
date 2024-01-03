@@ -23,4 +23,3 @@ class AddDatabaseIfUserIsNewUseCase @Inject constructor(
         Result.success(value = true)
     }
 }
-

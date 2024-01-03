@@ -4,4 +4,7 @@ object Exceptions {
     class FirebaseUserIdIsNullException : Exception()
     class FirebaseEmailVerificationIsFalseException : Exception()
     class RealmFavouriteNotFoundException : Exception()
+    class FirebaseDisplayNameNullException : Exception()
+    class FirebaseEmailNullException : Exception()
+    class FirebasePhotoUrlNullException : Exception()
 }

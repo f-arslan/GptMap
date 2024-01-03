@@ -3,7 +3,11 @@ package com.espressodev.gptmap.core.domain
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
+import com.espressodev.gptmap.core.model.ext.classTag
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.io.FileNotFoundException
+import java.io.IOException
 import javax.inject.Inject
 
 class LoadImagesFromInternalStorageUseCase @Inject constructor(@ApplicationContext private val context: Context) {
@@ -19,8 +23,11 @@ class LoadImagesFromInternalStorageUseCase @Inject constructor(@ApplicationConte
             context.openFileInput(fileName).use { fis ->
                 BitmapFactory.decodeStream(fis)
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (e: FileNotFoundException) {
+            Log.e(classTag(), "File not found: $fileName", e)
+            null
+        } catch (e: IOException) {
+            Log.e(classTag(), "I/O error while loading image: $fileName", e)
             null
         }
     }

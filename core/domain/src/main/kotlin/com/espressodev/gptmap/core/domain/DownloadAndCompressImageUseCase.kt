@@ -6,7 +6,9 @@ import android.os.Build
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
+import java.io.IOException
 import java.net.HttpURLConnection
+import java.net.MalformedURLException
 import java.net.URL
 
 class DownloadAndCompressImageUseCase {
@@ -16,7 +18,11 @@ class DownloadAndCompressImageUseCase {
             val resizedBitmap = resizeImage(bitmap)
             val compressedByteArray = compressImage(resizedBitmap)
             Result.success(compressedByteArray)
-        } catch (e: Exception) {
+        } catch (e: MalformedURLException) {
+            Result.failure(e)
+        } catch (e: IOException) {
+            Result.failure(e)
+        } catch (e: IllegalArgumentException) {
             Result.failure(e)
         }
     }

@@ -15,8 +15,10 @@ class SaveImageToFirebaseStorageUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(location: Location) = withContext(Dispatchers.IO) {
         require(location.locationImages.isNotEmpty()) { "No images found for location" }
-        val imageData = downloadAndCompressImageUseCase(location.locationImages[0].imageUrl).getOrThrow()
-        val imageUrl = storageService.uploadImage(imageData, location.id, IMAGE_REFERENCE).getOrThrow()
+        val imageData =
+            downloadAndCompressImageUseCase(location.locationImages[0].imageUrl).getOrThrow()
+        val imageUrl =
+            storageService.uploadImage(imageData, location.id, IMAGE_REFERENCE).getOrThrow()
         saveImageUrlToRealm(imageUrl, location)
         Result.success(imageUrl)
     }
