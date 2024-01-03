@@ -1,0 +1,24 @@
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  dekekt:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup JSK
+        uses: actions/setup-java@v3
+        with:
+          distribution: oracle
+          java-version: '17'
+
+      - name: Grant execute permission
+        run: chmod +x gradlew
+
+      - name: Build and run detekt
+        run: ./gradlew detekt

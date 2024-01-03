@@ -15,7 +15,6 @@ captures/
 *.apk
 output.json
 gradle.properties
-gradlew
 gradlew.bat
 
 # IntelliJ
