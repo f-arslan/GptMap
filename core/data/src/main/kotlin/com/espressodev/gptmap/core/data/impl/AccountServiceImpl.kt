@@ -6,9 +6,15 @@ import com.espressodev.gptmap.core.data.RevokeAccessResponse
 import com.espressodev.gptmap.core.data.SendEmailVerificationResponse
 import com.espressodev.gptmap.core.data.SendPasswordResetEmailResponse
 import com.espressodev.gptmap.core.data.UpdatePasswordResponse
+import com.espressodev.gptmap.core.model.Exceptions.FirebaseUserIdIsNullException
 import com.espressodev.gptmap.core.model.Response
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -17,7 +23,7 @@ class AccountServiceImpl @Inject constructor(
     private val auth: FirebaseAuth,
 ) : AccountService {
     override val currentUser: FirebaseUser
-        get() = auth.currentUser ?: throw Exception("Firebase: User id is null")
+        get() = auth.currentUser ?: throw FirebaseUserIdIsNullException()
 
     override suspend fun firebaseSignUpWithEmailAndPassword(
         email: String,
@@ -31,7 +37,9 @@ class AccountServiceImpl @Inject constructor(
         return try {
             auth.currentUser?.sendEmailVerification()?.await()
             Response.Success(true)
-        } catch (e: Exception) {
+        } catch (e: FirebaseAuthInvalidUserException) {
+            Response.Failure(e)
+        } catch (e: FirebaseAuthException) {
             Response.Failure(e)
         }
     }
@@ -45,7 +53,9 @@ class AccountServiceImpl @Inject constructor(
         return try {
             auth.currentUser?.reload()?.await()
             Response.Success(true)
-        } catch (e: Exception) {
+        } catch (e: FirebaseAuthInvalidUserException) {
+            Response.Failure(e)
+        } catch (e: FirebaseAuthException) {
             Response.Failure(e)
         }
     }
@@ -54,7 +64,11 @@ class AccountServiceImpl @Inject constructor(
         return try {
             auth.sendPasswordResetEmail(email).await()
             Response.Success(true)
-        } catch (e: Exception) {
+        } catch (e: FirebaseAuthInvalidUserException) {
+            Response.Failure(e)
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            Response.Failure(e)
+        } catch (e: FirebaseAuthException) {
             Response.Failure(e)
         }
     }
@@ -63,7 +77,13 @@ class AccountServiceImpl @Inject constructor(
         return try {
             auth.currentUser?.updatePassword(password)?.await()
             Response.Success(true)
-        } catch (e: Exception) {
+        } catch (e: FirebaseAuthWeakPasswordException) {
+            Response.Failure(e)
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            Response.Failure(e)
+        } catch (e: FirebaseAuthRecentLoginRequiredException) {
+            Response.Failure(e)
+        } catch (e: FirebaseAuthException) {
             Response.Failure(e)
         }
     }
@@ -74,10 +94,12 @@ class AccountServiceImpl @Inject constructor(
         return try {
             auth.currentUser?.delete()?.await()
             Response.Success(true)
-        } catch (e: Exception) {
+        } catch (e: FirebaseAuthInvalidUserException) {
+            Response.Failure(e)
+        } catch (e: FirebaseAuthRecentLoginRequiredException) {
+            Response.Failure(e)
+        } catch (e: FirebaseAuthException) {
             Response.Failure(e)
         }
     }
 }
-
-

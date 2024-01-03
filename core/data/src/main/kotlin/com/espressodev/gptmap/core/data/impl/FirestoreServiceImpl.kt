@@ -1,11 +1,12 @@
 package com.espressodev.gptmap.core.data.impl
 
 import com.espressodev.gptmap.core.data.FirestoreService
+import com.espressodev.gptmap.core.model.Exceptions.FirebaseUserIsNullException
 import com.espressodev.gptmap.core.model.User
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.Dispatchers
+import com.google.firebase.firestore.FirebaseFirestoreException
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
+import java.util.concurrent.ExecutionException
 import javax.inject.Inject
 
 class FirestoreServiceImpl @Inject constructor(
@@ -20,18 +21,20 @@ class FirestoreServiceImpl @Inject constructor(
         try {
             val querySnapshot = userColRef.whereEqualTo("email", email).get().await()
             Result.success(querySnapshot.size() > 0)
-        } catch (e: Exception) {
+        } catch (e: FirebaseFirestoreException) {
+            Result.failure(e)
+        } catch (e: InterruptedException) {
+            Result.failure(e)
+        } catch (e: ExecutionException) {
             Result.failure(e)
         }
 
     override suspend fun getUser(userId: String): User =
         getUserDocRef(userId).get().await().toObject(User::class.java)
-            ?: throw Exception("Firebase: User is null")
-
+            ?: throw FirebaseUserIsNullException()
 
     private val userColRef by lazy { firestore.collection(USERS) }
     private fun getUserDocRef(id: String) = userColRef.document(id)
-
 
     companion object {
         private const val USERS = "users"

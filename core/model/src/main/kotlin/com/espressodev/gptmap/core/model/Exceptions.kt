@@ -2,6 +2,7 @@ package com.espressodev.gptmap.core.model
 
 object Exceptions {
     class FirebaseUserIdIsNullException : Exception()
+    class FirebaseUserIsNullException : Exception()
     class FirebaseEmailVerificationIsFalseException : Exception()
     class RealmFavouriteNotFoundException : Exception()
     class FirebaseDisplayNameNullException : Exception()

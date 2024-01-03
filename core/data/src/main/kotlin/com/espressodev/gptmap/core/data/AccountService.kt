@@ -1,10 +1,8 @@
 package com.espressodev.gptmap.core.data
 
 import com.espressodev.gptmap.core.model.Response
-import com.espressodev.gptmap.core.model.User
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
-
 
 typealias SendEmailVerificationResponse = Response<Boolean>
 typealias ReloadUserResponse = Response<Boolean>
