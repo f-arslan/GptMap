@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.api.unsplash
+package com.espressodev.gptmap.core.testing
 
 import org.junit.Test
 

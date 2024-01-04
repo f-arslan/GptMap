@@ -21,8 +21,6 @@ internal fun Project.configureKotlinAndroid(
         }
 
         compileOptions {
-            // Up to Java 11 APIs are available through desugaring
-            // https://developer.android.com/studio/write/java11-minimal-support-table
             sourceCompatibility = JavaVersion.VERSION_1_8
             targetCompatibility = JavaVersion.VERSION_1_8
             isCoreLibraryDesugaringEnabled = true
@@ -43,6 +41,7 @@ internal fun Project.configureKotlinAndroid(
         add("coreLibraryDesugaring", libs.findLibrary("android-desugarJdkLibs").get())
         add("implementation", libs.findLibrary("androidx-test-ext").get())
         add("androidTestImplementation", libs.findLibrary("androidx-junit").get())
+        add("androidTestImplementation", libs.findLibrary("androidx-test-runner").get())
     }
 }
 
@@ -65,7 +64,7 @@ private fun Project.configureKotlin() {
     // Use withType to workaround https://youtrack.jetbrains.com/issue/KT-55947
     tasks.withType<KotlinCompile>().configureEach {
         kotlinOptions {
-            // Set JVM target to 11
+            // Set JVM target to 8
             jvmTarget = JavaVersion.VERSION_1_8.toString()
             // Treat all Kotlin warnings as errors (disabled by default)
             // Override by setting warningsAsErrors=true in your ~/.gradle/gradle.properties
@@ -80,3 +79,4 @@ private fun Project.configureKotlin() {
         }
     }
 }
+

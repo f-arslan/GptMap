@@ -8,7 +8,7 @@ androidxHiltNavigationCompose = "1.1.0"
 androidxLifecycle = "2.6.2"
 androidxNavigation = "2.7.6"
 androidxTestExt = "1.1.5"
-androidxTestRunner = "1.5.2"
+androidxTestRunner = "1.5.0"
 androidxWork = "2.9.0"
 firebaseBom = "32.7.0"
 firebaseCrashlyticsPlugin = "2.9.9"
@@ -53,6 +53,9 @@ material = "1.11.0"
 detekt = "1.23.3"
 detektCompose = "0.3.8"
 kotlinxCollectionsImmutable = "0.3.6"
+junitJupiter = "5.10.1"
+mockk = "1.13.7"  # 1.13.8 has problem with Java 1.8
+androidxTestRules = "1.5.0"
 [libraries]
 
 # Compose
@@ -92,6 +95,11 @@ firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics
 androidx-test-ext = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidxTestExt" } # Kotlin Android VC
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit" } # Kotlin Android VC
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidxTestRunner" }  # app build gradle
+junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junitJupiter" }
+junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junitJupiter" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
+androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidxTestRules" }
 # End of it
 
 # Hilt
