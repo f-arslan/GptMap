@@ -11,12 +11,10 @@ import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.save_screenshot.SaveScreenshotService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
-
 
 enum class ScreenState {
     Idle, Started, Finished
@@ -55,11 +53,9 @@ class ScreenshotViewModel @Inject constructor(
         }
     }
 
-
     init {
         initializeScreenCaptureBroadcastReceiver()
     }
-
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     private fun initializeScreenCaptureBroadcastReceiver() = launchCatching {

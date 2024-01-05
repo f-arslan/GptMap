@@ -19,12 +19,12 @@ import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.component.GmDraggableButton
 import com.espressodev.gptmap.core.save_screenshot.SaveScreenshotService
 
-
 @Composable
 fun SaveScreenshot(
-    viewModel: ScreenshotViewModel = hiltViewModel(),
     onSuccess: () -> Unit,
-    onProcessStarted: () -> Unit
+    onProcessStarted: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: ScreenshotViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(key1 = uiState.screenState) {
@@ -60,7 +60,7 @@ fun SaveScreenshot(
             }
         }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         if (uiState.isButtonVisible)
             GmDraggableButton(
                 icon = GmIcons.CameraFilled,

@@ -22,8 +22,10 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
-
+import java.io.IOException
+import java.nio.BufferUnderflowException
 
 /**
  * Service for capturing the device's screen.
@@ -66,8 +68,14 @@ class SaveScreenshotService : Service() {
                         bitmap?.compress(Bitmap.CompressFormat.PNG, 80, fos!!)
                         Log.e(TAG, "Screenshot captured")
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                } catch (e: FileNotFoundException) {
+                    Log.e(TAG, "File not found: ${e.message}")
+                } catch (e: IOException) {
+                    Log.e(TAG, "I/O error: ${e.message}")
+                } catch (e: BufferUnderflowException) {
+                    Log.e(TAG, "Buffer not large enough: ${e.message}")
+                } catch (e: IllegalStateException) {
+                    Log.e(TAG, "Illegal state: ${e.message}")
                 } finally {
                     fos?.close()
                     bitmap?.recycle()
@@ -140,13 +148,16 @@ class SaveScreenshotService : Service() {
         mMediaProjection?.let { mediaProjection ->
 
             // Register a callback to handle projection stop events
-            mediaProjection.registerCallback(object : MediaProjection.Callback() {
-                override fun onStop() {
-                    super.onStop()
-                    releaseResources()
-                    stopSelf()
-                }
-            }, null)
+            mediaProjection.registerCallback(
+                object : MediaProjection.Callback() {
+                    override fun onStop() {
+                        super.onStop()
+                        releaseResources()
+                        stopSelf()
+                    }
+                },
+                null
+            )
 
             // Get display metrics for the virtual display
             val metrics = Resources.getSystem().displayMetrics
@@ -155,9 +166,10 @@ class SaveScreenshotService : Service() {
             mHeight = metrics.heightPixels
 
             // Initialize the ImageReader for capturing the screen
-            mImageReader = ImageReader.newInstance(mWidth, mHeight, PixelFormat.RGBA_8888, 2).apply {
-                setOnImageAvailableListener(ImageAvailableListener(), null)
-            }
+            mImageReader =
+                ImageReader.newInstance(mWidth, mHeight, PixelFormat.RGBA_8888, 2).apply {
+                    setOnImageAvailableListener(ImageAvailableListener(), null)
+                }
 
             // Create a virtual display for the media projection after a delay
             serviceScope.launch {
@@ -207,8 +219,10 @@ class SaveScreenshotService : Service() {
         private const val RESULT_CODE = "RESULT_CODE"
         private const val DATA = "DATA"
         private const val SCREEN_CAP_NAME = "screen_cap"
-        const val ACTION_SERVICE_STARTED = "com.espressodev.gptmap.core.screen_capture.SERVICE_STARTED"
-        const val ACTION_SERVICE_STOPPED = "com.espressodev.gptmap.core.screen_capture.SERVICE_STOPPED"
+        const val ACTION_SERVICE_STARTED =
+            "com.espressodev.gptmap.core.screen_capture.SERVICE_STARTED"
+        const val ACTION_SERVICE_STOPPED =
+            "com.espressodev.gptmap.core.screen_capture.SERVICE_STOPPED"
 
         /**
          * Creates an Intent to start the ScreenCaptureService.

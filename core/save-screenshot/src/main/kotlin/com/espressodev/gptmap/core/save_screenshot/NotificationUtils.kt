@@ -20,7 +20,8 @@ object NotificationUtils {
     private const val NOTIFICATION_CHANNEL_NAME = "Screen Capture Service"
 
     /**
-     * Creates a notification for the ScreenCaptureService and returns a Pair of the notification ID and the notification itself.
+     * Creates a notification for the ScreenCaptureService and
+     * returns a Pair of the notification ID and the notification itself.
      * @param context The context used to create the notification.
      * @return A Pair containing the notification ID and the notification.
      */
@@ -29,7 +30,8 @@ object NotificationUtils {
         val notification = createNotification(context)
         // Notify the system to display the notification.
         (context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager)?.notify(
-            NOTIFICATION_ID, notification
+            NOTIFICATION_ID,
+            notification
         )
         return Pair(NOTIFICATION_ID, notification)
     }
@@ -57,10 +59,10 @@ object NotificationUtils {
      */
     private fun createNotification(context: Context): Notification {
         return NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID).apply {
-            setSmallIcon(android.R.drawable.ic_menu_camera) // Use a system icon as an example.
-            setContentTitle("Screen Capture Service") // Set the title of the notification.
-            setContentText("Tap to return to the app.") // Set the text of the notification.
-            setOngoing(true) // Make the notification ongoing.
+            setSmallIcon(android.R.drawable.ic_menu_camera)
+            setContentTitle("Screen Capture Service")
+            setContentText("Tap to return to the app.")
+            setOngoing(true)
             setCategory(Notification.CATEGORY_SERVICE) // Categorize as a service.
             setShowWhen(true) // Show the timestamp.
         }.build()
