@@ -19,31 +19,14 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import javax.inject.Inject
 
-@HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class UnsplashServiceImplTest {
 
-    @get:Rule
-    var hiltRule = HiltAndroidRule(this)
-
     private lateinit var unsplashService: UnsplashService
-
-    @Inject
-    lateinit var firebaseAuth: FirebaseAuth
-
+    private val token = "DEFINE_TEMP_TOKEN"
     @Before
     fun setUp() {
-        FirebaseApp.initializeApp(InstrumentationRegistry.getInstrumentation().targetContext)
-        hiltRule.inject()
-
-        // Sign in with a test account or retrieve an existing token
-        val testEmail = "jogek78962@visignal.com"
-        val testPassword = "Gptmap123"
-
         runBlocking {
-            val user = firebaseAuth.signInWithEmailAndPassword(testEmail, testPassword).await().user
-            val token = user?.getIdToken(false)?.await()?.token
-
             val okHttpClient = OkHttpClient.Builder()
                 .addInterceptor { chain ->
                     val request = chain.request()

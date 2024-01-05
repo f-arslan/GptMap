@@ -5,14 +5,14 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 
-const val favouriteRoute = "favourite_route"
+const val FAVOURITE_ROUTE = "favourite_route"
 
 fun NavController.navigateToFavourite(navOptions: NavOptions? = null) {
-    navigate(favouriteRoute, navOptions)
+    navigate(FAVOURITE_ROUTE, navOptions)
 }
 
 fun NavGraphBuilder.favouriteScreen(popUp: () -> Unit, navigateToMap: (String) -> Unit) {
-    composable(favouriteRoute) {
+    composable(FAVOURITE_ROUTE) {
         FavouriteRoute(popUp = popUp, navigateToMap = navigateToMap)
     }
 }

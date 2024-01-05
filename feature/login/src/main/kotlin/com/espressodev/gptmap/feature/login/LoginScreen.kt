@@ -71,7 +71,6 @@ fun LoginScreen(
     onForgotPasswordClick: () -> Unit
 ) {
     AppWrapper {
-        // AppIcon()
         LoginHeader()
         DefaultTextField(
             value = uiState.email,
@@ -127,21 +126,6 @@ fun LoginScreen(
         }
     }
 }
-
-@Composable
-fun AppIcon() {
-
-    Image(
-        painter = painterResource(id = AppDrawable.app_icon_no_background),
-        contentDescription = null,
-        modifier = Modifier
-            .padding(HIGH_PADDING)
-            .size(LARGE_BUTTON_SIZE)
-    )
-
-}
-
-
 
 @Composable
 fun LoginHeader() {

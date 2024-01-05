@@ -1,7 +1,6 @@
 package com.espressodev.gptmap.feature.favourite
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -31,12 +30,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
 import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import com.espressodev.gptmap.core.model.Content
 import com.espressodev.gptmap.core.model.Favourite
+import kotlinx.collections.immutable.PersistentList
 import java.time.LocalDateTime
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
@@ -54,9 +53,13 @@ fun FavouriteRoute(
     )
 }
 
-
 @Composable
-fun FavouriteScreen(popUp: () -> Unit, onCardClick: (String) -> Unit, favourites: List<Favourite>) {
+fun FavouriteScreen(
+    popUp: () -> Unit,
+    onCardClick: (String) -> Unit,
+    favourites: PersistentList<Favourite>,
+    modifier: Modifier = Modifier,
+) {
     Scaffold(
         topBar = {
             GmTopAppBar(
@@ -64,7 +67,8 @@ fun FavouriteScreen(popUp: () -> Unit, onCardClick: (String) -> Unit, favourites
                 icon = GmIcons.FavouriteFilled,
                 onBackClick = popUp
             )
-        }
+        },
+        modifier = modifier
     ) {
         LazyColumn(
             modifier = Modifier
@@ -75,20 +79,23 @@ fun FavouriteScreen(popUp: () -> Unit, onCardClick: (String) -> Unit, favourites
             contentPadding = PaddingValues(HIGH_PADDING)
         ) {
             items(favourites, key = { key -> key.id }) { favourite ->
-                FavouriteCard(favourite, onClick = { onCardClick(favourite.favouriteId) })
+                FavouriteCard(
+                    favourite = favourite,
+                    onClick = { onCardClick(favourite.favouriteId) }
+                )
             }
         }
     }
 }
 
-
 @Composable
-fun FavouriteCard(favourite: Favourite, onClick: () -> Unit) {
+fun FavouriteCard(favourite: Favourite, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Surface(
         color = MaterialTheme.colorScheme.primaryContainer,
         shape = RoundedCornerShape(16.dp),
         shadowElevation = 4.dp,
-        onClick = onClick
+        onClick = onClick,
+        modifier = modifier
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             AsyncImage(
@@ -144,10 +151,9 @@ fun FavouriteCard(favourite: Favourite, onClick: () -> Unit) {
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
-fun FavouritePreview() {
+private fun FavouritePreview() {
     GptmapTheme {
         FavouriteCard(
             favourite = Favourite(
@@ -168,7 +174,7 @@ fun FavouritePreview() {
                 ),
                 date = LocalDateTime.now()
             ),
-            {}
+            onClick = {}
         )
     }
 }
