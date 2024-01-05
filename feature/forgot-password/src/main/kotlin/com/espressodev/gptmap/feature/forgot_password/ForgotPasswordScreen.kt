@@ -59,15 +59,15 @@ fun ForgotPasswordRoute(
     )
 }
 
-
 @Composable
 fun ForgotPasswordScreen(
     email: String,
     onEmailChange: (String) -> Unit,
     onResetPasswordClick: () -> Unit,
-    backToLoginClick: () -> Unit
+    backToLoginClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Scaffold {
+    Scaffold(modifier = modifier) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -129,21 +129,20 @@ private fun FingerprintIcon() {
         Icon(
             imageVector = GmIcons.FingerPrintFilled,
             contentDescription = stringResource(AppText.forgot_password),
-            modifier = androidx.compose.ui.Modifier
+            modifier = Modifier
                 .padding(MEDIUM_PADDING)
                 .rotate(15f)
         )
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
-fun ForgotPreview() {
+private fun ForgotPreview() {
     ForgotPasswordScreen(
         email = "chandra.bradley@example.com",
         onEmailChange = {},
         onResetPasswordClick = {},
-        backToLoginClick = {})
+        backToLoginClick = {}
+    )
 }
-

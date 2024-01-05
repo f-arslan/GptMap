@@ -360,7 +360,7 @@ naming:
     propertyPattern: '[A-Za-z][_A-Za-z0-9]*'
     privatePropertyPattern: '(_)?[A-Za-z][_A-Za-z0-9]*'
   PackageNaming:
-    active: true
+    active: false
     packagePattern: '[a-z]+(\.[a-z][A-Za-z0-9]*)*'
   TopLevelPropertyNaming:
     active: true
@@ -952,7 +952,7 @@ formatting:
     active: true
     autoCorrect: true
   PackageName:
-    active: true
+    active: false
     autoCorrect: true
   ParameterListSpacing:
     active: false

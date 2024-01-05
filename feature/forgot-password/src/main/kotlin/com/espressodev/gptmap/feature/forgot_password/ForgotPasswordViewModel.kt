@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.feature.forgot_password
 
-import android.content.res.Resources
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.ext.isValidEmail
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
