@@ -8,9 +8,7 @@ import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthException
 import kotlinx.coroutines.tasks.await
-import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -30,8 +28,6 @@ class GoogleProfileServiceImpl @Inject constructor(
             GoogleResponse.Success(true)
         } catch (e: ApiException) {
             GoogleResponse.Failure(e)
-        } catch (e: IOException) {
-            GoogleResponse.Failure(e)
         }
     }
 
@@ -44,10 +40,6 @@ class GoogleProfileServiceImpl @Inject constructor(
             }
             GoogleResponse.Success(true)
         } catch (e: ApiException) {
-            GoogleResponse.Failure(e)
-        } catch (e: IOException) {
-            GoogleResponse.Failure(e)
-        } catch (e: FirebaseAuthException) {
             GoogleResponse.Failure(e)
         }
     }

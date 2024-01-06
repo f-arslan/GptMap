@@ -19,4 +19,5 @@ dependencies {
     debugApi(libs.androidx.compose.ui.tooling)
     implementation(libs.lottie.compose)
     implementation(libs.kotlinx.collections.immutable)
+    implementation(libs.coil.compose)
 }

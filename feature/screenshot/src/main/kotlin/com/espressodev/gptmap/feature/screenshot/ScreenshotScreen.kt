@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.feature.screenshot
 
-import android.util.Log
 import android.view.View
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.VectorConverter
@@ -19,9 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -55,7 +52,6 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -113,7 +109,6 @@ fun ScreenshotScreen(
     }
 }
 
-
 @Composable
 private fun InitialBottomBar(onClick: () -> Unit) {
     Button(onClick = onClick) {
@@ -131,7 +126,6 @@ private fun AfterBottomBar(onCancelClick: () -> Unit, onSaveClick: () -> Unit) {
         Icon(imageVector = GmIcons.DoneDefault, stringResource(id = R.string.done))
     }
 }
-
 
 @Composable
 private fun ScreenCaptureScreen(

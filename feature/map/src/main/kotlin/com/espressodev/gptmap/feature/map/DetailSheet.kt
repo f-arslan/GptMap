@@ -2,22 +2,13 @@ package com.espressodev.gptmap.feature.map
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -29,21 +20,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import com.espressodev.gptmap.core.common.ext.clipPolygon
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MAX_PADDING
@@ -52,10 +35,10 @@ import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.VERY_SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
+import com.espressodev.gptmap.core.designsystem.component.ClickableShimmerImage
 import com.espressodev.gptmap.core.designsystem.component.SquareButton
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
-import kotlinx.collections.immutable.PersistentList
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
@@ -135,64 +118,8 @@ fun LocationImages(
         modifier = modifier.padding(bottom = MEDIUM_PADDING)
     ) {
         items(2) { index ->
-            ImageCard(images[index], modifier = Modifier.size(160.dp, 100.dp)) { onClick(index) }
+            ClickableShimmerImage(images[index].imageUrl, modifier = Modifier.size(160.dp, 100.dp)) { onClick(index) }
         }
-    }
-}
-
-@Composable
-fun ImageCard(image: LocationImage, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
-    val showShimmer = remember { mutableStateOf(value = true) }
-    val interactionSource = remember { MutableInteractionSource() }
-    Surface(
-        modifier = modifier
-            .clip(RoundedCornerShape(MEDIUM_PADDING))
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null
-            ) { if (!showShimmer.value) onClick() },
-    ) {
-        AsyncImage(
-            model = image.imageUrl,
-            modifier = Modifier
-                .fillMaxSize()
-                .background(shimmerBrush(targetValue = 1300f, showShimmer = showShimmer.value))
-                .then(modifier),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            onSuccess = { showShimmer.value = false }
-        )
-    }
-}
-
-@Composable
-fun shimmerBrush(showShimmer: Boolean = true, targetValue: Float = 1000f): Brush {
-    return if (showShimmer) {
-        val shimmerColors = listOf(
-            Color(0xFFC2C2C2).copy(alpha = 0.8f),
-            Color(0xFFC2C2C2).copy(alpha = 0.1f),
-            Color(0xFFC2C2C2).copy(alpha = 0.8f),
-        )
-
-        val transition = rememberInfiniteTransition(label = "shimmer transition")
-        val translateAnimation = transition.animateFloat(
-            initialValue = 0f,
-            targetValue = targetValue,
-            animationSpec = infiniteRepeatable(
-                animation = tween(1000), repeatMode = RepeatMode.Reverse
-            ), label = "shimmer animation"
-        )
-        Brush.linearGradient(
-            colors = shimmerColors,
-            start = Offset.Zero,
-            end = Offset(x = translateAnimation.value, y = translateAnimation.value)
-        )
-    } else {
-        Brush.linearGradient(
-            colors = listOf(Color.Transparent, Color.Transparent),
-            start = Offset.Zero,
-            end = Offset.Zero
-        )
     }
 }
 

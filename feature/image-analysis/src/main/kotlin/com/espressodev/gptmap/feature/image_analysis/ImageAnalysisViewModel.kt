@@ -9,5 +9,5 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ImageAnalysisViewModel @Inject constructor(logService: LogService) : GmViewModel(logService) {
-
+    
 }

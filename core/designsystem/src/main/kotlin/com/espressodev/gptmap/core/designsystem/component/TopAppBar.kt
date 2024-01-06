@@ -48,7 +48,6 @@ fun GmTopAppBar(
                 imageVector = icon,
                 contentDescription = null,
                 modifier = Modifier.padding(end = 8.dp),
-                tint = MaterialTheme.colorScheme.primaryContainer
             )
         }
     )

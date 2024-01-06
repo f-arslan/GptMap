@@ -31,29 +31,15 @@ class GoogleAuthServiceImpl @Inject constructor(
 
     override suspend fun oneTapSignInWithGoogle(): OneTapSignInUpResponse {
         return try {
-            // Attempt to sign in the user
             val signInResult = oneTapClient.beginSignIn(signInRequest).await()
             GoogleResponse.Success(signInResult)
-        } catch (e: ApiException) {
-            if (e.statusCode == CommonStatusCodes.SIGN_IN_REQUIRED) {
-                try {
-                    // Attempt to sign up the user
-                    val signUpResult = oneTapClient.beginSignIn(signUpRequest).await()
-                    GoogleResponse.Success(signUpResult)
-                } catch (signUpException: ApiException) {
-                    GoogleResponse.Failure(signUpException)
-                } catch (signUpException: CancellationException) {
-                    GoogleResponse.Failure(signUpException)
-                } catch (signUpException: IOException) {
-                    GoogleResponse.Failure(signUpException)
-                }
-            } else {
+        } catch (e: Exception) {
+            try {
+                val signUpResult = oneTapClient.beginSignIn(signUpRequest).await()
+                GoogleResponse.Success(signUpResult)
+            } catch (e: Exception) {
                 GoogleResponse.Failure(e)
             }
-        } catch (e: CancellationException) {
-            GoogleResponse.Failure(e)
-        } catch (e: IOException) {
-            GoogleResponse.Failure(e)
         }
     }
 
@@ -61,11 +47,7 @@ class GoogleAuthServiceImpl @Inject constructor(
         return try {
             val signUpResult = oneTapClient.beginSignIn(signUpRequest).await()
             GoogleResponse.Success(signUpResult)
-        } catch (e: ApiException) {
-            GoogleResponse.Failure(e)
-        } catch (e: CancellationException) {
-            GoogleResponse.Failure(e)
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             GoogleResponse.Failure(e)
         }
     }
