@@ -31,11 +31,11 @@ import coil.compose.AsyncImage
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
+import com.espressodev.gptmap.core.designsystem.component.GmCircularIndicator
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
 import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
-import com.espressodev.gptmap.core.model.Content
 import com.espressodev.gptmap.core.model.Favourite
-import kotlinx.collections.immutable.PersistentList
+import com.espressodev.gptmap.core.model.Response
 import java.time.LocalDateTime
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
@@ -46,6 +46,7 @@ fun FavouriteRoute(
     viewModel: FavouriteViewModel = hiltViewModel()
 ) {
     val favourites by viewModel.favourites.collectAsStateWithLifecycle()
+
     FavouriteScreen(
         popUp = popUp,
         onCardClick = navigateToMap,
@@ -57,7 +58,7 @@ fun FavouriteRoute(
 fun FavouriteScreen(
     popUp: () -> Unit,
     onCardClick: (String) -> Unit,
-    favourites: PersistentList<Favourite>,
+    favourites: Response<List<Favourite>>,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -70,19 +71,32 @@ fun FavouriteScreen(
         },
         modifier = modifier
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it),
-            verticalArrangement = Arrangement.spacedBy(HIGH_PADDING),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = PaddingValues(HIGH_PADDING)
-        ) {
-            items(favourites, key = { key -> key.id }) { favourite ->
-                FavouriteCard(
-                    favourite = favourite,
-                    onClick = { onCardClick(favourite.favouriteId) }
-                )
+        with(favourites) {
+            when (this) {
+                is Response.Success -> {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(it),
+                        verticalArrangement = Arrangement.spacedBy(HIGH_PADDING),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        contentPadding = PaddingValues(HIGH_PADDING)
+                    ) {
+                        items(data, key = { favourite -> favourite.id }) { favourite ->
+                            FavouriteCard(
+                                favourite = favourite,
+                                onClick = { onCardClick(favourite.favouriteId) }
+                            )
+                        }
+                    }
+                }
+
+                is Response.Failure -> {
+                    // TODO: Banner will be added here
+                    Text(text = e.toString())
+                }
+
+                Response.Loading -> GmCircularIndicator()
             }
         }
     }
@@ -156,24 +170,7 @@ fun FavouriteCard(favourite: Favourite, onClick: () -> Unit, modifier: Modifier 
 private fun FavouritePreview() {
     GptmapTheme {
         FavouriteCard(
-            favourite = Favourite(
-                id = "definitiones",
-                userId = "tritani",
-                favouriteId = "ubique",
-                title = "assueverit",
-                placeholderImageUrl = "http://www.bing.com/search?q=finibus",
-                locationImages = listOf(),
-                content = Content(
-                    latitude = 4.5,
-                    longitude = 6.7,
-                    city = "Laqwisch",
-                    district = "pri",
-                    country = "Togo",
-                    poeticDescription = "sem",
-                    normalDescription = "molestie"
-                ),
-                date = LocalDateTime.now()
-            ),
+            favourite = Favourite(date = LocalDateTime.now()),
             onClick = {}
         )
     }
