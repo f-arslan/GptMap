@@ -6,10 +6,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 
-const val mapRoute = "map_route"
+const val MAP_ROUTE = "map_route"
 const val FAVOURITE_ID = "favouriteId"
 fun NavController.navigateToMap(favouriteId: String = "default") {
-    navigate("$mapRoute/$favouriteId") {
+    navigate("$MAP_ROUTE/$favouriteId") {
         launchSingleTop = true
         popUpTo(0) { inclusive = true }
     }
@@ -22,7 +22,7 @@ fun NavGraphBuilder.mapScreen(
     navigateToImageAnalyses: () -> Unit,
 ) {
     composable(
-        route = "$mapRoute/{$FAVOURITE_ID}",
+        route = "$MAP_ROUTE/{$FAVOURITE_ID}",
         arguments = listOf(navArgument(FAVOURITE_ID) { type = NavType.StringType })
     ) {
         val favouriteId = it.arguments?.getString(FAVOURITE_ID) ?: "default"

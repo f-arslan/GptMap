@@ -55,6 +55,7 @@ import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.component.SquareButton
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
+import kotlinx.collections.immutable.PersistentList
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
@@ -124,10 +125,14 @@ internal fun BoxScope.DetailSheet(
 }
 
 @Composable
-fun LocationImages(images: List<LocationImage>, onClick: (Int) -> Unit) {
+fun LocationImages(
+    images: List<LocationImage>,
+    onClick: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(MEDIUM_PADDING),
-        modifier = Modifier.padding(bottom = MEDIUM_PADDING)
+        modifier = modifier.padding(bottom = MEDIUM_PADDING)
     ) {
         items(2) { index ->
             ImageCard(images[index], modifier = Modifier.size(160.dp, 100.dp)) { onClick(index) }
@@ -192,9 +197,9 @@ fun shimmerBrush(showShimmer: Boolean = true, targetValue: Float = 1000f): Brush
 }
 
 @Composable
-fun BoxScope.UnsplashBanner(name: String) {
+fun BoxScope.UnsplashBanner(name: String, modifier: Modifier = Modifier) {
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .align(Alignment.BottomEnd)
             .padding(bottom = MEDIUM_PADDING, end = MEDIUM_PADDING),
         shape = RoundedCornerShape(SMALL_PADDING),
@@ -213,11 +218,12 @@ fun BoxScope.UnsplashBanner(name: String) {
 private fun DetailButtons(
     addToFavouriteButtonState: Boolean,
     onStreetViewClick: () -> Unit,
-    onFavouriteClick: () -> Unit
+    onFavouriteClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(HIGH_PADDING),
-        modifier = Modifier.padding(bottom = HIGH_PADDING)
+        modifier = modifier.padding(bottom = HIGH_PADDING)
     ) {
         SquareButton(
             iconId = AppDrawable.street_view,

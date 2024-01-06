@@ -11,9 +11,9 @@ import com.espressodev.gptmap.feature.image_analyses.imageAnalysesRoute
 import com.espressodev.gptmap.feature.image_analyses.imageAnalysesScreen
 import com.espressodev.gptmap.feature.image_analysis.imageAnalysisScreen
 import com.espressodev.gptmap.feature.image_analysis.navigateToImageAnalysis
-import com.espressodev.gptmap.feature.login.loginRoute
+import com.espressodev.gptmap.feature.login.LOGIN_ROUTE
 import com.espressodev.gptmap.feature.login.loginScreen
-import com.espressodev.gptmap.feature.map.mapRoute
+import com.espressodev.gptmap.feature.map.MAP_ROUTE
 import com.espressodev.gptmap.feature.map.mapScreen
 import com.espressodev.gptmap.feature.map.navigateToMap
 import com.espressodev.gptmap.feature.register.registerRoute
@@ -27,7 +27,7 @@ import com.espressodev.gptmap.feature.street_view.streetViewScreen
 fun GmNavHost(
     appState: GmAppState,
     modifier: Modifier = Modifier,
-    startDestination: String = loginRoute
+    startDestination: String = LOGIN_ROUTE
 ) {
     val navController = appState.navController
     NavHost(
@@ -49,10 +49,10 @@ fun GmNavHost(
             navigateToForgotPassword = { appState.navigate(FORGOT_PASSWORD_ROUTE) }
         )
         registerScreen(
-            navigateToLogin = { appState.clearAndNavigate(loginRoute) },
-            navigateToMap = { appState.clearAndNavigate(mapRoute) }
+            navigateToLogin = { appState.clearAndNavigate(LOGIN_ROUTE) },
+            navigateToMap = { appState.clearAndNavigate(MAP_ROUTE) }
         )
-        forgotPasswordScreen(navigateToLogin = { appState.clearAndNavigate(loginRoute) })
+        forgotPasswordScreen(navigateToLogin = { appState.clearAndNavigate(LOGIN_ROUTE) })
         streetViewScreen(popUp = appState::popUp)
         favouriteScreen(
             popUp = appState::popUp,
@@ -65,7 +65,7 @@ fun GmNavHost(
             navigateToImageAnalysis = {
                 navController.navigateToImageAnalysis {
                     launchSingleTop = true
-                    popUpTo(mapRoute) { inclusive = false }
+                    popUpTo(MAP_ROUTE) { inclusive = false }
                 }
             }
         )

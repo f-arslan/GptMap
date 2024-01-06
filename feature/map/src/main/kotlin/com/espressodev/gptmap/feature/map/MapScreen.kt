@@ -96,12 +96,13 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @Composable
 fun MapRoute(
-    viewModel: MapViewModel = hiltViewModel(),
     navigateToStreetView: (Float, Float) -> Unit,
     navigateToFavourite: () -> Unit,
     navigateToScreenshot: () -> Unit,
     navigateToImageAnalyses: () -> Unit,
-    favouriteId: String
+    favouriteId: String,
+    modifier: Modifier = Modifier,
+    viewModel: MapViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
@@ -123,7 +124,8 @@ fun MapRoute(
                     }
                 }
             }
-        }
+        },
+        modifier = modifier
     ) {
         MapScreen(
             uiState = uiState,
@@ -161,7 +163,7 @@ private fun MapScreen(
     onEvent: (MapUiEvent) -> Unit,
     navigateToFavourite: () -> Unit,
     navigateToImageAnalyses: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     val latLng = getLatLngFromLocation(uiState.location)
     val cameraPositionState = rememberCameraPositionState {
@@ -189,10 +191,11 @@ fun BoxScope.MapTopButtons(
     isVisible: Boolean,
     onFavouriteClick: () -> Unit,
     onImageAnalysesClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
         visible = isVisible,
-        modifier = Modifier
+        modifier = modifier
             .align(Alignment.TopEnd)
             .zIndex(2f)
             .padding(8.dp)
@@ -422,14 +425,14 @@ private fun BoxScope.LoadingDialog(loadingState: ComponentLoadingState) {
 }
 
 @Composable
-fun DefaultLoadingAnimation() {
+fun DefaultLoadingAnimation(modifier: Modifier = Modifier) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(AppRaw.map_loading_anim))
     val progress by animateLottieCompositionAsState(composition)
 
     LottieAnimation(
         composition = composition,
         progress = { progress },
-        modifier = Modifier.size(BUTTON_SIZE),
+        modifier = modifier.size(BUTTON_SIZE),
         contentScale = ContentScale.Crop
     )
 }
@@ -461,16 +464,16 @@ private fun BoxScope.LocationPin(isCameraMoving: Boolean) {
     }
 }
 
-
 @Composable
 fun BoxScope.SmallInformationCard(
     content: Content,
     onExploreWithAiClick: () -> Unit,
     onBackClick: () -> Unit,
-    onStreetViewClick: () -> Unit
+    onStreetViewClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .align(Alignment.BottomCenter)
             .padding(MEDIUM_PADDING),
         verticalArrangement = Arrangement.spacedBy(MEDIUM_PADDING)

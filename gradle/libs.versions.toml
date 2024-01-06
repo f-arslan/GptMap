@@ -46,7 +46,7 @@ lottieCompose = "6.2.0"
 firebaseStorage = "20.3.0"
 kotlin2 = "1.9.10"
 coreKtxVersion = "1.12.0"
-junitJunit = "4.13.2"
+baseJunit = "4.13.2"
 espressoCoreVersion = "3.5.1"
 appcompatVersion = "1.6.1"
 material = "1.11.0"
@@ -56,6 +56,9 @@ kotlinxCollectionsImmutable = "0.3.6"
 junitJupiter = "5.10.1"
 mockk = "1.13.7"  # 1.13.8 has problem with Java 1.8
 androidxTestRules = "1.5.0"
+mockito = "4.8.0"
+coreTesting = "2.2.0"
+turbine = "1.0.0"
 [libraries]
 
 # Compose
@@ -97,9 +100,18 @@ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "j
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidxTestRunner" }  # app build gradle
 junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junitJupiter" }
 junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junitJupiter" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
+junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junitJupiter" }
+junit-vintage-engine = { group = "org.junit.vintage", name = "junit-vintage-engine", version.ref = "junitJupiter" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidxTestRules" }
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+mockito-inline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito" }
+mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito" }
+core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "coreTesting" }
 # End of it
 
 # Hilt
@@ -156,7 +168,7 @@ firebase-crashlytics-gradlePlugin = { group = "com.google.firebase", name = "fir
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtxVersion" }
-junit = { group = "junit", name = "junit", version.ref = "junitJunit" }
+junit = { group = "junit", name = "junit", version.ref = "baseJunit" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCoreVersion" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompatVersion" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
