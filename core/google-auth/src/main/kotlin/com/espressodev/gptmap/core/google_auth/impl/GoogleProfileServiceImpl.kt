@@ -6,8 +6,11 @@ import com.espressodev.gptmap.core.google_auth.SignOutResponse
 import com.espressodev.gptmap.core.model.google.GoogleResponse
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
 import kotlinx.coroutines.tasks.await
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,7 +28,9 @@ class GoogleProfileServiceImpl @Inject constructor(
             oneTapClient.signOut().await()
             auth.signOut()
             GoogleResponse.Success(true)
-        } catch (e: Exception) {
+        } catch (e: ApiException) {
+            GoogleResponse.Failure(e)
+        } catch (e: IOException) {
             GoogleResponse.Failure(e)
         }
     }
@@ -38,7 +43,11 @@ class GoogleProfileServiceImpl @Inject constructor(
                 delete().await()
             }
             GoogleResponse.Success(true)
-        } catch (e: Exception) {
+        } catch (e: ApiException) {
+            GoogleResponse.Failure(e)
+        } catch (e: IOException) {
+            GoogleResponse.Failure(e)
+        } catch (e: FirebaseAuthException) {
             GoogleResponse.Failure(e)
         }
     }

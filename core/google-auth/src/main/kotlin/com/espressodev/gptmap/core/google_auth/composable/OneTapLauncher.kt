@@ -10,15 +10,15 @@ import androidx.compose.runtime.LaunchedEffect
 import com.espressodev.gptmap.core.designsystem.component.GmCircularIndicator
 import com.espressodev.gptmap.core.google_auth.OneTapSignInUpResponse
 import com.espressodev.gptmap.core.google_auth.SignInUpWithGoogleResponse
+import com.espressodev.gptmap.core.model.google.GoogleResponse.Failure
+import com.espressodev.gptmap.core.model.google.GoogleResponse.Loading
+import com.espressodev.gptmap.core.model.google.GoogleResponse.Success
 import com.google.android.gms.auth.api.identity.BeginSignInResult
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.Job
-import com.espressodev.gptmap.core.model.google.GoogleResponse.Loading
-import com.espressodev.gptmap.core.model.google.GoogleResponse.Success
-import com.espressodev.gptmap.core.model.google.GoogleResponse.Failure
 
 @Composable
 fun OneTapLauncher(
@@ -26,7 +26,7 @@ fun OneTapLauncher(
     oneTapSignInUpResponse: OneTapSignInUpResponse,
     singInUpWithGoogleResponse: SignInUpWithGoogleResponse,
     signInWithGoogle: (AuthCredential) -> Job,
-    navigate: () -> Unit
+    navigate: () -> Unit,
 ) {
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
@@ -56,44 +56,48 @@ fun OneTapLauncher(
             if (signedIn) {
                 navigate()
             }
-        }
+        },
     )
 }
 
 @Composable
 fun OneTapSignInUp(
     oneTapSignUpResponse: OneTapSignInUpResponse,
-    launch: (result: BeginSignInResult) -> Unit
+    launch: (result: BeginSignInResult) -> Unit,
 ) {
     when (oneTapSignUpResponse) {
         is Loading -> GmCircularIndicator()
-        is Success -> oneTapSignUpResponse.data?.let {
-            LaunchedEffect(it) {
-                launch(it)
+        is Success ->
+            oneTapSignUpResponse.data?.let {
+                LaunchedEffect(it) {
+                    launch(it)
+                }
             }
-        }
 
-        is Failure -> LaunchedEffect(Unit) {
-            Log.d("OneTapSignUp", oneTapSignUpResponse.e.toString())
-        }
+        is Failure ->
+            LaunchedEffect(Unit) {
+                Log.d("OneTapSignUp", oneTapSignUpResponse.e.toString())
+            }
     }
 }
 
 @Composable
 fun SignInUpWithGoogle(
     signUpWithGoogleResponse: SignInUpWithGoogleResponse,
-    navigateToHomeScreen: (signedIn: Boolean) -> Unit
+    navigateToHomeScreen: (signedIn: Boolean) -> Unit,
 ) {
     when (signUpWithGoogleResponse) {
         is Loading -> GmCircularIndicator()
-        is Success -> signUpWithGoogleResponse.data?.let { signedIn ->
-            LaunchedEffect(signedIn) {
-                navigateToHomeScreen(signedIn)
+        is Success ->
+            signUpWithGoogleResponse.data?.let { signedIn ->
+                LaunchedEffect(signedIn) {
+                    navigateToHomeScreen(signedIn)
+                }
             }
-        }
 
-        is Failure -> LaunchedEffect(Unit) {
-            Log.d("SignUpWithGoogle", signUpWithGoogleResponse.e.toString())
-        }
+        is Failure ->
+            LaunchedEffect(Unit) {
+                Log.d("SignUpWithGoogle", signUpWithGoogleResponse.e.toString())
+            }
     }
 }

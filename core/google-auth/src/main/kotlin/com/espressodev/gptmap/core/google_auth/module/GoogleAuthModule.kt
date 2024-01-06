@@ -23,7 +23,6 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Named
 
-
 @Module
 @InstallIn(ViewModelComponent::class)
 class GoogleAuthModule {

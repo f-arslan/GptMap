@@ -5,7 +5,6 @@ import com.espressodev.gptmap.core.model.google.GoogleResponse
 typealias SignOutResponse = GoogleResponse<Boolean>
 typealias RevokeAccessResponse = GoogleResponse<Boolean>
 
-
 interface GoogleProfileService {
     val displayName: String
     val photoUrl: String
