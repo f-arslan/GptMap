@@ -11,8 +11,8 @@ fun NavController.navigateToScreenshot(navOptions: NavOptions? = null) {
     navigate(screenshotRoute)
 }
 
-fun NavGraphBuilder.screenshotScreen(popUp: () -> Unit, navigateToImageAnalysis: () -> Unit) {
+fun NavGraphBuilder.screenshotScreen(popUp: () -> Unit, navigateToImageAnalysis: (String) -> Unit) {
     composable(screenshotRoute) {
-        ScreenshotScreen(popUp = popUp, navigateToImageAnalysis = navigateToImageAnalysis)
+        ScreenshotRoute(popUp = popUp, navigateToImageAnalysis = navigateToImageAnalysis)
     }
 }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -58,6 +59,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.R
+import com.espressodev.gptmap.core.designsystem.component.DefaultTextField
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
 import com.espressodev.gptmap.feature.screenshot.ScreenState.AfterSelectingTheField
 import com.espressodev.gptmap.feature.screenshot.ScreenState.Initial
@@ -68,10 +70,10 @@ import kotlin.math.roundToInt
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @Composable
-fun ScreenshotScreen(
-    viewModel: ScreenshotViewModel = hiltViewModel(),
+fun ScreenshotRoute(
     popUp: () -> Unit,
-    navigateToImageAnalysis: () -> Unit
+    navigateToImageAnalysis: (String) -> Unit,
+    viewModel: ScreenshotViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -101,7 +103,7 @@ fun ScreenshotScreen(
             }
         }
     ) {
-        ScreenCaptureScreen(
+        ScreenshotScreen(
             uiState = uiState,
             modifier = Modifier.padding(it),
             onEvent = { viewModel.onEvent(it, navigateToImageAnalysis = navigateToImageAnalysis) }
@@ -128,10 +130,10 @@ private fun AfterBottomBar(onCancelClick: () -> Unit, onSaveClick: () -> Unit) {
 }
 
 @Composable
-private fun ScreenCaptureScreen(
+private fun ScreenshotScreen(
     uiState: ScreenshotUiState,
+    onEvent: (ScreenshotUiEvent) -> Unit,
     modifier: Modifier = Modifier,
-    onEvent: (ScreenshotUiEvent) -> Unit
 ) {
     when (uiState.screenState) {
         Initial -> {
@@ -144,7 +146,9 @@ private fun ScreenCaptureScreen(
 
         AfterSelectingTheField -> {
             EditScreenshot(
+                title = uiState.title,
                 imageResult = uiState.imageResult,
+                onValueChange = { onEvent(ScreenshotUiEvent.OnTitleChanged(it)) },
                 modifier = modifier
             )
         }
@@ -153,8 +157,10 @@ private fun ScreenCaptureScreen(
 
 @Composable
 fun EditScreenshot(
-    modifier: Modifier = Modifier,
+    title: String,
     imageResult: ImageResult,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
@@ -163,12 +169,20 @@ fun EditScreenshot(
         contentAlignment = Alignment.Center
     ) {
         if (imageResult is ImageResult.Success) {
-            Image(
-                bitmap = imageResult.data.asImageBitmap(),
-                contentDescription = stringResource(id = R.string.selected_image),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxWidth()
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Image(
+                    bitmap = imageResult.data.asImageBitmap(),
+                    contentDescription = stringResource(id = R.string.selected_image),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                DefaultTextField(
+                    value = title,
+                    label = AppText.title,
+                    leadingIcon = GmIcons.TitleDefault,
+                    onValueChange = onValueChange
+                )
+            }
         }
     }
 }
@@ -184,9 +198,9 @@ fun ScreenshotGallery(
     val squareSizePx = with(localDensity) { size.toPx() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val imagePath = remember {
+    val imagePath =
         context.getExternalFilesDir(null)?.absolutePath?.let { "${it}/screenshots/screenshot.png" }
-    }
+
     val offset = remember { Animatable(Offset(0f, 0f), Offset.VectorConverter) }
 
     Box(
@@ -262,7 +276,6 @@ fun ScreenshotBox(
             composableBounds?.let { bounds ->
                 if (bounds.width == 0f || bounds.height == 0f) return@let
                 scope.launch {
-                    // Launch a coroutine to perform the screenshot
                     val imageResult = withContext(Dispatchers.IO) {
                         view.screenshot(bounds)
                     }

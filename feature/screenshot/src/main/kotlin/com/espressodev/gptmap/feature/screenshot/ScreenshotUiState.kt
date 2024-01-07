@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 
-
 enum class ScreenState {
     Initial, AfterSelectingTheField
 }
@@ -15,16 +14,16 @@ data class ScreenshotUiState(
     val bitmap: Bitmap? = null,
     val screenState: ScreenState = ScreenState.Initial,
     val imageResult: ImageResult = ImageResult.Initial,
-    val callback: (() -> Unit)? = null
+    val callback: (() -> Unit)? = null,
+    val title: String = ""
 )
 
 sealed class ScreenshotUiEvent {
     data class OnBitmapChanged(val bitmap: Bitmap?) : ScreenshotUiEvent()
     data class OnCallbackChanged(val callback: (() -> Unit)?) : ScreenshotUiEvent()
-
     data class OnImageResultChanged(val imageResult: ImageResult) : ScreenshotUiEvent()
+    data class OnTitleChanged(val value: String): ScreenshotUiEvent()
     data object OnCaptureClicked: ScreenshotUiEvent()
-
     data object OnSaveClicked: ScreenshotUiEvent()
 }
 
