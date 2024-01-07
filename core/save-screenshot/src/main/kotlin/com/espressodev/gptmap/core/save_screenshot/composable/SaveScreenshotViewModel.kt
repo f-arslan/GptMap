@@ -47,7 +47,8 @@ class ScreenshotViewModel @Inject constructor(
                 }
 
                 SaveScreenshotService.ACTION_SERVICE_STOPPED -> {
-                    _uiState.update { it.copy(screenState = ScreenState.Finished) }
+                    if (uiState.value.screenState == ScreenState.Started)
+                        _uiState.update { it.copy(screenState = ScreenState.Finished) }
                 }
             }
         }

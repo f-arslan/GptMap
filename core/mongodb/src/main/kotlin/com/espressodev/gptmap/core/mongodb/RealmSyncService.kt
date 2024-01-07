@@ -21,4 +21,6 @@ interface RealmSyncService {
     fun getFavourite(id: String): Favourite
 
     fun getImageAnalyses(): Flow<List<ImageAnalysis>>
+
+    suspend fun getImageAnalysis(id: String): Result<ImageAnalysis>
 }

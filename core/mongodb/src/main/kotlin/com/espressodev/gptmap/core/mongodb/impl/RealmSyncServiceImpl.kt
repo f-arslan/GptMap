@@ -13,8 +13,10 @@ import com.espressodev.gptmap.core.mongodb.module.RealmModule.realm
 import com.espressodev.gptmap.core.mongodb.module.RealmModule.realmUser
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 class RealmSyncServiceImpl : RealmSyncService {
 
@@ -82,11 +84,21 @@ class RealmSyncServiceImpl : RealmSyncService {
             it.list.map { realmImageAnalysis -> realmImageAnalysis.toImageAnalysis() }
         }
 
+    override suspend fun getImageAnalysis(id: String): Result<ImageAnalysis> =
+        withContext(Dispatchers.IO) {
+            runCatching {
+                realm.query<RealmImageAnalysis>(
+                    "userId == $0 AND imageAnalysisId == $1",
+                    realmUserId,
+                    id
+                )
+                    .find()
+                    .first()
+                    .toImageAnalysis()
+            }
+        }
 
     override fun isUserInDatabase(): Boolean =
         realm.query<RealmUser>("userId == $0", realmUserId).first().find() != null
 
 }
-
-
-

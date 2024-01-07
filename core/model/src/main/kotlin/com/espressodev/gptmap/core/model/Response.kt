@@ -2,7 +2,7 @@ package com.espressodev.gptmap.core.model
 
 sealed class Response<out T> {
     data object Loading : Response<Nothing>()
-    data class Success<out R>(val data: R) : Response<R>()
+    data class Success<out T>(val data: T) : Response<T>()
     data class Failure(val e: Exception) : Response<Nothing>()
 }
 

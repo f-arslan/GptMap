@@ -7,17 +7,13 @@ import com.espressodev.gptmap.core.model.google.GoogleConstants.SIGN_UP_REQUEST
 import com.espressodev.gptmap.core.model.google.GoogleResponse
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.tasks.await
-import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
-import kotlin.coroutines.cancellation.CancellationException
 
 @Singleton
 class GoogleAuthServiceImpl @Inject constructor(

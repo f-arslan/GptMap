@@ -62,14 +62,19 @@ fun GmNavHost(
         )
         screenshotScreen(
             popUp = appState::popUp,
-            navigateToImageAnalysis = {
-                navController.navigateToImageAnalysis {
+            navigateToImageAnalysis = { imageId ->
+                navController.navigateToImageAnalysis(imageId) {
                     launchSingleTop = true
                     popUpTo(MAP_ROUTE) { inclusive = false }
                 }
             }
         )
         imageAnalysisScreen(popUp = appState::popUp)
-        imageAnalysesScreen(popUp = appState::popUp)
+        imageAnalysesScreen(
+            popUp = appState::popUp,
+            navigateToImageAnalysis = { imageId ->
+
+            }
+        )
     }
 }

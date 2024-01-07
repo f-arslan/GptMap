@@ -5,6 +5,7 @@ import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.model.Exceptions
 import com.espressodev.gptmap.core.model.ImageAnalysis
+import com.espressodev.gptmap.core.model.ImageAnalysisSummary
 import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,8 +22,8 @@ class ImageAnalysesViewModel @Inject constructor(
 ) : GmViewModel(logService) {
     val imageAnalyses = realmSyncService
         .getImageAnalyses()
-        .map<List<ImageAnalysis>, Response<List<ImageAnalysis>>> {
-            Response.Success(it)
+        .map<List<ImageAnalysis>, Response<List<ImageAnalysisSummary>>> {
+            Response.Success(it.map { imageAnalysis -> imageAnalysis.toImageAnalysisSummary() })
         }
         .catch {
             Response.Failure(Exceptions.RealmFailedToLoadImageAnalysesException())

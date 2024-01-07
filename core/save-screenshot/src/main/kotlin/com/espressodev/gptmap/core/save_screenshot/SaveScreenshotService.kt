@@ -22,10 +22,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.FileOutputStream
-import java.io.IOException
-import java.nio.BufferUnderflowException
 
 /**
  * Service for capturing the device's screen.
@@ -42,6 +39,8 @@ class SaveScreenshotService : Service() {
 
     /**
      * Listener for new images available for processing.
+     * Only send Finished broadcast when the screenshot is saved.
+     * Sometimes due to error, the screenshot is not saved.
      */
     private inner class ImageAvailableListener : ImageReader.OnImageAvailableListener {
         override fun onImageAvailable(reader: ImageReader) {
@@ -65,17 +64,16 @@ class SaveScreenshotService : Service() {
                         bitmap?.copyPixelsFromBuffer(buffer)
 
                         fos = FileOutputStream("$mStoreDir/screenshot.png")
-                        bitmap?.compress(Bitmap.CompressFormat.PNG, 80, fos!!)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            bitmap?.compress(Bitmap.CompressFormat.WEBP_LOSSY, 80, fos!!)
+                        } else {
+                            bitmap?.compress(Bitmap.CompressFormat.JPEG, 80, fos!!)
+                        }
                         Log.e(TAG, "Screenshot captured")
+                        sendBroadcast(Intent(ACTION_SERVICE_STOPPED))
                     }
-                } catch (e: FileNotFoundException) {
-                    Log.e(TAG, "File not found: ${e.message}")
-                } catch (e: IOException) {
-                    Log.e(TAG, "I/O error: ${e.message}")
-                } catch (e: BufferUnderflowException) {
-                    Log.e(TAG, "Buffer not large enough: ${e.message}")
-                } catch (e: IllegalStateException) {
-                    Log.e(TAG, "Illegal state: ${e.message}")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to capture screenshot because: ${e.message}")
                 } finally {
                     fos?.close()
                     bitmap?.recycle()
@@ -211,7 +209,6 @@ class SaveScreenshotService : Service() {
         super.onDestroy()
         releaseResources()
         serviceScope.cancel()
-        sendBroadcast(Intent(ACTION_SERVICE_STOPPED))
     }
 
     companion object {

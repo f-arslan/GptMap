@@ -10,8 +10,11 @@ fun NavController.navigateToListImageAnalyses() {
     navigate(imageAnalysesRoute)
 }
 
-fun NavGraphBuilder.imageAnalysesScreen(popUp: () -> Unit) {
+fun NavGraphBuilder.imageAnalysesScreen(
+    popUp: () -> Unit,
+    navigateToImageAnalysis: (String) -> Unit
+) {
     composable(imageAnalysesRoute) {
-        ImageAnalysesRoute(popUp)
+        ImageAnalysesRoute(popUp, navigateToImageAnalysis)
     }
 }

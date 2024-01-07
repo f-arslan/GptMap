@@ -10,7 +10,15 @@ data class ImageAnalysis(
     val title: String,
     val messages: List<ImageMessage>,
     val date: LocalDateTime
-)
+) {
+    fun toImageAnalysisSummary() =
+        ImageAnalysisSummary(
+            id = imageId,
+            imageUrl = imageUrl,
+            title = title,
+            date = date
+        )
+}
 
 data class ImageMessage(
     val request: String,
