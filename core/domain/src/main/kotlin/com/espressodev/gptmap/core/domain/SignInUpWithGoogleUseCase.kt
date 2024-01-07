@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.core.domain
 
-import android.util.Log
 import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.google_auth.GoogleAuthService
 import com.espressodev.gptmap.core.google_auth.OneTapSignInUpResponse
@@ -11,18 +10,14 @@ import com.espressodev.gptmap.core.model.Exceptions.FirebasePhotoUrlNullExceptio
 import com.espressodev.gptmap.core.model.Exceptions.FirebaseUserIdIsNullException
 import com.espressodev.gptmap.core.model.Provider
 import com.espressodev.gptmap.core.model.User
-import com.espressodev.gptmap.core.model.ext.classTag
 import com.espressodev.gptmap.core.model.google.GoogleResponse
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseUser
-import io.realm.kotlin.exceptions.RealmException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.io.IOException
 import javax.inject.Inject
 
 class SignInUpWithGoogleUseCase @Inject constructor(
@@ -50,14 +45,7 @@ class SignInUpWithGoogleUseCase @Inject constructor(
                 addUserToDatabaseIfUserIsNew(authResult)
 
                 GoogleResponse.Success(data = true)
-            } catch (e: FirebaseAuthException) {
-                Log.e(classTag(), "Firebase auth exception", e)
-                GoogleResponse.Failure(e)
-            } catch (e: RealmException) {
-                Log.e(classTag(), "Realm exception", e)
-                GoogleResponse.Failure(e)
-            } catch (e: IOException) {
-                Log.e(classTag(), "I/O exception", e)
+            } catch (e: Exception) {
                 GoogleResponse.Failure(e)
             }
         }

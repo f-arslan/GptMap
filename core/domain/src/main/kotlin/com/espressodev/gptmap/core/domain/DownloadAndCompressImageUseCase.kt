@@ -13,17 +13,11 @@ import java.net.URL
 
 class DownloadAndCompressImageUseCase {
     suspend operator fun invoke(imageUrl: String) = withContext(Dispatchers.IO) {
-        try {
+        runCatching {
             val bitmap = downloadImage(imageUrl)
             val resizedBitmap = resizeImage(bitmap)
             val compressedByteArray = compressImage(resizedBitmap)
-            Result.success(compressedByteArray)
-        } catch (e: MalformedURLException) {
-            Result.failure(e)
-        } catch (e: IOException) {
-            Result.failure(e)
-        } catch (e: IllegalArgumentException) {
-            Result.failure(e)
+            compressedByteArray
         }
     }
 
