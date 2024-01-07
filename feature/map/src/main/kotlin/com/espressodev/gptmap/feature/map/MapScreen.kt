@@ -67,6 +67,7 @@ import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
+import com.espressodev.gptmap.core.designsystem.component.ClickableShimmerImage
 import com.espressodev.gptmap.core.designsystem.component.LoadingAnimation
 import com.espressodev.gptmap.core.designsystem.component.MapSearchButton
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
@@ -179,11 +180,13 @@ private fun MapScreen(
             onImageAnalysesClick = navigateToImageAnalyses
         )
         LoadingDialog(uiState.componentLoadingState)
-        MapSection(cameraPositionState = cameraPositionState)
+        MapSection(
+            isPinVisible = uiState.isLocationPinVisible,
+            cameraPositionState = cameraPositionState
+        )
         DisplayBottomSheet(uiState.bottomSheetState, uiState.location, cameraPositionState, onEvent)
     }
 }
-
 
 @Composable
 fun BoxScope.MapTopButtons(
@@ -313,8 +316,9 @@ private fun ImageGallery(initialPage: Int, images: List<LocationImage>, onDismis
                         )
                     }
             ) {
-                ImageCard(
-                    image = images[page], modifier = Modifier
+                ClickableShimmerImage(
+                    imageUrl = images[page].imageUrl,
+                    modifier = Modifier
                         .fillMaxWidth()
                         .height(240.dp)
                 )
@@ -345,7 +349,7 @@ private fun RowScope.MapBottomBar(
 }
 
 @Composable
-private fun MapSection(cameraPositionState: CameraPositionState) {
+private fun MapSection(isPinVisible: Boolean, cameraPositionState: CameraPositionState) {
     val context = LocalContext.current
     val isSystemInDarkTheme = isSystemInDarkTheme()
     var isMapLoaded by remember { mutableStateOf(value = false) }
@@ -363,7 +367,12 @@ private fun MapSection(cameraPositionState: CameraPositionState) {
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        MapContent(isMapLoaded, cameraPositionState, mapProperties) {
+        MapContent(
+            isMapLoaded = isMapLoaded,
+            isPinVisible = isPinVisible,
+            cameraPositionState = cameraPositionState,
+            mapProperties = mapProperties
+        ) {
             isMapLoaded = true
         }
     }
@@ -372,6 +381,7 @@ private fun MapSection(cameraPositionState: CameraPositionState) {
 @Composable
 private fun BoxScope.MapContent(
     isMapLoaded: Boolean,
+    isPinVisible: Boolean,
     cameraPositionState: CameraPositionState,
     mapProperties: MapProperties,
     onMapLoaded: () -> Unit
@@ -379,7 +389,7 @@ private fun BoxScope.MapContent(
     if (!isMapLoaded) {
         LoadingAnimation(AppRaw.transistor_earth)
     }
-    LocationPin(cameraPositionState.isMoving)
+    LocationPin(isPinVisible = isPinVisible, isCameraMoving = cameraPositionState.isMoving)
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
@@ -438,9 +448,14 @@ fun DefaultLoadingAnimation(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun BoxScope.LocationPin(isCameraMoving: Boolean) {
-    Column(
-        modifier = Modifier
+private fun BoxScope.LocationPin(
+    isPinVisible: Boolean,
+    isCameraMoving: Boolean,
+    modifier: Modifier = Modifier
+) {
+    AnimatedVisibility(
+        visible = isPinVisible,
+        modifier = modifier
             .align(Alignment.Center)
             .zIndex(1f)
             .size(MARKER_SIZE),

@@ -21,6 +21,7 @@ data class MapUiState(
     val bottomSearchState: Boolean = true,
     val isTopButtonsVisible: Boolean = true,
     val isFavouriteButtonPlaying: Boolean = false,
+    val isLocationPinVisible: Boolean = true,
     val takeScreenshotState: Boolean = false,
     val imageGalleryState: Pair<Int, Boolean> = Pair(0, false)
 )

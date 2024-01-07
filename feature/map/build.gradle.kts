@@ -10,8 +10,6 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.model)
-    implementation(projects.core.mongodb)
     implementation(projects.core.saveScreenshot)
 
     implementation(projects.api.unsplash)
