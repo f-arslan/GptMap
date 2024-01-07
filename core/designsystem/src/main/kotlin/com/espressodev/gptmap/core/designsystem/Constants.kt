@@ -16,7 +16,7 @@ object Constants {
     val VERY_HIGH_PADDING = 24.dp
     val MAX_PADDING = 32.dp
     val VERY_MAX_PADDING = 48.dp
-    val MARKER_SIZE = 96.dp
+    val MARKER_SIZE = 112.dp
     val BUTTON_SIZE = 56.dp
     val BIG_BUTTON_SIZE = 64.dp
     val LARGE_BUTTON_SIZE = 120.dp
@@ -30,7 +30,4 @@ object Constants {
     const val TERMS_CONDITIONS_LINK = "https://sites.google.com/view/smile-terms-conditions/home"
     const val GITHUB_DESC = "Check out this open source project on GitHub by clicking here."
     const val GITHUB_LINK = "https://github.com/f-arslan/smile"
-
-    // Mongodb
-    const val MONGO_APP_ID = "gptmapapp-odcnu"
 }
