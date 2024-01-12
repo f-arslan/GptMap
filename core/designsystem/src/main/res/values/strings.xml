@@ -37,7 +37,10 @@
     <string name="selected_image">Selected image</string>
     <string name="edit_screenshot">Edit Screenshot</string>
     <string name="image_analyses">Image Analyses</string>
+    <string name="image_analysis">Image Analysis</string>
     <string name="title">Title</string>
+    <string name="send">Send</string>
+    <string name="message">Message</string>
 
 
     <!-- Map -->

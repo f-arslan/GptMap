@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -23,7 +24,9 @@ fun GmCircularIndicator(modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        CircularProgressIndicator()
+        Dialog(onDismissRequest = {}) {
+            CircularProgressIndicator()
+        }
     }
 }
 
@@ -44,7 +47,6 @@ fun LoadingAnimation(@RawRes animId: Int, modifier: Modifier = Modifier) {
         LottieAnimation(
             composition = composition,
             progress = { progress },
-            modifier = Modifier.fillMaxSize(0.5f)
         )
     }
 }

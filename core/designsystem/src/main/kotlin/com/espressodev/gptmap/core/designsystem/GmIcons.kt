@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.ImageSearch
 import androidx.compose.material.icons.filled.Screenshot
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Title
 import androidx.compose.material.icons.filled.TravelExplore
 import androidx.compose.material.icons.outlined.ArrowBack
@@ -45,4 +46,5 @@ object GmIcons {
     val ScreenshotDefault = Icons.Default.Screenshot
     val ImageSearchDefault = Icons.Default.ImageSearch
     val TitleDefault = Icons.Default.Title
+    val SendDefault = Icons.Default.Send
 }
