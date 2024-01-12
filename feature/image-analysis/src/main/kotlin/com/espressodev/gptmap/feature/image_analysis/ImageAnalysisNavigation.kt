@@ -13,6 +13,7 @@ fun NavController.navigateToImageAnalysis(
     imageId: String = "default",
     navOptionsBuilder: NavOptionsBuilder.() -> Unit
 ) {
+    println(navOptionsBuilder)
     navigate("$IMAGE_ANALYSIS_ROUTE/$imageId", navOptionsBuilder)
 }
 

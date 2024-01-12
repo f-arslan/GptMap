@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.feature.image_analysis
 
+import android.util.Log
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.model.Exceptions.RealmFailedToLoadImageAnalysisException
