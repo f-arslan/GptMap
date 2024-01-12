@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espressodev.gptmap.core.designsystem.GmIcons
+import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.component.ClickableShimmerImage
 import com.espressodev.gptmap.core.designsystem.component.GmCircularIndicator
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
@@ -46,7 +47,7 @@ fun ImageAnalysesRoute(
 ) {
     val imageAnalysesResponse by viewModel.imageAnalyses.collectAsStateWithLifecycle()
     Scaffold(topBar = {
-        GmTopAppBar(title = AppText.image_analyses, icon = GmIcons.ImageSearchDefault, onBackClick = popUp)
+        GmTopAppBar(title = AppText.image_analyses, icon = IconType.Vector(GmIcons.ImageSearchDefault), onBackClick = popUp)
     }) {
         with(imageAnalysesResponse) {
             when (this) {

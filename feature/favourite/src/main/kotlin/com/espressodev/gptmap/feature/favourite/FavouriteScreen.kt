@@ -31,6 +31,7 @@ import coil.compose.AsyncImage
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
+import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.component.GmCircularIndicator
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
 import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
@@ -65,7 +66,7 @@ fun FavouriteScreen(
         topBar = {
             GmTopAppBar(
                 title = AppText.favourite,
-                icon = GmIcons.FavouriteFilled,
+                icon = IconType.Vector(GmIcons.FavouriteFilled),
                 onBackClick = popUp
             )
         },

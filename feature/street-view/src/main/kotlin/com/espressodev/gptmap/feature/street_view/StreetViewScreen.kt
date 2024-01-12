@@ -64,7 +64,7 @@ fun StreetViewScreen(uiState: StreetViewUiState, onCameraButtonClick: (Boolean) 
             },
         )
         if (!isStreetViewLoaded) {
-            LoadingAnimation(AppRaw.earth_orbit)
+            LoadingAnimation(AppRaw.earth_orbit, modifier = Modifier.fillMaxSize(.5f))
         }
         // StreetView composable doesn't have a callback for when the street view is loaded
         LaunchedEffect(key1 = uiState.latLng) {

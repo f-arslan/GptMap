@@ -387,7 +387,7 @@ private fun BoxScope.MapContent(
     onMapLoaded: () -> Unit
 ) {
     if (!isMapLoaded) {
-        LoadingAnimation(AppRaw.transistor_earth)
+        LoadingAnimation(AppRaw.transistor_earth, modifier = Modifier.fillMaxSize())
     }
     LocationPin(isPinVisible = isPinVisible, isCameraMoving = cameraPositionState.isMoving)
     GoogleMap(
