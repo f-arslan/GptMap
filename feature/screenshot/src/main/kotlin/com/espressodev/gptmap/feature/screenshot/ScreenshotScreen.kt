@@ -5,6 +5,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -33,6 +35,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
@@ -41,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.input.pointer.pointerInput
@@ -51,6 +56,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -58,8 +65,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.espressodev.gptmap.core.designsystem.GmIcons
+import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.R
 import com.espressodev.gptmap.core.designsystem.component.DefaultTextField
+import com.espressodev.gptmap.core.designsystem.component.GmCircularIndicator
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
 import com.espressodev.gptmap.feature.screenshot.ScreenState.AfterSelectingTheField
 import com.espressodev.gptmap.feature.screenshot.ScreenState.Initial
@@ -81,7 +90,7 @@ fun ScreenshotRoute(
         topBar = {
             GmTopAppBar(
                 title = AppText.edit_screenshot,
-                icon = GmIcons.ScreenshotDefault,
+                icon = IconType.Vector(GmIcons.ScreenshotDefault),
                 onBackClick = popUp
             )
         },
@@ -96,7 +105,12 @@ fun ScreenshotRoute(
                         Initial -> InitialBottomBar(onClick = { viewModel.onEvent(ScreenshotUiEvent.OnCaptureClicked) })
                         AfterSelectingTheField -> AfterBottomBar(
                             onCancelClick = popUp,
-                            onSaveClick = { viewModel.onEvent(ScreenshotUiEvent.OnSaveClicked) }
+                            onSaveClick = {
+                                viewModel.onEvent(
+                                    event = ScreenshotUiEvent.OnSaveClicked,
+                                    navigateToImageAnalysis = navigateToImageAnalysis
+                                )
+                            }
                         )
                     }
                 }
@@ -106,9 +120,14 @@ fun ScreenshotRoute(
         ScreenshotScreen(
             uiState = uiState,
             modifier = Modifier.padding(it),
-            onEvent = { viewModel.onEvent(it, navigateToImageAnalysis = navigateToImageAnalysis) }
+            onEvent = { event ->
+                viewModel.onEvent(event, navigateToImageAnalysis = navigateToImageAnalysis)
+            }
         )
     }
+
+    if (uiState.isSaveStateStarted)
+        GmCircularIndicator()
 }
 
 @Composable
@@ -140,7 +159,7 @@ private fun ScreenshotScreen(
             ScreenshotGallery(
                 modifier = modifier,
                 onEvent = onEvent,
-                screenState = uiState.screenState
+                screenState = uiState.screenState,
             )
         }
 
@@ -156,7 +175,7 @@ private fun ScreenshotScreen(
 }
 
 @Composable
-fun EditScreenshot(
+private fun EditScreenshot(
     title: String,
     imageResult: ImageResult,
     onValueChange: (String) -> Unit,
@@ -188,10 +207,10 @@ fun EditScreenshot(
 }
 
 @Composable
-fun ScreenshotGallery(
-    modifier: Modifier = Modifier,
+private fun ScreenshotGallery(
     onEvent: (ScreenshotUiEvent) -> Unit,
-    screenState: ScreenState
+    screenState: ScreenState,
+    modifier: Modifier = Modifier,
 ) {
     val size = 300.dp
     val localDensity = LocalDensity.current
@@ -231,6 +250,7 @@ fun ScreenshotGallery(
         Canvas(
             modifier = Modifier
                 .matchParentSize()
+                .clip(RoundedCornerShape(12.dp))
         ) {
             drawIntoCanvas {
                 val transparentSquare = Path().apply {
@@ -247,6 +267,8 @@ fun ScreenshotGallery(
             }
         }
         ScreenshotBox(
+            onEvent = onEvent,
+            screenState = screenState,
             modifier = Modifier
                 .offset {
                     IntOffset(
@@ -255,17 +277,15 @@ fun ScreenshotGallery(
                     )
                 }
                 .size(size),
-            onEvent = onEvent,
-            screenState = screenState
         )
     }
 }
 
 @Composable
-fun ScreenshotBox(
-    modifier: Modifier = Modifier,
+private fun ScreenshotBox(
     onEvent: (ScreenshotUiEvent) -> Unit,
     screenState: ScreenState,
+    modifier: Modifier = Modifier,
 ) {
     val view: View = LocalView.current
     var composableBounds by remember { mutableStateOf<Rect?>(null) }
@@ -300,5 +320,71 @@ fun ScreenshotBox(
             .onGloballyPositioned {
                 composableBounds = it.boundsInWindow()
             }
+            .screenshotPreviewOverlay()
     )
+}
+
+fun Modifier.screenshotPreviewOverlay(
+    borderWidth: Dp = 3.dp,
+    borderColor: Color = Color.White,
+) = this.then(
+    Modifier.drawWithContent {
+        drawContent()
+
+        val strokeWidthPx = borderWidth.toPx()
+        val cornerOffset = 2.dp.toPx()
+
+        val thirdWidth = (size.width + strokeWidthPx) / 3
+        val thirdHeight = (size.height + strokeWidthPx) / 3
+        val twoThirdWidth = (size.width + strokeWidthPx) / 3 * 2
+        val twoThirdHeight = (size.height + strokeWidthPx) / 3 * 2
+
+        val path = Path().apply {
+            // Top-left
+            moveTo(thirdWidth, -cornerOffset)
+            lineTo(-cornerOffset, -cornerOffset)
+            lineTo(-cornerOffset, thirdHeight)
+
+            // Bottom-left
+            moveTo(-cornerOffset, twoThirdHeight)
+            lineTo(-cornerOffset, size.height + cornerOffset)
+            lineTo(thirdWidth, size.height + cornerOffset)
+
+            // Top-right
+            moveTo(twoThirdWidth, -cornerOffset)
+            lineTo(size.width + cornerOffset, -cornerOffset)
+            lineTo(size.width + cornerOffset, thirdHeight)
+
+            // Bottom-right
+            moveTo(size.width + cornerOffset, twoThirdHeight)
+            lineTo(size.width + cornerOffset, size.height + cornerOffset)
+            lineTo(twoThirdWidth, size.height + cornerOffset)
+        }
+
+        drawPath(
+            path = path,
+            color = borderColor,
+            style = Stroke(
+                width = strokeWidthPx,
+            )
+        )
+    }
+)
+
+@Preview(showBackground = true)
+@Composable
+private fun ScreenshotPreview() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Box(
+            Modifier
+                .size(200.dp)
+                .screenshotPreviewOverlay(borderColor = Color.Red)
+        )
+        Box(
+            Modifier
+                .size(200.dp)
+                .offset(y = (-0).dp)
+                .background(Color.Blue)
+        )
+    }
 }

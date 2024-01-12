@@ -1,9 +1,6 @@
 package com.espressodev.gptmap.feature.screenshot
 
 import android.graphics.Bitmap
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 
 enum class ScreenState {
     Initial, AfterSelectingTheField
@@ -15,7 +12,8 @@ data class ScreenshotUiState(
     val screenState: ScreenState = ScreenState.Initial,
     val imageResult: ImageResult = ImageResult.Initial,
     val callback: (() -> Unit)? = null,
-    val title: String = ""
+    val title: String = "",
+    val isSaveStateStarted: Boolean = false
 )
 
 sealed class ScreenshotUiEvent {
