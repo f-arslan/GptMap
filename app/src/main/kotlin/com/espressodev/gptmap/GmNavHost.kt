@@ -1,7 +1,9 @@
 package com.espressodev.gptmap
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.espressodev.gptmap.feature.favourite.FAVOURITE_ROUTE
 import com.espressodev.gptmap.feature.favourite.favouriteScreen
@@ -30,6 +32,9 @@ fun GmNavHost(
     startDestination: String = LOGIN_ROUTE
 ) {
     val navController = appState.navController
+
+    NavigationListener(navController)
+
     NavHost(
         modifier = modifier,
         navController = navController,
@@ -65,7 +70,7 @@ fun GmNavHost(
             navigateToImageAnalysis = { imageId ->
                 navController.navigateToImageAnalysis(imageId) {
                     launchSingleTop = true
-                    popUpTo(MAP_ROUTE) { inclusive = false }
+                    popUpTo("$MAP_ROUTE/{favouriteId}") { inclusive = false }
                 }
             }
         )
@@ -76,5 +81,19 @@ fun GmNavHost(
 
             }
         )
+    }
+}
+
+/**
+ * This function is used to listen to navigation events and print them to the logcat.
+ */
+@Composable
+private fun NavigationListener(navController: NavHostController) {
+    LaunchedEffect(navController) {
+        navController.addOnDestinationChangedListener { controller, destination, arguments ->
+            println("Current back stack: $destination")
+            println("Parent back stack: ${controller.previousBackStackEntry?.destination}")
+            println("Arguments: $arguments")
+        }
     }
 }

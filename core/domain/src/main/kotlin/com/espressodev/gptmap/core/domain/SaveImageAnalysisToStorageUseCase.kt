@@ -15,24 +15,25 @@ class SaveImageAnalysisToStorageUseCase @Inject constructor(
     private val storageService: StorageService,
     private val realmSyncService: RealmSyncService
 ) {
-    suspend operator fun invoke(bitmap: Bitmap) = withContext(Dispatchers.IO) {
+    suspend operator fun invoke(bitmap: Bitmap, title: String) = withContext(Dispatchers.IO) {
         runCatching {
             val byteArray = bitmapToByteArray(bitmap)
             val imageId = UUID.randomUUID().toString()
-            val uploadImageResult = storageService.uploadImage(
+            val imageUrl = storageService.uploadImage(
                 byteArray,
                 imageId,
                 ANALYSIS_IMAGE_REFERENCE
             ).getOrThrow()
-            saveImageAnalysisToRealm(imageId, uploadImageResult)
+            saveImageAnalysisToRealm(imageId, imageUrl, title)
             imageId
         }
     }
 
-    private suspend fun saveImageAnalysisToRealm(imageId: String, imageUrl: String) {
+    private suspend fun saveImageAnalysisToRealm(imageId: String, imageUrl: String, title: String) {
         val realmImageAnalysis = RealmImageAnalysis().apply {
             this.imageId = imageId
             this.imageUrl = imageUrl
+            this.title = title
         }
         realmSyncService.saveImageAnalysis(realmImageAnalysis).getOrThrow()
     }

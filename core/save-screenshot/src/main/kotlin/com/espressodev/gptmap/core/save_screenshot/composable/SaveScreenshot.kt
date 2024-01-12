@@ -28,7 +28,6 @@ fun SaveScreenshot(
     viewModel: ScreenshotViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    Log.d("SaveScreenshot", "uiState: $uiState")
     LaunchedEffect(key1 = uiState.screenState) {
         when (uiState.screenState) {
             ScreenState.Finished -> {

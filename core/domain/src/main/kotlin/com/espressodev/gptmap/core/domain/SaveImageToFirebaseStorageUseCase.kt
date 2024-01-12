@@ -18,9 +18,11 @@ class SaveImageToFirebaseStorageUseCase @Inject constructor(
             require(location.locationImages.isNotEmpty()) { "No images found for location" }
             val imageData =
                 downloadAndCompressImageUseCase(location.locationImages[0].imageUrl).getOrThrow()
+
             val imageUrl =
                 storageService.uploadImage(imageData, location.id, IMAGE_REFERENCE).getOrThrow()
             saveImageUrlToRealm(imageUrl, location)
+
             imageUrl
         }
     }

@@ -88,7 +88,7 @@ class RealmSyncServiceImpl : RealmSyncService {
         withContext(Dispatchers.IO) {
             runCatching {
                 realm.query<RealmImageAnalysis>(
-                    "userId == $0 AND imageAnalysisId == $1",
+                    "userId == $0 AND imageId == $1",
                     realmUserId,
                     id
                 )
