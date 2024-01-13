@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.feature.image_analyses
+package com.espressodev.gptmap.feature.screenshot_gallery
 
 import org.junit.Test
 

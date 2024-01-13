@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.feature.image_analyses
+package com.espressodev.gptmap.feature.screenshot_gallery
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

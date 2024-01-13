@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.feature.image_analyses
+package com.espressodev.gptmap.feature.screenshot_gallery
 
 import androidx.lifecycle.viewModelScope
 import com.espressodev.gptmap.core.common.GmViewModel

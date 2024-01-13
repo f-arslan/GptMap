@@ -1,5 +1,6 @@
-package com.espressodev.gptmap.feature.image_analyses
+package com.espressodev.gptmap.feature.screenshot_gallery
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
@@ -31,7 +32,6 @@ import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.TextType
 import com.espressodev.gptmap.core.designsystem.component.ClickableShimmerImage
-import com.espressodev.gptmap.core.designsystem.component.GmCircularIndicator
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
 import com.espressodev.gptmap.core.designsystem.component.LoadingAnimation
 import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
@@ -63,7 +63,7 @@ fun ScreenshotGalleryRoute(
                     LoadingAnimation(animId = AppRaw.confused_man_404)
                 }
 
-                Response.Loading -> GmCircularIndicator()
+                Response.Loading -> {}
                 is Response.Success -> {
                     ScreenshotGalleryScreen(
                         modifier = Modifier.padding(it),
@@ -84,6 +84,7 @@ fun ScreenshotGalleryScreen(
     onImageClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    Log.d("ScreenshotGalleryScreen", "images: $images")
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -91,9 +92,9 @@ fun ScreenshotGalleryScreen(
         contentPadding = PaddingValues(8.dp),
         modifier = modifier
     ) {
-        items(images, key = { key -> key.id }) { imageAnalysisSummary ->
-            ImageAnalysisCard(
-                imageAnalysisSummary = imageAnalysisSummary,
+        items(images, key = { it.id }) { imageAnalysisSummary ->
+            ImageCard(
+                imageSummary = imageAnalysisSummary,
                 onClick = { onImageClick(imageAnalysisSummary.id) }
             )
         }
@@ -102,32 +103,27 @@ fun ScreenshotGalleryScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ImageAnalysisCard(
-    imageAnalysisSummary: ImageSummary,
+fun ImageCard(
+    imageSummary: ImageSummary,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    Surface(
-        modifier = modifier
-            .clip(RoundedCornerShape(16.dp))
-            .clickable { onClick() },
-        shadowElevation = 4.dp
-    ) {
-        Column {
-            ClickableShimmerImage(
-                imageAnalysisSummary.imageUrl,
-                modifier = Modifier.aspectRatio(1f),
-            )
-            Text(
-                text = imageAnalysisSummary.title,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-                    .basicMarquee(),
-                style = MaterialTheme.typography.labelLarge,
-                textAlign = TextAlign.Center
-            )
-        }
+    Log.d("ImageAnalysisCard", "imageAnalysisSummary: $imageSummary")
+
+    Column {
+        ClickableShimmerImage(
+            imageSummary.imageUrl,
+            modifier = Modifier.aspectRatio(1f),
+        )
+        Text(
+            text = imageSummary.title,
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth()
+                .basicMarquee(),
+            style = MaterialTheme.typography.labelLarge,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -135,8 +131,8 @@ fun ImageAnalysisCard(
 @Composable
 fun ScreenshotGalleryPreview() {
     GptmapTheme {
-        ImageAnalysisCard(
-            imageAnalysisSummary = ImageSummary(
+        ImageCard(
+            imageSummary = ImageSummary(
                 id = "epicuri",
                 imageUrl = "https://duckduckgo.com/?q=comprehensam",
                 title = "nunc",

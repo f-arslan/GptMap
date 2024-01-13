@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.feature.image_analyses
+package com.espressodev.gptmap.feature.screenshot_gallery
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
