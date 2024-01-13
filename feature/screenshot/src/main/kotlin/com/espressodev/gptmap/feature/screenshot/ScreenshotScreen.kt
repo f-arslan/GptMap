@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -67,6 +68,7 @@ import coil.request.ImageRequest
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.R
+import com.espressodev.gptmap.core.designsystem.TextType
 import com.espressodev.gptmap.core.designsystem.component.DefaultTextField
 import com.espressodev.gptmap.core.designsystem.component.GmCircularIndicator
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
@@ -78,10 +80,11 @@ import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScreenshotRoute(
     popUp: () -> Unit,
-    navigateToImageAnalysis: (String) -> Unit,
+    navigateToMap: () -> Unit,
     viewModel: ScreenshotViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -89,7 +92,7 @@ fun ScreenshotRoute(
     Scaffold(
         topBar = {
             GmTopAppBar(
-                title = AppText.edit_screenshot,
+                textType = TextType.Res(AppText.edit_screenshot),
                 icon = IconType.Vector(GmIcons.ScreenshotDefault),
                 onBackClick = popUp
             )
@@ -108,7 +111,6 @@ fun ScreenshotRoute(
                             onSaveClick = {
                                 viewModel.onEvent(
                                     event = ScreenshotUiEvent.OnSaveClicked,
-                                    navigateToImageAnalysis = navigateToImageAnalysis
                                 )
                             }
                         )
@@ -121,7 +123,7 @@ fun ScreenshotRoute(
             uiState = uiState,
             modifier = Modifier.padding(it),
             onEvent = { event ->
-                viewModel.onEvent(event, navigateToImageAnalysis = navigateToImageAnalysis)
+                viewModel.onEvent(event, navigateToMap = navigateToMap)
             }
         )
     }
@@ -383,7 +385,6 @@ private fun ScreenshotPreview() {
         Box(
             Modifier
                 .size(200.dp)
-                .offset(y = (-0).dp)
                 .background(Color.Blue)
         )
     }

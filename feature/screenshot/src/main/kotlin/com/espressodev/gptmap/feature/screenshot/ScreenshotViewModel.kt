@@ -17,7 +17,7 @@ class ScreenshotViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ScreenshotUiState())
     val uiState = _uiState.asStateFlow()
 
-    fun onEvent(event: ScreenshotUiEvent, navigateToImageAnalysis: (String) -> Unit = {}) {
+    fun onEvent(event: ScreenshotUiEvent, navigateToMap: () -> Unit = {}) {
         when (event) {
             is ScreenshotUiEvent.OnBitmapChanged ->
                 _uiState.update { currentState ->
@@ -40,20 +40,17 @@ class ScreenshotViewModel @Inject constructor(
 
             is ScreenshotUiEvent.OnTitleChanged -> _uiState.update { it.copy(title = event.value) }
 
-            ScreenshotUiEvent.OnSaveClicked -> onSaveClick(navigateToImageAnalysis)
+            ScreenshotUiEvent.OnSaveClicked -> onSaveClick(navigateToMap)
         }
     }
 
-    private fun onSaveClick(navigateToImageAnalysis: (String) -> Unit) = launchCatching {
+    private fun onSaveClick(navigateToMap: () -> Unit) = launchCatching {
         _uiState.update { it.copy(isSaveStateStarted = true) }
 
         uiState.value.imageResult.let { image ->
             if (image is ImageResult.Success) {
-                saveImageAnalysisToStorageUseCase(image.data, uiState.value.title)
-                    .getOrThrow()
-                    .also { imageId ->
-                        navigateToImageAnalysis(imageId)
-                    }
+                saveImageAnalysisToStorageUseCase(image.data, uiState.value.title).getOrThrow()
+                navigateToMap()
             }
         }
 
