@@ -3,6 +3,8 @@ package com.espressodev.gptmap.core.domain
 import android.graphics.Bitmap
 import com.espressodev.gptmap.core.data.StorageService
 import com.espressodev.gptmap.core.data.impl.StorageServiceImpl.Companion.ANALYSIS_IMAGE_REFERENCE
+import com.espressodev.gptmap.core.model.ext.compressImage
+import com.espressodev.gptmap.core.model.ext.resizeImage
 import com.espressodev.gptmap.core.model.realm.RealmImageAnalysis
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +19,7 @@ class SaveImageAnalysisToStorageUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(bitmap: Bitmap, title: String) = withContext(Dispatchers.IO) {
         runCatching {
-            val byteArray = bitmapToByteArray(bitmap)
+            val byteArray = bitmap.resizeImage(320, 320).compressImage()
             val imageId = UUID.randomUUID().toString()
             val imageUrl = storageService.uploadImage(
                 byteArray,
@@ -36,11 +38,5 @@ class SaveImageAnalysisToStorageUseCase @Inject constructor(
             this.title = title
         }
         realmSyncService.saveImageAnalysis(realmImageAnalysis).getOrThrow()
-    }
-
-    private fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
-        val stream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-        return stream.toByteArray()
     }
 }

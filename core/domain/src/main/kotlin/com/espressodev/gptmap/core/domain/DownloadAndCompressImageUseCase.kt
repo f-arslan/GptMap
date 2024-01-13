@@ -3,6 +3,8 @@ package com.espressodev.gptmap.core.domain
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
+import com.espressodev.gptmap.core.model.ext.compressImage
+import com.espressodev.gptmap.core.model.ext.resizeImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
@@ -15,9 +17,7 @@ class DownloadAndCompressImageUseCase {
     suspend operator fun invoke(imageUrl: String) = withContext(Dispatchers.IO) {
         runCatching {
             val bitmap = downloadImage(imageUrl)
-            val resizedBitmap = resizeImage(bitmap)
-            val compressedByteArray = compressImage(resizedBitmap)
-            compressedByteArray
+            bitmap.resizeImage(320, 180).compressImage()
         }
     }
 
@@ -29,18 +29,5 @@ class DownloadAndCompressImageUseCase {
         return connection.inputStream.use { inputStream ->
             BitmapFactory.decodeStream(inputStream)
         }
-    }
-
-    private fun resizeImage(bitmap: Bitmap): Bitmap {
-        return Bitmap.createScaledBitmap(bitmap, 320, 180, true)
-    }
-
-    private fun compressImage(bitmap: Bitmap): ByteArray = ByteArrayOutputStream().use { stream ->
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, 50, stream)
-        } else {
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream)
-        }
-        stream.toByteArray()
     }
 }
