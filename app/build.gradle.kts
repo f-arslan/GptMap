@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.gptmap.android.hilt)
     alias(libs.plugins.gptmap.android.application.firebase)
     alias(libs.plugins.secrets)
+    id("dev.shreyaspatil.compose-compiler-report-generator") version "1.1.0"
 }
 
 android {
@@ -44,8 +45,7 @@ dependencies {
     implementation(projects.feature.streetView)
     implementation(projects.feature.favourite)
     implementation(projects.feature.screenshot)
-    implementation(projects.feature.imageAnalysis)
-    implementation(projects.feature.imageAnalyses)
+    implementation(projects.feature.screenshotGallery)
 
     implementation(projects.core.designsystem)
     implementation(projects.core.common)

@@ -5,23 +5,21 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.espressodev.gptmap.feature.favourite.FAVOURITE_ROUTE
 import com.espressodev.gptmap.feature.favourite.favouriteScreen
-import com.espressodev.gptmap.feature.forgot_password.FORGOT_PASSWORD_ROUTE
+import com.espressodev.gptmap.feature.favourite.navigateToFavourite
 import com.espressodev.gptmap.feature.forgot_password.forgotPasswordScreen
-import com.espressodev.gptmap.feature.image_analyses.imageAnalysesRoute
-import com.espressodev.gptmap.feature.image_analyses.imageAnalysesScreen
-import com.espressodev.gptmap.feature.image_analysis.imageAnalysisScreen
-import com.espressodev.gptmap.feature.image_analysis.navigateToImageAnalysis
+import com.espressodev.gptmap.feature.forgot_password.navigateToForgotPassword
 import com.espressodev.gptmap.feature.login.LOGIN_ROUTE
 import com.espressodev.gptmap.feature.login.loginScreen
 import com.espressodev.gptmap.feature.map.MAP_ROUTE
 import com.espressodev.gptmap.feature.map.mapScreen
 import com.espressodev.gptmap.feature.map.navigateToMap
-import com.espressodev.gptmap.feature.register.registerRoute
+import com.espressodev.gptmap.feature.register.navigateToRegister
 import com.espressodev.gptmap.feature.register.registerScreen
-import com.espressodev.gptmap.feature.screenshot.screenshotRoute
+import com.espressodev.gptmap.feature.screenshot.navigateToScreenshot
 import com.espressodev.gptmap.feature.screenshot.screenshotScreen
+import com.espressodev.gptmap.feature.screenshot_gallery.navigateToScreenshotGallery
+import com.espressodev.gptmap.feature.screenshot_gallery.screenshotGalleryScreen
 import com.espressodev.gptmap.feature.street_view.navigateToStreetView
 import com.espressodev.gptmap.feature.street_view.streetViewScreen
 
@@ -44,14 +42,14 @@ fun GmNavHost(
             navigateToStreetView = { latitude, longitude ->
                 navController.navigateToStreetView(latitude, longitude)
             },
-            navigateToFavourite = { appState.navigate(FAVOURITE_ROUTE) },
-            navigateToScreenshot = { appState.navigate(screenshotRoute) },
-            navigateToImageAnalyses = { appState.navigate(imageAnalysesRoute) }
+            navigateToFavourite = navController::navigateToFavourite,
+            navigateToScreenshot = navController::navigateToScreenshot,
+            navigateToScreenshotGallery = navController::navigateToScreenshotGallery
         )
         loginScreen(
-            navigateToMap = { navController.navigateToMap() },
-            navigateToRegister = { appState.navigate(registerRoute) },
-            navigateToForgotPassword = { appState.navigate(FORGOT_PASSWORD_ROUTE) }
+            navigateToMap = navController::navigateToMap,
+            navigateToRegister = navController::navigateToRegister,
+            navigateToForgotPassword = navController::navigateToForgotPassword
         )
         registerScreen(
             navigateToLogin = { appState.clearAndNavigate(LOGIN_ROUTE) },
@@ -61,32 +59,13 @@ fun GmNavHost(
         streetViewScreen(popUp = appState::popUp)
         favouriteScreen(
             popUp = appState::popUp,
-            navigateToMap = { favouriteId ->
-                appState.navController.navigateToMap(favouriteId)
-            }
+            navigateToMap = { favouriteId -> appState.navController.navigateToMap(favouriteId) }
         )
-        screenshotScreen(
-            popUp = appState::popUp,
-            navigateToImageAnalysis = { imageId ->
-                navController.navigateToImageAnalysis(imageId) {
-                    launchSingleTop = true
-                    popUpTo("$MAP_ROUTE/{favouriteId}") { inclusive = false }
-                }
-            }
-        )
-        imageAnalysisScreen(popUp = appState::popUp)
-        imageAnalysesScreen(
-            popUp = appState::popUp,
-            navigateToImageAnalysis = { imageId ->
-
-            }
-        )
+        screenshotScreen(popUp = appState::popUp, navigateToMap = navController::navigateToMap)
+        screenshotGalleryScreen(popUp = appState::popUp)
     }
 }
 
-/**
- * This function is used to listen to navigation events and print them to the logcat.
- */
 @Composable
 private fun NavigationListener(navController: NavHostController) {
     LaunchedEffect(navController) {

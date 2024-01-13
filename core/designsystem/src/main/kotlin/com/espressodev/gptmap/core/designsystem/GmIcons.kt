@@ -1,11 +1,13 @@
 package com.espressodev.gptmap.core.designsystem
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BrowseGallery
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.ImageSearch
 import androidx.compose.material.icons.filled.Screenshot
 import androidx.compose.material.icons.filled.Search
@@ -47,4 +49,5 @@ object GmIcons {
     val ImageSearchDefault = Icons.Default.ImageSearch
     val TitleDefault = Icons.Default.Title
     val SendDefault = Icons.Default.Send
+    val GalleryDefault = Icons.Default.Image
 }

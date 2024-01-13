@@ -21,24 +21,21 @@ fun ClickableShimmerImage(
     shadowElevation: Dp = 0.dp,
     onClick: () -> Unit = {}
 ) {
-    val showShimmer = remember { mutableStateOf(value = true) }
+    // val showShimmer = remember { mutableStateOf(value = true) }
     val interactionSource = remember { MutableInteractionSource() }
     Surface(
-        modifier = modifier
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null
-            ) { if (!showShimmer.value) onClick() },
+        modifier = modifier,
+        onClick = onClick,
         shadowElevation = shadowElevation
     ) {
         AsyncImage(
             model = imageUrl,
             modifier = Modifier
                 .fillMaxSize()
-                .background(shimmerBrush(targetValue = 1300f, showShimmer = showShimmer.value)),
+                ,
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            onSuccess = { showShimmer.value = false }
+            onSuccess = {  }
         )
     }
 }

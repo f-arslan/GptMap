@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.core.model
 
+import androidx.compose.runtime.Stable
 import com.espressodev.gptmap.core.model.chatgpt.Content
 import com.espressodev.gptmap.core.model.realm.RealmFavourite
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
@@ -7,7 +8,7 @@ import io.realm.kotlin.ext.toRealmList
 
 // Added due to showing placeholder image while loading
 val emptyImagePlaceholder = List(2) { LocationImage("", "") }
-
+@Stable
 data class Location(
     val id: String = "default",
     val content: Content = Content(),

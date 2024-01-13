@@ -1,6 +1,7 @@
 package com.espressodev.gptmap
 
 import android.content.res.Resources
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +35,7 @@ fun GmApp() {
                     snackbar = { snackbarData -> Snackbar(snackbarData) },
                 )
             },
+            contentWindowInsets = WindowInsets(0, 0, 0, 0)
         ) {
             GmNavHost(appState = appState, modifier = Modifier.padding(it))
         }
