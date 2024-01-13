@@ -1,8 +1,6 @@
 package com.espressodev.gptmap.core.designsystem.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -15,27 +13,21 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 
 @Composable
-fun ClickableShimmerImage(
+fun ShimmerImage(
     imageUrl: String,
     modifier: Modifier = Modifier,
     shadowElevation: Dp = 0.dp,
-    onClick: () -> Unit = {}
 ) {
-    // val showShimmer = remember { mutableStateOf(value = true) }
-    val interactionSource = remember { MutableInteractionSource() }
-    Surface(
-        modifier = modifier,
-        onClick = onClick,
-        shadowElevation = shadowElevation
-    ) {
+    val showShimmer = remember { mutableStateOf(value = true) }
+    Surface(shadowElevation = shadowElevation, modifier = modifier) {
         AsyncImage(
             model = imageUrl,
             modifier = Modifier
                 .fillMaxSize()
-                ,
+                .background(shimmerBrush(showShimmer = showShimmer.value, targetValue = 1300f)),
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            onSuccess = {  }
+            onSuccess = { showShimmer.value = false },
         )
     }
 }

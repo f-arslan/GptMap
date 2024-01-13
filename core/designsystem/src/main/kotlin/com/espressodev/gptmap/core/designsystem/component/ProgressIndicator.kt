@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.zIndex
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -21,12 +21,15 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 @Composable
 fun GmCircularIndicator(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .zIndex(2f)
+            .background(Color(0x80000000)),
         contentAlignment = Alignment.Center
     ) {
-        Dialog(onDismissRequest = {}) {
-            CircularProgressIndicator()
-        }
+        CircularProgressIndicator(
+            color = Color.White
+        )
     }
 }
 
