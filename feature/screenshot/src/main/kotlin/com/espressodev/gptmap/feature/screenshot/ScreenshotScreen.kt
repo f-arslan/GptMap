@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.feature.screenshot
 
+import android.annotation.SuppressLint
 import android.view.View
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.VectorConverter
@@ -17,8 +18,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,7 +37,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -100,7 +100,8 @@ fun ScreenshotRoute(
         bottomBar = {
             BottomAppBar {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
@@ -109,22 +110,20 @@ fun ScreenshotRoute(
                         AfterSelectingTheField -> AfterBottomBar(
                             onCancelClick = popUp,
                             onSaveClick = {
-                                viewModel.onEvent(
-                                    event = ScreenshotUiEvent.OnSaveClicked,
-                                )
+                                viewModel.onEvent(event = ScreenshotUiEvent.OnSaveClicked, navigateToMap)
                             }
                         )
                     }
                 }
             }
-        }
+        },
     ) {
         ScreenshotScreen(
             uiState = uiState,
-            modifier = Modifier.padding(it),
             onEvent = { event ->
-                viewModel.onEvent(event, navigateToMap = navigateToMap)
-            }
+                viewModel.onEvent(event)
+            },
+            modifier = Modifier.padding(it)
         )
     }
 
@@ -183,27 +182,26 @@ private fun EditScreenshot(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        if (imageResult is ImageResult.Success) {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Image(
-                    bitmap = imageResult.data.asImageBitmap(),
-                    contentDescription = stringResource(id = R.string.selected_image),
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                DefaultTextField(
-                    value = title,
-                    label = AppText.title,
-                    leadingIcon = GmIcons.TitleDefault,
-                    onValueChange = onValueChange
-                )
-            }
+    if (imageResult is ImageResult.Success) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .padding(16.dp)
+        ) {
+            DefaultTextField(
+                value = title,
+                label = AppText.title,
+                leadingIcon = GmIcons.TitleDefault,
+                onValueChange = onValueChange
+            )
+            Image(
+                bitmap = imageResult.data.asImageBitmap(),
+                contentDescription = stringResource(id = R.string.selected_image),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
@@ -252,7 +250,6 @@ private fun ScreenshotGallery(
         Canvas(
             modifier = Modifier
                 .matchParentSize()
-                .clip(RoundedCornerShape(12.dp))
         ) {
             drawIntoCanvas {
                 val transparentSquare = Path().apply {

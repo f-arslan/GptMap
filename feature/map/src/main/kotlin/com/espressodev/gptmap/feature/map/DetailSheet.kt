@@ -36,7 +36,7 @@ import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.VERY_SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
-import com.espressodev.gptmap.core.designsystem.component.ClickableShimmerImage
+import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
 import com.espressodev.gptmap.core.designsystem.component.SquareButton
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
@@ -119,11 +119,13 @@ fun LocationImages(
         modifier = modifier.padding(bottom = MEDIUM_PADDING)
     ) {
         items(2) { index ->
-            ClickableShimmerImage(
-                images[index].imageUrl, modifier = Modifier
-                    .size(160.dp, 100.dp)
-                    .clip(RoundedCornerShape(16.dp))
-            ) { onClick(index) }
+            Surface(onClick = { onClick(index) }) {
+                ShimmerImage(
+                    images[index].imageUrl, modifier = Modifier
+                        .size(160.dp, 100.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                )
+            }
         }
     }
 }

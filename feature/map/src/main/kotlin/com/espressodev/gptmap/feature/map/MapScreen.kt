@@ -1,7 +1,6 @@
 package com.espressodev.gptmap.feature.map
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -73,7 +72,7 @@ import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
-import com.espressodev.gptmap.core.designsystem.component.ClickableShimmerImage
+import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
 import com.espressodev.gptmap.core.designsystem.component.LoadingAnimation
 import com.espressodev.gptmap.core.designsystem.component.MapSearchButton
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
@@ -314,7 +313,7 @@ private fun ImageGallery(initialPage: Int, images: List<LocationImage>, onDismis
                         )
                     }
             ) {
-                ClickableShimmerImage(
+                ShimmerImage(
                     imageUrl = images[page].imageUrl,
                     modifier = Modifier
                         .fillMaxWidth()
