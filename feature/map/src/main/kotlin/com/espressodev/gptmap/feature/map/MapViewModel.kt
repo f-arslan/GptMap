@@ -35,7 +35,7 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: MapUiEvent, navigateToStreetView: (LatLng) -> Unit = {}) {
+    fun onEvent(event: MapUiEvent, navigateToStreetView: (Pair<Double, Double>) -> Unit = {}) {
         when (event) {
             is MapUiEvent.OnSearchValueChanged -> _uiState.update { it.copy(searchValue = event.text) }
             is MapUiEvent.OnSearchClick -> onSearchClick()
@@ -127,12 +127,15 @@ class MapViewModel @Inject constructor(
         _uiState.update { it.copy(isTopButtonsVisible = true, isLocationPinVisible = true) }
     }
 
-    private fun onStreetViewClick(latLng: LatLng, navigateToStreetView: (LatLng) -> Unit) =
+    private fun onStreetViewClick(
+        latLng: Pair<Double, Double>,
+        navigateToStreetView: (Pair<Double, Double>) -> Unit
+    ) =
         launchCatching {
             _uiState.update { it.copy(componentLoadingState = ComponentLoadingState.STREET_VIEW) }
 
             val isStreetAvailable = withContext(Dispatchers.IO) {
-                MapUtils.fetchStreetViewData(latLng)
+                MapUtils.fetchStreetViewData(LatLng(latLng.first, latLng.second))
             }
             when (isStreetAvailable) {
                 Status.OK -> {

@@ -1,5 +1,7 @@
 package com.espressodev.gptmap.feature.map
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -12,13 +14,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -33,7 +37,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -49,6 +54,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.window.Dialog
@@ -72,8 +78,10 @@ import com.espressodev.gptmap.core.designsystem.component.LoadingAnimation
 import com.espressodev.gptmap.core.designsystem.component.MapSearchButton
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
 import com.espressodev.gptmap.core.designsystem.component.SquareButton
+import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.chatgpt.Content
+import com.espressodev.gptmap.core.model.chatgpt.Coordinates
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
 import com.espressodev.gptmap.core.save_screenshot.composable.SaveScreenshot
 import com.espressodev.gptmap.feature.map.ComponentLoadingState.MAP
@@ -95,12 +103,13 @@ import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MapRoute(
     navigateToStreetView: (Float, Float) -> Unit,
     navigateToFavourite: () -> Unit,
     navigateToScreenshot: () -> Unit,
-    navigateToImageAnalyses: () -> Unit,
+    navigateToScreenshotGallery: () -> Unit,
     favouriteId: String,
     modifier: Modifier = Modifier,
     viewModel: MapViewModel = hiltViewModel(),
@@ -109,41 +118,33 @@ fun MapRoute(
     Scaffold(
         bottomBar = {
             if (uiState.bottomSearchState) {
-                BottomAppBar {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        MapBottomBar(
-                            uiState = uiState,
-                            onValueChange = { viewModel.onEvent(MapUiEvent.OnSearchValueChanged(it)) },
-                            onSearchClick = { viewModel.onEvent(MapUiEvent.OnSearchClick) },
-                        )
-                    }
-                }
+                MapBottomBar(
+                    value = uiState.searchValue,
+                    isSearchButtonEnabled = uiState.searchButtonEnabledState,
+                    isTextFieldEnabled = uiState.searchTextFieldEnabledState,
+                    onValueChange = { viewModel.onEvent(MapUiEvent.OnSearchValueChanged(it)) },
+                    onSearchClick = { viewModel.onEvent(MapUiEvent.OnSearchClick) },
+                )
             }
         },
         modifier = modifier
+            .imePadding()
+            .navigationBarsPadding()
     ) {
         MapScreen(
             uiState = uiState,
+            onFavouriteClick = navigateToFavourite,
+            onScreenshotGalleryClick = navigateToScreenshotGallery,
             onEvent = { event ->
                 viewModel.onEvent(
                     event = event,
                     navigateToStreetView = { latLng ->
-                        navigateToStreetView(latLng.latitude.toFloat(), latLng.longitude.toFloat())
+                        navigateToStreetView(latLng.first.toFloat(), latLng.second.toFloat())
                     }
                 )
             },
-            navigateToFavourite = navigateToFavourite,
-            navigateToImageAnalyses = navigateToImageAnalyses,
-            modifier = Modifier.padding(it)
         )
     }
-
     SaveScreenshot(
         onSuccess = {
             navigateToScreenshot()
@@ -161,24 +162,31 @@ fun MapRoute(
 @Composable
 private fun MapScreen(
     uiState: MapUiState,
+    onFavouriteClick: () -> Unit,
+    onScreenshotGalleryClick: () -> Unit,
     onEvent: (MapUiEvent) -> Unit,
-    navigateToFavourite: () -> Unit,
-    navigateToImageAnalyses: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    val latLng = getLatLngFromLocation(uiState.location)
+    val latLng by remember(uiState.location) {
+        derivedStateOf {
+            uiState.getCoordinates().let { LatLng(it.first, it.second) }
+        }
+    }
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(latLng, 13f)
     }
-    AnimateCameraPosition(latLng, cameraPositionState)
-    DisplayImageGallery(uiState.imageGalleryState, uiState.location, onEvent)
+    AnimateCameraPosition(uiState.getCoordinates(), cameraPositionState)
+    DisplayImageGallery(
+        imageGalleryState = uiState.imageGalleryState,
+        location = uiState.location,
+        onDismiss = { onEvent(MapUiEvent.OnImageDismiss) }
+    )
+    MapTopButtons(
+        isVisible = uiState.isTopButtonsVisible,
+        onFavouriteClick = onFavouriteClick,
+        onScreenshotGalleryClick = onScreenshotGalleryClick,
+    )
     Box(modifier = modifier.fillMaxSize()) {
-        MapTopButtons(
-            isPlaying = uiState.isFavouriteButtonPlaying,
-            isVisible = uiState.isTopButtonsVisible,
-            onFavouriteClick = navigateToFavourite,
-            onImageAnalysesClick = navigateToImageAnalyses
-        )
         LoadingDialog(uiState.componentLoadingState)
         MapSection(
             isPinVisible = uiState.isLocationPinVisible,
@@ -189,64 +197,54 @@ private fun MapScreen(
 }
 
 @Composable
-fun BoxScope.MapTopButtons(
-    isPlaying: Boolean,
+fun MapTopButtons(
     isVisible: Boolean,
     onFavouriteClick: () -> Unit,
-    onImageAnalysesClick: () -> Unit,
+    onScreenshotGalleryClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    AnimatedVisibility(
-        visible = isVisible,
+    Box(
         modifier = modifier
-            .align(Alignment.TopEnd)
-            .zIndex(2f)
-            .padding(8.dp)
+            .fillMaxSize()
+            .zIndex(1f)
+            .statusBarsPadding()
     ) {
-        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(AppRaw.favourite_anim))
-        val progress by animateLottieCompositionAsState(composition, isPlaying = isPlaying)
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+        AnimatedVisibility(
+            visible = isVisible,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(8.dp)
         ) {
-            FloatingActionButton(
-                onClick = onFavouriteClick,
-                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                LottieAnimation(
-                    composition = composition,
-                    progress = { progress },
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(56.dp)
-                )
-            }
-            FloatingActionButton(
-                onClick = onImageAnalysesClick,
-                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
-            ) {
-                Icon(
-                    painter = painterResource(id = AppDrawable.gallery_thumbnail),
-                    null,
-                    modifier = Modifier.size(48.dp)
-                )
+                TopButton(onFavouriteClick, GmIcons.GalleryDefault)
+                TopButton(onScreenshotGalleryClick, GmIcons.ScreenshotDefault)
             }
         }
     }
 }
 
-@ReadOnlyComposable
-private fun getLatLngFromLocation(location: Location): LatLng {
-    return location.content.coordinates.let {
-        LatLng(it.latitude, it.longitude)
+@Composable
+private fun TopButton(onClick: () -> Unit, imageVector: ImageVector) {
+    FloatingActionButton(
+        onClick = onClick,
+        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+    ) {
+        Icon(imageVector, null, modifier = Modifier.size(36.dp))
     }
 }
 
 @Composable
 private fun AnimateCameraPosition(
-    latLng: LatLng,
+    latLng: Pair<Double, Double>,
     cameraPositionState: CameraPositionState
 ) {
     LaunchedEffect(latLng) {
-        cameraPositionState.animate(CameraUpdateFactory.newLatLng(latLng))
+        cameraPositionState.animate(
+            CameraUpdateFactory.newLatLng(LatLng(latLng.first, latLng.second))
+        )
     }
 }
 
@@ -254,13 +252,13 @@ private fun AnimateCameraPosition(
 private fun DisplayImageGallery(
     imageGalleryState: Pair<Int, Boolean>,
     location: Location,
-    onEvent: (MapUiEvent) -> Unit
+    onDismiss: () -> Unit,
 ) {
     if (imageGalleryState.second) {
         ImageGallery(
             initialPage = imageGalleryState.first,
             images = location.locationImages,
-            onDismiss = { onEvent(MapUiEvent.OnImageDismiss) }
+            onDismiss = onDismiss
         )
     }
 }
@@ -278,7 +276,7 @@ private fun BoxScope.DisplayBottomSheet(
                 content = location.content,
                 onExploreWithAiClick = { onEvent(MapUiEvent.OnExploreWithAiClick) },
                 onBackClick = { onEvent(MapUiEvent.OnBackClick) },
-                onStreetViewClick = { onEvent(MapUiEvent.OnStreetViewClick(cameraPositionState.position.target)) }
+                onStreetViewClick = { onEvent(MapUiEvent.OnStreetViewClick(cameraPositionState.toLatitudeLongitude())) }
             )
         }
 
@@ -286,7 +284,7 @@ private fun BoxScope.DisplayBottomSheet(
             DetailSheet(
                 location,
                 onEvent = onEvent,
-                onStreetViewClick = { onEvent(MapUiEvent.OnStreetViewClick(cameraPositionState.position.target)) }
+                onStreetViewClick = { onEvent(MapUiEvent.OnStreetViewClick(cameraPositionState.toLatitudeLongitude())) }
             )
         }
 
@@ -329,23 +327,41 @@ private fun ImageGallery(initialPage: Int, images: List<LocationImage>, onDismis
 }
 
 @Composable
-private fun RowScope.MapBottomBar(
-    uiState: MapUiState,
+private fun MapBottomBar(
+    isTextFieldEnabled: Boolean,
+    isSearchButtonEnabled: Boolean,
+    value: String,
     onValueChange: (String) -> Unit,
     onSearchClick: () -> Unit,
 ) {
-    MapTextField(
-        value = uiState.searchValue,
-        textFieldEnabledState = uiState.searchTextFieldEnabledState,
-        placeholder = AppText.map_text_field_placeholder,
-        onValueChange = onValueChange,
-        modifier = Modifier.weight(1f)
-    )
-    Spacer(modifier = Modifier.width(4.dp))
-    MapSearchButton(
-        buttonEnabledState = uiState.searchButtonEnabledState,
-        onClick = onSearchClick
-    )
+    BottomAppBar(
+        modifier = Modifier
+            .imePadding()
+            .navigationBarsPadding()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            MapTextField(
+                value = value,
+                textFieldEnabledState = isTextFieldEnabled,
+                placeholder = AppText.map_text_field_placeholder,
+                onValueChange = onValueChange,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            MapSearchButton(
+                buttonEnabledState = isSearchButtonEnabled,
+                onClick = onSearchClick
+            )
+        }
+    }
 }
 
 @Composable
@@ -549,5 +565,44 @@ fun BoxScope.SmallInformationCard(
                 }
             }
         }
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun MapPreview() {
+    GptmapTheme {
+        MapScreen(
+            uiState = MapUiState(
+                searchValue = "",
+                location = Location(
+                    id = "", content = Content(
+                        coordinates = Coordinates(
+                            latitude = 0.0,
+                            longitude = 0.0
+                        ),
+                        city = "",
+                        district = null,
+                        country = "",
+                        poeticDescription = "",
+                        normalDescription = ""
+                    ), locationImages = listOf(), addToFavouriteButtonState = false
+                ),
+                componentLoadingState = MAP,
+                bottomSheetState = SMALL_INFORMATION_CARD,
+                searchButtonEnabledState = false,
+                searchTextFieldEnabledState = false,
+                bottomSearchState = false,
+                isTopButtonsVisible = true,
+                isFavouriteButtonPlaying = false,
+                isLocationPinVisible = false,
+                takeScreenshotState = false,
+                imageGalleryState = Pair(0, false)
+            ),
+            {},
+            {},
+            onEvent = {}
+        )
     }
 }

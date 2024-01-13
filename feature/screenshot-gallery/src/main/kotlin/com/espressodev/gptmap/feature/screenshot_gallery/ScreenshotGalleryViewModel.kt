@@ -5,7 +5,7 @@ import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.model.Exceptions
 import com.espressodev.gptmap.core.model.ImageAnalysis
-import com.espressodev.gptmap.core.model.ImageAnalysisSummary
+import com.espressodev.gptmap.core.model.ImageSummary
 import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,13 +16,13 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
-class ImageAnalysesViewModel @Inject constructor(
+class ScreenshotGalleryViewModel @Inject constructor(
     realmSyncService: RealmSyncService,
     logService: LogService
 ) : GmViewModel(logService) {
     val imageAnalyses = realmSyncService
         .getImageAnalyses()
-        .map<List<ImageAnalysis>, Response<List<ImageAnalysisSummary>>> {
+        .map<List<ImageAnalysis>, Response<List<ImageSummary>>> {
             Response.Success(it.map { imageAnalysis -> imageAnalysis.toImageAnalysisSummary() })
         }
         .catch {

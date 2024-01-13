@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -28,27 +29,34 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
+import com.espressodev.gptmap.core.designsystem.TextType
 import com.espressodev.gptmap.core.designsystem.component.ClickableShimmerImage
 import com.espressodev.gptmap.core.designsystem.component.GmCircularIndicator
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
 import com.espressodev.gptmap.core.designsystem.component.LoadingAnimation
 import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
-import com.espressodev.gptmap.core.model.ImageAnalysisSummary
+import com.espressodev.gptmap.core.model.ImageSummary
 import com.espressodev.gptmap.core.model.Response
 import java.time.LocalDateTime
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ImageAnalysesRoute(
+fun ScreenshotGalleryRoute(
     popUp: () -> Unit,
-    navigateToImageAnalysis: (String) -> Unit,
-    viewModel: ImageAnalysesViewModel = hiltViewModel()
+    viewModel: ScreenshotGalleryViewModel = hiltViewModel()
 ) {
     val imageAnalysesResponse by viewModel.imageAnalyses.collectAsStateWithLifecycle()
-    Scaffold(topBar = {
-        GmTopAppBar(title = AppText.image_analyses, icon = IconType.Vector(GmIcons.ImageSearchDefault), onBackClick = popUp)
-    }) {
+    Scaffold(
+        topBar = {
+            GmTopAppBar(
+                textType = TextType.Res(AppText.image_analyses),
+                icon = IconType.Vector(GmIcons.ImageSearchDefault),
+                onBackClick = popUp
+            )
+        }
+    ) {
         with(imageAnalysesResponse) {
             when (this) {
                 is Response.Failure -> {
@@ -57,10 +65,12 @@ fun ImageAnalysesRoute(
 
                 Response.Loading -> GmCircularIndicator()
                 is Response.Success -> {
-                    ImageAnalysesScreen(
+                    ScreenshotGalleryScreen(
                         modifier = Modifier.padding(it),
-                        imageAnalyses = data,
-                        onImageClick = navigateToImageAnalysis
+                        images = data,
+                        onImageClick = { imageId ->
+
+                        }
                     )
                 }
             }
@@ -69,8 +79,8 @@ fun ImageAnalysesRoute(
 }
 
 @Composable
-fun ImageAnalysesScreen(
-    imageAnalyses: List<ImageAnalysisSummary>,
+fun ScreenshotGalleryScreen(
+    images: List<ImageSummary>,
     onImageClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -81,7 +91,7 @@ fun ImageAnalysesScreen(
         contentPadding = PaddingValues(8.dp),
         modifier = modifier
     ) {
-        items(imageAnalyses, key = { key -> key.id }) { imageAnalysisSummary ->
+        items(images, key = { key -> key.id }) { imageAnalysisSummary ->
             ImageAnalysisCard(
                 imageAnalysisSummary = imageAnalysisSummary,
                 onClick = { onImageClick(imageAnalysisSummary.id) }
@@ -93,7 +103,7 @@ fun ImageAnalysesScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ImageAnalysisCard(
-    imageAnalysisSummary: ImageAnalysisSummary,
+    imageAnalysisSummary: ImageSummary,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
@@ -123,10 +133,10 @@ fun ImageAnalysisCard(
 
 @Preview(showBackground = true)
 @Composable
-fun ImageAnalysesPreview() {
+fun ScreenshotGalleryPreview() {
     GptmapTheme {
         ImageAnalysisCard(
-            imageAnalysisSummary = ImageAnalysisSummary(
+            imageAnalysisSummary = ImageSummary(
                 id = "epicuri",
                 imageUrl = "https://duckduckgo.com/?q=comprehensam",
                 title = "nunc",

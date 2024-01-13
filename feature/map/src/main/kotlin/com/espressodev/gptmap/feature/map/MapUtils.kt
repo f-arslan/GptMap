@@ -10,6 +10,7 @@ import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import com.espressodev.gptmap.feature.map.BuildConfig.MAPS_API_KEY
+import com.google.maps.android.compose.CameraPositionState
 
 object MapUtils {
     /**
@@ -82,3 +83,6 @@ enum class Source(var value: String) {
     DEFAULT("default"),
     OUTDOOR("outdoor");
 }
+
+fun CameraPositionState.toLatitudeLongitude(): Pair<Double, Double> =
+    position.target.let { Pair(it.latitude, it.longitude) }
