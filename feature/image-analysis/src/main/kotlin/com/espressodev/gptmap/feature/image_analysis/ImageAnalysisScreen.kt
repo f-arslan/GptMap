@@ -110,7 +110,7 @@ fun ImageAnalysisScreen(
         topBar = {
             GmTopAppBar(
                 textType = TextType.Text(imageAnalysis.title),
-                icon = IconType.Bitmap(painter = painterResource(id = AppDrawable.analyze)),
+                icon = IconType.Bitmap(AppDrawable.analyze),
                 onBackClick = popUp,
                 scrollBehavior = scrollBehavior
             )
