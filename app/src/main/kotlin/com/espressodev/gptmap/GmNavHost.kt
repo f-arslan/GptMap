@@ -44,7 +44,8 @@ fun GmNavHost(
             },
             navigateToFavourite = navController::navigateToFavourite,
             navigateToScreenshot = navController::navigateToScreenshot,
-            navigateToScreenshotGallery = navController::navigateToScreenshotGallery
+            navigateToScreenshotGallery = navController::navigateToScreenshotGallery,
+            navigateToAccount = {}
         )
         loginScreen(
             navigateToMap = navController::navigateToMap,

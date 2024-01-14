@@ -27,15 +27,12 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.NO_SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.VERY_MAX_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.VERY_SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.component.DefaultTextField
 import com.espressodev.gptmap.core.designsystem.component.GmCircularIndicator
@@ -118,11 +115,11 @@ fun ForgotPasswordScreen(
 @Composable
 private fun FingerprintIcon() {
     Surface(
-        shadowElevation = VERY_SMALL_PADDING,
-        modifier = Modifier.size(VERY_MAX_PADDING),
-        shape = RoundedCornerShape(MEDIUM_HIGH_PADDING),
+        shadowElevation = 2.dp,
+        modifier = Modifier.size(48.dp),
+        shape = RoundedCornerShape(12.dp),
         border = BorderStroke(
-            NO_SMALL_PADDING,
+            1.dp,
             MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
         )
     ) {
@@ -130,7 +127,7 @@ private fun FingerprintIcon() {
             imageVector = GmIcons.FingerPrintFilled,
             contentDescription = stringResource(AppText.forgot_password),
             modifier = Modifier
-                .padding(MEDIUM_PADDING)
+                .padding(8.dp)
                 .rotate(15f)
         )
     }
