@@ -3,7 +3,6 @@ package com.espressodev.gptmap.core.save_screenshot.composable
 import android.app.Activity
 import android.content.Context
 import android.media.projection.MediaProjectionManager
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -22,8 +21,8 @@ import com.espressodev.gptmap.core.save_screenshot.SaveScreenshotService
 
 @Composable
 fun SaveScreenshot(
+    onConfirm: () -> Unit,
     onSuccess: () -> Unit,
-    onProcessStarted: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ScreenshotViewModel = hiltViewModel(),
 ) {
@@ -35,7 +34,7 @@ fun SaveScreenshot(
                 viewModel.resetScreenState()
             }
             ScreenState.Started -> {
-                onProcessStarted()
+                onConfirm()
             }
             else -> {}
         }

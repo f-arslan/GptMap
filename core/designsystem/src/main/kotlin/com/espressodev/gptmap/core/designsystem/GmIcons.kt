@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.ImageSearch
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Screenshot
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Send
@@ -50,4 +51,5 @@ object GmIcons {
     val TitleDefault = Icons.Default.Title
     val SendDefault = Icons.Default.Send
     val GalleryDefault = Icons.Default.Image
+    val PersonDefault = Icons.Default.Person
 }

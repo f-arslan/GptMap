@@ -25,6 +25,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
@@ -37,8 +38,7 @@ fun MapTextField(
     @StringRes placeholder: Int,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    shape: Shape = RoundedCornerShape(HIGH_PADDING),
-    leadingIcon: ImageVector = GmIcons.TravelExploreDefault,
+    shape: Shape = RoundedCornerShape(16.dp),
 ) {
     val shouldShownClearIcon by remember(value) { derivedStateOf { value.isNotBlank() } }
 
@@ -46,7 +46,6 @@ fun MapTextField(
         value = value,
         onValueChange = onValueChange,
         shape = shape,
-        leadingIcon = { Icon(leadingIcon, stringResource(AppText.clear)) },
         placeholder = {
             Text(
                 text = stringResource(placeholder),
@@ -63,7 +62,7 @@ fun MapTextField(
                 }
             }
         },
-        maxLines = 3,
+        maxLines = 4,
         enabled = textFieldEnabledState
     )
 }
@@ -155,6 +154,5 @@ private fun TextFieldPreview() {
         onValueChange = {},
         modifier = Modifier,
         shape = RoundedCornerShape(HIGH_PADDING),
-        leadingIcon = GmIcons.TravelExploreDefault
     )
 }

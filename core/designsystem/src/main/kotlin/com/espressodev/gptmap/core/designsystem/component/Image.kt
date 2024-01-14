@@ -17,6 +17,7 @@ fun ShimmerImage(
     imageUrl: String,
     modifier: Modifier = Modifier,
     shadowElevation: Dp = 0.dp,
+    onSuccess: () -> Unit = {},
 ) {
     val showShimmer = remember { mutableStateOf(value = true) }
     Surface(shadowElevation = shadowElevation, modifier = modifier) {
@@ -27,7 +28,10 @@ fun ShimmerImage(
                 .background(shimmerBrush(showShimmer = showShimmer.value, targetValue = 1300f)),
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            onSuccess = { showShimmer.value = false },
+            onSuccess = {
+                showShimmer.value = false
+                onSuccess()
+            },
         )
     }
 }

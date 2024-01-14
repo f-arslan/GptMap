@@ -40,13 +40,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.espressodev.gptmap.core.designsystem.Constants
 import com.espressodev.gptmap.core.designsystem.Constants.BIG_BUTTON_SIZE
-import com.espressodev.gptmap.core.designsystem.Constants.BUTTON_SIZE
-import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.NO_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
+import com.espressodev.gptmap.core.designsystem.IconType
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
@@ -58,7 +54,7 @@ fun MapSearchButton(
     buttonEnabledState: Boolean,
     modifier: Modifier = Modifier,
     icon: ImageVector = GmIcons.SearchDefault,
-    shape: Shape = RoundedCornerShape(HIGH_PADDING),
+    shape: Shape = RoundedCornerShape(16.dp),
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     Button(
@@ -68,8 +64,8 @@ fun MapSearchButton(
             keyboardController?.hide()
             onClick()
         },
-        modifier = modifier.size(BUTTON_SIZE),
-        contentPadding = PaddingValues(NO_PADDING)
+        contentPadding = PaddingValues(0.dp),
+        modifier = modifier.size(56.dp)
     ) {
         Icon(icon, stringResource(id = AppText.search))
     }
@@ -87,7 +83,7 @@ fun ExtFloActionButton(
             painter = painterResource(icon),
             contentDescription = null
         )
-        Spacer(Modifier.width(MEDIUM_PADDING))
+        Spacer(Modifier.width(8.dp))
         Text(stringResource(label), style = MaterialTheme.typography.titleMedium)
     }
 }
@@ -101,12 +97,12 @@ fun DefaultButton(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     Button(
-        modifier = modifier.defaultMinSize(BUTTON_SIZE),
+        modifier = modifier.defaultMinSize(56.dp),
         onClick = {
             keyboardController?.hide()
             onClick()
         },
-        shape = RoundedCornerShape(HIGH_PADDING),
+        shape = RoundedCornerShape(16.dp),
     ) {
         Text(
             text = stringResource(id = text),
@@ -120,7 +116,7 @@ fun GmDraggableButton(icon: ImageVector, modifier: Modifier = Modifier, onClick:
     val localDensity = LocalDensity.current
     val screenWidth = with(localDensity) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
     val screenHeight = with(localDensity) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
-    val buttonSizePx = with(localDensity) { 56.dp.toPx() } // Assuming 56.dp is the FAB size
+    val buttonSizePx = with(localDensity) { 56.dp.toPx() } // FAB size
     val marginPx = with(localDensity) { 8.dp.toPx() }
     val scope = rememberCoroutineScope()
 
@@ -189,10 +185,9 @@ fun SquareButton(
     @StringRes contentDesc: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    icon: ImageVector? = null,
-    @DrawableRes iconId: Int? = null,
-    shape: RoundedCornerShape = RoundedCornerShape(HIGH_PADDING),
-    contentPaddings: PaddingValues = PaddingValues(NO_PADDING),
+    icon: IconType,
+    shape: RoundedCornerShape = RoundedCornerShape(8.dp),
+    contentPaddings: PaddingValues = PaddingValues(0.dp),
     size: Dp = BIG_BUTTON_SIZE
 ) {
     ElevatedButton(
@@ -204,18 +199,21 @@ fun SquareButton(
             containerColor = MaterialTheme.colorScheme.surface,
         )
     ) {
-        if (icon != null) {
-            Icon(
-                imageVector = icon,
-                contentDescription = stringResource(id = contentDesc),
-                modifier = Modifier.size(Constants.MAX_PADDING)
-            )
-        } else if (iconId != null) {
-            Icon(
-                painter = painterResource(id = iconId),
-                contentDescription = stringResource(id = contentDesc),
-                modifier = Modifier.size(Constants.MAX_PADDING)
-            )
+        when (icon) {
+            is IconType.Bitmap -> {
+                Icon(
+                    painter = painterResource(id = icon.painterId),
+                    contentDescription = stringResource(id = contentDesc),
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+            is IconType.Vector -> {
+                Icon(
+                    imageVector = icon.imageVector,
+                    contentDescription = stringResource(id = contentDesc),
+                    modifier = Modifier.size(32.dp)
+                )
+            }
         }
     }
 }

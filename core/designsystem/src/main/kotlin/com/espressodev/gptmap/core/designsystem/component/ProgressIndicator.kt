@@ -27,9 +27,7 @@ fun GmCircularIndicator(modifier: Modifier = Modifier) {
             .background(Color(0x80000000)),
         contentAlignment = Alignment.Center
     ) {
-        CircularProgressIndicator(
-            color = Color.White
-        )
+        CircularProgressIndicator(color = Color.White)
     }
 }
 
