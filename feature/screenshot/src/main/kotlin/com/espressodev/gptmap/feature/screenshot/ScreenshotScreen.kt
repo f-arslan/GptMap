@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.feature.screenshot
 
-import android.annotation.SuppressLint
 import android.view.View
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.VectorConverter
@@ -117,6 +116,7 @@ fun ScreenshotRoute(
                 }
             }
         },
+        modifier = Modifier.statusBarsPadding()
     ) {
         ScreenshotScreen(
             uiState = uiState,

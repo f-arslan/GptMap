@@ -19,7 +19,6 @@ sealed class ScreenshotError(message: String) : Exception(message) {
     class UnknownError : ScreenshotError("The pixel copy request failed with an unknown error.")
 }
 
-
 suspend fun View.screenshot(bounds: Rect): ImageResult = suspendCancellableCoroutine { continuation ->
     try {
         val bitmap = Bitmap.createBitmap(
@@ -47,7 +46,7 @@ suspend fun View.screenshot(bounds: Rect): ImageResult = suspendCancellableCorou
                     else -> continuation.resumeWithException(ScreenshotError.UnknownError())
                 }
             },
-            Handler(Looper.getMainLooper()) //need a handler for PixelCopy callback
+            Handler(Looper.getMainLooper())
         )
     } catch (e: Exception) {
         continuation.resumeWithException(e)
