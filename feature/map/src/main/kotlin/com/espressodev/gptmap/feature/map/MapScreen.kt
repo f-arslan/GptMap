@@ -43,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -64,14 +65,13 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.espressodev.gptmap.core.designsystem.Constants.BUTTON_SIZE
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.MARKER_SIZE
 import com.espressodev.gptmap.core.designsystem.Constants.MAX_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
+import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
 import com.espressodev.gptmap.core.designsystem.component.LoadingAnimation
 import com.espressodev.gptmap.core.designsystem.component.MapSearchButton
@@ -108,6 +108,7 @@ fun MapRoute(
     navigateToStreetView: (Float, Float) -> Unit,
     navigateToFavourite: () -> Unit,
     navigateToScreenshot: () -> Unit,
+    navigateToAccount: () -> Unit,
     navigateToScreenshotGallery: () -> Unit,
     favouriteId: String,
     modifier: Modifier = Modifier,
@@ -127,13 +128,12 @@ fun MapRoute(
             }
         },
         modifier = modifier
-            .imePadding()
-            .navigationBarsPadding()
     ) {
         MapScreen(
             uiState = uiState,
             onFavouriteClick = navigateToFavourite,
             onScreenshotGalleryClick = navigateToScreenshotGallery,
+            onAccountClick = navigateToAccount,
             onEvent = { event ->
                 viewModel.onEvent(
                     event = event,
@@ -149,7 +149,7 @@ fun MapRoute(
             navigateToScreenshot()
             viewModel.reset()
         },
-        onProcessStarted = { viewModel.onEvent(MapUiEvent.OnScreenshotProcessStarted) }
+        onConfirm = { viewModel.onEvent(MapUiEvent.OnScreenshotProcessStarted) }
     )
 
     LaunchedEffect(favouriteId) {
@@ -163,6 +163,7 @@ private fun MapScreen(
     uiState: MapUiState,
     onFavouriteClick: () -> Unit,
     onScreenshotGalleryClick: () -> Unit,
+    onAccountClick: () -> Unit,
     onEvent: (MapUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -184,6 +185,7 @@ private fun MapScreen(
         isVisible = uiState.isTopButtonsVisible,
         onFavouriteClick = onFavouriteClick,
         onScreenshotGalleryClick = onScreenshotGalleryClick,
+        onAccountClick = onAccountClick
     )
     Box(modifier = modifier.fillMaxSize()) {
         LoadingDialog(uiState.componentLoadingState)
@@ -200,6 +202,7 @@ fun MapTopButtons(
     isVisible: Boolean,
     onFavouriteClick: () -> Unit,
     onScreenshotGalleryClick: () -> Unit,
+    onAccountClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -207,12 +210,11 @@ fun MapTopButtons(
             .fillMaxSize()
             .zIndex(1f)
             .statusBarsPadding()
+            .padding(8.dp)
     ) {
         AnimatedVisibility(
             visible = isVisible,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(8.dp)
+            modifier = Modifier.align(Alignment.TopEnd)
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -221,15 +223,29 @@ fun MapTopButtons(
                 TopButton(onScreenshotGalleryClick, GmIcons.ScreenshotDefault)
             }
         }
+        AnimatedVisibility(visible = isVisible) {
+            TopButton(
+                onClick = onAccountClick,
+                imageVector = GmIcons.PersonDefault,
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            )
+        }
     }
 }
 
 @Composable
-private fun TopButton(onClick: () -> Unit, imageVector: ImageVector) {
+private fun TopButton(
+    onClick: () -> Unit,
+    imageVector: ImageVector,
+    modifier: Modifier = Modifier,
+    containerColor: Color = MaterialTheme.colorScheme.secondaryContainer.copy(0.7f),
+    contentColor: Color = MaterialTheme.colorScheme.onSecondaryContainer
+) {
     FloatingActionButton(
         onClick = onClick,
-        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+        containerColor = containerColor,
+        contentColor = contentColor,
+        modifier = modifier
     ) {
         Icon(imageVector, null, modifier = Modifier.size(36.dp))
     }
@@ -457,7 +473,7 @@ fun DefaultLoadingAnimation(modifier: Modifier = Modifier) {
     LottieAnimation(
         composition = composition,
         progress = { progress },
-        modifier = modifier.size(BUTTON_SIZE),
+        modifier = modifier.size(112.dp),
         contentScale = ContentScale.Crop
     )
 }
@@ -473,7 +489,7 @@ private fun BoxScope.LocationPin(
         modifier = modifier
             .align(Alignment.Center)
             .zIndex(1f)
-            .size(MARKER_SIZE),
+            .size(112.dp),
     ) {
         val composition by rememberLottieComposition(
             spec = LottieCompositionSpec.RawRes(resId = AppRaw.pin)
@@ -509,16 +525,16 @@ fun BoxScope.SmallInformationCard(
         verticalArrangement = Arrangement.spacedBy(MEDIUM_PADDING)
     ) {
         SquareButton(
-            icon = GmIcons.ArrowBackOutlined,
+            icon = IconType.Vector(GmIcons.ArrowBackOutlined),
             contentDesc = AppText.back_arrow,
             onClick = onBackClick,
-            size = BUTTON_SIZE
+            size = 112.dp
         )
         SquareButton(
-            iconId = AppDrawable.street_view,
+            icon = IconType.Bitmap(AppDrawable.street_view),
             contentDesc = AppText.search,
             onClick = onStreetViewClick,
-            size = BUTTON_SIZE
+            size = 112.dp
         )
         Surface(
             shape = RoundedCornerShape(HIGH_PADDING),
@@ -599,6 +615,7 @@ fun MapPreview() {
                 takeScreenshotState = false,
                 imageGalleryState = Pair(0, false)
             ),
+            {},
             {},
             {},
             onEvent = {}

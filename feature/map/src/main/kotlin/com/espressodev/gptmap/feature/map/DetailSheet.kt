@@ -34,8 +34,8 @@ import com.espressodev.gptmap.core.designsystem.Constants.MAX_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.VERY_SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
+import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
 import com.espressodev.gptmap.core.designsystem.component.SquareButton
 import com.espressodev.gptmap.core.model.Location
@@ -143,7 +143,7 @@ fun BoxScope.UnsplashBanner(name: String, modifier: Modifier = Modifier) {
             text = "$name on Unsplash",
             style = MaterialTheme.typography.labelSmall,
             fontSize = 8.sp,
-            modifier = Modifier.padding(VERY_SMALL_PADDING)
+            modifier = Modifier.padding(2.dp)
         )
     }
 }
@@ -160,7 +160,7 @@ private fun DetailButtons(
         modifier = modifier.padding(bottom = HIGH_PADDING)
     ) {
         SquareButton(
-            iconId = AppDrawable.street_view,
+            icon = IconType.Bitmap(AppDrawable.street_view),
             contentDesc = AppText.street_view,
             onClick = onStreetViewClick
         )
@@ -169,7 +169,7 @@ private fun DetailButtons(
             exit = slideOutVertically(targetOffsetY = { fullHeight: Int -> -fullHeight })
         ) {
             SquareButton(
-                icon = GmIcons.FavouriteOutlined,
+                icon = IconType.Vector(GmIcons.FavouriteOutlined),
                 contentDesc = AppText.add_favourite,
                 onClick = onFavouriteClick
             )

@@ -113,13 +113,20 @@ class MapViewModel @Inject constructor(
 
     private fun onFavouriteClick() = launchCatching {
         uiState.value.location.also { location ->
-            saveImageToFirebaseStorageUseCase(location).getOrThrow()
             _uiState.update { state ->
                 state.copy(
                     location = state.location.copy(addToFavouriteButtonState = false),
                     isFavouriteButtonPlaying = true
                 )
             }
+            saveImageToFirebaseStorageUseCase(location)
+                .onFailure {
+                    _uiState.update { state ->
+                        state.copy(
+                            location = state.location.copy(addToFavouriteButtonState = true),
+                        )
+                    }
+                }
         }
     }
 
