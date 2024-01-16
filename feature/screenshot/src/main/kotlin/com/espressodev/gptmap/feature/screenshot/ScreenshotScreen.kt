@@ -52,6 +52,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
@@ -109,7 +110,10 @@ fun ScreenshotRoute(
                         AfterSelectingTheField -> AfterBottomBar(
                             onCancelClick = popUp,
                             onSaveClick = {
-                                viewModel.onEvent(event = ScreenshotUiEvent.OnSaveClicked, navigateToMap)
+                                viewModel.onEvent(
+                                    event = ScreenshotUiEvent.OnSaveClicked,
+                                    navigateToMap
+                                )
                             }
                         )
                     }
@@ -220,7 +224,13 @@ private fun ScreenshotGallery(
     val imagePath =
         context.getExternalFilesDir(null)?.absolutePath?.let { "${it}/screenshots/screenshot.png" }
 
-    val offset = remember { Animatable(Offset(0f, 0f), Offset.VectorConverter) }
+    val screenSize =
+        with(localDensity) { LocalConfiguration.current.screenWidthDp.dp.toPx() to LocalConfiguration.current.screenHeightDp.dp.toPx() }
+    val initialOffset = Offset(
+        x = (screenSize.first - squareSizePx) / 2,
+        y = (screenSize.second - squareSizePx * 3 / 2) / 2
+    )
+    val offset = remember { Animatable(initialOffset, Offset.VectorConverter) }
 
     Box(
         modifier = modifier

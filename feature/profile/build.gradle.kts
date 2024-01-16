@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.espressodev.gptmap.feature.image_analysis"
+    namespace = "com.espressodev.gptmap.feature.profile"
 }
 
 dependencies {

@@ -2,13 +2,18 @@ package com.espressodev.gptmap.feature.login
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
+import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.composable
 
 const val LOGIN_ROUTE = "login_route"
 
-fun NavController.navigateToLogin(navOptions: NavOptions? = null) {
-    navigate(LOGIN_ROUTE, navOptions)
+fun NavController.navigateToLogin(
+    navOptionsBuilder: NavOptionsBuilder.() -> Unit = {
+        launchSingleTop = true
+        popUpTo(0) { inclusive = true }
+    }
+) {
+    navigate(LOGIN_ROUTE, builder = navOptionsBuilder)
 }
 
 fun NavGraphBuilder.loginScreen(

@@ -33,17 +33,14 @@ import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
-import com.espressodev.gptmap.core.designsystem.R
 import com.espressodev.gptmap.core.designsystem.TextType
-import com.espressodev.gptmap.core.designsystem.component.GmCircularIndicator
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
-import com.espressodev.gptmap.core.designsystem.component.LoadingAnimation
 import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import com.espressodev.gptmap.core.model.Favourite
 import com.espressodev.gptmap.core.model.Response
 import java.time.LocalDateTime
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
-import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
+
 @Composable
 fun FavouriteRoute(
     popUp: () -> Unit,
@@ -98,7 +95,7 @@ fun FavouriteScreen(
                 }
 
                 is Response.Failure -> {
-                    LoadingAnimation(animId = AppRaw.confused_man_404)
+                    // LoadingAnimation(animId = AppRaw.confused_man_404)
                 }
 
                 Response.Loading -> {}

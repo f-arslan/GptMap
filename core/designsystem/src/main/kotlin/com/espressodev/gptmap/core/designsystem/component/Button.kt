@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
@@ -40,7 +39,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.espressodev.gptmap.core.designsystem.Constants.BIG_BUTTON_SIZE
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import kotlinx.coroutines.launch
@@ -186,18 +184,15 @@ fun SquareButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     icon: IconType,
-    shape: RoundedCornerShape = RoundedCornerShape(8.dp),
+    shape: RoundedCornerShape = RoundedCornerShape(16.dp),
     contentPaddings: PaddingValues = PaddingValues(0.dp),
-    size: Dp = BIG_BUTTON_SIZE
+    size: Dp = 56.dp,
 ) {
     ElevatedButton(
         onClick = onClick,
         modifier = modifier.size(size),
         shape = shape,
         contentPadding = contentPaddings,
-        colors = ButtonDefaults.elevatedButtonColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        )
     ) {
         when (icon) {
             is IconType.Bitmap -> {

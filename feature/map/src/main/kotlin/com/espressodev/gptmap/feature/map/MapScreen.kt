@@ -1,6 +1,7 @@
 package com.espressodev.gptmap.feature.map
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -45,7 +46,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -69,13 +69,12 @@ import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MAX_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
-import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
-import com.espressodev.gptmap.core.designsystem.component.LoadingAnimation
+import com.espressodev.gptmap.core.designsystem.component.LottieAnimationView
 import com.espressodev.gptmap.core.designsystem.component.MapSearchButton
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
+import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
 import com.espressodev.gptmap.core.designsystem.component.SquareButton
 import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import com.espressodev.gptmap.core.model.Location
@@ -142,6 +141,7 @@ fun MapRoute(
                     }
                 )
             },
+            modifier = Modifier.statusBarsPadding()
         )
     }
     SaveScreenshot(
@@ -185,7 +185,8 @@ private fun MapScreen(
         isVisible = uiState.isTopButtonsVisible,
         onFavouriteClick = onFavouriteClick,
         onScreenshotGalleryClick = onScreenshotGalleryClick,
-        onAccountClick = onAccountClick
+        onAccountClick = onAccountClick,
+        modifier = modifier
     )
     Box(modifier = modifier.fillMaxSize()) {
         LoadingDialog(uiState.componentLoadingState)
@@ -209,7 +210,6 @@ fun MapTopButtons(
         modifier = modifier
             .fillMaxSize()
             .zIndex(1f)
-            .statusBarsPadding()
             .padding(8.dp)
     ) {
         AnimatedVisibility(
@@ -219,14 +219,17 @@ fun MapTopButtons(
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                TopButton(onFavouriteClick, GmIcons.GalleryDefault)
-                TopButton(onScreenshotGalleryClick, GmIcons.ScreenshotDefault)
+                GmFloatingButton(onFavouriteClick, IconType.Vector(GmIcons.GalleryDefault))
+                GmFloatingButton(
+                    onScreenshotGalleryClick,
+                    IconType.Vector(GmIcons.ScreenshotDefault)
+                )
             }
         }
         AnimatedVisibility(visible = isVisible) {
-            TopButton(
+            GmFloatingButton(
                 onClick = onAccountClick,
-                imageVector = GmIcons.PersonDefault,
+                icon = IconType.Vector(GmIcons.PersonDefault),
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
             )
         }
@@ -234,11 +237,11 @@ fun MapTopButtons(
 }
 
 @Composable
-private fun TopButton(
+fun GmFloatingButton(
     onClick: () -> Unit,
-    imageVector: ImageVector,
+    icon: IconType,
     modifier: Modifier = Modifier,
-    containerColor: Color = MaterialTheme.colorScheme.secondaryContainer.copy(0.7f),
+    containerColor: Color = MaterialTheme.colorScheme.secondaryContainer,
     contentColor: Color = MaterialTheme.colorScheme.onSecondaryContainer
 ) {
     FloatingActionButton(
@@ -247,7 +250,14 @@ private fun TopButton(
         contentColor = contentColor,
         modifier = modifier
     ) {
-        Icon(imageVector, null, modifier = Modifier.size(36.dp))
+        when (icon) {
+            is IconType.Vector -> Icon(icon.imageVector, null, modifier = Modifier.size(36.dp))
+            is IconType.Bitmap -> Image(
+                painterResource(id = icon.painterId),
+                null,
+                modifier = Modifier.size(36.dp)
+            )
+        }
     }
 }
 
@@ -384,6 +394,7 @@ private fun MapSection(isPinVisible: Boolean, cameraPositionState: CameraPositio
     val context = LocalContext.current
     val isSystemInDarkTheme = isSystemInDarkTheme()
     var isMapLoaded by remember { mutableStateOf(value = false) }
+    Log.d("MapSection", "isMapLoaded: $isMapLoaded")
     val mapProperties = remember {
         if (isSystemInDarkTheme) {
             MapProperties(
@@ -397,9 +408,10 @@ private fun MapSection(isPinVisible: Boolean, cameraPositionState: CameraPositio
         }
     }
 
+
+
     Box(modifier = Modifier.fillMaxSize()) {
         MapContent(
-            isMapLoaded = isMapLoaded,
             isPinVisible = isPinVisible,
             cameraPositionState = cameraPositionState,
             mapProperties = mapProperties
@@ -407,19 +419,19 @@ private fun MapSection(isPinVisible: Boolean, cameraPositionState: CameraPositio
             isMapLoaded = true
         }
     }
+
+    if (!isMapLoaded) {
+        LottieAnimationView(AppRaw.transistor_earth)
+    }
 }
 
 @Composable
 private fun BoxScope.MapContent(
-    isMapLoaded: Boolean,
     isPinVisible: Boolean,
     cameraPositionState: CameraPositionState,
     mapProperties: MapProperties,
     onMapLoaded: () -> Unit
 ) {
-    if (!isMapLoaded) {
-        LoadingAnimation(AppRaw.transistor_earth, modifier = Modifier.fillMaxSize())
-    }
     LocationPin(isPinVisible = isPinVisible, isCameraMoving = cameraPositionState.isMoving)
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
@@ -435,9 +447,9 @@ private fun BoxScope.LoadingDialog(loadingState: ComponentLoadingState) {
     AnimatedVisibility(
         visible = loadingState != ComponentLoadingState.NOTHING,
         modifier = Modifier
-            .padding(top = VERY_HIGH_PADDING)
+            .padding(bottom = 48.dp)
             .zIndex(1f)
-            .align(Alignment.TopCenter)
+            .align(Alignment.Center)
     ) {
         val textId: Int =
             when (loadingState) {
@@ -446,7 +458,7 @@ private fun BoxScope.LoadingDialog(loadingState: ComponentLoadingState) {
                 ComponentLoadingState.NOTHING -> AppText.info
             }
         Surface(
-            shape = RoundedCornerShape(HIGH_PADDING),
+            shape = RoundedCornerShape(16.dp),
             color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
         ) {
             Column(
@@ -473,7 +485,7 @@ fun DefaultLoadingAnimation(modifier: Modifier = Modifier) {
     LottieAnimation(
         composition = composition,
         progress = { progress },
-        modifier = modifier.size(112.dp),
+        modifier = modifier.size(56.dp),
         contentScale = ContentScale.Crop
     )
 }
@@ -528,24 +540,23 @@ fun BoxScope.SmallInformationCard(
             icon = IconType.Vector(GmIcons.ArrowBackOutlined),
             contentDesc = AppText.back_arrow,
             onClick = onBackClick,
-            size = 112.dp
         )
         SquareButton(
             icon = IconType.Bitmap(AppDrawable.street_view),
             contentDesc = AppText.search,
             onClick = onStreetViewClick,
-            size = 112.dp
         )
+
         Surface(
-            shape = RoundedCornerShape(HIGH_PADDING),
-            shadowElevation = MEDIUM_PADDING,
+            shape = RoundedCornerShape(16.dp),
+            shadowElevation = 8.dp,
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(HIGH_PADDING),
+                    .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(SMALL_PADDING)
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
                     text = "${content.city}, ${content.country}",

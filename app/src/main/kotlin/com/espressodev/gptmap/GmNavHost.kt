@@ -11,6 +11,7 @@ import com.espressodev.gptmap.feature.forgot_password.forgotPasswordScreen
 import com.espressodev.gptmap.feature.forgot_password.navigateToForgotPassword
 import com.espressodev.gptmap.feature.login.LOGIN_ROUTE
 import com.espressodev.gptmap.feature.login.loginScreen
+import com.espressodev.gptmap.feature.login.navigateToLogin
 import com.espressodev.gptmap.feature.map.MAP_ROUTE
 import com.espressodev.gptmap.feature.map.mapScreen
 import com.espressodev.gptmap.feature.map.navigateToMap
@@ -39,9 +40,7 @@ fun GmNavHost(
         startDestination = startDestination
     ) {
         mapScreen(
-            navigateToStreetView = { latitude, longitude ->
-                navController.navigateToStreetView(latitude, longitude)
-            },
+            navigateToStreetView = navController::navigateToStreetView,
             navigateToFavourite = navController::navigateToFavourite,
             navigateToScreenshot = navController::navigateToScreenshot,
             navigateToScreenshotGallery = navController::navigateToScreenshotGallery,
@@ -53,15 +52,12 @@ fun GmNavHost(
             navigateToForgotPassword = navController::navigateToForgotPassword
         )
         registerScreen(
-            navigateToLogin = { appState.clearAndNavigate(LOGIN_ROUTE) },
-            navigateToMap = { appState.clearAndNavigate(MAP_ROUTE) }
+            navigateToLogin = navController::navigateToLogin,
+            navigateToMap = navController::navigateToMap
         )
-        forgotPasswordScreen(navigateToLogin = { appState.clearAndNavigate(LOGIN_ROUTE) })
-        streetViewScreen(popUp = appState::popUp)
-        favouriteScreen(
-            popUp = appState::popUp,
-            navigateToMap = { favouriteId -> appState.navController.navigateToMap(favouriteId) }
-        )
+        forgotPasswordScreen(navigateToLogin = navController::navigateToLogin)
+        streetViewScreen()
+        favouriteScreen(popUp = appState::popUp, navigateToMap = navController::navigateToMap)
         screenshotScreen(popUp = appState::popUp, navigateToMap = navController::navigateToMap)
         screenshotGalleryScreen(popUp = appState::popUp)
     }

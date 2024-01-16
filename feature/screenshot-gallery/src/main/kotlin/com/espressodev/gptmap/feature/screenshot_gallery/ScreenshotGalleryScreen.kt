@@ -1,6 +1,6 @@
 package com.espressodev.gptmap.feature.screenshot_gallery
 
-import androidx.compose.animation.AnimatedVisibility
+import android.util.Log
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
@@ -48,7 +49,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -59,15 +59,11 @@ import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.TextType
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
-import com.espressodev.gptmap.core.designsystem.component.LoadingAnimation
 import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
 import com.espressodev.gptmap.core.designsystem.component.darkBottomOverlayBrush
-import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import com.espressodev.gptmap.core.model.ImageSummary
 import com.espressodev.gptmap.core.model.Response
-import java.time.LocalDateTime
 import kotlin.math.absoluteValue
-import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -89,7 +85,7 @@ fun ScreenshotGalleryRoute(
     ) {
         when (val result = imageAnalysesResponse) {
             is Response.Failure -> {
-                LoadingAnimation(animId = AppRaw.confused_man_404)
+                // LoadingAnimation(animId = AppRaw.confused_man_404)
             }
 
             Response.Loading -> {}
@@ -104,6 +100,7 @@ fun ScreenshotGalleryRoute(
 
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ScreenshotGalleryScreen(
     images: List<ImageSummary>,
@@ -111,7 +108,11 @@ fun ScreenshotGalleryScreen(
 ) {
     var currentPage by rememberSaveable { mutableIntStateOf(0) }
     var dialogState by rememberSaveable { mutableStateOf(false) }
-
+    val pagerState = rememberPagerState(initialPage = currentPage, pageCount = { images.size })
+    Log.d("ScreenshotGalleryScreen", "images: $images")
+    if (dialogState) {
+        GalleryView(images = images, pagerState = pagerState, onDismiss = { dialogState = false })
+    }
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -131,10 +132,6 @@ fun ScreenshotGalleryScreen(
                 }
             )
         }
-    }
-
-    AnimatedVisibility(visible = dialogState) {
-        GalleryView(images = images, initialPage = currentPage, onDismiss = { dialogState = false })
     }
 }
 
@@ -186,14 +183,13 @@ fun ImageCard(
 @Composable
 private fun GalleryView(
     images: List<ImageSummary>,
-    initialPage: Int,
+    pagerState: PagerState,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    Log.d("GalleryView", "images: $images")
     Dialog(onDismissRequest = onDismiss) {
         Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            val pagerState =
-                rememberPagerState(initialPage = initialPage, pageCount = { images.size })
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
@@ -252,7 +248,7 @@ fun DotsIndicator(
 ) {
     val listState = rememberLazyListState()
     val totalWidth: Dp = selectedDotSize * maxDots + spacing * (maxDots - 1)
-    val widthInPx = LocalDensity.current.run { selectedDotSize.toPx() }
+    val widthInPx = with(LocalDensity.current) { selectedDotSize.toPx() }
 
     LaunchedEffect(key1 = selectedIndex) {
         val viewportSize = listState.layoutInfo.viewportSize
@@ -273,11 +269,11 @@ fun DotsIndicator(
             val scale = animateFloatAsState(
                 targetValue = when (index) {
                     selectedIndex -> 1f
-                    selectedIndex - 1, selectedIndex + 1 -> 0.75f
-                    else -> 0.5f
+                    selectedIndex - 1, selectedIndex + 1 -> 0.70f
+                    else -> 0.4f
                 },
                 animationSpec = tween(
-                    durationMillis = 300,
+                    durationMillis = 500,
                     easing = FastOutSlowInEasing
                 ),
                 label = "Dot sizing animation"
@@ -295,21 +291,5 @@ fun DotsIndicator(
                     )
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ScreenshotGalleryPreview() {
-    GptmapTheme {
-        ImageCard(
-            imageSummary = ImageSummary(
-                id = "epicuri",
-                imageUrl = "https://duckduckgo.com/?q=comprehensam",
-                title = "nunc",
-                date = LocalDateTime.now()
-            ),
-            onClick = {}
-        )
     }
 }
