@@ -1,4 +1,6 @@
 package com.espressodev.gptmap.feature.profile
 
-class ProfileUiState {
-}
+data class ProfileUiState(
+    val email: String = "",
+    val name: String = ""
+)

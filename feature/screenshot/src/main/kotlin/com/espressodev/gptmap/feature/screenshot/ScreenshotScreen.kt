@@ -92,7 +92,7 @@ fun ScreenshotRoute(
     Scaffold(
         topBar = {
             GmTopAppBar(
-                textType = TextType.Res(AppText.edit_screenshot),
+                text = TextType.Res(AppText.edit_screenshot),
                 icon = IconType.Vector(GmIcons.ScreenshotDefault),
                 onBackClick = popUp
             )

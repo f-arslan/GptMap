@@ -1,7 +1,6 @@
 package com.espressodev.gptmap.feature.map
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -107,7 +106,7 @@ fun MapRoute(
     navigateToStreetView: (Float, Float) -> Unit,
     navigateToFavourite: () -> Unit,
     navigateToScreenshot: () -> Unit,
-    navigateToAccount: () -> Unit,
+    navigateToProfile: () -> Unit,
     navigateToScreenshotGallery: () -> Unit,
     favouriteId: String,
     modifier: Modifier = Modifier,
@@ -132,7 +131,7 @@ fun MapRoute(
             uiState = uiState,
             onFavouriteClick = navigateToFavourite,
             onScreenshotGalleryClick = navigateToScreenshotGallery,
-            onAccountClick = navigateToAccount,
+            onProfileClick = navigateToProfile,
             onEvent = { event ->
                 viewModel.onEvent(
                     event = event,
@@ -163,7 +162,7 @@ private fun MapScreen(
     uiState: MapUiState,
     onFavouriteClick: () -> Unit,
     onScreenshotGalleryClick: () -> Unit,
-    onAccountClick: () -> Unit,
+    onProfileClick: () -> Unit,
     onEvent: (MapUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -185,7 +184,7 @@ private fun MapScreen(
         isVisible = uiState.isTopButtonsVisible,
         onFavouriteClick = onFavouriteClick,
         onScreenshotGalleryClick = onScreenshotGalleryClick,
-        onAccountClick = onAccountClick,
+        onAccountClick = onProfileClick,
         modifier = modifier
     )
     Box(modifier = modifier.fillMaxSize()) {
@@ -394,7 +393,6 @@ private fun MapSection(isPinVisible: Boolean, cameraPositionState: CameraPositio
     val context = LocalContext.current
     val isSystemInDarkTheme = isSystemInDarkTheme()
     var isMapLoaded by remember { mutableStateOf(value = false) }
-    Log.d("MapSection", "isMapLoaded: $isMapLoaded")
     val mapProperties = remember {
         if (isSystemInDarkTheme) {
             MapProperties(

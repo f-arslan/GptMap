@@ -59,13 +59,14 @@ import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.TextType
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
+import com.espressodev.gptmap.core.designsystem.component.LottieAnimationView
 import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
 import com.espressodev.gptmap.core.designsystem.component.darkBottomOverlayBrush
 import com.espressodev.gptmap.core.model.ImageSummary
 import com.espressodev.gptmap.core.model.Response
 import kotlin.math.absoluteValue
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
-
+import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScreenshotGalleryRoute(
@@ -77,7 +78,7 @@ fun ScreenshotGalleryRoute(
     Scaffold(
         topBar = {
             GmTopAppBar(
-                textType = TextType.Res(AppText.screenshot_gallery),
+                text = TextType.Res(AppText.screenshot_gallery),
                 icon = IconType.Vector(GmIcons.ImageSearchDefault),
                 onBackClick = popUp
             )
@@ -85,7 +86,7 @@ fun ScreenshotGalleryRoute(
     ) {
         when (val result = imageAnalysesResponse) {
             is Response.Failure -> {
-                // LoadingAnimation(animId = AppRaw.confused_man_404)
+                LottieAnimationView(AppRaw.confused_man_404)
             }
 
             Response.Loading -> {}

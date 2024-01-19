@@ -35,11 +35,13 @@ import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.TextType
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
+import com.espressodev.gptmap.core.designsystem.component.LottieAnimationView
 import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import com.espressodev.gptmap.core.model.Favourite
 import com.espressodev.gptmap.core.model.Response
 import java.time.LocalDateTime
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
+import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 
 @Composable
 fun FavouriteRoute(
@@ -67,7 +69,7 @@ fun FavouriteScreen(
     Scaffold(
         topBar = {
             GmTopAppBar(
-                textType = TextType.Res(AppText.favourite),
+                text = TextType.Res(AppText.favourite),
                 icon = IconType.Vector(GmIcons.FavouriteFilled),
                 onBackClick = popUp
             )
@@ -95,7 +97,7 @@ fun FavouriteScreen(
                 }
 
                 is Response.Failure -> {
-                    // LoadingAnimation(animId = AppRaw.confused_man_404)
+                    LottieAnimationView(AppRaw.confused_man_404)
                 }
 
                 Response.Loading -> {}
