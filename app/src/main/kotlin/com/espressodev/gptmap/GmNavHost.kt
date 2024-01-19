@@ -12,9 +12,10 @@ import com.espressodev.gptmap.feature.forgot_password.navigateToForgotPassword
 import com.espressodev.gptmap.feature.login.LOGIN_ROUTE
 import com.espressodev.gptmap.feature.login.loginScreen
 import com.espressodev.gptmap.feature.login.navigateToLogin
-import com.espressodev.gptmap.feature.map.MAP_ROUTE
 import com.espressodev.gptmap.feature.map.mapScreen
 import com.espressodev.gptmap.feature.map.navigateToMap
+import com.espressodev.gptmap.feature.profile.navigateToProfile
+import com.espressodev.gptmap.feature.profile.profileScreen
 import com.espressodev.gptmap.feature.register.navigateToRegister
 import com.espressodev.gptmap.feature.register.registerScreen
 import com.espressodev.gptmap.feature.screenshot.navigateToScreenshot
@@ -44,7 +45,7 @@ fun GmNavHost(
             navigateToFavourite = navController::navigateToFavourite,
             navigateToScreenshot = navController::navigateToScreenshot,
             navigateToScreenshotGallery = navController::navigateToScreenshotGallery,
-            navigateToAccount = {}
+            navigateToProfile = navController::navigateToProfile
         )
         loginScreen(
             navigateToMap = navController::navigateToMap,
@@ -57,9 +58,10 @@ fun GmNavHost(
         )
         forgotPasswordScreen(navigateToLogin = navController::navigateToLogin)
         streetViewScreen()
-        favouriteScreen(popUp = appState::popUp, navigateToMap = navController::navigateToMap)
-        screenshotScreen(popUp = appState::popUp, navigateToMap = navController::navigateToMap)
-        screenshotGalleryScreen(popUp = appState::popUp)
+        favouriteScreen(popUp = navController::popBackStack, navigateToMap = navController::navigateToMap)
+        screenshotScreen(popUp = navController::popBackStack, navigateToMap = navController::navigateToMap)
+        screenshotGalleryScreen(popUp = navController::popBackStack)
+        profileScreen(popUp = navController::popBackStack, navigateToLogin = navController::navigateToLogin)
     }
 }
 

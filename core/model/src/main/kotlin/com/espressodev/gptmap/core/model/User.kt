@@ -23,5 +23,5 @@ data class User(
 }
 
 enum class Provider {
-    DEFAULT, GOOGLE, FACEBOOK, X
+    DEFAULT, GOOGLE
 }

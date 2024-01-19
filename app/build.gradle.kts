@@ -46,6 +46,7 @@ dependencies {
     implementation(projects.feature.favourite)
     implementation(projects.feature.screenshot)
     implementation(projects.feature.screenshotGallery)
+    implementation(projects.feature.profile)
 
     implementation(projects.core.designsystem)
     implementation(projects.core.common)

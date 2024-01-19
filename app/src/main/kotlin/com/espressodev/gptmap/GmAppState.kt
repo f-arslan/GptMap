@@ -27,8 +27,4 @@ class GmAppState(
             }
         }
     }
-
-    fun popUp() {
-        navController.popBackStack()
-    }
 }
