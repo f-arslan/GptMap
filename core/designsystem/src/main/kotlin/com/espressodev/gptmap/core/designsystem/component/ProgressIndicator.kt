@@ -60,6 +60,6 @@ fun LottieAnimationView(
 
 @Preview
 @Composable
-fun LottieAnimationParentPreview() {
+private fun LottieAnimationParentPreview() {
     LottieAnimationView(AppRaw.earth_orbit)
 }

@@ -25,15 +25,15 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GmTopAppBar(
-    textType: TextType,
+    text: TextType,
     icon: IconType,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
-    val text = when (textType) {
-        is TextType.Res -> stringResource(id = textType.textId)
-        is TextType.Text -> textType.text
+    val value = when (text) {
+        is TextType.Res -> stringResource(id = text.textId)
+        is TextType.Text -> text.text
     }
     TopAppBar(
         modifier = modifier,
@@ -41,7 +41,7 @@ fun GmTopAppBar(
         title = {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Text(
-                    text = text,
+                    text = value,
                     fontWeight = FontWeight.Medium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -62,7 +62,7 @@ fun GmTopAppBar(
                     Icon(
                         painter = painterResource(id = icon.painterId),
                         contentDescription = null,
-                        modifier = Modifier.padding(end = 8.dp),
+                        modifier = Modifier.padding(end = 12.dp),
                     )
                 }
 
@@ -70,7 +70,7 @@ fun GmTopAppBar(
                     Icon(
                         imageVector = icon.imageVector,
                         contentDescription = null,
-                        modifier = Modifier.padding(end = 8.dp),
+                        modifier = Modifier.padding(end = 12.dp),
                     )
                 }
             }
