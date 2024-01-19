@@ -11,22 +11,19 @@ typealias RevokeAccessResponse = Response<Boolean>
 typealias UpdatePasswordResponse = Response<Boolean>
 
 interface AccountService {
-
     val currentUser: FirebaseUser
-
-    suspend fun firebaseSignUpWithEmailAndPassword(email: String, password: String, fullName: String): AuthResult
+    val userId: String
+    suspend fun firebaseSignUpWithEmailAndPassword(
+        email: String,
+        password: String,
+        fullName: String
+    ): AuthResult
 
     suspend fun sendEmailVerification(): SendEmailVerificationResponse
-
     suspend fun firebaseSignInWithEmailAndPassword(email: String, password: String): AuthResult
-
     suspend fun reloadFirebaseUser(): ReloadUserResponse
-
     suspend fun updatePassword(password: String): UpdatePasswordResponse
-
     suspend fun sendPasswordResetEmail(email: String): SendPasswordResetEmailResponse
-
     fun signOut()
-
     suspend fun revokeAccess(): RevokeAccessResponse
 }

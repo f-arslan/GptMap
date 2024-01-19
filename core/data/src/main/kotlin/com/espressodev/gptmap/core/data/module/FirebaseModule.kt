@@ -28,6 +28,7 @@ object FirebaseModule {
     @Provides
     fun storage(): FirebaseStorage = Firebase.storage
 
+    @Singleton
     @Provides
-    fun providesIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
+    fun providesIODispatcher(): CoroutineDispatcher = Dispatchers.IO
 }

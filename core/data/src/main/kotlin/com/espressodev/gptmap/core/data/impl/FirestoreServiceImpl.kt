@@ -3,14 +3,18 @@ package com.espressodev.gptmap.core.data.impl
 import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.model.Exceptions.FirebaseUserIsNullException
 import com.espressodev.gptmap.core.model.User
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.dataObjects
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
 import java.util.concurrent.ExecutionException
 import javax.inject.Inject
 
 class FirestoreServiceImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
+    private val auth: FirebaseAuth,
 ) : FirestoreService {
 
     override fun saveUser(user: User) {
@@ -32,6 +36,9 @@ class FirestoreServiceImpl @Inject constructor(
     override suspend fun getUser(userId: String): User =
         getUserDocRef(userId).get().await().toObject(User::class.java)
             ?: throw FirebaseUserIsNullException()
+
+    override fun getUserFlow(userId: String): Flow<User?> =
+        getUserDocRef(userId).dataObjects<User>()
 
     private val userColRef by lazy { firestore.collection(USERS) }
     private fun getUserDocRef(id: String) = userColRef.document(id)

@@ -6,7 +6,7 @@ import com.espressodev.gptmap.core.data.RevokeAccessResponse
 import com.espressodev.gptmap.core.data.SendEmailVerificationResponse
 import com.espressodev.gptmap.core.data.SendPasswordResetEmailResponse
 import com.espressodev.gptmap.core.data.UpdatePasswordResponse
-import com.espressodev.gptmap.core.model.Exceptions.FirebaseUserIdIsNullException
+import com.espressodev.gptmap.core.model.Exceptions.FirebaseUserIsNullException
 import com.espressodev.gptmap.core.model.Response
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -18,7 +18,10 @@ class AccountServiceImpl @Inject constructor(
     private val auth: FirebaseAuth,
 ) : AccountService {
     override val currentUser: FirebaseUser
-        get() = auth.currentUser ?: throw FirebaseUserIdIsNullException()
+        get() = auth.currentUser ?: throw FirebaseUserIsNullException()
+
+    override val userId: String
+        get() = currentUser.uid
 
     override suspend fun firebaseSignUpWithEmailAndPassword(
         email: String,
@@ -64,7 +67,7 @@ class AccountServiceImpl @Inject constructor(
         return try {
             auth.currentUser?.updatePassword(password)?.await()
             Response.Success(true)
-        } catch (e: Exception)  {
+        } catch (e: Exception) {
             Response.Failure(e)
         }
     }
