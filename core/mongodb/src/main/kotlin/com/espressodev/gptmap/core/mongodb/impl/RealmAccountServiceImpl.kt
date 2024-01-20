@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.core.mongodb.impl
 
+import android.util.Log
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
 import com.espressodev.gptmap.core.mongodb.module.RealmModule
 import com.espressodev.gptmap.core.mongodb.module.RealmModule.app

@@ -37,8 +37,10 @@ class FirestoreServiceImpl @Inject constructor(
         getUserDocRef(userId).get().await().toObject(User::class.java)
             ?: throw FirebaseUserIsNullException()
 
-    override fun getUserFlow(userId: String): Flow<User?> =
-        getUserDocRef(userId).dataObjects<User>()
+    override fun getUserFlow(): Flow<User?> =
+        auth.currentUser?.uid?.let { userId ->
+            getUserDocRef(userId).dataObjects<User>()
+        } ?: throw FirebaseUserIsNullException()
 
     private val userColRef by lazy { firestore.collection(USERS) }
     private fun getUserDocRef(id: String) = userColRef.document(id)

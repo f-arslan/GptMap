@@ -2,6 +2,7 @@ package com.espressodev.gptmap.core.domain
 
 import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.data.FirestoreService
+import com.espressodev.gptmap.core.model.Exceptions
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -18,7 +19,9 @@ class AddDatabaseIfUserIsNewUseCase @Inject constructor(
         if (isUserInRealmDb) {
             return@withContext Result.success(value = true)
         }
-        val realmUser = firestoreService.getUser(accountService.currentUser.uid).toRealmUser()
+        val realmUser =
+            accountService.userId?.let { userId -> firestoreService.getUser(userId).toRealmUser() }
+                ?: throw Exceptions.FirebaseUserIsNullException()
         realmSyncService.saveUser(realmUser).getOrThrow()
         Result.success(value = true)
     }

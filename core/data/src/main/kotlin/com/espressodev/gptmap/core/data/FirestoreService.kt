@@ -7,5 +7,5 @@ interface FirestoreService {
     fun saveUser(user: User)
     suspend fun isUserInDatabase(email: String): Result<Boolean>
     suspend fun getUser(userId: String): User
-    fun getUserFlow(userId: String): Flow<User?>
+    fun getUserFlow(): Flow<User?>
 }

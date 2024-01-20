@@ -17,11 +17,14 @@ import javax.inject.Inject
 class AccountServiceImpl @Inject constructor(
     private val auth: FirebaseAuth,
 ) : AccountService {
-    override val currentUser: FirebaseUser
-        get() = auth.currentUser ?: throw FirebaseUserIsNullException()
+    override val userId: String?
+        get() = auth.currentUser?.uid
 
-    override val userId: String
-        get() = currentUser.uid
+    override val isEmailVerified: Boolean
+        get() = auth.currentUser?.isEmailVerified ?: false
+
+    override val firebaseUser: FirebaseUser?
+        get() = auth.currentUser
 
     override suspend fun firebaseSignUpWithEmailAndPassword(
         email: String,

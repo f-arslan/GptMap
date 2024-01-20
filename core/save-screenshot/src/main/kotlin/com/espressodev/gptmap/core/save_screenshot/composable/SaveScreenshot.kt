@@ -3,6 +3,7 @@ package com.espressodev.gptmap.core.save_screenshot.composable
 import android.app.Activity
 import android.content.Context
 import android.media.projection.MediaProjectionManager
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -27,6 +28,7 @@ fun SaveScreenshot(
     viewModel: ScreenshotViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    Log.d("SaveScreenshot", "uiState: $uiState")
     LaunchedEffect(key1 = uiState.screenState) {
         when (uiState.screenState) {
             ScreenState.Finished -> {
@@ -36,7 +38,7 @@ fun SaveScreenshot(
             ScreenState.Started -> {
                 onConfirm()
             }
-            else -> {}
+            ScreenState.Idle -> {}
         }
     }
 

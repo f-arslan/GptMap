@@ -70,7 +70,11 @@ class SaveScreenshotService : Service() {
                             bitmap?.compress(Bitmap.CompressFormat.JPEG, 80, fos!!)
                         }
                         Log.e(TAG, "Screenshot captured")
-                        sendBroadcast(Intent(ACTION_SERVICE_STOPPED))
+                        sendBroadcast(
+                            Intent(ACTION_SERVICE_STOPPED).apply {
+                                setPackage(applicationContext.packageName)
+                            }
+                        )
                     }
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to capture screenshot because: ${e.message}")
@@ -96,7 +100,6 @@ class SaveScreenshotService : Service() {
 
     @Suppress("DEPRECATION")
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        // Start the service in the foreground with a notification
         startForegroundWithNotification()
 
         // Extract the result code and data from the intent to start the media projection
@@ -107,7 +110,10 @@ class SaveScreenshotService : Service() {
             intent.getParcelableExtra(DATA)
         }
         startProjection(resultCode, data)
-        sendBroadcast(Intent(ACTION_SERVICE_STARTED))
+        sendBroadcast(Intent(ACTION_SERVICE_STARTED).apply {
+            setPackage(applicationContext.packageName)
+        }
+        )
         return START_NOT_STICKY
     }
 

@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.core.common.state
+package com.espressodev.gptmap.core.common.util
 
 import android.graphics.Rect
 import android.util.Log

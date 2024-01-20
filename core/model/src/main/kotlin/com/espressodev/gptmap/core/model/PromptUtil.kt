@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.core.model.utils
+package com.espressodev.gptmap.core.model
 
 object PromptUtil {
     val locationPreText = """

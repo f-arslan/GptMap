@@ -43,7 +43,7 @@ fun shimmerBrush(showShimmer: Boolean = true, targetValue: Float = 1000f): Brush
 
 val darkBottomOverlayBrush: Brush = Brush.verticalGradient(
     colors = listOf(
-        Color.Black.copy(alpha = 0.8f),
+        Color.Black.copy(alpha = 0.7f),
         Color.Transparent,
         Color.Transparent,
         Color.Transparent
