@@ -19,14 +19,25 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.espressodev.gptmap.core.common.network_monitor.NetworkMonitor
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
+import com.espressodev.gptmap.feature.login.LOGIN_ROUTE
+import com.espressodev.gptmap.feature.map.MAP_ROUTE
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
-fun GmApp() {
+fun GmApp(
+    networkMonitor: NetworkMonitor,
+    accountState: AccountState,
+    appState: GmAppState = rememberAppState(networkMonitor = networkMonitor)
+) {
+    val startDestination = when (accountState) {
+        AccountState.UserAlreadySignIn -> "$MAP_ROUTE/{favouriteId}"
+        else -> LOGIN_ROUTE
+    }
+
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
-        val appState = rememberAppState()
         Scaffold(
             snackbarHost = {
                 SnackbarHost(
@@ -37,7 +48,11 @@ fun GmApp() {
             },
             contentWindowInsets = WindowInsets(0, 0, 0, 0)
         ) {
-            GmNavHost(appState = appState, modifier = Modifier.padding(it))
+            GmNavHost(
+                appState = appState,
+                modifier = Modifier.padding(it),
+                startDestination = startDestination
+            )
         }
     }
 }
@@ -51,6 +66,7 @@ fun resources(): Resources {
 
 @Composable
 fun rememberAppState(
+    networkMonitor: NetworkMonitor,
     navController: NavHostController = rememberNavController(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     snackbarManager: SnackbarManager = SnackbarManager,
@@ -58,6 +74,7 @@ fun rememberAppState(
     coroutineScope: CoroutineScope = rememberCoroutineScope()
 ) = remember(navController, snackbarHostState, coroutineScope) {
     GmAppState(
+        networkMonitor,
         navController,
         snackbarHostState,
         snackbarManager,

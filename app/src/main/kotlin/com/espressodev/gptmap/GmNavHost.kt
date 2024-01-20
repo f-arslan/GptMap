@@ -2,9 +2,13 @@ package com.espressodev.gptmap
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.espressodev.gptmap.core.common.splash_navigation.AfterSplashState
+import com.espressodev.gptmap.core.common.splash_navigation.SplashNavigationManager
 import com.espressodev.gptmap.feature.favourite.favouriteScreen
 import com.espressodev.gptmap.feature.favourite.navigateToFavourite
 import com.espressodev.gptmap.feature.forgot_password.forgotPasswordScreen
@@ -33,7 +37,7 @@ fun GmNavHost(
 ) {
     val navController = appState.navController
 
-    NavigationListener(navController)
+    navController.NavigationListener()
 
     NavHost(
         modifier = modifier,
@@ -58,20 +62,39 @@ fun GmNavHost(
         )
         forgotPasswordScreen(navigateToLogin = navController::navigateToLogin)
         streetViewScreen()
-        favouriteScreen(popUp = navController::popBackStack, navigateToMap = navController::navigateToMap)
-        screenshotScreen(popUp = navController::popBackStack, navigateToMap = navController::navigateToMap)
+        favouriteScreen(
+            popUp = navController::popBackStack,
+            navigateToMap = navController::navigateToMap
+        )
+        screenshotScreen(
+            popUp = navController::popBackStack,
+            navigateToMap = navController::navigateToMap
+        )
         screenshotGalleryScreen(popUp = navController::popBackStack)
-        profileScreen(popUp = navController::popBackStack, navigateToLogin = navController::navigateToLogin)
+        profileScreen(
+            popUp = navController::popBackStack,
+            navigateToLogin = navController::navigateToLogin
+        )
     }
+
+    navController.SplashNavigationListener()
 }
 
 @Composable
-private fun NavigationListener(navController: NavHostController) {
-    LaunchedEffect(navController) {
-        navController.addOnDestinationChangedListener { controller, destination, arguments ->
+private fun NavHostController.NavigationListener() {
+    LaunchedEffect(this) {
+        this@NavigationListener.addOnDestinationChangedListener { controller, destination, arguments ->
             println("Current back stack: $destination")
             println("Parent back stack: ${controller.previousBackStackEntry?.destination}")
             println("Arguments: $arguments")
         }
+    }
+}
+
+@Composable
+private fun NavHostController.SplashNavigationListener() {
+    val splashNavState by SplashNavigationManager.splashNavigationState.collectAsStateWithLifecycle()
+    if (splashNavState == AfterSplashState.Map) {
+        navigateToMap()
     }
 }
