@@ -9,6 +9,8 @@ import com.espressodev.gptmap.core.model.ImageSummary
 import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -22,8 +24,11 @@ class ScreenshotGalleryViewModel @Inject constructor(
 ) : GmViewModel(logService) {
     val imageAnalyses = realmSyncService
         .getImageAnalyses()
-        .map<List<ImageAnalysis>, Response<List<ImageSummary>>> {
-            Response.Success(it.map { imageAnalysis -> imageAnalysis.toImageAnalysisSummary() })
+        .map<List<ImageAnalysis>, Response<PersistentList<ImageSummary>>> {
+            Response.Success(
+                it.map { imageAnalysis -> imageAnalysis.toImageAnalysisSummary() }
+                    .toPersistentList()
+            )
         }
         .catch {
             Response.Failure(Exceptions.RealmFailedToLoadImageAnalysesException())

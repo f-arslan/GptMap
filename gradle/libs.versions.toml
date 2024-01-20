@@ -4,6 +4,7 @@ androidGradlePlugin = "8.2.1"
 androidxActivity = "1.8.2"
 androidxComposeBom = "2023.10.01"
 androidxComposeCompiler = "1.5.3"  # Compose VC
+androidxCoreSplashscreen = "1.0.1"
 androidxHiltNavigationCompose = "1.1.0"
 androidxLifecycle = "2.6.2"
 androidxNavigation = "2.7.6"
@@ -136,6 +137,7 @@ realm-library-sync = { group = "io.realm.kotlin", name = "library-sync", version
 # Android
 androidx-work-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "androidxWork" }
 android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugarJdkLibs" }  # Used in Kotlin VC
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxCoreSplashscreen" }
 # End of it
 
 # Ktor

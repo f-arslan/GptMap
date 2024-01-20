@@ -5,7 +5,7 @@ import com.espressodev.gptmap.api.palm.PalmApi
 import com.espressodev.gptmap.api.palm.PalmService
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.ext.classTag
-import com.espressodev.gptmap.core.model.utils.PromptUtil.locationPreText
+import com.espressodev.gptmap.core.model.PromptUtil.locationPreText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

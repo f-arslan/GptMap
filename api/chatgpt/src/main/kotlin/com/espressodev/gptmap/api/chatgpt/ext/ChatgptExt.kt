@@ -1,7 +1,7 @@
 package com.espressodev.gptmap.api.chatgpt.ext
 
 import com.espressodev.gptmap.core.model.chatgpt.ChatgptRequest
-import com.espressodev.gptmap.core.model.utils.PromptUtil.locationPreText
+import com.espressodev.gptmap.core.model.PromptUtil.locationPreText
 
 
 internal fun ChatgptRequest.mergeMessageWithPreText(): ChatgptRequest {

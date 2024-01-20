@@ -2,6 +2,7 @@ package com.espressodev.gptmap.feature.profile
 
 import androidx.lifecycle.viewModelScope
 import com.espressodev.gptmap.core.common.GmViewModel
+import com.espressodev.gptmap.core.common.splash_navigation.SplashNavigationManager
 import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.data.LogService
@@ -31,7 +32,7 @@ class ProfileViewModel @Inject constructor(
     logService: LogService
 ) : GmViewModel(logService) {
     val user = firestoreService
-        .getUserFlow(accountService.userId)
+        .getUserFlow()
         .retryWhen { cause, attempt ->
             if (cause is CancellationException && attempt < MAX_RETRY_ATTEMPTS) {
                 delay(RETRY_DELAY_MS)
@@ -57,6 +58,7 @@ class ProfileViewModel @Inject constructor(
     fun onLogoutClick(navigate: () -> Unit) = launchCatching {
         accountService.signOut()
         realmAccountService.logOut()
+        SplashNavigationManager.onLogout()
         navigate()
     }
 

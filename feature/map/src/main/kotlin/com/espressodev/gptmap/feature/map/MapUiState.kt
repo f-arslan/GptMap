@@ -1,10 +1,9 @@
 package com.espressodev.gptmap.feature.map
 
 import com.espressodev.gptmap.core.model.Location
-import com.google.android.gms.maps.model.LatLng
 
 enum class MapBottomSheetState {
-    SMALL_INFORMATION_CARD, DETAIL_CARD, NOTHING
+    SMALL_INFORMATION_CARD, DETAIL_CARD, BOTTOM_SHEET_HIDDEN
 }
 
 enum class ComponentLoadingState {
@@ -15,7 +14,7 @@ data class MapUiState(
     val searchValue: String = "",
     val location:Location = Location(),
     val componentLoadingState: ComponentLoadingState = ComponentLoadingState.NOTHING,
-    val bottomSheetState: MapBottomSheetState = MapBottomSheetState.NOTHING,
+    val bottomSheetState: MapBottomSheetState = MapBottomSheetState.BOTTOM_SHEET_HIDDEN,
     val searchButtonEnabledState: Boolean = true,
     val searchTextFieldEnabledState: Boolean = true,
     val bottomSearchState: Boolean = true,

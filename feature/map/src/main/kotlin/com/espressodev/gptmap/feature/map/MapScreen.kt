@@ -1,6 +1,8 @@
 package com.espressodev.gptmap.feature.map
 
 import android.annotation.SuppressLint
+import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -40,6 +42,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,6 +67,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.espressodev.gptmap.core.common.splash_navigation.SplashNavigationManager
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MAX_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
@@ -83,8 +87,8 @@ import com.espressodev.gptmap.core.model.unsplash.LocationImage
 import com.espressodev.gptmap.core.save_screenshot.composable.SaveScreenshot
 import com.espressodev.gptmap.feature.map.ComponentLoadingState.MAP
 import com.espressodev.gptmap.feature.map.ComponentLoadingState.STREET_VIEW
+import com.espressodev.gptmap.feature.map.MapBottomSheetState.BOTTOM_SHEET_HIDDEN
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.DETAIL_CARD
-import com.espressodev.gptmap.feature.map.MapBottomSheetState.NOTHING
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.SMALL_INFORMATION_CARD
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -140,7 +144,7 @@ fun MapRoute(
                     }
                 )
             },
-            modifier = Modifier.statusBarsPadding()
+           modifier = Modifier.statusBarsPadding()
         )
     }
     SaveScreenshot(
@@ -148,7 +152,9 @@ fun MapRoute(
             navigateToScreenshot()
             viewModel.reset()
         },
-        onConfirm = { viewModel.onEvent(MapUiEvent.OnScreenshotProcessStarted) }
+        onConfirm = {
+            viewModel.onEvent(MapUiEvent.OnScreenshotProcessStarted)
+        }
     )
 
     LaunchedEffect(favouriteId) {
@@ -312,7 +318,7 @@ private fun BoxScope.DisplayBottomSheet(
             )
         }
 
-        NOTHING -> {}
+        BOTTOM_SHEET_HIDDEN -> {}
     }
 }
 
@@ -406,8 +412,6 @@ private fun MapSection(isPinVisible: Boolean, cameraPositionState: CameraPositio
         }
     }
 
-
-
     Box(modifier = Modifier.fillMaxSize()) {
         MapContent(
             isPinVisible = isPinVisible,
@@ -445,7 +449,6 @@ private fun BoxScope.LoadingDialog(loadingState: ComponentLoadingState) {
     AnimatedVisibility(
         visible = loadingState != ComponentLoadingState.NOTHING,
         modifier = Modifier
-            .padding(bottom = 48.dp)
             .zIndex(1f)
             .align(Alignment.Center)
     ) {
@@ -457,7 +460,7 @@ private fun BoxScope.LoadingDialog(loadingState: ComponentLoadingState) {
             }
         Surface(
             shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
+            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -528,6 +531,7 @@ fun BoxScope.SmallInformationCard(
     onStreetViewClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    BackHandler(onBack = onBackClick)
     Column(
         modifier = modifier
             .align(Alignment.BottomCenter)

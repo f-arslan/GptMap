@@ -56,7 +56,7 @@ class MapViewModel @Inject constructor(
             is MapUiEvent.OnDetailSheetBackClick -> _uiState.update { it.copy(bottomSheetState = MapBottomSheetState.SMALL_INFORMATION_CARD) }
             is MapUiEvent.OnBackClick -> _uiState.update {
                 it.copy(
-                    bottomSheetState = MapBottomSheetState.NOTHING,
+                    bottomSheetState = MapBottomSheetState.BOTTOM_SHEET_HIDDEN,
                     bottomSearchState = true
                 )
             }

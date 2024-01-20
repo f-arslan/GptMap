@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espressodev.gptmap.core.designsystem.GmIcons
@@ -64,9 +65,11 @@ import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
 import com.espressodev.gptmap.core.designsystem.component.darkBottomOverlayBrush
 import com.espressodev.gptmap.core.model.ImageSummary
 import com.espressodev.gptmap.core.model.Response
+import kotlinx.collections.immutable.PersistentList
 import kotlin.math.absoluteValue
-import com.espressodev.gptmap.core.designsystem.R.string as AppText
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
+import com.espressodev.gptmap.core.designsystem.R.string as AppText
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScreenshotGalleryRoute(
@@ -104,13 +107,12 @@ fun ScreenshotGalleryRoute(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ScreenshotGalleryScreen(
-    images: List<ImageSummary>,
+    images: PersistentList<ImageSummary>,
     modifier: Modifier = Modifier
 ) {
     var currentPage by rememberSaveable { mutableIntStateOf(0) }
     var dialogState by rememberSaveable { mutableStateOf(false) }
     val pagerState = rememberPagerState(initialPage = currentPage, pageCount = { images.size })
-    Log.d("ScreenshotGalleryScreen", "images: $images")
     if (dialogState) {
         GalleryView(images = images, pagerState = pagerState, onDismiss = { dialogState = false })
     }
@@ -183,14 +185,16 @@ fun ImageCard(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun GalleryView(
-    images: List<ImageSummary>,
+    images: PersistentList<ImageSummary>,
     pagerState: PagerState,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Log.d("GalleryView", "images: $images")
     Dialog(onDismissRequest = onDismiss) {
-        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Box(modifier = modifier
+            .fillMaxSize()
+            .zIndex(2f), contentAlignment = Alignment.Center) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,

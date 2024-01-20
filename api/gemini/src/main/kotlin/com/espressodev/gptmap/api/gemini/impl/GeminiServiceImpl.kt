@@ -4,7 +4,7 @@ import com.espressodev.gptmap.api.gemini.GeminiService
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.ext.classTag
 import com.espressodev.gptmap.core.model.ext.toLocation
-import com.espressodev.gptmap.core.model.utils.PromptUtil.locationPreText
+import com.espressodev.gptmap.core.model.PromptUtil.locationPreText
 import com.google.ai.client.generativeai.GenerativeModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
