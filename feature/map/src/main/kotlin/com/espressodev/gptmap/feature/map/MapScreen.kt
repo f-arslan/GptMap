@@ -18,8 +18,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -27,9 +25,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,7 +32,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -75,7 +69,6 @@ import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.component.LottieAnimationView
-import com.espressodev.gptmap.core.designsystem.component.MapSearchButton
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
 import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
 import com.espressodev.gptmap.core.designsystem.component.SquareButton
@@ -119,12 +112,12 @@ fun MapRoute(
     Scaffold(
         bottomBar = {
             if (uiState.bottomSearchState) {
-                MapBottomBar(
+                MapSearchBar(
                     value = uiState.searchValue,
-                    isSearchButtonEnabled = uiState.searchButtonEnabledState,
-                    isTextFieldEnabled = uiState.searchTextFieldEnabledState,
+                    userFirstChar = 'F',
                     onValueChange = { viewModel.onEvent(MapUiEvent.OnSearchValueChanged(it)) },
                     onSearchClick = { viewModel.onEvent(MapUiEvent.OnSearchClick) },
+                    onAvatarClick = {}
                 )
             }
         },
@@ -197,7 +190,6 @@ private fun MapScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapTopButtons(
     onFavouriteClick: () -> Unit,
@@ -205,15 +197,19 @@ fun MapTopButtons(
     onAccountClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    CenterAlignedTopAppBar(
-        title = { Text(text = "Gptmap", fontWeight = FontWeight.Medium) },
-        navigationIcon = {
-            GmIconButtonWithText(
-                onClick = onAccountClick,
-                icon = IconType.Vector(GmIcons.PersonDefault),
-            )
-        },
-        actions = {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        GmIconButtonWithText(
+            onClick = onAccountClick,
+            icon = IconType.Vector(GmIcons.PersonDefault),
+        )
+        Text(text = "Gptmap", fontWeight = FontWeight.Medium)
+        Row {
             GmIconButtonWithText(
                 onClick = onFavouriteClick,
                 icon = IconType.Vector(GmIcons.GalleryDefault),
@@ -222,12 +218,8 @@ fun MapTopButtons(
                 onClick = onScreenshotGalleryClick,
                 icon = IconType.Vector(GmIcons.ScreenshotDefault),
             )
-        },
-        modifier = modifier,
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = Color.Transparent
-        )
-    )
+        }
+    }
 }
 
 @Composable
@@ -349,42 +341,26 @@ private fun ImageGallery(initialPage: Int, images: List<LocationImage>, onDismis
 }
 
 @Composable
-private fun MapBottomBar(
-    isTextFieldEnabled: Boolean,
-    isSearchButtonEnabled: Boolean,
+private fun MapSearchBar(
     value: String,
+    userFirstChar: Char,
     onValueChange: (String) -> Unit,
     onSearchClick: () -> Unit,
+    onAvatarClick: () -> Unit,
 ) {
-    Surface(
+    MapTextField(
+        value = value,
+        placeholder = AppText.map_text_field_placeholder,
+        userFirstChar = userFirstChar,
+        onValueChange = onValueChange,
+        onSearchClick = onSearchClick,
+        onAvatarClick = onAvatarClick,
         modifier = Modifier
-            .height(80.dp)
-            .imePadding()
-            .navigationBarsPadding(),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            MapTextField(
-                value = value,
-                textFieldEnabledState = isTextFieldEnabled,
-                placeholder = AppText.map_text_field_placeholder,
-                onValueChange = onValueChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            MapSearchButton(
-                buttonEnabledState = isSearchButtonEnabled,
-                onClick = onSearchClick
-            )
-        }
-    }
+            .fillMaxWidth()
+            .statusBarsPadding()
+            .padding(8.dp),
+        shape = RoundedCornerShape(36.dp)
+    )
 }
 
 @Composable
@@ -593,10 +569,12 @@ fun BoxScope.SmallInformationCard(
 @Composable
 fun MapPreview() {
     GptmapTheme {
-        MapTopButtons(
-            onFavouriteClick = {},
-            onScreenshotGalleryClick = {},
-            onAccountClick = {},
+        MapSearchBar(
+            value = "libris",
+            userFirstChar = 'F',
+            onValueChange = {},
+            onSearchClick = {},
+            {}
         )
     }
 }

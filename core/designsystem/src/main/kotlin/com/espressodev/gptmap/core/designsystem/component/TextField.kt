@@ -2,13 +2,17 @@ package com.espressodev.gptmap.core.designsystem.component
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -16,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -26,7 +31,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
@@ -34,11 +38,13 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 @Composable
 fun MapTextField(
     value: String,
-    textFieldEnabledState: Boolean,
     @StringRes placeholder: Int,
+    userFirstChar: Char,
     onValueChange: (String) -> Unit,
+    onSearchClick: () -> Unit,
+    onAvatarClick: () -> Unit,
     modifier: Modifier = Modifier,
-    shape: Shape = RoundedCornerShape(16.dp),
+    shape: Shape = RoundedCornerShape(24.dp),
 ) {
     val shouldShownClearIcon by remember(value) { derivedStateOf { value.isNotBlank() } }
 
@@ -60,10 +66,30 @@ fun MapTextField(
                 IconButton(onClick = { onValueChange("") }) {
                     Icon(GmIcons.ClearDefault, stringResource(id = AppText.clear))
                 }
+            } else {
+                IconButton(onClick = onAvatarClick) {
+                    LetterInCircle(
+                        letter = userFirstChar,
+                        textStyle = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.size(36.dp),
+                        strokeDp = 2.dp,
+                        paddingToAnim = 1.dp
+                    )
+                }
             }
         },
-        maxLines = 4,
-        enabled = textFieldEnabledState
+        leadingIcon = {
+            Icon(imageVector = GmIcons.SearchDefault, contentDescription = null)
+        },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions { onSearchClick() },
+        maxLines = 1,
+        colors = TextFieldDefaults.colors(
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
+            focusedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            unfocusedContainerColor = MaterialTheme.colorScheme.tertiaryContainer
+        )
     )
 }
 
@@ -148,11 +174,13 @@ fun PasswordTextField(
 @Preview(showBackground = true)
 private fun TextFieldPreview() {
     MapTextField(
-        value = "quam",
-        textFieldEnabledState = true,
+        value = "",
         placeholder = AppText.map_text_field_placeholder,
         onValueChange = {},
-        modifier = Modifier,
-        shape = RoundedCornerShape(HIGH_PADDING),
+        onSearchClick = {},
+        onAvatarClick = {},
+        userFirstChar = 'F',
+        modifier = Modifier.padding(8.dp),
+        shape = RoundedCornerShape(32.dp),
     )
 }

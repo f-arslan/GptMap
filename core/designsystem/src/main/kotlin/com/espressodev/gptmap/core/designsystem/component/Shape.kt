@@ -21,6 +21,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -36,7 +38,10 @@ private fun shimmerColors(): Array<out Pair<Float, Color>> {
 fun LetterInCircle(
     letter: Char,
     modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.primaryContainer
+    color: Color = MaterialTheme.colorScheme.primaryContainer,
+    textStyle: TextStyle = MaterialTheme.typography.displayLarge,
+    strokeDp: Dp = 4.dp,
+    paddingToAnim: Dp = 2.dp
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "Infinity Transition")
     val rotationAnimation = infiniteTransition.animateFloat(
@@ -52,19 +57,19 @@ fun LetterInCircle(
                 rotate(rotationAnimation.value) {
                     drawCircle(
                         Brush.horizontalGradient(colorStops = colors),
-                        style = Stroke(4.dp.toPx())
+                        style = Stroke(strokeDp.toPx())
                     )
                 }
             }
-            .padding(2.dp)
+            .padding(paddingToAnim)
             .clip(CircleShape),
-        color = color
+        color = color,
     ) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize()
         ) {
-            Text(text = letter.uppercase(), style = MaterialTheme.typography.displayLarge)
+            Text(text = letter.uppercase(), style = textStyle)
         }
     }
 }

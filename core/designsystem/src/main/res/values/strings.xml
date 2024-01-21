@@ -49,7 +49,7 @@
 
 
     <!-- Map -->
-    <string name="map_text_field_placeholder">Type anything…</string>
+    <string name="map_text_field_placeholder">Search here</string>
     <string name="loading_dialog_text">Discovering your dream place…</string>
     <string name="street_view">Street View</string>
     <string name="add_favourite">Add to Favourite</string>
