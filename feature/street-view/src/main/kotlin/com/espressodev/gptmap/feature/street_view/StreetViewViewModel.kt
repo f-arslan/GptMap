@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
-
 @HiltViewModel
 class StreetViewViewModel @Inject constructor(logService: LogService): GmViewModel(logService) {
 
@@ -18,9 +17,5 @@ class StreetViewViewModel @Inject constructor(logService: LogService): GmViewMod
 
     fun getStreetView(latitude: Double, longitude: Double) {
         _uiState.update { it.copy(latLng = LatLng(latitude, longitude)) }
-    }
-
-    fun onCameraButtonClick(state: Boolean) {
-        _uiState.update { it.copy(screenshotState = state, cameraButtonState = false) }
     }
 }

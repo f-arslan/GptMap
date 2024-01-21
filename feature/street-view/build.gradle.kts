@@ -9,6 +9,9 @@ android {
 }
 
 dependencies {
-    implementation(libs.maps.compose)
+    implementation(projects.core.saveScreenshot)
+
     implementation(projects.feature.screenshot)
+
+    implementation(libs.maps.compose)
 }

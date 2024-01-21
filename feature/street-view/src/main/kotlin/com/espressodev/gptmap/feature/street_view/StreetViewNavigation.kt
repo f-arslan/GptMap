@@ -15,7 +15,7 @@ fun NavController.navigateToStreetView(latitude: Float, longitude: Float) {
     navigate("$streetViewRoute/$latitude/$longitude")
 }
 
-fun NavGraphBuilder.streetViewScreen() {
+fun NavGraphBuilder.streetViewScreen(popUp: () -> Unit, navigateToScreenshot: () -> Unit) {
     composable(
         route = "$streetViewRoute/{$LATITUDE_ID}/{$LONGITUDE_ID}",
         arguments = listOf(
@@ -27,8 +27,11 @@ fun NavGraphBuilder.streetViewScreen() {
             backStackEntry.arguments?.getFloat(LATITUDE_ID)?.toDouble() ?: return@composable
         val longitude =
             backStackEntry.arguments?.getFloat(LONGITUDE_ID)?.toDouble() ?: return@composable
-        StreetViewRoute(latitude, longitude)
+        StreetViewRoute(
+            latitude = latitude,
+            longitude = longitude,
+            popUp = popUp,
+            navigateToScreenshot = navigateToScreenshot
+        )
     }
 }
-
-
