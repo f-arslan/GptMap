@@ -2,13 +2,9 @@ package com.espressodev.gptmap
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.espressodev.gptmap.core.common.splash_navigation.AfterSplashState
-import com.espressodev.gptmap.core.common.splash_navigation.SplashNavigationManager
 import com.espressodev.gptmap.feature.favourite.favouriteScreen
 import com.espressodev.gptmap.feature.favourite.navigateToFavourite
 import com.espressodev.gptmap.feature.forgot_password.forgotPasswordScreen
@@ -61,7 +57,10 @@ fun GmNavHost(
             navigateToMap = navController::navigateToMap
         )
         forgotPasswordScreen(navigateToLogin = navController::navigateToLogin)
-        streetViewScreen()
+        streetViewScreen(
+            popUp = navController::popBackStack,
+            navigateToScreenshot = navController::navigateToScreenshot
+        )
         favouriteScreen(
             popUp = navController::popBackStack,
             navigateToMap = navController::navigateToMap
@@ -76,8 +75,6 @@ fun GmNavHost(
             navigateToLogin = navController::navigateToLogin
         )
     }
-
-    navController.SplashNavigationListener()
 }
 
 @Composable
@@ -88,13 +85,5 @@ private fun NavHostController.NavigationListener() {
             println("Parent back stack: ${controller.previousBackStackEntry?.destination}")
             println("Arguments: $arguments")
         }
-    }
-}
-
-@Composable
-private fun NavHostController.SplashNavigationListener() {
-    val splashNavState by SplashNavigationManager.splashNavigationState.collectAsStateWithLifecycle()
-    if (splashNavState == AfterSplashState.Map) {
-        navigateToMap()
     }
 }

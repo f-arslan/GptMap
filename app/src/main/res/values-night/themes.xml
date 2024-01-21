@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <style name="NightAdjusted.Theme.Gptmap" parent="android:Theme.Material.NoActionBar" />
-
-    <style name="NightAdjusted.Theme.Splash" parent="Theme.SplashScreen">
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
+    <style name="Theme.Gptmap" parent="NightAdjusted.Theme.Gptmap"/>
+    <style name="Theme.Gptmap.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/app_icon</item>
+        <item name="postSplashScreenTheme">@style/Theme.Gptmap</item>
     </style>
 </resources>

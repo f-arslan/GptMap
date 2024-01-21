@@ -13,7 +13,7 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 enum class AccountState {
-    Idle,
+    Loading,
     UserAlreadySignIn,
     UserNotSignIn,
 }
@@ -23,7 +23,7 @@ class MainActivityViewModel @Inject constructor(
     accountService: AccountService,
     realmAccountService: RealmAccountService,
 ) : ViewModel() {
-    private val _accountState = MutableStateFlow(AccountState.Idle)
+    private val _accountState = MutableStateFlow(AccountState.Loading)
     val accountService = _accountState.asStateFlow()
     init {
         viewModelScope.launch {

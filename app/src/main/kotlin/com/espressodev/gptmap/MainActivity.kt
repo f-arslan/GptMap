@@ -7,7 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
@@ -29,34 +28,27 @@ class MainActivity : ComponentActivity() {
     private val viewModel: MainActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        val splashScreen = installSplashScreen()
+
         super.onCreate(savedInstanceState)
 
-        var isEmailVerified by mutableStateOf(AccountState.Idle)
+        var isEmailVerified by mutableStateOf(AccountState.Loading)
 
         scopeWithLifecycle {
             viewModel.accountService.collect {
-                isEmailVerified = when (it) {
-                    AccountState.Idle -> {
-                        AccountState.Idle
-                    }
-
-                    AccountState.UserAlreadySignIn -> {
-                        AccountState.UserAlreadySignIn
-                    }
-
-                    AccountState.UserNotSignIn -> {
-                        AccountState.UserNotSignIn
-                    }
-                }
+                isEmailVerified = it
             }
+        }
+
+        splashScreen.setKeepOnScreenCondition {
+            isEmailVerified == AccountState.Loading
         }
 
         enableEdgeToEdge()
         setContent {
             GptmapTheme {
-                if (isEmailVerified != AccountState.Idle)
-                GmApp(networkMonitor, isEmailVerified)
+                if (isEmailVerified != AccountState.Loading)
+                    GmApp(networkMonitor, isEmailVerified)
             }
         }
     }
