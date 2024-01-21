@@ -1,7 +1,6 @@
 package com.espressodev.gptmap.feature.map
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
@@ -29,20 +28,22 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,7 +68,6 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.espressodev.gptmap.core.common.splash_navigation.SplashNavigationManager
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MAX_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
@@ -82,7 +82,6 @@ import com.espressodev.gptmap.core.designsystem.component.SquareButton
 import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.chatgpt.Content
-import com.espressodev.gptmap.core.model.chatgpt.Coordinates
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
 import com.espressodev.gptmap.core.save_screenshot.composable.SaveScreenshot
 import com.espressodev.gptmap.feature.map.ComponentLoadingState.MAP
@@ -129,13 +128,18 @@ fun MapRoute(
                 )
             }
         },
+        topBar = {
+            MapTopButtons(
+                onFavouriteClick = navigateToFavourite,
+                onScreenshotGalleryClick = navigateToScreenshotGallery,
+                onAccountClick = navigateToProfile,
+                modifier = modifier
+            )
+        },
         modifier = modifier
     ) {
         MapScreen(
             uiState = uiState,
-            onFavouriteClick = navigateToFavourite,
-            onScreenshotGalleryClick = navigateToScreenshotGallery,
-            onProfileClick = navigateToProfile,
             onEvent = { event ->
                 viewModel.onEvent(
                     event = event,
@@ -144,7 +148,7 @@ fun MapRoute(
                     }
                 )
             },
-           modifier = Modifier.statusBarsPadding()
+            modifier = Modifier.padding(top = it.calculateTopPadding())
         )
     }
     SaveScreenshot(
@@ -166,9 +170,6 @@ fun MapRoute(
 @Composable
 private fun MapScreen(
     uiState: MapUiState,
-    onFavouriteClick: () -> Unit,
-    onScreenshotGalleryClick: () -> Unit,
-    onProfileClick: () -> Unit,
     onEvent: (MapUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -186,13 +187,6 @@ private fun MapScreen(
         location = uiState.location,
         onDismiss = { onEvent(MapUiEvent.OnImageDismiss) }
     )
-    MapTopButtons(
-        isVisible = uiState.isTopButtonsVisible,
-        onFavouriteClick = onFavouriteClick,
-        onScreenshotGalleryClick = onScreenshotGalleryClick,
-        onAccountClick = onProfileClick,
-        modifier = modifier
-    )
     Box(modifier = modifier.fillMaxSize()) {
         LoadingDialog(uiState.componentLoadingState)
         MapSection(
@@ -203,64 +197,62 @@ private fun MapScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapTopButtons(
-    isVisible: Boolean,
     onFavouriteClick: () -> Unit,
     onScreenshotGalleryClick: () -> Unit,
     onAccountClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .zIndex(1f)
-            .padding(8.dp)
-    ) {
-        AnimatedVisibility(
-            visible = isVisible,
-            modifier = Modifier.align(Alignment.TopEnd)
-        ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                GmFloatingButton(onFavouriteClick, IconType.Vector(GmIcons.GalleryDefault))
-                GmFloatingButton(
-                    onScreenshotGalleryClick,
-                    IconType.Vector(GmIcons.ScreenshotDefault)
-                )
-            }
-        }
-        AnimatedVisibility(visible = isVisible) {
-            GmFloatingButton(
+    CenterAlignedTopAppBar(
+        title = { Text(text = "Gptmap", fontWeight = FontWeight.Medium) },
+        navigationIcon = {
+            GmIconButtonWithText(
                 onClick = onAccountClick,
                 icon = IconType.Vector(GmIcons.PersonDefault),
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
             )
-        }
-    }
+        },
+        actions = {
+            GmIconButtonWithText(
+                onClick = onFavouriteClick,
+                icon = IconType.Vector(GmIcons.GalleryDefault),
+            )
+            GmIconButtonWithText(
+                onClick = onScreenshotGalleryClick,
+                icon = IconType.Vector(GmIcons.ScreenshotDefault),
+            )
+        },
+        modifier = modifier,
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = Color.Transparent
+        )
+    )
 }
 
 @Composable
-fun GmFloatingButton(
+fun GmIconButtonWithText(
     onClick: () -> Unit,
     icon: IconType,
     modifier: Modifier = Modifier,
-    containerColor: Color = MaterialTheme.colorScheme.secondaryContainer,
-    contentColor: Color = MaterialTheme.colorScheme.onSecondaryContainer
+    color: Color = MaterialTheme.colorScheme.onSurface
 ) {
-    FloatingActionButton(
+    IconButton(
         onClick = onClick,
-        containerColor = containerColor,
-        contentColor = contentColor,
-        modifier = modifier
+        modifier = modifier.size(48.dp)
     ) {
         when (icon) {
-            is IconType.Vector -> Icon(icon.imageVector, null, modifier = Modifier.size(36.dp))
+            is IconType.Vector -> Icon(
+                imageVector = icon.imageVector,
+                contentDescription = null,
+                modifier = Modifier.size(32.dp),
+                tint = color
+            )
+
             is IconType.Bitmap -> Image(
                 painterResource(id = icon.painterId),
                 null,
-                modifier = Modifier.size(36.dp)
+                modifier = Modifier.size(32.dp),
             )
         }
     }
@@ -364,10 +356,11 @@ private fun MapBottomBar(
     onValueChange: (String) -> Unit,
     onSearchClick: () -> Unit,
 ) {
-    BottomAppBar(
+    Surface(
         modifier = Modifier
+            .height(80.dp)
             .imePadding()
-            .navigationBarsPadding()
+            .navigationBarsPadding(),
     ) {
         Row(
             modifier = Modifier
@@ -596,42 +589,14 @@ fun BoxScope.SmallInformationCard(
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun MapPreview() {
     GptmapTheme {
-        MapScreen(
-            uiState = MapUiState(
-                searchValue = "",
-                location = Location(
-                    id = "", content = Content(
-                        coordinates = Coordinates(
-                            latitude = 0.0,
-                            longitude = 0.0
-                        ),
-                        city = "",
-                        district = null,
-                        country = "",
-                        poeticDescription = "",
-                        normalDescription = ""
-                    ), locationImages = listOf(), addToFavouriteButtonState = false
-                ),
-                componentLoadingState = MAP,
-                bottomSheetState = SMALL_INFORMATION_CARD,
-                searchButtonEnabledState = false,
-                searchTextFieldEnabledState = false,
-                bottomSearchState = false,
-                isTopButtonsVisible = true,
-                isFavouriteButtonPlaying = false,
-                isLocationPinVisible = false,
-                takeScreenshotState = false,
-                imageGalleryState = Pair(0, false)
-            ),
-            {},
-            {},
-            {},
-            onEvent = {}
+        MapTopButtons(
+            onFavouriteClick = {},
+            onScreenshotGalleryClick = {},
+            onAccountClick = {},
         )
     }
 }

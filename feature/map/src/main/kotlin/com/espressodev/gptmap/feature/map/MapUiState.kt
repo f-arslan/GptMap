@@ -18,7 +18,6 @@ data class MapUiState(
     val searchButtonEnabledState: Boolean = true,
     val searchTextFieldEnabledState: Boolean = true,
     val bottomSearchState: Boolean = true,
-    val isTopButtonsVisible: Boolean = true,
     val isFavouriteButtonPlaying: Boolean = false,
     val isLocationPinVisible: Boolean = true,
     val takeScreenshotState: Boolean = false,
