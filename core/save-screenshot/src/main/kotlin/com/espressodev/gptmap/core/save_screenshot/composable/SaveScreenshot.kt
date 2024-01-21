@@ -22,13 +22,12 @@ import com.espressodev.gptmap.core.save_screenshot.SaveScreenshotService
 
 @Composable
 fun SaveScreenshot(
-    onConfirm: () -> Unit,
     onSuccess: () -> Unit,
     modifier: Modifier = Modifier,
+    onConfirm: () -> Unit = {},
     viewModel: ScreenshotViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    Log.d("SaveScreenshot", "uiState: $uiState")
     LaunchedEffect(key1 = uiState.screenState) {
         when (uiState.screenState) {
             ScreenState.Finished -> {

@@ -101,7 +101,6 @@ fun ScreenshotGalleryRoute(
             }
         }
     }
-
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -245,7 +244,7 @@ fun DotsIndicator(
     totalDots: Int,
     selectedIndex: Int,
     modifier: Modifier = Modifier,
-    activeDotColor: Color = Color.Black,
+    activeDotColor: Color = Color.White,
     inactiveDotColor: Color = Color.LightGray,
     spacing: Dp = 8.dp,
     selectedDotSize: Dp = 16.dp,

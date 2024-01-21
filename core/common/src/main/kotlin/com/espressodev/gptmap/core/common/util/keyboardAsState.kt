@@ -1,7 +1,6 @@
 package com.espressodev.gptmap.core.common.util
 
 import android.graphics.Rect
-import android.util.Log
 import android.view.ViewTreeObserver
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -14,7 +13,6 @@ import androidx.compose.ui.platform.LocalView
 fun keyboardAsState(): State<Boolean> {
     val keyboardState = remember { mutableStateOf(false) }
     val view = LocalView.current
-    Log.d("keyboardAsState", "view: ${view.hashCode()}")
     DisposableEffect(view) {
         val onGlobalListener = ViewTreeObserver.OnGlobalLayoutListener {
             val rect = Rect()

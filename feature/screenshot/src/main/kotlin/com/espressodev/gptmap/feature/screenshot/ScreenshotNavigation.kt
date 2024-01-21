@@ -5,14 +5,14 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 
-const val SCREENSHOT_ROUTE = "screenshot_route"
+const val ScreenshotRoute = "screenshot_route"
 
 fun NavController.navigateToScreenshot(navOptions: NavOptions? = null) {
-    navigate(SCREENSHOT_ROUTE)
+    navigate(ScreenshotRoute, navOptions)
 }
 
 fun NavGraphBuilder.screenshotScreen(popUp: () -> Unit, navigateToMap: () -> Unit) {
-    composable(SCREENSHOT_ROUTE) {
+    composable(ScreenshotRoute) {
         ScreenshotRoute(popUp = popUp, navigateToMap)
     }
 }

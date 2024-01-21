@@ -42,6 +42,8 @@
     <string name="send">Send</string>
     <string name="message">Message</string>
     <string name="screenshot_gallery">Screenshot Gallery</string>
+    <string name="screenshots">Screenshots</string>
+    <string name="favourites">Favourites</string>
     <string name="edit">Edit</string>
     <string name="logout">Logout</string>
 
