@@ -14,13 +14,11 @@ interface RealmSyncService {
 
     suspend fun saveImageAnalysis(realmImageAnalysis: RealmImageAnalysis): Result<Boolean>
 
-    fun isUserInDatabase(): Boolean
+    fun isUserInDatabase(): Result<Boolean>
 
     fun getFavourites(): Flow<List<Favourite>>
 
     fun getFavourite(id: String): Favourite
 
     fun getImageAnalyses(): Flow<List<ImageAnalysis>>
-
-    suspend fun getImageAnalysis(id: String): Result<ImageAnalysis>
 }
