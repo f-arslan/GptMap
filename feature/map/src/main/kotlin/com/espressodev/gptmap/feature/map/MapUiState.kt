@@ -13,11 +13,12 @@ enum class ComponentLoadingState {
 data class MapUiState(
     val searchValue: String = "",
     val location:Location = Location(),
+    val userFirstChar: Char = 'H',
     val componentLoadingState: ComponentLoadingState = ComponentLoadingState.NOTHING,
     val bottomSheetState: MapBottomSheetState = MapBottomSheetState.BOTTOM_SHEET_HIDDEN,
     val searchButtonEnabledState: Boolean = true,
     val searchTextFieldEnabledState: Boolean = true,
-    val bottomSearchState: Boolean = true,
+    val searchBarState: Boolean = true,
     val isFavouriteButtonPlaying: Boolean = false,
     val isLocationPinVisible: Boolean = true,
     val takeScreenshotState: Boolean = false,

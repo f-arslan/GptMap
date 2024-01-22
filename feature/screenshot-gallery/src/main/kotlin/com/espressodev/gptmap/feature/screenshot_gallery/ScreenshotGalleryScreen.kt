@@ -7,10 +7,10 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -31,6 +31,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -49,6 +50,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -60,12 +62,14 @@ import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.TextType
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
-import com.espressodev.gptmap.core.designsystem.component.LottieAnimationView
+import com.espressodev.gptmap.core.designsystem.component.LottieAnimationPlaceholder
 import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
 import com.espressodev.gptmap.core.designsystem.component.darkBottomOverlayBrush
+import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import com.espressodev.gptmap.core.model.ImageSummary
 import com.espressodev.gptmap.core.model.Response
 import kotlinx.collections.immutable.PersistentList
+import java.time.LocalDateTime
 import kotlin.math.absoluteValue
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
@@ -77,19 +81,24 @@ fun ScreenshotGalleryRoute(
     viewModel: ScreenshotGalleryViewModel = hiltViewModel()
 ) {
     val imageAnalysesResponse by viewModel.imageAnalyses.collectAsStateWithLifecycle()
-
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
         topBar = {
             GmTopAppBar(
                 text = TextType.Res(AppText.screenshot_gallery),
                 icon = IconType.Vector(GmIcons.ImageSearchDefault),
-                onBackClick = popUp
+                onBackClick = popUp,
+                editText = uiState.selectedImageSummary.title,
+                isInEditMode = uiState.uiIsInEditMode,
+                onEditClick = viewModel::onEditClick,
+                onDeleteClick = viewModel::onDeleteClick,
+                onCancelClick = viewModel::onCancelClick
             )
         }
     ) {
         when (val result = imageAnalysesResponse) {
             is Response.Failure -> {
-                LottieAnimationView(AppRaw.confused_man_404)
+                LottieAnimationPlaceholder(AppRaw.confused_man_404)
             }
 
             Response.Loading -> {}
@@ -97,6 +106,8 @@ fun ScreenshotGalleryRoute(
                 ScreenshotGalleryScreen(
                     modifier = Modifier.padding(it),
                     images = result.data,
+                    onLongClick = viewModel::onLongClickToImage,
+                    selectedId = uiState.selectedImageSummary.id
                 )
             }
         }
@@ -107,7 +118,9 @@ fun ScreenshotGalleryRoute(
 @Composable
 fun ScreenshotGalleryScreen(
     images: PersistentList<ImageSummary>,
-    modifier: Modifier = Modifier
+    onLongClick: (ImageSummary) -> Unit,
+    selectedId: String,
+    modifier: Modifier = Modifier,
 ) {
     var currentPage by rememberSaveable { mutableIntStateOf(0) }
     var dialogState by rememberSaveable { mutableStateOf(false) }
@@ -124,14 +137,16 @@ fun ScreenshotGalleryScreen(
     ) {
         itemsIndexed(
             images,
-            key = { _, imageAnalysisSummary -> imageAnalysisSummary.id }
-        ) { index, imageAnalysisSummary ->
+            key = { _, imageSummary -> imageSummary.id }
+        ) { index, imageSummary ->
             ImageCard(
-                imageSummary = imageAnalysisSummary,
+                imageSummary = imageSummary,
                 onClick = {
                     currentPage = index
                     dialogState = true
-                }
+                },
+                onLongClick = { onLongClick(imageSummary) },
+                isSelected = selectedId == imageSummary.id
             )
         }
     }
@@ -142,19 +157,22 @@ fun ScreenshotGalleryScreen(
 fun ImageCard(
     imageSummary: ImageSummary,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
+    isSelected: Boolean = false,
+    onClick: () -> Unit = {},
+    onLongClick: () -> Unit = {}
 ) {
-    var isImageLoaded by remember { mutableStateOf(false) }
-    val interactionSource = remember { MutableInteractionSource() }
+    var isImageLoaded by remember { mutableStateOf(value = false) }
 
     ElevatedCard(
-        modifier = modifier.clickable(
-            interactionSource = interactionSource,
-            indication = null,
-            onClick = onClick
+        modifier = modifier.combinedClickable(
+            onClick = onClick,
+            onLongClick = onLongClick
         )
     ) {
         Box {
+            if (isSelected) {
+                SelectedIconView()
+            }
             ShimmerImage(
                 imageSummary.imageUrl,
                 modifier = Modifier.aspectRatio(1f),
@@ -181,6 +199,25 @@ fun ImageCard(
     }
 }
 
+@Composable
+private fun BoxScope.SelectedIconView() {
+    Box(
+        modifier = Modifier.Companion
+            .matchParentSize()
+            .zIndex(1f)
+    ) {
+        Icon(
+            imageVector = GmIcons.ApproveFilled,
+            contentDescription = null,
+            modifier = Modifier
+                .padding(8.dp)
+                .size(56.dp)
+                .align(Alignment.TopEnd),
+            tint = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun GalleryView(
@@ -191,9 +228,11 @@ private fun GalleryView(
 ) {
     Log.d("GalleryView", "images: $images")
     Dialog(onDismissRequest = onDismiss) {
-        Box(modifier = modifier
-            .fillMaxSize()
-            .zIndex(2f), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .zIndex(2f), contentAlignment = Alignment.Center
+        ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
@@ -294,6 +333,21 @@ fun DotsIndicator(
                         color = if (index == selectedIndex) activeDotColor else inactiveDotColor
                     )
             )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ScreenshotGalleryPreview() {
+    GptmapTheme {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            ImageCard(imageSummary = ImageSummary(
+                id = "debet",
+                imageUrl = "https://www.google.com/#q=fames",
+                title = "himenaeos",
+                date = LocalDateTime.now()
+            ), isSelected = true, onClick = {}, onLongClick = {})
         }
     }
 }

@@ -49,12 +49,17 @@ class ScreenshotViewModel @Inject constructor(
 
         uiState.value.imageResult.let { image ->
             if (image is ImageResult.Success) {
-                saveImageAnalysisToStorageUseCase(image.data, uiState.value.title).getOrThrow()
-                navigateToMap()
+                saveImageAnalysisToStorageUseCase(image.data, uiState.value.title)
+                    .onSuccess {
+                        navigateToMap()
+                    }.onFailure { throwable ->
+                        _uiState.update { it.copy(isSaveStateStarted = false) }
+                        throw throwable
+                    }
             }
+            _uiState.update { it.copy(isSaveStateStarted = false) }
         }
 
-        _uiState.update { it.copy(isSaveStateStarted = false) }
     }
 
     private fun onCaptureClick() = launchCatching {

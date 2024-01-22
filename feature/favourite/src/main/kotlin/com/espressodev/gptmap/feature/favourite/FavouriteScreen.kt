@@ -24,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -35,11 +34,9 @@ import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.TextType
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
-import com.espressodev.gptmap.core.designsystem.component.LottieAnimationView
-import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
+import com.espressodev.gptmap.core.designsystem.component.LottieAnimationPlaceholder
 import com.espressodev.gptmap.core.model.Favourite
 import com.espressodev.gptmap.core.model.Response
-import java.time.LocalDateTime
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 
@@ -97,7 +94,7 @@ fun FavouriteScreen(
                 }
 
                 is Response.Failure -> {
-                    LottieAnimationView(AppRaw.confused_man_404)
+                    LottieAnimationPlaceholder(AppRaw.confused_man_404)
                 }
 
                 Response.Loading -> {}
@@ -166,16 +163,5 @@ fun FavouriteCard(favourite: Favourite, onClick: () -> Unit, modifier: Modifier 
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun FavouritePreview() {
-    GptmapTheme {
-        FavouriteCard(
-            favourite = Favourite(date = LocalDateTime.now()),
-            onClick = {}
-        )
     }
 }

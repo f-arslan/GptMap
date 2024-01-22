@@ -23,4 +23,5 @@ dependencies {
     testImplementation(libs.junit.jupiter.params)
     testImplementation(libs.junit)
     testRuntimeOnly(libs.junit.vintage.engine)
+    implementation(libs.lottie.compose)
 }

@@ -37,7 +37,7 @@ import com.espressodev.gptmap.core.designsystem.TextType
 import com.espressodev.gptmap.core.designsystem.component.GmTonalIconButton
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
 import com.espressodev.gptmap.core.designsystem.component.LetterInCircle
-import com.espressodev.gptmap.core.designsystem.component.LottieAnimationView
+import com.espressodev.gptmap.core.designsystem.component.LottieAnimationPlaceholder
 import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.model.User
@@ -59,10 +59,10 @@ fun ProfileRoute(
                 icon = IconType.Vector(GmIcons.AccountCircleOutlined),
                 onBackClick = popUp
             )
-        }
+        },
     ) {
         when (val result = user) {
-            is Response.Failure -> LottieAnimationView(AppRaw.confused_man_404)
+            is Response.Failure -> LottieAnimationPlaceholder(AppRaw.confused_man_404)
             Response.Loading -> {}
             is Response.Success -> ProfileScreen(
                 user = result.data,

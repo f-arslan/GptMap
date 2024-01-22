@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.feature.map
 
+import StreetView
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,8 +25,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -41,7 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -68,7 +65,8 @@ import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
-import com.espressodev.gptmap.core.designsystem.component.LottieAnimationView
+import com.espressodev.gptmap.core.designsystem.component.GmDraggableButton
+import com.espressodev.gptmap.core.designsystem.component.LottieAnimationPlaceholder
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
 import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
 import com.espressodev.gptmap.core.designsystem.component.SquareButton
@@ -100,35 +98,14 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 @Composable
 fun MapRoute(
     navigateToStreetView: (Float, Float) -> Unit,
-    navigateToFavourite: () -> Unit,
     navigateToScreenshot: () -> Unit,
     navigateToProfile: () -> Unit,
-    navigateToScreenshotGallery: () -> Unit,
     favouriteId: String,
     modifier: Modifier = Modifier,
     viewModel: MapViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
-        bottomBar = {
-            if (uiState.bottomSearchState) {
-                MapSearchBar(
-                    value = uiState.searchValue,
-                    userFirstChar = 'F',
-                    onValueChange = { viewModel.onEvent(MapUiEvent.OnSearchValueChanged(it)) },
-                    onSearchClick = { viewModel.onEvent(MapUiEvent.OnSearchClick) },
-                    onAvatarClick = {}
-                )
-            }
-        },
-        topBar = {
-            MapTopButtons(
-                onFavouriteClick = navigateToFavourite,
-                onScreenshotGalleryClick = navigateToScreenshotGallery,
-                onAccountClick = navigateToProfile,
-                modifier = modifier
-            )
-        },
         modifier = modifier
     ) {
         MapScreen(
@@ -141,7 +118,7 @@ fun MapRoute(
                     }
                 )
             },
-            modifier = Modifier.padding(top = it.calculateTopPadding())
+            onAvatarClick = navigateToProfile
         )
     }
     SaveScreenshot(
@@ -164,6 +141,7 @@ fun MapRoute(
 private fun MapScreen(
     uiState: MapUiState,
     onEvent: (MapUiEvent) -> Unit,
+    onAvatarClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val latLng by remember(uiState.location) {
@@ -181,72 +159,25 @@ private fun MapScreen(
         onDismiss = { onEvent(MapUiEvent.OnImageDismiss) }
     )
     Box(modifier = modifier.fillMaxSize()) {
+        if (uiState.searchBarState) {
+            MapSearchBar(
+                value = uiState.searchValue,
+                userFirstChar = uiState.userFirstChar,
+                onValueChange = { onEvent(MapUiEvent.OnSearchValueChanged(it)) },
+                onSearchClick = { onEvent(MapUiEvent.OnSearchClick) },
+                onAvatarClick = onAvatarClick,
+                modifier = Modifier
+                    .zIndex(1f)
+                    .align(Alignment.TopCenter)
+            )
+        }
+        GmDraggableButton(icon = StreetView, initialAlignment = Alignment.CenterStart)
         LoadingDialog(uiState.componentLoadingState)
         MapSection(
             isPinVisible = uiState.isLocationPinVisible,
             cameraPositionState = cameraPositionState
         )
         DisplayBottomSheet(uiState.bottomSheetState, uiState.location, cameraPositionState, onEvent)
-    }
-}
-
-@Composable
-fun MapTopButtons(
-    onFavouriteClick: () -> Unit,
-    onScreenshotGalleryClick: () -> Unit,
-    onAccountClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(56.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        GmIconButtonWithText(
-            onClick = onAccountClick,
-            icon = IconType.Vector(GmIcons.PersonDefault),
-        )
-        Text(text = "Gptmap", fontWeight = FontWeight.Medium)
-        Row {
-            GmIconButtonWithText(
-                onClick = onFavouriteClick,
-                icon = IconType.Vector(GmIcons.GalleryDefault),
-            )
-            GmIconButtonWithText(
-                onClick = onScreenshotGalleryClick,
-                icon = IconType.Vector(GmIcons.ScreenshotDefault),
-            )
-        }
-    }
-}
-
-@Composable
-fun GmIconButtonWithText(
-    onClick: () -> Unit,
-    icon: IconType,
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.onSurface
-) {
-    IconButton(
-        onClick = onClick,
-        modifier = modifier.size(48.dp)
-    ) {
-        when (icon) {
-            is IconType.Vector -> Icon(
-                imageVector = icon.imageVector,
-                contentDescription = null,
-                modifier = Modifier.size(32.dp),
-                tint = color
-            )
-
-            is IconType.Bitmap -> Image(
-                painterResource(id = icon.painterId),
-                null,
-                modifier = Modifier.size(32.dp),
-            )
-        }
     }
 }
 
@@ -347,6 +278,7 @@ private fun MapSearchBar(
     onValueChange: (String) -> Unit,
     onSearchClick: () -> Unit,
     onAvatarClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     MapTextField(
         value = value,
@@ -355,7 +287,7 @@ private fun MapSearchBar(
         onValueChange = onValueChange,
         onSearchClick = onSearchClick,
         onAvatarClick = onAvatarClick,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .statusBarsPadding()
             .padding(8.dp),
@@ -392,7 +324,7 @@ private fun MapSection(isPinVisible: Boolean, cameraPositionState: CameraPositio
     }
 
     if (!isMapLoaded) {
-        LottieAnimationView(AppRaw.transistor_earth)
+        LottieAnimationPlaceholder(AppRaw.transistor_earth)
     }
 }
 

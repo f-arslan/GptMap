@@ -17,7 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.TextType
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
-import com.espressodev.gptmap.core.designsystem.component.LottieAnimationView
+import com.espressodev.gptmap.core.designsystem.component.LottieAnimationPlaceholder
 import com.espressodev.gptmap.core.save_screenshot.composable.SaveScreenshot
 import com.google.android.gms.maps.StreetViewPanoramaOptions
 import com.google.android.gms.maps.model.LatLng
@@ -71,7 +71,7 @@ fun StreetViewScreen(modifier: Modifier, uiState: StreetViewUiState) {
             },
         )
         if (!isStreetViewLoaded) {
-            LottieAnimationView(AppRaw.earth_orbit)
+            LottieAnimationPlaceholder(AppRaw.earth_orbit)
         }
 
         // StreetView composable doesn't have a callback for when the street view is loaded

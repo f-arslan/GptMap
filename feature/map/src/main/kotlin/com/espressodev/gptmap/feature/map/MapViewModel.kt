@@ -1,12 +1,15 @@
 package com.espressodev.gptmap.feature.map
 
+import android.util.Log
 import com.espressodev.gptmap.api.gemini.GeminiService
 import com.espressodev.gptmap.api.unsplash.UnsplashService
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
+import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.domain.AddDatabaseIfUserIsNewUseCase
 import com.espressodev.gptmap.core.domain.SaveImageToFirebaseStorageUseCase
+import com.espressodev.gptmap.core.model.ext.classTag
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +27,7 @@ class MapViewModel @Inject constructor(
     private val saveImageToFirebaseStorageUseCase: SaveImageToFirebaseStorageUseCase,
     private val addDatabaseIfUserIsNewUseCase: AddDatabaseIfUserIsNewUseCase,
     private val realmSyncService: RealmSyncService,
+    private val firestoreService: FirestoreService,
     logService: LogService,
 ) : GmViewModel(logService) {
     private val _uiState = MutableStateFlow(MapUiState())
@@ -31,6 +35,7 @@ class MapViewModel @Inject constructor(
 
     init {
         launchCatching {
+            getUserFirstChar()
             addDatabaseIfUserIsNewUseCase()
         }
     }
@@ -57,13 +62,13 @@ class MapViewModel @Inject constructor(
             is MapUiEvent.OnBackClick -> _uiState.update {
                 it.copy(
                     bottomSheetState = MapBottomSheetState.BOTTOM_SHEET_HIDDEN,
-                    bottomSearchState = true
+                    searchBarState = true
                 )
             }
 
             is MapUiEvent.OnTakeScreenshotClick -> _uiState.update { it.copy(takeScreenshotState = true) }
             is MapUiEvent.OnScreenshotProcessStarted -> _uiState.update {
-                it.copy(isLocationPinVisible = false)
+                it.copy(isLocationPinVisible = false, searchBarState = false)
             }
         }
     }
@@ -86,7 +91,7 @@ class MapViewModel @Inject constructor(
                         searchButtonEnabledState = true,
                         searchTextFieldEnabledState = true,
                         bottomSheetState = MapBottomSheetState.SMALL_INFORMATION_CARD,
-                        bottomSearchState = false,
+                        searchBarState = false,
                         searchValue = ""
                     )
                 }
@@ -103,7 +108,7 @@ class MapViewModel @Inject constructor(
                         componentLoadingState = ComponentLoadingState.NOTHING,
                         searchButtonEnabledState = true,
                         searchTextFieldEnabledState = true,
-                        bottomSearchState = true
+                        searchBarState = true
                     )
                 }
                 throw exception
@@ -129,8 +134,14 @@ class MapViewModel @Inject constructor(
         }
     }
 
+    private fun getUserFirstChar() = launchCatching {
+        firestoreService.getUser().run {
+            _uiState.update { it.copy(userFirstChar = fullName.first()) }
+        }
+    }
+
     fun reset() = launchCatching {
-        _uiState.update { it.copy(isLocationPinVisible = true) }
+        _uiState.update { it.copy(isLocationPinVisible = true, searchBarState = true) }
     }
 
     private fun onStreetViewClick(
@@ -164,7 +175,7 @@ class MapViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 location = location,
-                bottomSearchState = false,
+                searchBarState = false,
                 bottomSheetState = MapBottomSheetState.SMALL_INFORMATION_CARD,
             )
         }
