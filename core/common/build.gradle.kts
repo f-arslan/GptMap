@@ -15,4 +15,5 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.firebase.bom)
     implementation(libs.firebase.crashlytics)
+    implementation(libs.androidx.compose.material3)
 }

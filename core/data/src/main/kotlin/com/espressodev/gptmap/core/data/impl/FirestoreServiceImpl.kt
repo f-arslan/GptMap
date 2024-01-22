@@ -1,6 +1,8 @@
 package com.espressodev.gptmap.core.data.impl
 
+import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.data.FirestoreService
+import com.espressodev.gptmap.core.model.Exceptions
 import com.espressodev.gptmap.core.model.Exceptions.FirebaseUserIsNullException
 import com.espressodev.gptmap.core.model.User
 import com.google.firebase.auth.FirebaseAuth
@@ -14,7 +16,7 @@ import javax.inject.Inject
 
 class FirestoreServiceImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val auth: FirebaseAuth,
+    private val accountService: AccountService,
 ) : FirestoreService {
 
     override fun saveUser(user: User) {
@@ -33,12 +35,13 @@ class FirestoreServiceImpl @Inject constructor(
             Result.failure(e)
         }
 
-    override suspend fun getUser(userId: String): User =
-        getUserDocRef(userId).get().await().toObject(User::class.java)
-            ?: throw FirebaseUserIsNullException()
+    override suspend fun getUser(): User =
+        accountService.userId?.let { userId ->
+            getUserDocRef(userId).get().await().toObject(User::class.java)
+        } ?: throw FirebaseUserIsNullException()
 
     override fun getUserFlow(): Flow<User?> =
-        auth.currentUser?.uid?.let { userId ->
+        accountService.userId?.let { userId ->
             getUserDocRef(userId).dataObjects<User>()
         } ?: throw FirebaseUserIsNullException()
 

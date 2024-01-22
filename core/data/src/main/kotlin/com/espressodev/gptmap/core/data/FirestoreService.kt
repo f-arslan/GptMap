@@ -6,6 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface FirestoreService {
     fun saveUser(user: User)
     suspend fun isUserInDatabase(email: String): Result<Boolean>
-    suspend fun getUser(userId: String): User
+    suspend fun getUser(): User
     fun getUserFlow(): Flow<User?>
 }
