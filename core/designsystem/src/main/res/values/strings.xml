@@ -46,6 +46,8 @@
     <string name="favourites">Favourites</string>
     <string name="edit">Edit</string>
     <string name="logout">Logout</string>
+    <string name="map">Map</string>
+    <string name="delete">Delete</string>
 
 
     <!-- Map -->

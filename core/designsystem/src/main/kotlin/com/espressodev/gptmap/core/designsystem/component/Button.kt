@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -140,7 +141,12 @@ fun GmTonalIconButton(
 }
 
 @Composable
-fun GmDraggableButton(icon: ImageVector, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
+fun GmDraggableButton(
+    icon: ImageVector,
+    modifier: Modifier = Modifier,
+    initialAlignment: Alignment = Alignment.CenterEnd,
+    onClick: () -> Unit = {}
+) {
     val localDensity = LocalDensity.current
     val screenWidth = with(localDensity) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
     val screenHeight = with(localDensity) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
@@ -148,8 +154,19 @@ fun GmDraggableButton(icon: ImageVector, modifier: Modifier = Modifier, onClick:
     val marginPx = with(localDensity) { 8.dp.toPx() }
     val scope = rememberCoroutineScope()
 
-    val initialXOffsetPx = screenWidth - buttonSizePx - marginPx
-    val initialYOffsetPx = (screenHeight - buttonSizePx) / 2
+    // Calculate initial offsets based on the provided alignment
+    val (initialXOffsetPx, initialYOffsetPx) = when (initialAlignment) {
+        Alignment.CenterStart -> Pair(marginPx, (screenHeight - buttonSizePx) / 2)
+        Alignment.CenterEnd -> Pair(
+            screenWidth - buttonSizePx - marginPx,
+            (screenHeight - buttonSizePx) / 2
+        )
+        else -> Pair(
+            screenWidth - buttonSizePx - marginPx,
+            (screenHeight - buttonSizePx) / 2
+        )
+    }
+
     val bottomMarginPx = with(localDensity) { 160.dp.toPx() }
 
     val offset = remember(localDensity) {

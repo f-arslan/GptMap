@@ -34,7 +34,7 @@ fun GmCircularIndicator(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun LottieAnimationView(
+fun LottieAnimationPlaceholder(
     @RawRes rawRes: Int,
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.background
@@ -61,5 +61,5 @@ fun LottieAnimationView(
 @Preview
 @Composable
 private fun LottieAnimationParentPreview() {
-    LottieAnimationView(AppRaw.earth_orbit)
+    LottieAnimationPlaceholder(AppRaw.earth_orbit)
 }

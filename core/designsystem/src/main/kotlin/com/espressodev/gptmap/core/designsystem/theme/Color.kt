@@ -1,9 +1,7 @@
 package com.espressodev.gptmap.core.designsystem.theme
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import javax.annotation.concurrent.Immutable
 
@@ -27,7 +25,7 @@ val md_theme_light_background = Color(0xFFF8FDFF)
 val md_theme_light_onBackground = Color(0xFF001F25)
 val md_theme_light_surface = Color(0xFFF8FDFF)
 val md_theme_light_onSurface = Color(0xFF001F25)
-val md_theme_light_surfaceVariant = Color(0xFFDBE5DF)
+val md_theme_light_surfaceVariant = Color(0xFFf9fcf4)
 val md_theme_light_onSurfaceVariant = Color(0xFF3F4945)
 val md_theme_light_outline = Color(0xFF6F7975)
 val md_theme_light_inverseOnSurface = Color(0xFFD6F6FF)
@@ -58,7 +56,7 @@ val md_theme_dark_background = Color(0xFF001F25)
 val md_theme_dark_onBackground = Color(0xFFA6EEFF)
 val md_theme_dark_surface = Color(0xFF001F25)
 val md_theme_dark_onSurface = Color(0xFFA6EEFF)
-val md_theme_dark_surfaceVariant = Color(0xFF3F4945)
+val md_theme_dark_surfaceVariant = Color(0xFF181a17)
 val md_theme_dark_onSurfaceVariant = Color(0xFFBFC9C3)
 val md_theme_dark_outline = Color(0xFF89938E)
 val md_theme_dark_inverseOnSurface = Color(0xFF001F25)
@@ -70,36 +68,25 @@ val md_theme_dark_outlineVariant = Color(0xFF3F4945)
 val md_theme_dark_scrim = Color(0xFF000000)
 
 val seed = Color(0xFF00DDB3)
+val lightBottomColor = Color(0xFFf9fcf4)
+val darkBottomBarColor = Color(0xFF181a17)
 
-val lightBottomBarGradient = listOf(
-    md_theme_light_primaryContainer,
-    md_theme_light_surface,
-)
-
-val darkBottomBarGradient = listOf(
-    md_theme_dark_primaryContainer,
-    md_theme_dark_surface,
-)
-
-val lightBottomBrush = Brush.linearGradient(colors = lightBottomBarGradient)
-
-val darkBottomBrush = Brush.linearGradient(colors = darkBottomBarGradient)
 
 val LightGmColorsPalette = GmColorPalette(
-    bottomBarBrush = lightBottomBrush
+    bottomBarColor = lightBottomColor
 )
 
 val DarkGmColorsPalette = GmColorPalette(
-    bottomBarBrush = darkBottomBrush
+    bottomBarColor = darkBottomBarColor
 )
 
 val LocalGmColorsPalette = staticCompositionLocalOf { GmColorPalette() }
 
 @Immutable
 data class GmColorPalette(
-    val bottomBarBrush: Brush = lightBottomBrush
+    val bottomBarColor: Color = lightBottomColor
 )
 
-val MaterialTheme.gmColorsPalette: GmColorPalette
+val gmColorsPalette: GmColorPalette
     @Composable
     get() = LocalGmColorsPalette.current

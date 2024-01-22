@@ -40,6 +40,7 @@ fun LetterInCircle(
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.primaryContainer,
     textStyle: TextStyle = MaterialTheme.typography.displayLarge,
+    textColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
     strokeDp: Dp = 4.dp,
     paddingToAnim: Dp = 2.dp
 ) {
@@ -69,7 +70,7 @@ fun LetterInCircle(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize()
         ) {
-            Text(text = letter.uppercase(), style = textStyle)
+            Text(text = letter.uppercase(), style = textStyle, color = textColor)
         }
     }
 }

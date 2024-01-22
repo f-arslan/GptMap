@@ -2,6 +2,7 @@ package com.espressodev.gptmap.core.designsystem.component
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -33,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
+import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @Composable
@@ -60,7 +63,7 @@ fun MapTextField(
                 overflow = TextOverflow.Ellipsis
             )
         },
-        modifier = modifier,
+        modifier = modifier.height(52.dp).shadow(4.dp, shape),
         trailingIcon = {
             if (shouldShownClearIcon) {
                 IconButton(onClick = { onValueChange("") }) {
@@ -87,8 +90,8 @@ fun MapTextField(
         colors = TextFieldDefaults.colors(
             unfocusedIndicatorColor = Color.Transparent,
             focusedIndicatorColor = Color.Transparent,
-            focusedContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
-            unfocusedContainerColor = MaterialTheme.colorScheme.tertiaryContainer
+            focusedContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
         )
     )
 }
@@ -173,14 +176,16 @@ fun PasswordTextField(
 @Composable
 @Preview(showBackground = true)
 private fun TextFieldPreview() {
-    MapTextField(
-        value = "",
-        placeholder = AppText.map_text_field_placeholder,
-        onValueChange = {},
-        onSearchClick = {},
-        onAvatarClick = {},
-        userFirstChar = 'F',
-        modifier = Modifier.padding(8.dp),
-        shape = RoundedCornerShape(32.dp),
-    )
+    GptmapTheme {
+        MapTextField(
+            value = "",
+            placeholder = AppText.map_text_field_placeholder,
+            onValueChange = {},
+            onSearchClick = {},
+            onAvatarClick = {},
+            userFirstChar = 'F',
+            modifier = Modifier.padding(8.dp),
+            shape = RoundedCornerShape(32.dp),
+        )
+    }
 }
