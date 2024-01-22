@@ -1,12 +1,12 @@
-package com.espressodev.gptmap
+package com.espressodev.gptmap.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.espressodev.gptmap.GmAppState
 import com.espressodev.gptmap.feature.favourite.favouriteScreen
-import com.espressodev.gptmap.feature.favourite.navigateToFavourite
 import com.espressodev.gptmap.feature.forgot_password.forgotPasswordScreen
 import com.espressodev.gptmap.feature.forgot_password.navigateToForgotPassword
 import com.espressodev.gptmap.feature.login.LOGIN_ROUTE
@@ -20,7 +20,6 @@ import com.espressodev.gptmap.feature.register.navigateToRegister
 import com.espressodev.gptmap.feature.register.registerScreen
 import com.espressodev.gptmap.feature.screenshot.navigateToScreenshot
 import com.espressodev.gptmap.feature.screenshot.screenshotScreen
-import com.espressodev.gptmap.feature.screenshot_gallery.navigateToScreenshotGallery
 import com.espressodev.gptmap.feature.screenshot_gallery.screenshotGalleryScreen
 import com.espressodev.gptmap.feature.street_view.navigateToStreetView
 import com.espressodev.gptmap.feature.street_view.streetViewScreen
@@ -42,9 +41,7 @@ fun GmNavHost(
     ) {
         mapScreen(
             navigateToStreetView = navController::navigateToStreetView,
-            navigateToFavourite = navController::navigateToFavourite,
             navigateToScreenshot = navController::navigateToScreenshot,
-            navigateToScreenshotGallery = navController::navigateToScreenshotGallery,
             navigateToProfile = navController::navigateToProfile
         )
         loginScreen(
