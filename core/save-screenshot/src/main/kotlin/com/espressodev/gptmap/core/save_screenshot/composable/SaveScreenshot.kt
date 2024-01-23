@@ -6,8 +6,6 @@ import android.media.projection.MediaProjectionManager
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -34,9 +32,11 @@ fun SaveScreenshot(
                 onSuccess()
                 viewModel.resetScreenState()
             }
+
             ScreenState.Started -> {
                 onConfirm()
             }
+
             ScreenState.Idle -> {}
         }
     }
@@ -61,13 +61,12 @@ fun SaveScreenshot(
             }
         }
 
-    Box(modifier = modifier.fillMaxSize()) {
-        if (uiState.isButtonVisible)
-            GmDraggableButton(
-                icon = GmIcons.CameraFilled,
-                onClick = {
-                    screenCaptureLauncher.launch(screenCaptureIntent)
-                }
-            )
-    }
+    if (uiState.isButtonVisible)
+        GmDraggableButton(
+            icon = GmIcons.CameraFilled,
+            onClick = {
+                screenCaptureLauncher.launch(screenCaptureIntent)
+            },
+            modifier = modifier
+        )
 }

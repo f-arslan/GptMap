@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,14 +39,12 @@ import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
 import com.espressodev.gptmap.core.designsystem.component.SquareButton
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
-import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @Composable
 internal fun BoxScope.DetailSheet(
     location: Location,
     onEvent: (MapUiEvent) -> Unit,
-    onStreetViewClick: () -> Unit,
 ) {
     BackHandler { onEvent(MapUiEvent.OnDetailSheetBackClick) }
     Box(
@@ -78,9 +75,8 @@ internal fun BoxScope.DetailSheet(
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(MEDIUM_PADDING))
-            DetailButtons(
+            DetailButton(
                 addToFavouriteButtonState = location.addToFavouriteButtonState,
-                onStreetViewClick = onStreetViewClick,
                 onFavouriteClick = { onEvent(MapUiEvent.OnFavouriteClick) }
             )
             Text(
@@ -149,30 +145,20 @@ fun BoxScope.UnsplashBanner(name: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun DetailButtons(
+private fun DetailButton(
     addToFavouriteButtonState: Boolean,
-    onStreetViewClick: () -> Unit,
     onFavouriteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(HIGH_PADDING),
+    AnimatedVisibility(
+        addToFavouriteButtonState,
+        exit = slideOutVertically(targetOffsetY = { fullHeight: Int -> -fullHeight }),
         modifier = modifier.padding(bottom = HIGH_PADDING)
     ) {
         SquareButton(
-            icon = IconType.Bitmap(AppDrawable.street_view),
-            contentDesc = AppText.street_view,
-            onClick = onStreetViewClick
+            icon = IconType.Vector(GmIcons.FavouriteOutlined),
+            contentDesc = AppText.add_favourite,
+            onClick = onFavouriteClick
         )
-        AnimatedVisibility(
-            addToFavouriteButtonState,
-            exit = slideOutVertically(targetOffsetY = { fullHeight: Int -> -fullHeight })
-        ) {
-            SquareButton(
-                icon = IconType.Vector(GmIcons.FavouriteOutlined),
-                contentDesc = AppText.add_favourite,
-                onClick = onFavouriteClick
-            )
-        }
     }
 }
