@@ -1,6 +1,9 @@
 package com.espressodev.gptmap.feature.favourite
 
-import android.util.Log
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,8 +25,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -34,13 +41,17 @@ import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.TextType
+import com.espressodev.gptmap.core.designsystem.component.GmAlertDialog
+import com.espressodev.gptmap.core.designsystem.component.GmEditAlertDialog
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
 import com.espressodev.gptmap.core.designsystem.component.LottieAnimationPlaceholder
+import com.espressodev.gptmap.core.model.EditableItemUiEvent
 import com.espressodev.gptmap.core.model.Favourite
 import com.espressodev.gptmap.core.model.Response
-import com.espressodev.gptmap.core.designsystem.R.string as AppText
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
+import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavouriteRoute(
     popUp: () -> Unit,
@@ -48,77 +59,130 @@ fun FavouriteRoute(
     viewModel: FavouriteViewModel = hiltViewModel()
 ) {
     val favourites by viewModel.favourites.collectAsStateWithLifecycle()
-    Log.d("FavouriteRoute", "favourites: $favourites")
-    FavouriteScreen(
-        popUp = popUp,
-        onCardClick = navigateToMap,
-        favourites = favourites
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun FavouriteScreen(
-    popUp: () -> Unit,
-    onCardClick: (String) -> Unit,
-    favourites: Response<List<Favourite>>,
-    modifier: Modifier = Modifier,
-) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
         topBar = {
             GmTopAppBar(
                 text = TextType.Res(AppText.favourite),
                 icon = IconType.Vector(GmIcons.FavouriteFilled),
-                onBackClick = popUp
+                onBackClick = popUp,
+                editText = uiState.selectedItem.title,
+                isInEditMode = uiState.uiIsInEditMode,
+                onEditClick = { viewModel.onEvent(EditableItemUiEvent.OnEditClick) },
+                onDeleteClick = { viewModel.onEvent(EditableItemUiEvent.OnDeleteClick) },
+                onCancelClick = { viewModel.onEvent(EditableItemUiEvent.OnCancelClick) }
             )
         },
-        modifier = modifier
     ) {
-        with(favourites) {
-            when (this) {
-                is Response.Success -> {
-                    if (data.isNotEmpty()) {
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(it),
-                            verticalArrangement = Arrangement.spacedBy(HIGH_PADDING),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            contentPadding = PaddingValues(HIGH_PADDING)
-                        ) {
-                            items(data, key = { favourite -> favourite.id }) { favourite ->
-                                FavouriteCard(
-                                    favourite = favourite,
-                                    onClick = { onCardClick(favourite.favouriteId) }
-                                )
-                            }
-                        }
-                    } else {
-                        LottieAnimationPlaceholder(
-                            modifier = Modifier.padding(it),
-                            rawRes = AppRaw.nothing_here_anim
-                        )
-                    }
-                }
+        FavouriteScreen(
+            onCardClick = navigateToMap,
+            favourites = favourites,
+            onLongClick = { favourite ->
+                viewModel.onEvent(EditableItemUiEvent.OnLongClickToItem(favourite))
+            },
+            selectedId = uiState.selectedItem.favouriteId,
+            isUiInEditMode = uiState.uiIsInEditMode,
+            modifier = Modifier.padding(it)
+        )
+    }
 
-                is Response.Failure -> {
-                    LottieAnimationPlaceholder(AppRaw.confused_man_404)
-                }
-
-                Response.Loading -> {}
-            }
+    BackHandler {
+        if (uiState.uiIsInEditMode) {
+            viewModel.onEvent(EditableItemUiEvent.Reset)
         }
+    }
+
+    if (uiState.editDialogState) {
+        GmEditAlertDialog(
+            title = AppText.rename,
+            textFieldLabel = AppText.screenshot_gallery_edit_dialog_text_field_placeholder,
+            onConfirm = { viewModel.onEvent(EditableItemUiEvent.OnEditDialogConfirm(it)) },
+            onDismiss = { viewModel.onEvent(EditableItemUiEvent.OnEditDialogDismiss) }
+        )
+    }
+
+    if (uiState.deleteDialogState) {
+        GmAlertDialog(
+            title = AppText.screenshot_gallery_delete_dialog_title,
+            onConfirm = { viewModel.onEvent(EditableItemUiEvent.OnDeleteDialogConfirm) },
+            onDismiss = { viewModel.onEvent(EditableItemUiEvent.OnDeleteDialogDismiss) }
+        )
     }
 }
 
 @Composable
-fun FavouriteCard(favourite: Favourite, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun FavouriteScreen(
+    favourites: Response<List<Favourite>>,
+    selectedId: String,
+    onCardClick: (String) -> Unit,
+    onLongClick: (Favourite) -> Unit,
+    isUiInEditMode: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    when (favourites) {
+        is Response.Success -> {
+            if (favourites.data.isNotEmpty()) {
+                LazyColumn(
+                    modifier = modifier
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(HIGH_PADDING),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    contentPadding = PaddingValues(HIGH_PADDING)
+                ) {
+                    items(favourites.data, key = { favourite -> favourite.id }) { favourite ->
+                        FavouriteCard(
+                            favourite = favourite,
+                            onClick = {
+                                if (isUiInEditMode) {
+                                    onLongClick(favourite)
+                                } else {
+                                    onCardClick(favourite.favouriteId)
+                                }
+                            },
+                            onLongClick = { onLongClick(favourite) },
+                            isSelected = favourite.favouriteId == selectedId,
+                        )
+                    }
+                }
+            } else {
+                LottieAnimationPlaceholder(
+                    modifier = modifier,
+                    rawRes = AppRaw.nothing_here_anim
+                )
+            }
+        }
+
+        is Response.Failure -> {
+            LottieAnimationPlaceholder(AppRaw.confused_man_404)
+        }
+
+        Response.Loading -> {}
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun FavouriteCard(
+    favourite: Favourite,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+
+    val borderStroke = if (isSelected) 3.dp else 0.dp
+    val elevation = if (isSelected) 8.dp else 0.dp
+    val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
+
     Surface(
-        color = MaterialTheme.colorScheme.primaryContainer,
-        shape = RoundedCornerShape(16.dp),
-        shadowElevation = 4.dp,
-        onClick = onClick,
         modifier = modifier
+            .shadow(elevation)
+            .border(borderStroke, borderColor)
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            ),
+        tonalElevation = 4.dp
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             AsyncImage(
@@ -135,41 +199,50 @@ fun FavouriteCard(favourite: Favourite, onClick: () -> Unit, modifier: Modifier 
                     .padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(MEDIUM_PADDING)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(MEDIUM_PADDING)
-                ) {
-                    Icon(
-                        imageVector = GmIcons.LocationCityOutlined,
-                        contentDescription = null,
-                        modifier = Modifier.size(HIGH_PADDING),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                    Text(
-                        text = favourite.placeholderTitle,
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                if (favourite.title.isNotBlank()) {
+                    InfoRow(
+                        icon = GmIcons.TitleDefault,
+                        text = favourite.title
                     )
                 }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(MEDIUM_PADDING),
-                ) {
-                    Icon(
-                        imageVector = GmIcons.MyLocationOutlined,
-                        contentDescription = null,
-                        modifier = Modifier.size(HIGH_PADDING),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                    Text(
-                        text = favourite.placeholderCoordinates,
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
+                InfoRow(
+                    icon = GmIcons.LocationCityOutlined,
+                    text = favourite.placeholderTitle
+                )
+                InfoRow(
+                    icon = GmIcons.MyLocationOutlined,
+                    text = favourite.placeholderCoordinates
+                )
             }
         }
+    }
+}
+
+@Composable
+fun InfoRow(
+    icon: ImageVector,
+    text: String,
+    modifier: Modifier = Modifier,
+    iconSize: Dp = HIGH_PADDING,
+    textStyle: TextStyle = MaterialTheme.typography.titleMedium,
+    iconTint: Color = MaterialTheme.colorScheme.onPrimaryContainer
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(MEDIUM_PADDING),
+        modifier = modifier
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(iconSize),
+            tint = iconTint
+        )
+        Text(
+            text = text,
+            style = textStyle,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
