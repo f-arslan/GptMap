@@ -15,7 +15,6 @@ import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 
 class RealmSyncServiceImpl : RealmSyncService {
 
@@ -107,6 +106,28 @@ class RealmSyncServiceImpl : RealmSyncService {
                 .first()
             findLatest(imageAnalysisToUpdate)?.let { realmImageAnalysis ->
                realmImageAnalysis.title = text
+            }
+        }
+        true
+    }
+
+    override suspend fun deleteFavourite(favouriteId: String): Result<Boolean> = runCatching {
+        realm.write {
+            val favouriteToDelete: RealmFavourite = query<RealmFavourite>("userId == $0 AND favouriteId == $1", realmUserId, favouriteId)
+                .find()
+                .first()
+            delete(favouriteToDelete)
+        }
+        true
+    }
+
+    override suspend fun updateFavouriteText(favouriteId: String, text: String): Result<Boolean> = runCatching {
+        realm.write {
+            val favouriteToUpdate: RealmFavourite = query<RealmFavourite>("userId == $0 AND favouriteId == $1", realmUserId, favouriteId)
+                .find()
+                .first()
+            findLatest(favouriteToUpdate)?.let { realmFavourite ->
+               realmFavourite.title = text
             }
         }
         true

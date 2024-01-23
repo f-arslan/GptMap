@@ -11,7 +11,7 @@ data class Favourite(
     val placeholderImageUrl: String = "",
     val locationImages: List<LocationImage> = listOf(),
     val content: Content = Content(),
-    val date: LocalDateTime
+    val date: LocalDateTime = LocalDateTime.now()
 ) {
     val placeholderTitle = "${content.city}, ${content.country}"
     val placeholderCoordinates = "${"%.4f".format(content.latitude)}°, ${"%.4f".format(content.longitude)}°"

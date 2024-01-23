@@ -8,5 +8,5 @@ data class ImageSummary(
     val id: String = "",
     val imageUrl: String = "",
     val title: String = "",
-    val date: LocalDateTime
+    val date: LocalDateTime = LocalDateTime.now()
 )
