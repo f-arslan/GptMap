@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.feature.map
 
-import android.util.Log
 import com.espressodev.gptmap.api.gemini.GeminiService
 import com.espressodev.gptmap.api.unsplash.UnsplashService
 import com.espressodev.gptmap.core.common.GmViewModel
@@ -9,7 +8,6 @@ import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.domain.AddDatabaseIfUserIsNewUseCase
 import com.espressodev.gptmap.core.domain.SaveImageToFirebaseStorageUseCase
-import com.espressodev.gptmap.core.model.ext.classTag
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -68,8 +66,14 @@ class MapViewModel @Inject constructor(
 
             is MapUiEvent.OnTakeScreenshotClick -> _uiState.update { it.copy(takeScreenshotState = true) }
             is MapUiEvent.OnScreenshotProcessStarted -> _uiState.update {
-                it.copy(isLocationPinVisible = false, searchBarState = false)
+                it.copy(
+                    isStreetViewButtonVisible = false,
+                    isLocationPinVisible = false,
+                    searchBarState = false
+                )
             }
+
+            MapUiEvent.OnScreenshotProcessFinished -> reset()
         }
     }
 
@@ -140,8 +144,8 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    fun reset() = launchCatching {
-        _uiState.update { it.copy(isLocationPinVisible = true, searchBarState = true) }
+    private fun reset() = launchCatching {
+        _uiState.update { it.copy(isStreetViewButtonVisible = true, isLocationPinVisible = true, searchBarState = true) }
     }
 
     private fun onStreetViewClick(

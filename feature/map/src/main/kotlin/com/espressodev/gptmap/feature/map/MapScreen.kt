@@ -9,7 +9,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -32,7 +31,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -82,12 +80,9 @@ import com.espressodev.gptmap.feature.map.MapBottomSheetState.DETAIL_CARD
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.SMALL_INFORMATION_CARD
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlin.math.absoluteValue
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
@@ -105,9 +100,7 @@ fun MapRoute(
     viewModel: MapViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    Scaffold(
-        modifier = modifier
-    ) {
+    Scaffold(modifier = modifier) {
         MapScreen(
             uiState = uiState,
             onEvent = { event ->
@@ -118,18 +111,10 @@ fun MapRoute(
                     }
                 )
             },
-            onAvatarClick = navigateToProfile
+            onAvatarClick = navigateToProfile,
+            navigateToScreenshot = navigateToScreenshot
         )
     }
-    SaveScreenshot(
-        onSuccess = {
-            navigateToScreenshot()
-            viewModel.reset()
-        },
-        onConfirm = {
-            viewModel.onEvent(MapUiEvent.OnScreenshotProcessStarted)
-        }
-    )
 
     LaunchedEffect(favouriteId) {
         if (favouriteId != "default")
@@ -142,17 +127,9 @@ private fun MapScreen(
     uiState: MapUiState,
     onEvent: (MapUiEvent) -> Unit,
     onAvatarClick: () -> Unit,
+    navigateToScreenshot: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val latLng by remember(uiState.location) {
-        derivedStateOf {
-            uiState.getCoordinates().let { LatLng(it.first, it.second) }
-        }
-    }
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(latLng, 13f)
-    }
-    AnimateCameraPosition(uiState.getCoordinates(), cameraPositionState)
     DisplayImageGallery(
         imageGalleryState = uiState.imageGalleryState,
         location = uiState.location,
@@ -171,24 +148,23 @@ private fun MapScreen(
                     .align(Alignment.TopCenter)
             )
         }
-        GmDraggableButton(icon = StreetView, initialAlignment = Alignment.CenterStart)
+        SaveScreenshot(
+            onSuccess = {
+                navigateToScreenshot()
+                onEvent(MapUiEvent.OnScreenshotProcessFinished)
+            },
+            onConfirm = { onEvent(MapUiEvent.OnScreenshotProcessStarted) },
+        )
         LoadingDialog(uiState.componentLoadingState)
         MapSection(
             isPinVisible = uiState.isLocationPinVisible,
-            cameraPositionState = cameraPositionState
+            uiState = uiState,
+            onEvent = onEvent
         )
-        DisplayBottomSheet(uiState.bottomSheetState, uiState.location, cameraPositionState, onEvent)
-    }
-}
-
-@Composable
-private fun AnimateCameraPosition(
-    latLng: Pair<Double, Double>,
-    cameraPositionState: CameraPositionState
-) {
-    LaunchedEffect(latLng) {
-        cameraPositionState.animate(
-            CameraUpdateFactory.newLatLng(LatLng(latLng.first, latLng.second))
+        DisplayBottomSheet(
+            bottomSheetState = uiState.bottomSheetState,
+            location = uiState.location,
+            onEvent = onEvent
         )
     }
 }
@@ -212,7 +188,6 @@ private fun DisplayImageGallery(
 private fun BoxScope.DisplayBottomSheet(
     bottomSheetState: MapBottomSheetState,
     location: Location,
-    cameraPositionState: CameraPositionState,
     onEvent: (MapUiEvent) -> Unit
 ) {
     when (bottomSheetState) {
@@ -221,16 +196,11 @@ private fun BoxScope.DisplayBottomSheet(
                 content = location.content,
                 onExploreWithAiClick = { onEvent(MapUiEvent.OnExploreWithAiClick) },
                 onBackClick = { onEvent(MapUiEvent.OnBackClick) },
-                onStreetViewClick = { onEvent(MapUiEvent.OnStreetViewClick(cameraPositionState.toLatitudeLongitude())) }
             )
         }
 
         DETAIL_CARD -> {
-            DetailSheet(
-                location,
-                onEvent = onEvent,
-                onStreetViewClick = { onEvent(MapUiEvent.OnStreetViewClick(cameraPositionState.toLatitudeLongitude())) }
-            )
+            DetailSheet(location = location, onEvent = onEvent)
         }
 
         BOTTOM_SHEET_HIDDEN -> {}
@@ -296,62 +266,68 @@ private fun MapSearchBar(
 }
 
 @Composable
-private fun MapSection(isPinVisible: Boolean, cameraPositionState: CameraPositionState) {
-    val context = LocalContext.current
-    val isSystemInDarkTheme = isSystemInDarkTheme()
+private fun MapSection(uiState: MapUiState, isPinVisible: Boolean, onEvent: (MapUiEvent) -> Unit) {
     var isMapLoaded by remember { mutableStateOf(value = false) }
+    val context = LocalContext.current
+    val latLng = uiState.getCoordinates()
     val mapProperties = remember {
-        if (isSystemInDarkTheme) {
-            MapProperties(
-                mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
-                    context,
-                    AppRaw.dark_map_style
-                )
+        MapProperties(
+            mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
+                context,
+                AppRaw.map_style
             )
-        } else {
-            MapProperties()
-        }
+        )
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        MapContent(
-            isPinVisible = isPinVisible,
-            cameraPositionState = cameraPositionState,
-            mapProperties = mapProperties
-        ) {
-            isMapLoaded = true
-        }
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(latLng, 14f)
     }
 
     if (!isMapLoaded) {
         LottieAnimationPlaceholder(AppRaw.transistor_earth)
     }
+
+    LaunchedEffect(uiState.getCoordinates()) {
+        cameraPositionState.animate(CameraUpdateFactory.newLatLng(latLng))
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        AnimatedVisibility(
+            visible = uiState.isStreetViewButtonVisible,
+            modifier = Modifier.zIndex(1f)
+        ) {
+            GmDraggableButton(
+                icon = StreetView,
+                initialAlignment = Alignment.CenterStart,
+                onClick = {
+                    onEvent(MapUiEvent.OnStreetViewClick(cameraPositionState.toLatitudeLongitude()))
+                }
+            )
+        }
+        LocationPin(isPinVisible = isPinVisible, isCameraMoving = cameraPositionState.isMoving)
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState,
+            properties = mapProperties,
+            onMapLoaded = { isMapLoaded = true }
+        )
+    }
 }
 
 @Composable
-private fun BoxScope.MapContent(
-    isPinVisible: Boolean,
-    cameraPositionState: CameraPositionState,
-    mapProperties: MapProperties,
-    onMapLoaded: () -> Unit
+private fun BoxScope.LoadingDialog(
+    loadingState: ComponentLoadingState,
+    modifier: Modifier = Modifier
 ) {
-    LocationPin(isPinVisible = isPinVisible, isCameraMoving = cameraPositionState.isMoving)
-    GoogleMap(
-        modifier = Modifier.fillMaxSize(),
-        cameraPositionState = cameraPositionState,
-        uiSettings = MapUiSettings(zoomControlsEnabled = false),
-        properties = mapProperties,
-        onMapLoaded = onMapLoaded
-    )
-}
-
-@Composable
-private fun BoxScope.LoadingDialog(loadingState: ComponentLoadingState) {
     AnimatedVisibility(
         visible = loadingState != ComponentLoadingState.NOTHING,
-        modifier = Modifier
+        modifier = modifier
             .zIndex(1f)
-            .align(Alignment.Center)
+            .align(Alignment.TopCenter)
+            .statusBarsPadding()
+            .fillMaxWidth()
+            .padding(top = 64.dp)
+            .padding(horizontal = 32.dp)
     ) {
         val textId: Int =
             when (loadingState) {
@@ -371,8 +347,8 @@ private fun BoxScope.LoadingDialog(loadingState: ComponentLoadingState) {
                 Text(
                     text = stringResource(textId),
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Medium
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium,
                 )
             }
         }
@@ -429,7 +405,6 @@ fun BoxScope.SmallInformationCard(
     content: Content,
     onExploreWithAiClick: () -> Unit,
     onBackClick: () -> Unit,
-    onStreetViewClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     BackHandler(onBack = onBackClick)
@@ -443,11 +418,6 @@ fun BoxScope.SmallInformationCard(
             icon = IconType.Vector(GmIcons.ArrowBackOutlined),
             contentDesc = AppText.back_arrow,
             onClick = onBackClick,
-        )
-        SquareButton(
-            icon = IconType.Bitmap(AppDrawable.street_view),
-            contentDesc = AppText.search,
-            onClick = onStreetViewClick,
         )
 
         Surface(

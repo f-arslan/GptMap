@@ -81,7 +81,7 @@ enum class Status {
 
 enum class Source(var value: String) {
     DEFAULT("default"),
-    OUTDOOR("outdoor");
+    OUTDOOR("outdoor")
 }
 
 fun CameraPositionState.toLatitudeLongitude(): Pair<Double, Double> =

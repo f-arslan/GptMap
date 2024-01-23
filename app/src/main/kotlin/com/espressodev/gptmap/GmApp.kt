@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarItem
@@ -15,6 +16,7 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
@@ -86,9 +88,10 @@ fun GmBottomNavigation(
     modifier: Modifier = Modifier,
 ) {
     if (currentTopLevelDestination == null) return
-    BottomNavigation(
+    BottomAppBar(
         modifier = modifier,
-        backgroundColor = MaterialTheme.colorScheme.surfaceVariant
+        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
     ) {
         destinations.forEach { destination ->
             val selected = currentDestination.isTopLevelDestinationInHierarchy(destination)
@@ -108,6 +111,9 @@ fun GmBottomNavigation(
                         tint = MaterialTheme.colorScheme.primary
                     )
                 },
+                label = {
+                    Text(text = stringResource(id = destination.contentDesc))
+                }
             )
         }
     }

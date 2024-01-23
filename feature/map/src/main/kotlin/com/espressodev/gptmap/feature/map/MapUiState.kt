@@ -1,6 +1,7 @@
 package com.espressodev.gptmap.feature.map
 
 import com.espressodev.gptmap.core.model.Location
+import com.google.android.gms.maps.model.LatLng
 
 enum class MapBottomSheetState {
     SMALL_INFORMATION_CARD, DETAIL_CARD, BOTTOM_SHEET_HIDDEN
@@ -21,11 +22,12 @@ data class MapUiState(
     val searchBarState: Boolean = true,
     val isFavouriteButtonPlaying: Boolean = false,
     val isLocationPinVisible: Boolean = true,
+    val isStreetViewButtonVisible: Boolean = true,
     val takeScreenshotState: Boolean = false,
     val imageGalleryState: Pair<Int, Boolean> = Pair(0, false)
 ) {
-    fun getCoordinates(): Pair<Double, Double> =
-        location.content.coordinates.let { Pair(it.latitude, it.longitude) }
+    fun getCoordinates(): LatLng =
+        location.content.coordinates.let { LatLng(it.latitude, it.longitude) }
 }
 
 sealed class MapUiEvent {
@@ -38,6 +40,7 @@ sealed class MapUiEvent {
     data object OnBackClick: MapUiEvent()
     data object OnExploreWithAiClick: MapUiEvent()
     data object OnScreenshotProcessStarted: MapUiEvent()
+    data object OnScreenshotProcessFinished: MapUiEvent()
     data object OnTakeScreenshotClick: MapUiEvent()
     data class OnStreetViewClick(val latLng: Pair<Double, Double>) : MapUiEvent()
 }
