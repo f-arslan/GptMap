@@ -95,7 +95,8 @@ fun GmTopAppBar(
                     IconButton(onClick = onDeleteClick) {
                         Icon(
                             imageVector = GmIcons.DeleteOutlined,
-                            contentDescription = stringResource(id = AppText.delete)
+                            contentDescription = stringResource(id = AppText.delete),
+                            tint = MaterialTheme.colorScheme.error
                         )
                     }
                 }

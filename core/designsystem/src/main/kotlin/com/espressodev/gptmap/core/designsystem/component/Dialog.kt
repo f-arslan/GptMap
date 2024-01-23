@@ -6,6 +6,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -19,8 +20,8 @@ fun GmAlertDialog(
     @StringRes title: Int,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
-    text: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    text: @Composable (() -> Unit)? = null,
     icon: ImageVector? = null,
 ) {
     val dialogIcon: @Composable (() -> Unit)? = when (icon) {
@@ -53,6 +54,11 @@ fun GmEditAlertDialog(
 ) {
     val (text, onValueChange) = rememberSaveable { mutableStateOf("") }
     val (isError, setIsError) = rememberSaveable { mutableStateOf(value = false) }
+
+    LaunchedEffect(text.isNotEmpty()) {
+        if (text.isNotBlank()) setIsError(false)
+    }
+
     GmAlertDialog(
         title = title,
         onConfirm = {

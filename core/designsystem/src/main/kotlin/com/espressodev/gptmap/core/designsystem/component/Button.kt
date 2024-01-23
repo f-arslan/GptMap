@@ -7,7 +7,6 @@ import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
@@ -18,18 +17,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonColors
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -38,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
@@ -50,35 +44,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
-import com.espressodev.gptmap.core.designsystem.R.string as AppText
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun MapSearchButton(
-    onClick: () -> Unit,
-    buttonEnabledState: Boolean,
-    modifier: Modifier = Modifier,
-    icon: ImageVector = GmIcons.SearchDefault,
-    shape: Shape = RoundedCornerShape(16.dp),
-) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    Button(
-        shape = shape,
-        enabled = buttonEnabledState,
-        onClick = {
-            keyboardController?.hide()
-            onClick()
-        },
-        contentPadding = PaddingValues(0.dp),
-        modifier = modifier.size(56.dp)
-    ) {
-        Icon(icon, stringResource(id = AppText.search))
-    }
-}
 
 @Composable
 fun ExtFloActionButton(
@@ -182,9 +150,9 @@ fun GmDraggableButton(
     FloatingActionButton(
         onClick = onClick,
         containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp),
         modifier = modifier
-            .zIndex(4f)
+            .zIndex(1f)
             .offset { IntOffset(offset.value.x.roundToInt(), offset.value.y.roundToInt()) }
             .pointerInput(Unit) {
                 detectDragGestures(
@@ -235,7 +203,7 @@ fun SquareButton(
     contentPaddings: PaddingValues = PaddingValues(0.dp),
     size: Dp = 56.dp,
 ) {
-    ElevatedButton(
+    Button(
         onClick = onClick,
         modifier = modifier.size(size),
         shape = shape,

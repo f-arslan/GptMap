@@ -1,6 +1,7 @@
 package com.espressodev.gptmap.core.designsystem
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Clear
@@ -15,6 +16,8 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Title
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Bookmark
+import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Email
@@ -61,6 +64,7 @@ object GmIcons {
     val NavigateNextDefault = Icons.Outlined.NavigateNext
     val ExploreOutlined = Icons.Outlined.Explore
     val ExploreFilled = Icons.Filled.Explore
-    val ApproveFilled = Icons.Filled.CheckCircle
     val DeleteOutlined = Icons.Outlined.Delete
+    val BookmarkOutlined = Icons.Outlined.BookmarkBorder
+    val BookmarkFilled = Icons.Filled.Bookmark
 }

@@ -12,18 +12,18 @@ enum class TopLevelDestination(
     @StringRes val contentDesc: Int,
 ) {
     FAVOURITE(
-        GmIcons.FavouriteFilled,
-        GmIcons.FavouriteOutlined,
-        AppText.favourite
+        GmIcons.BookmarkFilled,
+        GmIcons.BookmarkOutlined,
+        AppText.saved
     ),
     MAP(
         GmIcons.ExploreFilled,
         GmIcons.ExploreOutlined,
-        AppText.map
+        AppText.explore
     ),
     SCREENSHOT_GALLERY(
         GmIcons.ScreenshotFilled,
         GmIcons.ScreenshotOutlined,
-        AppText.screenshot_gallery
+        AppText.gallery
     )
 }
