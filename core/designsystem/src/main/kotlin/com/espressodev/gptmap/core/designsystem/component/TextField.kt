@@ -63,7 +63,9 @@ fun MapTextField(
                 overflow = TextOverflow.Ellipsis
             )
         },
-        modifier = modifier.height(52.dp).shadow(4.dp, shape),
+        modifier = modifier
+            .height(52.dp)
+            .shadow(4.dp, shape),
         trailingIcon = {
             if (shouldShownClearIcon) {
                 IconButton(onClick = { onValueChange("") }) {
@@ -104,6 +106,7 @@ fun DefaultTextField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    isError: Boolean = false,
 ) {
     val showClearIcon by remember(value) { derivedStateOf { value.isNotEmpty() } }
     OutlinedTextField(
@@ -117,14 +120,13 @@ fun DefaultTextField(
         },
         trailingIcon = {
             if (showClearIcon) {
-                IconButton(onClick = {
-                    onValueChange("")
-                }) {
+                IconButton(onClick = { onValueChange("") }) {
                     Icon(GmIcons.CancelOutlined, null)
                 }
             }
         },
-        onValueChange = onValueChange
+        onValueChange = onValueChange,
+        isError = isError,
     )
 }
 

@@ -104,4 +104,8 @@
 
     <!-- Profile -->
     <string name="profile_top_bar_header">Profile</string>
+
+    <!-- Screenshot Gallery -->
+    <string name="screenshot_gallery_edit_dialog_title">Rename Screenshot</string>
+    <string name="screenshot_gallery_edit_dialog_text_field_placeholder">Enter new name</string>
 </resources>

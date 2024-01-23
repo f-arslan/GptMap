@@ -6,34 +6,71 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
+import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @Composable
-fun AppAlertDialog(
-    icon: ImageVector,
+fun GmAlertDialog(
     @StringRes title: Int,
-    @StringRes text: Int,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
+    text: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
 ) {
+    val dialogIcon: @Composable (() -> Unit)? = when (icon) {
+        null -> null
+        else -> {
+            { Icon(imageVector = icon, contentDescription = null) }
+        }
+    }
     AlertDialog(
-        icon = { Icon(icon, null) },
+        icon = dialogIcon,
         title = { Text(stringResource(title)) },
-        text = { Text(stringResource(text), textAlign = TextAlign.Center) },
+        text = text,
         onDismissRequest = onDismiss,
         confirmButton = {
-            TextButton(onClick = {
-                onConfirm()
-            }) { Text(stringResource(AppText.confirm)) }
+            TextButton(onClick = onConfirm) { Text(stringResource(AppText.confirm)) }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text(stringResource(AppText.dismiss)) }
         },
         modifier = modifier
+    )
+}
+
+@Composable
+fun GmEditAlertDialog(
+    @StringRes title: Int,
+    @StringRes textFieldLabel: Int,
+    onConfirm: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val (text, onValueChange) = rememberSaveable { mutableStateOf("") }
+    val (isError, setIsError) = rememberSaveable { mutableStateOf(value = false) }
+    GmAlertDialog(
+        title = title,
+        onConfirm = {
+            if (text.isNotBlank()) {
+                onConfirm(text)
+            } else {
+                setIsError(true)
+            }
+        },
+        onDismiss = onDismiss,
+        text = {
+            DefaultTextField(
+                value = text,
+                label = textFieldLabel,
+                leadingIcon = GmIcons.EditDefault,
+                onValueChange = onValueChange,
+                isError = isError
+            )
+        }
     )
 }
