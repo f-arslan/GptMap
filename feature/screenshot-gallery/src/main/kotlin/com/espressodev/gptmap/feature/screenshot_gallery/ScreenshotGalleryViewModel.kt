@@ -3,10 +3,12 @@ package com.espressodev.gptmap.feature.screenshot_gallery
 import androidx.lifecycle.viewModelScope
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.data.LogService
+import com.espressodev.gptmap.core.model.EditableItemUiEvent
 import com.espressodev.gptmap.core.model.Exceptions
 import com.espressodev.gptmap.core.model.ImageAnalysis
 import com.espressodev.gptmap.core.model.ImageSummary
 import com.espressodev.gptmap.core.model.Response
+import com.espressodev.gptmap.core.model.ScreenshotGalleryUiState
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.PersistentList
@@ -45,29 +47,32 @@ class ScreenshotGalleryViewModel @Inject constructor(
             Response.Loading
         )
 
-    private val _uiState = MutableStateFlow(ScreenshotGalleryUiState())
+    private val _uiState =
+        MutableStateFlow(ScreenshotGalleryUiState(selectedItem = ImageSummary()))
     val uiState = _uiState.asStateFlow()
 
     private val imageSummaryId
-        get() = uiState.value.selectedImageSummary.id
+        get() = uiState.value.selectedItem.id
 
-
-    fun onEvent(event: ScreenshotGalleryUiEvent) {
+    fun onEvent(event: EditableItemUiEvent) {
         when (event) {
-            ScreenshotGalleryUiEvent.OnCancelClick -> reset()
-            ScreenshotGalleryUiEvent.OnDeleteClick -> onDeleteClick()
-            ScreenshotGalleryUiEvent.OnEditClick -> _uiState.update { it.copy(uiIsInEditMode = true) }
-            ScreenshotGalleryUiEvent.OnEditDialogDismiss -> _uiState.update {
-                it.copy(editDialogState = false)
-            }
-
-            is ScreenshotGalleryUiEvent.OnLongClickToImage -> _uiState.update {
-                it.copy(selectedImageSummary = event.imageSummary, uiIsInEditMode = true)
-            }
-
-            ScreenshotGalleryUiEvent.Reset -> reset()
-            is ScreenshotGalleryUiEvent.OnEditDialogConfirm -> onEditDialogConfirmClick(event.text)
+            EditableItemUiEvent.OnCancelClick -> reset()
+            EditableItemUiEvent.OnDeleteClick -> _uiState.update { it.copy(deleteDialogState = true) }
+            EditableItemUiEvent.OnDeleteDialogConfirm -> onDeleteDialogConfirmClick()
+            EditableItemUiEvent.OnDeleteDialogDismiss -> _uiState.update { it.copy(deleteDialogState = false) }
+            EditableItemUiEvent.OnEditClick -> _uiState.update { it.copy(editDialogState = true) }
+            is EditableItemUiEvent.OnEditDialogConfirm -> onEditDialogConfirmClick(event.text)
+            EditableItemUiEvent.OnEditDialogDismiss -> _uiState.update { it.copy(editDialogState = false) }
+            is EditableItemUiEvent.OnLongClickToItem<*> -> _uiState.update { it.copy(uiIsInEditMode = true, selectedItem = event.item as ImageSummary) }
+            EditableItemUiEvent.Reset -> reset()
         }
+    }
+
+    private fun onDeleteDialogConfirmClick() = launchCatching {
+        withContext(ioDispatcher) {
+            realmSyncService.deleteImageAnalysis(imageSummaryId).getOrThrow()
+        }
+        reset()
     }
 
     private fun onEditDialogConfirmClick(text: String) = launchCatching {
@@ -78,12 +83,6 @@ class ScreenshotGalleryViewModel @Inject constructor(
     }
 
     private fun reset() {
-        _uiState.update { ScreenshotGalleryUiState() }
-    }
-    private fun onDeleteClick() = launchCatching {
-        withContext(ioDispatcher) {
-            realmSyncService.deleteImageAnalysis(imageSummaryId).getOrThrow()
-        }
-        reset()
+        _uiState.update { ScreenshotGalleryUiState(selectedItem = ImageSummary()) }
     }
 }

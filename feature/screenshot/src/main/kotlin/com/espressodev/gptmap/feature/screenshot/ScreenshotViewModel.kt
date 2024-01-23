@@ -4,6 +4,7 @@ import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.domain.SaveImageAnalysisToStorageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -51,13 +52,14 @@ class ScreenshotViewModel @Inject constructor(
             if (image is ImageResult.Success) {
                 saveImageAnalysisToStorageUseCase(image.data, uiState.value.title)
                     .onSuccess {
+                        _uiState.update { it.copy(isSaveStateStarted = false) }
+                        delay(25L)
                         navigateToMap()
                     }.onFailure { throwable ->
                         _uiState.update { it.copy(isSaveStateStarted = false) }
                         throw throwable
                     }
             }
-            _uiState.update { it.copy(isSaveStateStarted = false) }
         }
 
     }
