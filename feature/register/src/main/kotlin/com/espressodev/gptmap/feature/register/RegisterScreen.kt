@@ -24,7 +24,7 @@ import com.espressodev.gptmap.core.designsystem.Constants.TERMS_CONDITIONS
 import com.espressodev.gptmap.core.designsystem.Constants.TERMS_CONDITIONS_LINK
 import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
-import com.espressodev.gptmap.core.designsystem.component.AppAlertDialog
+import com.espressodev.gptmap.core.designsystem.component.GmAlertDialog
 import com.espressodev.gptmap.core.designsystem.component.AppWrapper
 import com.espressodev.gptmap.core.designsystem.component.DayHeader
 import com.espressodev.gptmap.core.designsystem.component.DefaultButton
@@ -37,7 +37,6 @@ import com.espressodev.gptmap.core.designsystem.component.PasswordTextField
 import com.espressodev.gptmap.core.google_auth.composable.OneTapLauncher
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.google.GoogleResponse
-import kotlinx.collections.immutable.immutableMapOf
 import kotlinx.collections.immutable.persistentMapOf
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
@@ -55,10 +54,9 @@ fun RegisterRoute(
         }
 
         uiState.verificationAlertState is LoadingState.Loading -> {
-            AppAlertDialog(
-                GmIcons.MarkEmailUnreadOutlined,
-                AppText.email_confirmation_title,
-                AppText.email_confirmation_body,
+            GmAlertDialog(
+                icon = GmIcons.MarkEmailUnreadOutlined,
+                title = AppText.email_confirmation_title,
                 onConfirm = { viewModel.handleVerificationAndNavigate { clearAndNavigateLogin() } },
                 onDismiss = {
                     viewModel.onEvent(
@@ -66,6 +64,9 @@ fun RegisterRoute(
                             LoadingState.Idle
                         )
                     )
+                },
+                text = {
+                    Text(stringResource(AppText.email_confirmation_body), textAlign = TextAlign.Center)
                 }
             )
         }

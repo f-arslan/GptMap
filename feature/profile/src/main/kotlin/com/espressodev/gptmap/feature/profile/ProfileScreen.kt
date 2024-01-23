@@ -27,7 +27,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -38,7 +37,6 @@ import com.espressodev.gptmap.core.designsystem.component.GmTonalIconButton
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
 import com.espressodev.gptmap.core.designsystem.component.LetterInCircle
 import com.espressodev.gptmap.core.designsystem.component.LottieAnimationPlaceholder
-import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.model.User
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
@@ -141,24 +139,6 @@ fun ProfileItem(icon: ImageVector, @StringRes textId: Int, onClick: () -> Unit) 
         Icon(
             imageVector = GmIcons.NavigateNextDefault,
             contentDescription = null,
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ProfilePreview() {
-    GptmapTheme {
-        ProfileScreen(
-            user = User(
-                userId = "sumo",
-                fullName = "Selena Beard",
-                email = "kristina.gonzales@example.com",
-                profilePictureUrl = "https://search.yahoo.com/search?p=vestibulum",
-                fcmToken = "perpetua",
-                provider = "iisque"
-            ),
-            {}, {}, {}
         )
     }
 }

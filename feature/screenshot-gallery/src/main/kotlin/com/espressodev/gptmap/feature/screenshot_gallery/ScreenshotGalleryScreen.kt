@@ -1,16 +1,17 @@
 package com.espressodev.gptmap.feature.screenshot_gallery
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -28,10 +29,9 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -46,7 +46,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
@@ -61,6 +63,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.TextType
+import com.espressodev.gptmap.core.designsystem.component.GmEditAlertDialog
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
 import com.espressodev.gptmap.core.designsystem.component.LottieAnimationPlaceholder
 import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
@@ -90,9 +93,9 @@ fun ScreenshotGalleryRoute(
                 onBackClick = popUp,
                 editText = uiState.selectedImageSummary.title,
                 isInEditMode = uiState.uiIsInEditMode,
-                onEditClick = viewModel::onEditClick,
-                onDeleteClick = viewModel::onDeleteClick,
-                onCancelClick = viewModel::onCancelClick
+                onEditClick = { viewModel.onEvent(ScreenshotGalleryUiEvent.OnEditClick) },
+                onDeleteClick = { viewModel.onEvent(ScreenshotGalleryUiEvent.OnDeleteClick) },
+                onCancelClick = { viewModel.onEvent(ScreenshotGalleryUiEvent.OnCancelClick) }
             )
         }
     ) {
@@ -103,14 +106,40 @@ fun ScreenshotGalleryRoute(
 
             Response.Loading -> {}
             is Response.Success -> {
-                ScreenshotGalleryScreen(
-                    modifier = Modifier.padding(it),
-                    images = result.data,
-                    onLongClick = viewModel::onLongClickToImage,
-                    selectedId = uiState.selectedImageSummary.id
-                )
+                if (result.data.isNotEmpty()) {
+                    ScreenshotGalleryScreen(
+                        modifier = Modifier.padding(it),
+                        images = result.data,
+                        onLongClick = { imageSummary ->
+                            viewModel.onEvent(
+                                ScreenshotGalleryUiEvent.OnLongClickToImage(imageSummary)
+                            )
+                        },
+                        selectedId = uiState.selectedImageSummary.id
+                    )
+                } else {
+                    LottieAnimationPlaceholder(
+                        modifier = Modifier.padding(it),
+                        rawRes = AppRaw.nothing_here_anim
+                    )
+                }
             }
         }
+    }
+
+    BackHandler {
+        if (uiState.uiIsInEditMode) {
+            viewModel.onEvent(ScreenshotGalleryUiEvent.Reset)
+        }
+    }
+
+    if (uiState.editDialogState) {
+        GmEditAlertDialog(
+            title = AppText.screenshot_gallery_edit_dialog_title,
+            textFieldLabel = AppText.screenshot_gallery_edit_dialog_text_field_placeholder,
+            onConfirm = { viewModel.onEvent(ScreenshotGalleryUiEvent.OnEditDialogConfirm(it)) },
+            onDismiss = { viewModel.onEvent(ScreenshotGalleryUiEvent.OnEditDialogDismiss) }
+        )
     }
 }
 
@@ -157,64 +186,48 @@ fun ScreenshotGalleryScreen(
 fun ImageCard(
     imageSummary: ImageSummary,
     modifier: Modifier = Modifier,
+    shape: Shape = RoundedCornerShape(16.dp),
     isSelected: Boolean = false,
     onClick: () -> Unit = {},
     onLongClick: () -> Unit = {}
 ) {
     var isImageLoaded by remember { mutableStateOf(value = false) }
+    val borderStroke = if (isSelected) 3.dp else 0.dp
+    val elevation = if (isSelected) 8.dp else 0.dp
 
-    ElevatedCard(
-        modifier = modifier.combinedClickable(
-            onClick = onClick,
-            onLongClick = onLongClick
-        )
-    ) {
-        Box {
-            if (isSelected) {
-                SelectedIconView()
-            }
-            ShimmerImage(
-                imageSummary.imageUrl,
-                modifier = Modifier.aspectRatio(1f),
-                onSuccess = { isImageLoaded = true }
-            )
-            if (isImageLoaded)
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .background(brush = darkBottomOverlayBrush)
-                )
-            Text(
-                text = imageSummary.title,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-                    .basicMarquee(iterations = Int.MAX_VALUE),
-                style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Center,
-                color = Color.White
-            )
-        }
-    }
-}
-
-@Composable
-private fun BoxScope.SelectedIconView() {
     Box(
-        modifier = Modifier.Companion
-            .matchParentSize()
-            .zIndex(1f)
+        modifier = modifier
+            .shadow(elevation, shape)
+            .clip(shape)
+            .border(borderStroke, MaterialTheme.colorScheme.primary, shape)
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            ),
     ) {
-        Icon(
-            imageVector = GmIcons.ApproveFilled,
-            contentDescription = null,
+        ShimmerImage(
+            imageSummary.imageUrl,
+            modifier = Modifier.aspectRatio(1f),
+            onSuccess = { isImageLoaded = true }
+        )
+        if (isImageLoaded)
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(brush = darkBottomOverlayBrush)
+            )
+        Text(
+            text = imageSummary.title,
             modifier = Modifier
                 .padding(8.dp)
-                .size(56.dp)
-                .align(Alignment.TopEnd),
-            tint = MaterialTheme.colorScheme.primary
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .basicMarquee(iterations = Int.MAX_VALUE),
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center,
+            color = Color.White
         )
+
     }
 }
 
@@ -342,12 +355,18 @@ fun DotsIndicator(
 fun ScreenshotGalleryPreview() {
     GptmapTheme {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            ImageCard(imageSummary = ImageSummary(
-                id = "debet",
-                imageUrl = "https://www.google.com/#q=fames",
-                title = "himenaeos",
-                date = LocalDateTime.now()
-            ), isSelected = true, onClick = {}, onLongClick = {})
+            ImageCard(
+                imageSummary = ImageSummary(
+                    id = "debet",
+                    imageUrl = "https://www.google.com/#q=fames",
+                    title = "himenaeos",
+                    date = LocalDateTime.now()
+                ),
+                isSelected = true,
+                onClick = {},
+                onLongClick = {},
+                modifier = Modifier.padding(8.dp)
+            )
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.feature.favourite
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -47,7 +48,7 @@ fun FavouriteRoute(
     viewModel: FavouriteViewModel = hiltViewModel()
 ) {
     val favourites by viewModel.favourites.collectAsStateWithLifecycle()
-
+    Log.d("FavouriteRoute", "favourites: $favourites")
     FavouriteScreen(
         popUp = popUp,
         onCardClick = navigateToMap,
@@ -76,20 +77,27 @@ fun FavouriteScreen(
         with(favourites) {
             when (this) {
                 is Response.Success -> {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(it),
-                        verticalArrangement = Arrangement.spacedBy(HIGH_PADDING),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        contentPadding = PaddingValues(HIGH_PADDING)
-                    ) {
-                        items(data, key = { favourite -> favourite.id }) { favourite ->
-                            FavouriteCard(
-                                favourite = favourite,
-                                onClick = { onCardClick(favourite.favouriteId) }
-                            )
+                    if (data.isNotEmpty()) {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(it),
+                            verticalArrangement = Arrangement.spacedBy(HIGH_PADDING),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            contentPadding = PaddingValues(HIGH_PADDING)
+                        ) {
+                            items(data, key = { favourite -> favourite.id }) { favourite ->
+                                FavouriteCard(
+                                    favourite = favourite,
+                                    onClick = { onCardClick(favourite.favouriteId) }
+                                )
+                            }
                         }
+                    } else {
+                        LottieAnimationPlaceholder(
+                            modifier = Modifier.padding(it),
+                            rawRes = AppRaw.nothing_here_anim
+                        )
                     }
                 }
 
