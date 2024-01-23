@@ -15,6 +15,7 @@ import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 class RealmSyncServiceImpl : RealmSyncService {
 
@@ -84,5 +85,30 @@ class RealmSyncServiceImpl : RealmSyncService {
 
     override fun isUserInDatabase(): Result<Boolean> = runCatching {
         realm.query<RealmUser>("userId == $0", realmUserId).first().find() != null
+    }
+
+    override suspend fun deleteImageAnalysis(imageAnalysisId: String): Result<Boolean> = runCatching {
+        realm.write {
+            val imageAnalysisToDelete: RealmImageAnalysis = query<RealmImageAnalysis>("userId == $0 AND imageId == $1", realmUserId, imageAnalysisId)
+                .find()
+                .first()
+            delete(imageAnalysisToDelete)
+        }
+        true
+    }
+
+    override suspend fun updateImageAnalysisText(
+        imageAnalysisId: String,
+        text: String
+    ): Result<Boolean> = runCatching {
+        realm.write {
+            val imageAnalysisToUpdate: RealmImageAnalysis = query<RealmImageAnalysis>("userId == $0 AND imageId == $1", realmUserId, imageAnalysisId)
+                .find()
+                .first()
+            findLatest(imageAnalysisToUpdate)?.let { realmImageAnalysis ->
+               realmImageAnalysis.title = text
+            }
+        }
+        true
     }
 }
