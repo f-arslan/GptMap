@@ -9,6 +9,8 @@ import com.espressodev.gptmap.GmAppState
 import com.espressodev.gptmap.feature.favourite.favouriteScreen
 import com.espressodev.gptmap.feature.forgot_password.forgotPasswordScreen
 import com.espressodev.gptmap.feature.forgot_password.navigateToForgotPassword
+import com.espressodev.gptmap.feature.info.infoScreen
+import com.espressodev.gptmap.feature.info.navigateToInfo
 import com.espressodev.gptmap.feature.login.LOGIN_ROUTE
 import com.espressodev.gptmap.feature.login.loginScreen
 import com.espressodev.gptmap.feature.login.navigateToLogin
@@ -31,8 +33,6 @@ fun GmNavHost(
     startDestination: String = LOGIN_ROUTE
 ) {
     val navController = appState.navController
-
-    navController.NavigationListener()
 
     NavHost(
         modifier = modifier,
@@ -69,9 +69,13 @@ fun GmNavHost(
         screenshotGalleryScreen(popUp = navController::popBackStack)
         profileScreen(
             popUp = navController::popBackStack,
-            navigateToLogin = navController::navigateToLogin
+            navigateToLogin = navController::navigateToLogin,
+            navigateToInfo = navController::navigateToInfo
         )
+        infoScreen(popUp = navController::popBackStack)
     }
+
+    navController.NavigationListener()
 }
 
 @Composable

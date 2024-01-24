@@ -37,7 +37,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isDebuggable = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -63,6 +63,7 @@ dependencies {
     implementation(projects.feature.screenshot)
     implementation(projects.feature.screenshotGallery)
     implementation(projects.feature.profile)
+    implementation(projects.feature.info)
 
     implementation(projects.core.designsystem)
     implementation(projects.core.common)
@@ -76,5 +77,4 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.runtimeCompose)
-    implementation(libs.androidx.compose.material)
 }
