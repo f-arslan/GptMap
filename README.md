@@ -1,7 +1,7 @@
 # GptMap
 Crafted a map search app using Kotlin and Jetpack Compose. The app boasts a modular architecture, dynamic UI, secure user data handling, and efficient dependency injection. It integrates various APIs and advanced graphics, ensuring a smooth user experience.
 
-Demo: [https://drive.google.com/file/d/1gCmDmGglGuZJ5VTG2jt_mFadUiBiQuKd/view?usp=sharing](https://drive.google.com/file/d/1gCmDmGglGuZJ5VTG2jt_mFadUiBiQuKd/view?usp=sharing)
+Demo: [Gptmap-Demo](https://drive.google.com/file/d/1gCmDmGglGuZJ5VTG2jt_mFadUiBiQuKd/view?usp=sharing)
 
 ## Key Technologies:
 
