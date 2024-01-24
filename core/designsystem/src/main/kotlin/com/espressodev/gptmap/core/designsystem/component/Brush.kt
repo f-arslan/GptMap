@@ -24,8 +24,10 @@ fun shimmerBrush(showShimmer: Boolean = true, targetValue: Float = 1000f): Brush
             initialValue = 0f,
             targetValue = targetValue,
             animationSpec = infiniteRepeatable(
-                animation = tween(1000), repeatMode = RepeatMode.Reverse
-            ), label = "shimmer animation"
+                animation = tween(1000),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "shimmer animation"
         )
         Brush.linearGradient(
             colors = shimmerColors,

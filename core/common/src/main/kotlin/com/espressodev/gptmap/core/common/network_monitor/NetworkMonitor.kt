@@ -13,7 +13,6 @@ interface NetworkMonitor {
 @Module
 @InstallIn(ActivityComponent::class)
 abstract class NetworkModule {
-
     @Binds
     abstract fun bindsNetworkMonitor(networkMonitor: ConnectivityManagerNetworkMonitor): NetworkMonitor
 }

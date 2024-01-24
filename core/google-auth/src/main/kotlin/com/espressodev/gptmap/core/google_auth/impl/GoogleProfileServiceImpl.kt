@@ -25,7 +25,7 @@ class GoogleProfileServiceImpl @Inject constructor(
         return try {
             oneTapClient.signOut().await()
             auth.signOut()
-            GoogleResponse.Success(true)
+            GoogleResponse.Success(data = true)
         } catch (e: ApiException) {
             GoogleResponse.Failure(e)
         }
@@ -38,7 +38,7 @@ class GoogleProfileServiceImpl @Inject constructor(
                 oneTapClient.signOut().await()
                 delete().await()
             }
-            GoogleResponse.Success(true)
+            GoogleResponse.Success(data = true)
         } catch (e: ApiException) {
             GoogleResponse.Failure(e)
         }

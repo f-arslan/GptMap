@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.gptmap.android.library)
     alias(libs.plugins.gptmap.android.library.compose)
-    alias(libs.plugins.gptmap.android.application.firebase)
     alias(libs.plugins.gptmap.android.hilt)
     alias(libs.plugins.secrets)
 }
@@ -16,4 +15,6 @@ dependencies {
 
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.firebase.auth)
+    implementation(libs.play.services.auth)
 }

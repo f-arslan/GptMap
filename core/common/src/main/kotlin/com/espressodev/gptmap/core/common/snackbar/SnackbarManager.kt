@@ -21,7 +21,6 @@ object SnackbarManager {
     fun showMessage(message: SnackbarMessage) {
         messages.update { message }
     }
-
     fun clean() {
         messages.update { null }
     }

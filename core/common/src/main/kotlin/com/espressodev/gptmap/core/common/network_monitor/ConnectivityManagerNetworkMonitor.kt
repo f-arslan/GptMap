@@ -19,7 +19,7 @@ class ConnectivityManagerNetworkMonitor @Inject constructor(
     override val isOnline: Flow<Boolean> = callbackFlow {
         val connectivityManager = context.getSystemService<ConnectivityManager>()
         if (connectivityManager == null) {
-            channel.trySend(false)
+            channel.trySend(element = false)
             channel.close()
             return@callbackFlow
         }
@@ -29,7 +29,7 @@ class ConnectivityManagerNetworkMonitor @Inject constructor(
 
             override fun onAvailable(network: Network) {
                 networks += network
-                channel.trySend(true)
+                channel.trySend(element = true)
             }
 
             override fun onLost(network: Network) {
@@ -56,5 +56,5 @@ class ConnectivityManagerNetworkMonitor @Inject constructor(
 
     private fun ConnectivityManager.isCurrentlyConnected() = activeNetwork
         ?.let(::getNetworkCapabilities)
-        ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) ?: false
+        ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
 }
