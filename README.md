@@ -1,2 +1,24 @@
 # GptMap
-Architected and developed a map search and navigation application employing a multi-module architecture to enhance modularity and scalability. Utilized Kotlin and Jetpack Compose for a dynamic UI, Ktor and MongoDB for robust backend services, Firestore with Firebase Auth for secure user data handling, and integrated Dagger2, Hilt, and Koin for efficient dependency injection. Implemented Google Maps API and various third-party APIs to enrich functionality, with Coil and Lottie for advanced graphics. Applied KSP for streamlined code generation, and embraced MVVM and MVI patterns for clear separation of concerns. Managed asynchronous operations with Coroutines, state with ViewModel, and leveraged Docker for consistent deployment.
+Crafted a map search app using Kotlin and Jetpack Compose. The app boasts a modular architecture, dynamic UI, secure user data handling, and efficient dependency injection. It integrates various APIs and advanced graphics, ensuring a smooth user experience.
+
+## Key Technologies:
+
+- Kotlin
+- Jetpack Compose (custom composables and animations)
+- Ktor
+- MongoDB (Realm, Database, and JWT Auth)
+- Firestore and Storage
+- Firebase Auth (Email & Password - Gmail)
+- Dagger2, Hilt, Koin
+- Google Maps API
+- Third-party APIs (Gemini, Palm, Chatgpt, Unsplash)
+- Coil, Lottie
+- Kotlin Symbol Processing (KSP)
+- Model-View-ViewModel (MVVM) and Model-View-Intent (MVI) patterns
+- Coroutines
+- ViewModel
+- Retrofit
+- Docker
+- GCP Secret Manager
+- Testing (JUnit 4 - JUnit 5 - Mockk - turbine)
+- Linting (Detekt)
