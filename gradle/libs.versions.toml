@@ -3,7 +3,7 @@ androidDesugarJdkLibs = "2.0.4"
 androidGradlePlugin = "8.2.1"
 androidxActivity = "1.8.2"
 androidxComposeBom = "2023.10.01"
-androidxComposeCompiler = "1.5.3"  # Compose VC
+androidxComposeCompiler = "1.5.8"  # Compose VC
 androidxCoreSplashscreen = "1.0.1"
 androidxHiltNavigationCompose = "1.1.0"
 androidxLifecycle = "2.7.0"
@@ -21,10 +21,10 @@ firebase-messaging = "23.4.0"
 gmsPlugin = "4.4.0"
 hilt = "2.50"
 hiltExt = "1.1.0"
-kotlin = "1.9.10"  # Can't update due to Realm
+kotlin = "1.9.22"
 kotlinxCoroutines = "1.7.3"
 kotlinxSerializationJson = "1.6.0"
-ksp = "1.9.10-1.0.13"  # Can't update due to Realm
+ksp = "1.9.22-1.0.17"
 retrofit = "2.9.0"
 playServicesAuth = "20.7.0"
 playServicesLocation = "21.0.1"
@@ -32,11 +32,11 @@ playServicesMaps = "18.2.0"
 secrets = "2.0.1"
 mapsCompose = "4.1.1"
 junit = "1.1.5"
-realm = "1.11.0"
+realm = "1.13.0"
 googleServices = "4.4.0"
 okhttp3Logging = "4.12.0"
 googleGson = "2.10.1"
-ktorVersion = "2.1.2"
+ktorVersion = "2.3.2"
 coilCompose = "2.5.0"
 generativeai = "0.1.2"
 lottieCompose = "6.2.0"
@@ -53,6 +53,10 @@ androidxTestRules = "1.5.0"
 mockito = "4.8.0"
 coreTesting = "2.2.0"
 turbine = "1.0.0"
+kotlin2 = "1.9.0"
+espressoCore = "3.5.1"
+appcompat = "1.6.1"
+materialVersion = "1.11.0"
 [libraries]
 
 # Compose
@@ -70,9 +74,9 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 androidx-compose-ui-util = { group = "androidx.compose.ui", name = "ui-util" }
 androidx-lifecycle-runtimeCompose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidxLifecycle" }
 androidx-lifecycle-viewModelCompose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "androidxLifecycle" }
-androidx-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-junit4" }  # Used in Android Compose VC
-androidx-compose-ui-testManifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }  # Used in Android Compose VC
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }  # Used in Android Compose VC
+androidx-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-junit4" }  # Android Compose VC
+androidx-compose-ui-testManifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }  # Android Compose VC
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }  # Android Compose VC
 # End of it
 
 # Firebase
@@ -84,9 +88,9 @@ play-services-maps = { module = "com.google.android.gms:play-services-maps", ver
 google-services = { group = "com.google.gms", name = "google-services", version.ref = "googleServices" }
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
-firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebase-messaging" } # Used in Firebase VC
-play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" } # Used in Firebase VC
-firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics", version.ref = "firebase-analytics" } # Used in Firebase VC
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebase-messaging" }  # Firebase VC
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }  # Firebase VC
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics", version.ref = "firebase-analytics" }  # Firebase VC
 # End of it
 
 # Testing
@@ -115,11 +119,11 @@ hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testi
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-ext-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltExt" }
 hilt-ext-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hiltExt" }
-androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }  # Used in Android Feature VC
+androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }  #Android Feature VC
 # End of it
 
 # Kotlin
-kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }  # Used in Android Feature VC
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }  #Android Feature VC
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 # End of it
 
@@ -130,7 +134,7 @@ realm-library-sync = { group = "io.realm.kotlin", name = "library-sync", version
 
 # Android
 androidx-work-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "androidxWork" }
-android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugarJdkLibs" }  # Used in Kotlin VC
+android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugarJdkLibs" }  #Kotlin VC
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxCoreSplashscreen" }
 # End of it
 
@@ -165,6 +169,9 @@ kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-pl
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtxVersion" }
 junit = { group = "junit", name = "junit", version.ref = "baseJunit" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
 # End of it
 
 [plugins]
@@ -191,5 +198,6 @@ gptmap-android-application-firebase = { id = "gptmap.android.application.firebas
 gptmap-jvm-library = { id = "gptmap.jvm.library", version = "unspecified" }
 gptmap-ktor = { id = "gptmap.ktor", version = "unspecified" }
 gptmap-android-detekt = { id = "gptmap.android.detekt", version = "unspecified" }
+jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin2" }
 # End of it
 

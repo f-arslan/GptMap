@@ -56,7 +56,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 fun FavouriteRoute(
     popUp: () -> Unit,
     navigateToMap: (String) -> Unit,
-    viewModel: FavouriteViewModel = hiltViewModel()
+    viewModel: FavouriteViewModel = hiltViewModel(),
 ) {
     val favourites by viewModel.favourites.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

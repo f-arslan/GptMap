@@ -11,11 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -26,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -47,7 +44,8 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 fun ProfileRoute(
     popUp: () -> Unit,
     navigateToLogin: () -> Unit,
-    viewModel: ProfileViewModel = hiltViewModel()
+    navigateToInfo: () -> Unit,
+    viewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val user by viewModel.user.collectAsStateWithLifecycle()
     Scaffold(
@@ -64,8 +62,7 @@ fun ProfileRoute(
             Response.Loading -> {}
             is Response.Success -> ProfileScreen(
                 user = result.data,
-                onEditFullNameClick = {},
-                onInfoClick = {},
+                onInfoClick = navigateToInfo,
                 onLogOutClick = { viewModel.onLogoutClick(navigateToLogin) },
                 modifier = Modifier.padding(it)
             )
@@ -76,7 +73,6 @@ fun ProfileRoute(
 @Composable
 fun ProfileScreen(
     user: User,
-    onEditFullNameClick: () -> Unit,
     onInfoClick: () -> Unit,
     onLogOutClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -85,32 +81,10 @@ fun ProfileScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(vertical = 16.dp, horizontal = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            LetterInCircle(letter = user.fullName.first(), modifier = Modifier.size(120.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Spacer(modifier = Modifier.width(40.dp))
-                Text(
-                    text = user.fullName,
-                    style = MaterialTheme.typography.headlineLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                IconButton(onClick = onEditFullNameClick) {
-                    Icon(
-                        imageVector = GmIcons.EditDefault,
-                        contentDescription = stringResource(id = AppText.edit)
-                    )
-                }
-            }
-        }
+        LetterInCircle(letter = user.fullName.first(), modifier = Modifier.size(120.dp))
         Spacer(modifier = Modifier.height(8.dp))
         ProfileItem(GmIcons.InfoOutlined, AppText.info, onInfoClick)
         ProfileItem(GmIcons.LogoutOutlined, AppText.logout, onLogOutClick)

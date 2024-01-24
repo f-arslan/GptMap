@@ -29,10 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.espressodev.gptmap.core.common.ext.clipPolygon
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.MAX_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
@@ -51,6 +49,7 @@ internal fun BoxScope.DetailSheet(
         modifier = Modifier
             .fillMaxWidth()
             .clipPolygon(MaterialTheme.colorScheme.surface)
+
             .align(Alignment.BottomCenter)
 
     ) {
@@ -58,7 +57,7 @@ internal fun BoxScope.DetailSheet(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .padding(horizontal = HIGH_PADDING)
-                .padding(bottom = VERY_HIGH_PADDING)
+                .padding(bottom = 24.dp)
         ) {
             Text(
                 text = location.content.city,
@@ -85,16 +84,16 @@ internal fun BoxScope.DetailSheet(
                 style = MaterialTheme.typography.titleLarge,
                 maxLines = 5,
                 overflow = TextOverflow.Ellipsis,
-                lineHeight = MAX_PADDING.value.sp
+                lineHeight = 32.sp
             )
-            Spacer(modifier = Modifier.height(VERY_HIGH_PADDING))
+            Spacer(modifier = Modifier.height(24.dp))
             LocationImages(
                 location.locationImages,
                 onClick = { onEvent(MapUiEvent.OnImageClick(it)) }
             )
             Text(
                 text = location.content.normalDescription,
-                lineHeight = VERY_HIGH_PADDING.value.sp,
+                lineHeight = 24.sp,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyLarge,
                 maxLines = 6,

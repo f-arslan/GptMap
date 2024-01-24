@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.feature.screenshot_gallery
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -28,10 +29,10 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -54,7 +55,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espressodev.gptmap.core.designsystem.GmIcons
@@ -75,7 +75,6 @@ import java.time.LocalDateTime
 import kotlin.math.absoluteValue
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -152,7 +151,6 @@ fun ScreenshotGalleryRoute(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ScreenshotGalleryScreen(
     images: PersistentList<ImageSummary>,
@@ -162,10 +160,14 @@ fun ScreenshotGalleryScreen(
     isUiInEditMode: Boolean,
 ) {
     var currentPage by rememberSaveable { mutableIntStateOf(0) }
-    var dialogState by rememberSaveable { mutableStateOf(false) }
-    val pagerState = rememberPagerState(initialPage = currentPage, pageCount = { images.size })
+    var dialogState by rememberSaveable { mutableStateOf(value = false) }
+    Log.d("ScreenshotGalleryScreen", "ScreenshotGalleryScreen: $images $currentPage")
     if (dialogState) {
-        GalleryView(images = images, pagerState = pagerState, onDismiss = { dialogState = false })
+        GalleryView(
+            images = images,
+            currentPage = currentPage,
+            onDismiss = { dialogState = false }
+        )
     }
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -248,57 +250,52 @@ fun ImageCard(
 @Composable
 private fun GalleryView(
     images: PersistentList<ImageSummary>,
-    pagerState: PagerState,
+    currentPage: Int,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val pagerState = rememberPagerState(initialPage = currentPage, pageCount = { images.size })
     Dialog(onDismissRequest = onDismiss) {
-        Box(
-            modifier = modifier
-                .fillMaxSize()
-                .zIndex(2f), contentAlignment = Alignment.Center
+        Column(
+            modifier = modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                HorizontalPager(
-                    state = pagerState,
-                    contentPadding = PaddingValues(16.dp)
-                ) { page ->
-                    Card(
-                        Modifier
-                            .graphicsLayer {
-                                val pageOffset =
-                                    (pagerState.currentPage - page + pagerState.currentPageOffsetFraction)
-                                        .absoluteValue
+            HorizontalPager(
+                state = pagerState,
+                contentPadding = PaddingValues(16.dp)
+            ) { page ->
+                Surface(
+                    Modifier
+                        .graphicsLayer {
+                            val pageOffset =
+                                (pagerState.currentPage - page + pagerState.currentPageOffsetFraction)
+                                    .absoluteValue
 
-                                val scale = lerp(
-                                    start = 0.7f,
-                                    stop = 1f,
-                                    fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                                )
-                                scaleX = scale
-                                scaleY = scale
+                            val scale = lerp(
+                                start = 0.7f,
+                                stop = 1f,
+                                fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                            )
+                            scaleX = scale
+                            scaleY = scale
 
-                                alpha = lerp(
-                                    start = 0.5f,
-                                    stop = 1f,
-                                    fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                                )
-                            }
-                            .aspectRatio(1f)
-                    ) {
-                        ImageCard(imageSummary = images[page])
-                    }
+                            alpha = lerp(
+                                start = 0.5f,
+                                stop = 1f,
+                                fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                            )
+                        }
+                        .aspectRatio(1f)
+                ) {
+                    ImageCard(imageSummary = images[page])
                 }
-                DotsIndicator(
-                    totalDots = images.size,
-                    selectedIndex = pagerState.currentPage,
-                    maxDots = minOf(images.size, 5)
-                )
             }
+            DotsIndicator(
+                totalDots = images.size,
+                selectedIndex = pagerState.currentPage,
+                maxDots = minOf(images.size, 5)
+            )
         }
     }
 }

@@ -12,6 +12,7 @@ import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -160,15 +161,17 @@ class MapViewModel @Inject constructor(
             }
             when (isStreetAvailable) {
                 Status.OK -> {
+                    _uiState.update { it.copy(componentLoadingState = ComponentLoadingState.NOTHING) }
+                    delay(25L)
                     navigateToStreetView(latLng)
                 }
 
                 else -> {
+                    _uiState.update { it.copy(componentLoadingState = ComponentLoadingState.NOTHING) }
                     SnackbarManager.showMessage("Street View is not available for this location")
                 }
             }
 
-            _uiState.update { it.copy(componentLoadingState = ComponentLoadingState.NOTHING) }
         }
 
     fun loadLocationFromFavourite(favouriteId: String) = launchCatching {

@@ -58,7 +58,6 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.MAX_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
@@ -83,6 +82,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlin.math.absoluteValue
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
@@ -308,6 +308,7 @@ private fun MapSection(uiState: MapUiState, isPinVisible: Boolean, onEvent: (Map
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
+            uiSettings = MapUiSettings(zoomControlsEnabled = false),
             properties = mapProperties,
             onMapLoaded = { isMapLoaded = true }
         )
@@ -326,7 +327,7 @@ private fun BoxScope.LoadingDialog(
             .align(Alignment.TopCenter)
             .statusBarsPadding()
             .fillMaxWidth()
-            .padding(top = 64.dp)
+            .padding(top = 72.dp)
             .padding(horizontal = 32.dp)
     ) {
         val textId: Int =
@@ -341,13 +342,13 @@ private fun BoxScope.LoadingDialog(
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(HIGH_PADDING)
+                modifier = Modifier.padding(vertical = 16.dp)
             ) {
                 DefaultLoadingAnimation()
                 Text(
                     text = stringResource(textId),
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Medium,
                 )
             }
@@ -456,7 +457,7 @@ fun BoxScope.SmallInformationCard(
                         Image(
                             painter = painterResource(id = AppDrawable.sparkling),
                             contentDescription = null,
-                            modifier = Modifier.size(MAX_PADDING)
+                            modifier = Modifier.size(32.dp)
                         )
                         Spacer(modifier = Modifier.width(MEDIUM_PADDING))
                         Text(text = stringResource(id = AppText.explore_with_ai))

@@ -15,10 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.VERY_HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.component.AppWrapper
 import com.espressodev.gptmap.core.designsystem.component.DayHeader
@@ -96,7 +96,7 @@ fun LoginScreen(
         DayHeader(
             stringResource(AppText.or),
             style = MaterialTheme.typography.titleMedium,
-            height = VERY_HIGH_PADDING
+            height = 24.dp
         )
         ExtFloActionButton(
             AppDrawable.google,
