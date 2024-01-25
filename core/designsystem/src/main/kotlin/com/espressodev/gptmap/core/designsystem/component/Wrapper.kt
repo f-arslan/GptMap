@@ -12,8 +12,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun AppWrapper(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit = {}) {
@@ -21,12 +20,12 @@ fun AppWrapper(modifier: Modifier = Modifier, content: @Composable ColumnScope.(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .padding(HIGH_PADDING)
+            .padding(16.dp)
             .statusBarsPadding()
     ) {
         Column(
             modifier = Modifier.verticalScroll(scrollState),
-            verticalArrangement = Arrangement.spacedBy(HIGH_PADDING),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             content()
@@ -37,7 +36,7 @@ fun AppWrapper(modifier: Modifier = Modifier, content: @Composable ColumnScope.(
 @Composable
 fun HeaderWrapper(modifier: Modifier = Modifier, content: @Composable () -> Unit = {}) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(MEDIUM_PADDING),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {

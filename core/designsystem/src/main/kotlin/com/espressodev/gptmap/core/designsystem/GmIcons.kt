@@ -1,6 +1,9 @@
 package com.espressodev.gptmap.core.designsystem
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.Logout
+import androidx.compose.material.icons.automirrored.outlined.NavigateNext
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Clear
@@ -14,7 +17,6 @@ import androidx.compose.material.icons.filled.Screenshot
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Title
 import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Delete
@@ -25,10 +27,8 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocationCity
 import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.MarkEmailUnread
 import androidx.compose.material.icons.outlined.MyLocation
-import androidx.compose.material.icons.outlined.NavigateNext
 import androidx.compose.material.icons.outlined.Screenshot
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
@@ -45,7 +45,7 @@ object GmIcons {
     val FaceOutlined = Icons.Outlined.Face
     val EmailOutlined = Icons.Outlined.Email
     val MarkEmailUnreadOutlined = Icons.Outlined.MarkEmailUnread
-    val ArrowBackOutlined = Icons.Outlined.ArrowBack
+    val ArrowBackOutlined = Icons.AutoMirrored.Outlined.ArrowBack
     val FingerPrintFilled = Icons.Filled.Fingerprint
     val LocationCityOutlined = Icons.Outlined.LocationCity
     val MyLocationOutlined = Icons.Outlined.MyLocation
@@ -58,8 +58,8 @@ object GmIcons {
     val AccountCircleOutlined = Icons.Outlined.AccountCircle
     val EditDefault = Icons.Default.Edit
     val InfoOutlined = Icons.Outlined.Info
-    val LogoutOutlined = Icons.Outlined.Logout
-    val NavigateNextDefault = Icons.Outlined.NavigateNext
+    val LogoutOutlined = Icons.AutoMirrored.Outlined.Logout
+    val NavigateNextDefault = Icons.AutoMirrored.Outlined.NavigateNext
     val ExploreOutlined = Icons.Outlined.Explore
     val ExploreFilled = Icons.Filled.Explore
     val DeleteOutlined = Icons.Outlined.Delete

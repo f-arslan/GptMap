@@ -28,7 +28,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
@@ -65,7 +64,6 @@ fun ExtFloActionButton(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun DefaultButton(
     @StringRes text: Int,
@@ -197,8 +195,8 @@ fun GmDraggableButton(
 fun SquareButton(
     @StringRes contentDesc: Int,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
     icon: IconType,
+    modifier: Modifier = Modifier,
     shape: RoundedCornerShape = RoundedCornerShape(16.dp),
     contentPaddings: PaddingValues = PaddingValues(0.dp),
     size: Dp = 56.dp,

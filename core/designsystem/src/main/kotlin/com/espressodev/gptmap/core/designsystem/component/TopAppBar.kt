@@ -36,105 +36,130 @@ fun GmTopAppBar(
     scrollBehavior: TopAppBarScrollBehavior? = null,
     editText: String = "",
     isInEditMode: Boolean = false,
+    selectedItemsCount: Int = 0,
     onEditClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {},
     onCancelClick: () -> Unit = {}
 ) {
-    val value = when (text) {
-        is TextType.Res -> stringResource(id = text.textId)
-        is TextType.Text -> text.text
-    }
     TopAppBar(
         modifier = modifier,
         scrollBehavior = scrollBehavior,
-        title = {
-            when (isInEditMode) {
-                true -> Text(text = editText, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                false -> {
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        Text(
-                            text = value,
-                            fontWeight = FontWeight.Medium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                }
-            }
-        },
-        navigationIcon = {
-            when (isInEditMode) {
-                true -> {
-                    IconButton(onClick = onCancelClick) {
-                        Icon(
-                            imageVector = GmIcons.CancelOutlined,
-                            contentDescription = stringResource(id = AppText.cancel)
-                        )
-                    }
-                }
-
-                false -> {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = GmIcons.ArrowBackOutlined,
-                            contentDescription = stringResource(id = AppText.back_arrow)
-                        )
-                    }
-                }
-            }
-        },
+        title = { AppBarTitle(text, editText, isInEditMode) },
+        navigationIcon = { AppBarNavigationIcon(isInEditMode, onBackClick, onCancelClick) },
         actions = {
-            when (isInEditMode) {
-                true -> {
-                    IconButton(onClick = onEditClick) {
-                        Icon(
-                            imageVector = GmIcons.EditDefault,
-                            contentDescription = stringResource(id = AppText.edit)
-                        )
-                    }
-                    IconButton(onClick = onDeleteClick) {
-                        Icon(
-                            imageVector = GmIcons.DeleteOutlined,
-                            contentDescription = stringResource(id = AppText.delete),
-                            tint = MaterialTheme.colorScheme.error
-                        )
-                    }
-                }
-
-                false -> {
-                    when (icon) {
-                        is IconType.Bitmap -> {
-                            Icon(
-                                painter = painterResource(id = icon.painterId),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(end = 12.dp)
-                                    .size(24.dp),
-                                tint = MaterialTheme.colorScheme.secondary
-                            )
-                        }
-
-                        is IconType.Vector -> {
-                            Icon(
-                                imageVector = icon.imageVector,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(end = 12.dp)
-                                    .size(24.dp),
-                                tint = MaterialTheme.colorScheme.secondary
-                            )
-                        }
-                    }
-                }
-            }
+            AppBarActions(
+                isInEditMode,
+                selectedItemsCount,
+                onEditClick,
+                onDeleteClick,
+                icon
+            )
         }
     )
 }
 
+@Composable
+private fun AppBarTitle(text: TextType, editText: String, isInEditMode: Boolean) {
+    val titleText = when (text) {
+        is TextType.Res -> stringResource(id = text.textId)
+        is TextType.Text -> text.text
+    }
+
+    if (isInEditMode) {
+        Text(text = editText, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    } else {
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Text(
+                text = titleText,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
+
+@Composable
+private fun AppBarNavigationIcon(
+    isInEditMode: Boolean,
+    onBackClick: () -> Unit,
+    onCancelClick: () -> Unit
+) {
+    if (isInEditMode) {
+        IconButton(onClick = onCancelClick) {
+            Icon(
+                imageVector = GmIcons.CancelOutlined,
+                contentDescription = stringResource(id = AppText.cancel)
+            )
+        }
+    } else {
+        IconButton(onClick = onBackClick) {
+            Icon(
+                imageVector = GmIcons.ArrowBackOutlined,
+                contentDescription = stringResource(id = AppText.back_arrow)
+            )
+        }
+    }
+}
+
+@Composable
+private fun AppBarActions(
+    isInEditMode: Boolean,
+    selectedItemsCount: Int,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    icon: IconType
+) {
+    if (isInEditMode) {
+        if (selectedItemsCount == 1) {
+            IconButton(onClick = onEditClick) {
+                Icon(
+                    imageVector = GmIcons.EditDefault,
+                    contentDescription = stringResource(id = AppText.edit)
+                )
+            }
+        }
+        if (selectedItemsCount > 0) {
+            IconButton(onClick = onDeleteClick) {
+                Icon(
+                    imageVector = GmIcons.DeleteOutlined,
+                    contentDescription = stringResource(id = AppText.delete),
+                    tint = MaterialTheme.colorScheme.error
+                )
+            }
+        }
+    } else {
+        when (icon) {
+            is IconType.Bitmap -> {
+                Icon(
+                    painter = painterResource(id = icon.painterId),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(end = 12.dp)
+                        .size(24.dp),
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
+
+            is IconType.Vector -> {
+                Icon(
+                    imageVector = icon.imageVector,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(end = 12.dp)
+                        .size(24.dp),
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
+        }
+    }
+}
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview(showBackground = true)
-fun TopAppBarPreview() {
+private fun TopAppBarPreview() {
     GptmapTheme {
         GmTopAppBar(
             text = TextType.Res(AppText.add_favourite),

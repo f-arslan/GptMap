@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.core.common.ext
+package com.espressodev.gptmap.core.designsystem.ext
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind

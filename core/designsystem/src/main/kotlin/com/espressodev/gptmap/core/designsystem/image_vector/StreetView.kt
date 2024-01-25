@@ -7,15 +7,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
-
-private var _StreetView: ImageVector? = null
+private var Street_ViewMut: ImageVector? = null
 
 val StreetView: ImageVector
     get() {
-        if (_StreetView != null) {
-            return _StreetView!!
+        if (Street_ViewMut != null) {
+            return Street_ViewMut!!
         }
-        _StreetView = ImageVector.Builder(
+        Street_ViewMut = ImageVector.Builder(
             name = "StreetView",
             defaultWidth = 18.dp,
             defaultHeight = 24.dp,
@@ -141,6 +140,6 @@ val StreetView: ImageVector
                 close()
             }
         }.build()
-        return _StreetView!!
+        return Street_ViewMut!!
     }
 

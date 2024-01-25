@@ -25,6 +25,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -33,7 +34,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
@@ -50,7 +50,7 @@ fun MapTextField(
     shape: Shape = RoundedCornerShape(24.dp),
 ) {
     val shouldShownClearIcon by remember(value) { derivedStateOf { value.isNotBlank() } }
-
+    val keyboardController = LocalSoftwareKeyboardController.current
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -87,7 +87,10 @@ fun MapTextField(
             Icon(imageVector = GmIcons.SearchDefault, contentDescription = null)
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions { onSearchClick() },
+        keyboardActions = KeyboardActions {
+            keyboardController?.hide()
+            onSearchClick()
+        },
         maxLines = 1,
         colors = TextFieldDefaults.colors(
             unfocusedIndicatorColor = Color.Transparent,
@@ -114,14 +117,14 @@ fun DefaultTextField(
         value = value,
         enabled = enabled,
         label = { Text(text = stringResource(id = label)) },
-        shape = RoundedCornerShape(MEDIUM_PADDING),
+        shape = RoundedCornerShape(8.dp),
         leadingIcon = {
             Icon(imageVector = leadingIcon, contentDescription = null)
         },
         trailingIcon = {
             if (showClearIcon) {
                 IconButton(onClick = { onValueChange("") }) {
-                    Icon(GmIcons.CancelOutlined, null)
+                    Icon(imageVector = GmIcons.CancelOutlined, contentDescription = null)
                 }
             }
         },
@@ -168,7 +171,7 @@ fun PasswordTextField(
         keyboardActions = KeyboardActions(
             onNext = { onConfirmClick() }
         ),
-        shape = RoundedCornerShape(MEDIUM_PADDING),
+        shape = RoundedCornerShape(8.dp),
         onValueChange = { if (it.length < 30) onValueChange(it) },
         visualTransformation = if (passwordVisibility) VisualTransformation.None
         else PasswordVisualTransformation()

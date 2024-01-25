@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.core.designsystem.component
 
+import android.util.Log
 import androidx.annotation.RawRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,10 +20,11 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.espressodev.gptmap.core.designsystem.util.LifecycleObserver
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 
 @Composable
-fun GmCircularIndicator(modifier: Modifier = Modifier) {
+fun GmProgressIndicator(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -37,6 +40,7 @@ fun GmCircularIndicator(modifier: Modifier = Modifier) {
 fun LottieAnimationPlaceholder(
     @RawRes rawRes: Int,
     modifier: Modifier = Modifier,
+    visible: Boolean = true,
     backgroundColor: Color = MaterialTheme.colorScheme.background
 ) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(rawRes))
@@ -44,18 +48,18 @@ fun LottieAnimationPlaceholder(
         composition,
         iterations = LottieConstants.IterateForever
     )
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(backgroundColor)
-            .zIndex(2f),
-        contentAlignment = Alignment.Center
-    ) {
-        LottieAnimation(
-            composition = composition,
-            progress = { progress }
-        )
-    }
+    if (visible)
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .background(backgroundColor),
+            contentAlignment = Alignment.Center
+        ) {
+            LottieAnimation(
+                composition = composition,
+                progress = { progress }
+            )
+        }
 }
 
 @Preview

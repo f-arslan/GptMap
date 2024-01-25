@@ -3,10 +3,6 @@ package com.espressodev.gptmap.core.designsystem
 import androidx.compose.ui.unit.dp
 
 object Constants {
-    val SMALL_PADDING = 4.dp
-    val MEDIUM_PADDING = 8.dp
-    val HIGH_PADDING = 16.dp
-
     // User Agreements
     const val PRIVACY_POLICY_DESC = "By signing up, you agree to accept our privacy policy and terms & conditions."
     const val PRIVACY_TERM_CONDITIONS = "Privacy Policy and Terms & Conditions"

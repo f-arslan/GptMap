@@ -13,19 +13,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 
 @Composable
 fun DayHeader(
     dayString: String,
     modifier: Modifier = Modifier,
     style: TextStyle = MaterialTheme.typography.labelSmall,
-    height: Dp = HIGH_PADDING
+    height: Dp = 16.dp
 ) {
     Row(
         modifier = modifier
-            .padding(vertical = MEDIUM_PADDING, horizontal = HIGH_PADDING)
+            .padding(vertical = 8.dp, horizontal = 16.dp)
             .height(height)
     ) {
         DayHeaderLine()

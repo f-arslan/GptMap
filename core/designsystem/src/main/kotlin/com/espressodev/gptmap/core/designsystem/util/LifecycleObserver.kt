@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.core.common.util
+package com.espressodev.gptmap.core.designsystem.util
 
 import android.util.Log
 import androidx.compose.runtime.Composable

@@ -1,7 +1,6 @@
 package com.espressodev.gptmap.core.designsystem
 
 import androidx.annotation.DrawableRes
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class IconType {

@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.core.common.ext
+package com.espressodev.gptmap.core.designsystem.ext
 
 import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
