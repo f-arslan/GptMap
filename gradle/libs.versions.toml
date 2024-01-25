@@ -2,7 +2,7 @@
 androidDesugarJdkLibs = "2.0.4"
 androidGradlePlugin = "8.2.1"
 androidxActivity = "1.8.2"
-androidxComposeBom = "2023.10.01"
+androidxComposeBom = "2024.01.00"
 androidxComposeCompiler = "1.5.8"  # Compose VC
 androidxCoreSplashscreen = "1.0.1"
 androidxHiltNavigationCompose = "1.1.0"
@@ -43,7 +43,6 @@ lottieCompose = "6.2.0"
 firebaseStorage = "20.3.0"
 coreKtxVersion = "1.12.0"
 baseJunit = "4.13.2"
-material = "1.5.4"
 detekt = "1.23.3"
 detektCompose = "0.3.8"
 kotlinxCollectionsImmutable = "0.3.6"
@@ -53,19 +52,18 @@ androidxTestRules = "1.5.0"
 mockito = "4.8.0"
 coreTesting = "2.2.0"
 turbine = "1.0.0"
-kotlin2 = "1.9.0"
 espressoCore = "3.5.1"
 appcompat = "1.6.1"
 materialVersion = "1.11.0"
+material3 = "1.2.0-beta02"  # Bom version has Circular Progress Ind. problem
 [libraries]
 
 # Compose
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidxActivity" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
-androidx-compose-material = { group = "androidx.compose.material", name = "material", version.ref = "material" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout" }
 androidx-compose-material-iconsExtended = { group = "androidx.compose.material", name = "material-icons-extended" }
-androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" , version.ref = "material3" }
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
@@ -198,6 +196,5 @@ gptmap-android-application-firebase = { id = "gptmap.android.application.firebas
 gptmap-jvm-library = { id = "gptmap.jvm.library", version = "unspecified" }
 gptmap-ktor = { id = "gptmap.ktor", version = "unspecified" }
 gptmap-android-detekt = { id = "gptmap.android.detekt", version = "unspecified" }
-jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin2" }
 # End of it
 
