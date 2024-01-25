@@ -21,7 +21,7 @@ class AccountServiceImpl @Inject constructor(
         get() = auth.currentUser?.uid
 
     override val isEmailVerified: Boolean
-        get() = auth.currentUser?.isEmailVerified ?: false
+        get() = auth.currentUser?.isEmailVerified == true
 
     override val firebaseUser: FirebaseUser?
         get() = auth.currentUser
@@ -37,7 +37,7 @@ class AccountServiceImpl @Inject constructor(
     override suspend fun sendEmailVerification(): SendEmailVerificationResponse {
         return try {
             auth.currentUser?.sendEmailVerification()?.await()
-            Response.Success(true)
+            Response.Success(data = true)
         } catch (e: Exception) {
             Response.Failure(e)
         }
@@ -51,7 +51,7 @@ class AccountServiceImpl @Inject constructor(
     override suspend fun reloadFirebaseUser(): ReloadUserResponse {
         return try {
             auth.currentUser?.reload()?.await()
-            Response.Success(true)
+            Response.Success(data = true)
         } catch (e: Exception) {
             Response.Failure(e)
         }
@@ -60,7 +60,7 @@ class AccountServiceImpl @Inject constructor(
     override suspend fun sendPasswordResetEmail(email: String): SendPasswordResetEmailResponse {
         return try {
             auth.sendPasswordResetEmail(email).await()
-            Response.Success(true)
+            Response.Success(data = true)
         } catch (e: Exception) {
             Response.Failure(e)
         }
@@ -69,7 +69,7 @@ class AccountServiceImpl @Inject constructor(
     override suspend fun updatePassword(password: String): UpdatePasswordResponse {
         return try {
             auth.currentUser?.updatePassword(password)?.await()
-            Response.Success(true)
+            Response.Success(data = true)
         } catch (e: Exception) {
             Response.Failure(e)
         }
@@ -80,7 +80,7 @@ class AccountServiceImpl @Inject constructor(
     override suspend fun revokeAccess(): RevokeAccessResponse {
         return try {
             auth.currentUser?.delete()?.await()
-            Response.Success(true)
+            Response.Success(data = true)
         } catch (e: Exception) {
             Response.Failure(e)
         }
