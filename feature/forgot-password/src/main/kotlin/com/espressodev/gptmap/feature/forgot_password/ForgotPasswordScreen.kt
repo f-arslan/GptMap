@@ -30,12 +30,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.component.DefaultTextField
-import com.espressodev.gptmap.core.designsystem.component.GmCircularIndicator
+import com.espressodev.gptmap.core.designsystem.component.GmProgressIndicator
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
@@ -47,7 +44,7 @@ fun ForgotPasswordRoute(
     val email by viewModel.email.collectAsStateWithLifecycle()
     val loadingState by viewModel.loadingState.collectAsStateWithLifecycle()
     if (loadingState is LoadingState.Loading)
-        GmCircularIndicator()
+        GmProgressIndicator()
     ForgotPasswordScreen(
         email,
         viewModel::onEmailChange,
@@ -69,38 +66,38 @@ fun ForgotPasswordScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it)
-                .padding(HIGH_PADDING),
+                .padding(16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             FingerprintIcon()
-            Spacer(Modifier.height(HIGH_PADDING))
+            Spacer(Modifier.height(16.dp))
             Text(
                 stringResource(AppText.forgot_password),
                 style = MaterialTheme.typography.titleLarge
             )
-            Spacer(Modifier.height(MEDIUM_PADDING))
+            Spacer(Modifier.height(16.dp))
             Text(stringResource(AppText.forgot_password_instruction), textAlign = TextAlign.Center)
-            Spacer(Modifier.height(HIGH_PADDING))
+            Spacer(Modifier.height(16.dp))
             DefaultTextField(
                 email,
                 leadingIcon = GmIcons.EmailOutlined,
                 label = AppText.email,
                 onValueChange = onEmailChange
             )
-            Spacer(Modifier.height(HIGH_PADDING))
+            Spacer(Modifier.height(16.dp))
             Button(onClick = onResetPasswordClick, modifier = Modifier.fillMaxWidth()) {
                 Text(stringResource(AppText.reset_password))
             }
             TextButton(onClick = backToLoginClick, modifier = Modifier.imePadding()) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(SMALL_PADDING),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         GmIcons.ArrowBackOutlined,
                         contentDescription = stringResource(AppText.back_arrow),
-                        modifier = Modifier.size(HIGH_PADDING)
+                        modifier = Modifier.size(4.dp)
                     )
                     Text(
                         stringResource(AppText.back_login),

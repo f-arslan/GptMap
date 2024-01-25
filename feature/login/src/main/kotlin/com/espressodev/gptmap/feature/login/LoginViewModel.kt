@@ -2,9 +2,9 @@ package com.espressodev.gptmap.feature.login
 
 import com.espressodev.gptmap.core.model.Exceptions
 import com.espressodev.gptmap.core.common.GmViewModel
-import com.espressodev.gptmap.core.common.ext.isValidEmail
+import com.espressodev.gptmap.core.model.ext.isValidEmail
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
-import com.espressodev.gptmap.core.data.LogService
+import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.domain.SignInUpWithGoogleUseCase
 import com.espressodev.gptmap.core.domain.SignInWithEmailAndPasswordUseCase
 import com.espressodev.gptmap.core.model.LoadingState
@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
-
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(

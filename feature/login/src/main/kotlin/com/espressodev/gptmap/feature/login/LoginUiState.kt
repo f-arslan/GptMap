@@ -10,8 +10,8 @@ data class LoginUiState(
     val email: String = "",
     val password: String = "",
     val loadingState: LoadingState = LoadingState.Idle,
-    val oneTapSignInResponse: OneTapSignInUpResponse = GoogleResponse.Success(null),
-    val signInWithGoogleResponse: SignInUpWithGoogleResponse = GoogleResponse.Success(false)
+    val oneTapSignInResponse: OneTapSignInUpResponse = GoogleResponse.Success(data = null),
+    val signInWithGoogleResponse: SignInUpWithGoogleResponse = GoogleResponse.Success(data = false)
 )
 
 sealed class LoginEvent {
@@ -20,4 +20,5 @@ sealed class LoginEvent {
     data class OnLoadingStateChanged (val state: LoadingState): LoginEvent()
     data object OnGoogleClicked : LoginEvent()
     data object OnLoginClicked : LoginEvent()
+
 }

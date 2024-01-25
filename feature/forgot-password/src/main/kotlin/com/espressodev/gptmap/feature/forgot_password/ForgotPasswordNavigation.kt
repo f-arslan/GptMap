@@ -5,16 +5,16 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 
-const val FORGOT_PASSWORD_ROUTE = "forgot_password_route"
+const val ForgotPasswordRoute = "forgot_password_route"
 
 fun NavController.navigateToForgotPassword(navOptions: NavOptions? = null) {
-    navigate(FORGOT_PASSWORD_ROUTE, navOptions)
+    navigate(ForgotPasswordRoute, navOptions)
 }
 
 fun NavGraphBuilder.forgotPasswordScreen(
     navigateToLogin: () -> Unit,
 ) {
-    composable(route = FORGOT_PASSWORD_ROUTE) {
+    composable(route = ForgotPasswordRoute) {
         ForgotPasswordRoute(
             clearAndNavigateLogin = navigateToLogin,
         )

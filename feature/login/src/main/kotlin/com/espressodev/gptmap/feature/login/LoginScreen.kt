@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -18,14 +19,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.component.AppWrapper
 import com.espressodev.gptmap.core.designsystem.component.DayHeader
 import com.espressodev.gptmap.core.designsystem.component.DefaultButton
 import com.espressodev.gptmap.core.designsystem.component.DefaultTextField
 import com.espressodev.gptmap.core.designsystem.component.ExtFloActionButton
-import com.espressodev.gptmap.core.designsystem.component.GmCircularIndicator
+import com.espressodev.gptmap.core.designsystem.component.GmProgressIndicator
 import com.espressodev.gptmap.core.designsystem.component.HeaderWrapper
 import com.espressodev.gptmap.core.designsystem.component.PasswordTextField
 import com.espressodev.gptmap.core.google_auth.composable.OneTapLauncher
@@ -41,7 +41,7 @@ fun LoginRoute(
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    if (uiState.loadingState is LoadingState.Loading) GmCircularIndicator()
+    if (uiState.loadingState is LoadingState.Loading) GmProgressIndicator()
     LoginScreen(
         uiState = uiState,
         onEvent = { event -> viewModel.onEvent(event, navigateToMap) },
@@ -83,9 +83,7 @@ fun LoginScreen(
                 onClick = onForgotPasswordClick,
                 modifier = Modifier.align(Alignment.End)
             ) {
-                Text(
-                    stringResource(AppText.forgot_password)
-                )
+                Text(stringResource(AppText.forgot_password))
             }
         }
         DefaultButton(
@@ -106,7 +104,7 @@ fun LoginScreen(
         Spacer(Modifier.weight(1f))
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(bottom = HIGH_PADDING)
+            modifier = Modifier.padding(bottom = 16.dp)
         ) {
             Text(
                 text = stringResource(id = AppText.not_a_member),
