@@ -27,10 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.espressodev.gptmap.core.common.ext.clipPolygon
-import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
+import com.espressodev.gptmap.core.designsystem.ext.clipPolygon
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
@@ -56,7 +53,7 @@ internal fun BoxScope.DetailSheet(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .padding(horizontal = HIGH_PADDING)
+                .padding(horizontal = 16.dp)
                 .padding(bottom = 24.dp)
         ) {
             Text(
@@ -67,13 +64,13 @@ internal fun BoxScope.DetailSheet(
             )
             Text(
                 text = location.content.toDistrictAndCountry().uppercase(),
-                modifier = Modifier.offset(y = SMALL_PADDING * -1),
+                modifier = Modifier.offset(y = 4.dp * -1),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            Spacer(modifier = Modifier.height(MEDIUM_PADDING))
+            Spacer(modifier = Modifier.height(8.dp))
             DetailButton(
                 addToFavouriteButtonState = location.addToFavouriteButtonState,
                 onFavouriteClick = { onEvent(MapUiEvent.OnFavouriteClick) }
@@ -110,8 +107,8 @@ fun LocationImages(
     modifier: Modifier = Modifier
 ) {
     LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(MEDIUM_PADDING),
-        modifier = modifier.padding(bottom = MEDIUM_PADDING)
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier.padding(bottom = 8.dp)
     ) {
         items(2) { index ->
             Surface(onClick = { onClick(index) }) {
@@ -130,8 +127,8 @@ fun BoxScope.UnsplashBanner(name: String, modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier
             .align(Alignment.BottomEnd)
-            .padding(bottom = MEDIUM_PADDING, end = MEDIUM_PADDING),
-        shape = RoundedCornerShape(SMALL_PADDING),
+            .padding(bottom = 8.dp, end = 8.dp),
+        shape = RoundedCornerShape(4.dp),
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
     ) {
         Text(
@@ -152,7 +149,7 @@ private fun DetailButton(
     AnimatedVisibility(
         addToFavouriteButtonState,
         exit = slideOutVertically(targetOffsetY = { fullHeight: Int -> -fullHeight }),
-        modifier = modifier.padding(bottom = HIGH_PADDING)
+        modifier = modifier.padding(bottom = 16.dp)
     ) {
         SquareButton(
             icon = IconType.Vector(GmIcons.FavouriteOutlined),

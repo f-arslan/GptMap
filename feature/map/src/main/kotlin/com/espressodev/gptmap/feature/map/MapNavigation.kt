@@ -6,12 +6,19 @@ import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navOptions
 
 const val MapRoute = "map_route"
 const val FAVOURITE_ID = "favId"
 const val MapRouteWithArg = "$MapRoute/{$FAVOURITE_ID}"
-fun NavController.navigateToMap(favouriteId: String = "default", navOptions: NavOptions? = null) {
-    navigate("$MapRoute/$favouriteId", navOptions = navOptions)
+fun NavController.navigateToMap(
+    favouriteId: String = "default",
+    navOptions: NavOptions? = navOptions {
+        popUpTo(0) { inclusive = true }
+        launchSingleTop = true
+    }
+) {
+    navigate("$MapRoute/$favouriteId", navOptions)
 }
 
 fun NavGraphBuilder.mapScreen(

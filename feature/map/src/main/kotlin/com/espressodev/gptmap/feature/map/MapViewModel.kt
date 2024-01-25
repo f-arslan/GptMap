@@ -1,21 +1,30 @@
 package com.espressodev.gptmap.feature.map
 
+import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Build
 import com.espressodev.gptmap.api.gemini.GeminiService
 import com.espressodev.gptmap.api.unsplash.UnsplashService
 import com.espressodev.gptmap.core.common.GmViewModel
+import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
 import com.espressodev.gptmap.core.data.FirestoreService
-import com.espressodev.gptmap.core.data.LogService
 import com.espressodev.gptmap.core.domain.AddDatabaseIfUserIsNewUseCase
 import com.espressodev.gptmap.core.domain.SaveImageToFirebaseStorageUseCase
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
+import com.espressodev.gptmap.core.save_screenshot.SaveScreenshotService
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -27,14 +36,41 @@ class MapViewModel @Inject constructor(
     private val addDatabaseIfUserIsNewUseCase: AddDatabaseIfUserIsNewUseCase,
     private val realmSyncService: RealmSyncService,
     private val firestoreService: FirestoreService,
+    @ApplicationContext private val applicationContext: Context,
     logService: LogService,
 ) : GmViewModel(logService) {
     private val _uiState = MutableStateFlow(MapUiState())
     val uiState = _uiState.asStateFlow()
 
+    private val serviceStateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            when (intent.action) {
+                SaveScreenshotService.ACTION_SERVICE_STARTED -> {
+                    _uiState.update {
+                        it.copy(
+                            isScreenshotButtonVisible = false,
+                            isStreetViewButtonVisible = false,
+                            isLocationPinVisible = false,
+                            screenshotState = ScreenshotState.STARTED
+                        )
+                    }
+                }
+
+                SaveScreenshotService.ACTION_SERVICE_STOPPED -> {
+                    if (uiState.value.screenshotState == ScreenshotState.STARTED) {
+                        _uiState.update { it.copy(screenshotState = ScreenshotState.FINISHED) }
+                        applicationContext.unregisterReceiver(this)
+                    }
+                }
+            }
+        }
+    }
+
     init {
         launchCatching {
-            getUserFirstChar()
+            launch {
+                getUserFirstChar()
+            }
             addDatabaseIfUserIsNewUseCase()
         }
     }
@@ -51,30 +87,21 @@ class MapViewModel @Inject constructor(
                 it.copy(imageGalleryState = Pair(event.pos, true))
             }
 
-            is MapUiEvent.OnFavouriteClick -> onFavouriteClick()
+            MapUiEvent.OnFavouriteClick -> onFavouriteClick()
             is MapUiEvent.OnStreetViewClick -> {
                 onStreetViewClick(event.latLng, navigateToStreetView)
             }
 
-            is MapUiEvent.OnExploreWithAiClick -> _uiState.update { it.copy(bottomSheetState = MapBottomSheetState.DETAIL_CARD) }
-            is MapUiEvent.OnDetailSheetBackClick -> _uiState.update { it.copy(bottomSheetState = MapBottomSheetState.SMALL_INFORMATION_CARD) }
-            is MapUiEvent.OnBackClick -> _uiState.update {
+            MapUiEvent.OnExploreWithAiClick -> _uiState.update { it.copy(bottomSheetState = MapBottomSheetState.DETAIL_CARD) }
+            MapUiEvent.OnDetailSheetBackClick -> _uiState.update { it.copy(bottomSheetState = MapBottomSheetState.SMALL_INFORMATION_CARD) }
+            MapUiEvent.OnBackClick -> _uiState.update {
                 it.copy(
                     bottomSheetState = MapBottomSheetState.BOTTOM_SHEET_HIDDEN,
                     searchBarState = true
                 )
             }
 
-            is MapUiEvent.OnTakeScreenshotClick -> _uiState.update { it.copy(takeScreenshotState = true) }
-            is MapUiEvent.OnScreenshotProcessStarted -> _uiState.update {
-                it.copy(
-                    isStreetViewButtonVisible = false,
-                    isLocationPinVisible = false,
-                    searchBarState = false
-                )
-            }
-
-            MapUiEvent.OnScreenshotProcessFinished -> reset()
+            MapUiEvent.OnScreenshotProcessStarted -> initializeScreenCaptureBroadcastReceiver()
         }
     }
 
@@ -145,8 +172,16 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    private fun reset() = launchCatching {
-        _uiState.update { it.copy(isStreetViewButtonVisible = true, isLocationPinVisible = true, searchBarState = true) }
+    fun reset() {
+        _uiState.update {
+            it.copy(
+                isStreetViewButtonVisible = true,
+                isLocationPinVisible = true,
+                searchBarState = true,
+                isScreenshotButtonVisible = true,
+                screenshotState = ScreenshotState.IDLE,
+            )
+        }
     }
 
     private fun onStreetViewClick(
@@ -174,6 +209,23 @@ class MapViewModel @Inject constructor(
 
         }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
+    private fun initializeScreenCaptureBroadcastReceiver() = launchCatching {
+        val filter = IntentFilter().apply {
+            addAction(SaveScreenshotService.ACTION_SERVICE_STARTED)
+            addAction(SaveScreenshotService.ACTION_SERVICE_STOPPED)
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            applicationContext.registerReceiver(
+                serviceStateReceiver,
+                filter,
+                Context.RECEIVER_NOT_EXPORTED
+            )
+        } else {
+            applicationContext.registerReceiver(serviceStateReceiver, filter)
+        }
+    }
+
     fun loadLocationFromFavourite(favouriteId: String) = launchCatching {
         val location = withContext(Dispatchers.IO) {
             realmSyncService.getFavourite(favouriteId)
@@ -186,5 +238,12 @@ class MapViewModel @Inject constructor(
                 bottomSheetState = MapBottomSheetState.SMALL_INFORMATION_CARD,
             )
         }
+    }
+
+    override fun onCleared() {
+        launchCatching {
+            applicationContext.unregisterReceiver(serviceStateReceiver)
+        }
+        super.onCleared()
     }
 }

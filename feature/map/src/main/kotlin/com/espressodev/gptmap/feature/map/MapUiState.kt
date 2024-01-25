@@ -11,6 +11,10 @@ enum class ComponentLoadingState {
     STREET_VIEW, MAP, NOTHING
 }
 
+enum class ScreenshotState {
+    IDLE, STARTED, FINISHED
+}
+
 data class MapUiState(
     val searchValue: String = "",
     val location:Location = Location(),
@@ -23,7 +27,8 @@ data class MapUiState(
     val isFavouriteButtonPlaying: Boolean = false,
     val isLocationPinVisible: Boolean = true,
     val isStreetViewButtonVisible: Boolean = true,
-    val takeScreenshotState: Boolean = false,
+    val isScreenshotButtonVisible: Boolean = true,
+    val screenshotState: ScreenshotState = ScreenshotState.IDLE,
     val imageGalleryState: Pair<Int, Boolean> = Pair(0, false)
 ) {
     fun getCoordinates(): LatLng =
@@ -40,7 +45,5 @@ sealed class MapUiEvent {
     data object OnBackClick: MapUiEvent()
     data object OnExploreWithAiClick: MapUiEvent()
     data object OnScreenshotProcessStarted: MapUiEvent()
-    data object OnScreenshotProcessFinished: MapUiEvent()
-    data object OnTakeScreenshotClick: MapUiEvent()
     data class OnStreetViewClick(val latLng: Pair<Double, Double>) : MapUiEvent()
 }

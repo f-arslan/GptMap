@@ -2,6 +2,7 @@ package com.espressodev.gptmap.feature.map
 
 import StreetView
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
@@ -57,9 +58,6 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.SMALL_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.component.GmDraggableButton
@@ -73,7 +71,6 @@ import com.espressodev.gptmap.core.model.chatgpt.Content
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
 import com.espressodev.gptmap.core.save_screenshot.composable.SaveScreenshot
 import com.espressodev.gptmap.feature.map.ComponentLoadingState.MAP
-import com.espressodev.gptmap.feature.map.ComponentLoadingState.STREET_VIEW
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.BOTTOM_SHEET_HIDDEN
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.DETAIL_CARD
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.SMALL_INFORMATION_CARD
@@ -112,13 +109,19 @@ fun MapRoute(
                 )
             },
             onAvatarClick = navigateToProfile,
-            navigateToScreenshot = navigateToScreenshot
         )
     }
 
     LaunchedEffect(favouriteId) {
         if (favouriteId != "default")
             viewModel.loadLocationFromFavourite(favouriteId)
+    }
+
+    LaunchedEffect(uiState.screenshotState) {
+        if (uiState.screenshotState == ScreenshotState.FINISHED) {
+            viewModel.reset()
+            navigateToScreenshot()
+        }
     }
 }
 
@@ -127,7 +130,6 @@ private fun MapScreen(
     uiState: MapUiState,
     onEvent: (MapUiEvent) -> Unit,
     onAvatarClick: () -> Unit,
-    navigateToScreenshot: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     DisplayImageGallery(
@@ -135,6 +137,7 @@ private fun MapScreen(
         location = uiState.location,
         onDismiss = { onEvent(MapUiEvent.OnImageDismiss) }
     )
+    Log.d("MapScreen", "MapScreen: ${uiState.bottomSheetState}")
     Box(modifier = modifier.fillMaxSize()) {
         if (uiState.searchBarState) {
             MapSearchBar(
@@ -149,11 +152,8 @@ private fun MapScreen(
             )
         }
         SaveScreenshot(
-            onSuccess = {
-                navigateToScreenshot()
-                onEvent(MapUiEvent.OnScreenshotProcessFinished)
-            },
-            onConfirm = { onEvent(MapUiEvent.OnScreenshotProcessStarted) },
+            onClick = { onEvent(MapUiEvent.OnScreenshotProcessStarted) },
+            isButtonVisible = uiState.isScreenshotButtonVisible
         )
         LoadingDialog(uiState.componentLoadingState)
         MapSection(
@@ -213,7 +213,7 @@ private fun BoxScope.DisplayBottomSheet(
 private fun ImageGallery(initialPage: Int, images: List<LocationImage>, onDismiss: () -> Unit) {
     val pagerState = rememberPagerState(pageCount = { 2 }, initialPage = initialPage)
     Dialog(onDismissRequest = onDismiss) {
-        HorizontalPager(state = pagerState, pageSpacing = MEDIUM_PADDING) { page ->
+        HorizontalPager(state = pagerState, pageSpacing = 8.dp) { page ->
             Box(
                 Modifier
                     .graphicsLayer {
@@ -267,9 +267,9 @@ private fun MapSearchBar(
 
 @Composable
 private fun MapSection(uiState: MapUiState, isPinVisible: Boolean, onEvent: (MapUiEvent) -> Unit) {
-    var isMapLoaded by remember { mutableStateOf(value = false) }
     val context = LocalContext.current
     val latLng = uiState.getCoordinates()
+    var isMapLoaded by remember { mutableStateOf(value = false) }
     val mapProperties = remember {
         MapProperties(
             mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
@@ -281,10 +281,6 @@ private fun MapSection(uiState: MapUiState, isPinVisible: Boolean, onEvent: (Map
 
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(latLng, 14f)
-    }
-
-    if (!isMapLoaded) {
-        LottieAnimationPlaceholder(AppRaw.transistor_earth)
     }
 
     LaunchedEffect(uiState.getCoordinates()) {
@@ -299,12 +295,16 @@ private fun MapSection(uiState: MapUiState, isPinVisible: Boolean, onEvent: (Map
             GmDraggableButton(
                 icon = StreetView,
                 initialAlignment = Alignment.CenterStart,
-                onClick = {
-                    onEvent(MapUiEvent.OnStreetViewClick(cameraPositionState.toLatitudeLongitude()))
-                }
+                onClick = { onEvent(MapUiEvent.OnStreetViewClick(cameraPositionState.toLatitudeLongitude())) }
             )
         }
         LocationPin(isPinVisible = isPinVisible, isCameraMoving = cameraPositionState.isMoving)
+        Log.d("MapSection", "MapSection: $isMapLoaded")
+        LottieAnimationPlaceholder(
+            rawRes = AppRaw.transistor_earth,
+            visible = !isMapLoaded,
+            modifier = Modifier.zIndex(2f)
+        )
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
@@ -321,7 +321,7 @@ private fun BoxScope.LoadingDialog(
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
-        visible = loadingState != ComponentLoadingState.NOTHING,
+        visible = loadingState == MAP,
         modifier = modifier
             .zIndex(1f)
             .align(Alignment.TopCenter)
@@ -330,12 +330,6 @@ private fun BoxScope.LoadingDialog(
             .padding(top = 72.dp)
             .padding(horizontal = 32.dp)
     ) {
-        val textId: Int =
-            when (loadingState) {
-                STREET_VIEW -> AppText.street_view_loading_header
-                MAP -> AppText.discovering_your_dream_place
-                ComponentLoadingState.NOTHING -> AppText.info
-            }
         Surface(
             shape = RoundedCornerShape(16.dp),
             color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
@@ -346,7 +340,7 @@ private fun BoxScope.LoadingDialog(
             ) {
                 DefaultLoadingAnimation()
                 Text(
-                    text = stringResource(textId),
+                    text = stringResource(AppText.discovering_your_dream_place),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Medium,
@@ -412,8 +406,8 @@ fun BoxScope.SmallInformationCard(
     Column(
         modifier = modifier
             .align(Alignment.BottomCenter)
-            .padding(MEDIUM_PADDING),
-        verticalArrangement = Arrangement.spacedBy(MEDIUM_PADDING)
+            .padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         SquareButton(
             icon = IconType.Vector(GmIcons.ArrowBackOutlined),
@@ -446,20 +440,20 @@ fun BoxScope.SmallInformationCard(
                     fontStyle = FontStyle.Italic
                 )
                 Surface(
-                    shadowElevation = SMALL_PADDING,
-                    shape = RoundedCornerShape(HIGH_PADDING),
-                    modifier = Modifier.padding(top = MEDIUM_PADDING)
+                    shadowElevation = 4.dp,
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.padding(top = 8.dp)
                 ) {
                     OutlinedButton(
                         onClick = onExploreWithAiClick,
-                        shape = RoundedCornerShape(HIGH_PADDING)
+                        shape = RoundedCornerShape(16.dp)
                     ) {
                         Image(
                             painter = painterResource(id = AppDrawable.sparkling),
                             contentDescription = null,
                             modifier = Modifier.size(32.dp)
                         )
-                        Spacer(modifier = Modifier.width(MEDIUM_PADDING))
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(text = stringResource(id = AppText.explore_with_ai))
                     }
                 }
