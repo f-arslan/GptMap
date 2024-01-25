@@ -1,7 +1,7 @@
 package com.espressodev.gptmap.feature.favourite
 
 import app.cash.turbine.test
-import com.espressodev.gptmap.core.data.LogService
+import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.model.Favourite
 import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.mongodb.RealmSyncService

@@ -36,8 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
-import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.TextType
@@ -66,8 +64,9 @@ fun FavouriteRoute(
                 text = TextType.Res(AppText.favourite),
                 icon = IconType.Vector(GmIcons.FavouriteFilled),
                 onBackClick = popUp,
+                selectedItemsCount = 1,
                 editText = uiState.selectedItem.title,
-                isInEditMode = uiState.uiIsInEditMode,
+                isInEditMode = uiState.isUiInEditMode,
                 onEditClick = { viewModel.onEvent(EditableItemUiEvent.OnEditClick) },
                 onDeleteClick = { viewModel.onEvent(EditableItemUiEvent.OnDeleteClick) },
                 onCancelClick = { viewModel.onEvent(EditableItemUiEvent.OnCancelClick) }
@@ -81,13 +80,13 @@ fun FavouriteRoute(
                 viewModel.onEvent(EditableItemUiEvent.OnLongClickToItem(favourite))
             },
             selectedId = uiState.selectedItem.favouriteId,
-            isUiInEditMode = uiState.uiIsInEditMode,
+            isUiInEditMode = uiState.isUiInEditMode,
             modifier = Modifier.padding(it)
         )
     }
 
     BackHandler {
-        if (uiState.uiIsInEditMode) {
+        if (uiState.isUiInEditMode) {
             viewModel.onEvent(EditableItemUiEvent.Reset)
         }
     }
@@ -125,9 +124,9 @@ fun FavouriteScreen(
                 LazyColumn(
                     modifier = modifier
                         .fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(HIGH_PADDING),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    contentPadding = PaddingValues(HIGH_PADDING)
+                    contentPadding = PaddingValues(16.dp)
                 ) {
                     items(favourites.data, key = { favourite -> favourite.id }) { favourite ->
                         FavouriteCard(
@@ -197,7 +196,7 @@ fun FavouriteCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(MEDIUM_PADDING)
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (favourite.title.isNotBlank()) {
                     InfoRow(
@@ -223,13 +222,13 @@ fun InfoRow(
     icon: ImageVector,
     text: String,
     modifier: Modifier = Modifier,
-    iconSize: Dp = HIGH_PADDING,
+    iconSize: Dp = 16.dp,
     textStyle: TextStyle = MaterialTheme.typography.titleMedium,
     iconTint: Color = MaterialTheme.colorScheme.onPrimaryContainer
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(MEDIUM_PADDING),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier
     ) {
         Icon(
