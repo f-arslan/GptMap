@@ -8,7 +8,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navOptions
-import com.espressodev.gptmap.core.common.network_monitor.NetworkMonitor
+import com.espressodev.gptmap.core.common.NetworkMonitor
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
 import com.espressodev.gptmap.core.common.snackbar.SnackbarMessage.Companion.toMessage
 import com.espressodev.gptmap.feature.favourite.FavouriteRoute

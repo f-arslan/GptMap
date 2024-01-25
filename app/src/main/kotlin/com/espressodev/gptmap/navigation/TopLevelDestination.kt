@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.navigation
 
-import StreetView
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.espressodev.gptmap.core.designsystem.GmIcons

@@ -46,10 +46,6 @@ android {
         }
     }
 
-    buildFeatures {
-        buildConfig = true
-    }
-
     namespace = "com.espressodev.gptmap"
 }
 
@@ -70,10 +66,7 @@ dependencies {
     implementation(projects.core.data)
     implementation(projects.core.domain)
     implementation(projects.core.mongodb)
-    implementation(projects.core.saveScreenshot)
 
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.runtimeCompose)

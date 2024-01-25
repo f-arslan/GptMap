@@ -9,7 +9,6 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
@@ -29,11 +28,9 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.espressodev.gptmap.core.common.ext.surfaceTintColorAtElevation
-import com.espressodev.gptmap.core.common.network_monitor.NetworkMonitor
+import com.espressodev.gptmap.core.common.NetworkMonitor
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
-import com.espressodev.gptmap.core.designsystem.Constants.MEDIUM_PADDING
-import com.espressodev.gptmap.feature.login.LOGIN_ROUTE
+import com.espressodev.gptmap.feature.login.LoginRoute
 import com.espressodev.gptmap.feature.map.MapRouteWithArg
 import com.espressodev.gptmap.navigation.GmNavHost
 import com.espressodev.gptmap.navigation.TopLevelDestination
@@ -47,7 +44,7 @@ fun GmApp(
 ) {
     val startDestination = when (accountState) {
         AccountState.UserAlreadySignIn -> MapRouteWithArg
-        else -> LOGIN_ROUTE
+        else -> LoginRoute
     }
 
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
@@ -55,7 +52,7 @@ fun GmApp(
             snackbarHost = {
                 SnackbarHost(
                     hostState = appState.snackbarHostState,
-                    modifier = Modifier.padding(MEDIUM_PADDING),
+                    modifier = Modifier.padding(4.dp),
                     snackbar = { snackbarData -> Snackbar(snackbarData) },
                 )
             },
@@ -90,9 +87,8 @@ fun GmBottomNavigation(
     BottomAppBar(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
     ) {
-        destinations.forEach { destination ->
+        for (destination in destinations) {
             val selected = currentDestination.isTopLevelDestinationInHierarchy(destination)
             GmNavigationBarItem(
                 selected = selected,
@@ -135,9 +131,6 @@ fun RowScope.GmNavigationBarItem(
         modifier = modifier,
         enabled = enabled,
         label = label,
-        colors = NavigationBarItemDefaults.colors(
-            indicatorColor = MaterialTheme.colorScheme.surfaceTintColorAtElevation(0.dp)
-        )
     )
 }
 
