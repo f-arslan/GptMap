@@ -17,4 +17,5 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.realm.library.base)
+    implementation(libs.kotlinx.collections.immutable)
 }

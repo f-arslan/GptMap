@@ -7,7 +7,7 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import com.espressodev.gptmap.core.designsystem.component.GmCircularIndicator
+import com.espressodev.gptmap.core.designsystem.component.GmProgressIndicator
 import com.espressodev.gptmap.core.google_auth.OneTapSignInUpResponse
 import com.espressodev.gptmap.core.google_auth.SignInUpWithGoogleResponse
 import com.espressodev.gptmap.core.model.google.GoogleResponse.Failure
@@ -66,7 +66,7 @@ fun OneTapSignInUp(
     launch: (result: BeginSignInResult) -> Unit,
 ) {
     when (oneTapSignUpResponse) {
-        is Loading -> GmCircularIndicator()
+        is Loading -> GmProgressIndicator()
         is Success ->
             oneTapSignUpResponse.data?.let {
                 LaunchedEffect(it) {
@@ -87,7 +87,7 @@ fun SignInUpWithGoogle(
     navigateToHomeScreen: (signedIn: Boolean) -> Unit,
 ) {
     when (signUpWithGoogleResponse) {
-        is Loading -> GmCircularIndicator()
+        is Loading -> GmProgressIndicator()
         is Success ->
             signUpWithGoogleResponse.data?.let { signedIn ->
                 LaunchedEffect(signedIn) {

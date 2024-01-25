@@ -2,20 +2,17 @@ package com.espressodev.gptmap.core.model.chatgpt
 
 import com.espressodev.gptmap.core.model.Location
 import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
+@Serializable
 data class ChatgptResponse(
-    @SerializedName("choices")
     val choices: List<Choice>,
-    @SerializedName("created")
     val created: Int,
-    @SerializedName("id")
     val id: String,
-    @SerializedName("model")
     val model: String,
     @SerializedName("object")
     val `object`: String,
-    @SerializedName("usage")
     val usage: Usage
 ) {
     fun toLocation(responseContent: String, id: String): Location {

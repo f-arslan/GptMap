@@ -5,6 +5,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Singleton
 
 @Module
@@ -12,6 +13,6 @@ import javax.inject.Singleton
 object DomainModule {
     @Singleton
     @Provides
-    fun provideDownloadAndCompressImageUseCase(): DownloadAndCompressImageUseCase =
-        DownloadAndCompressImageUseCase()
+    fun provideDownloadAndCompressImageUseCase(ioDispatcher: CoroutineDispatcher): DownloadAndCompressImageUseCase =
+        DownloadAndCompressImageUseCase(ioDispatcher = ioDispatcher)
 }

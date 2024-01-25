@@ -24,6 +24,8 @@ interface RealmSyncService {
 
     suspend fun deleteImageAnalysis(imageAnalysisId: String): Result<Boolean>
 
+    suspend fun deleteImageAnalyses(imageAnalysesIds: Set<String>): Result<Unit>
+
     suspend fun updateImageAnalysisText(imageAnalysisId: String, text: String): Result<Boolean>
 
     suspend fun deleteFavourite(favouriteId: String): Result<Boolean>

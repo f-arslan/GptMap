@@ -3,44 +3,22 @@ package com.espressodev.gptmap.core.save_screenshot.composable
 import android.app.Activity
 import android.content.Context
 import android.media.projection.MediaProjectionManager
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.component.GmDraggableButton
 import com.espressodev.gptmap.core.save_screenshot.SaveScreenshotService
 
 @Composable
 fun SaveScreenshot(
-    onSuccess: () -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onConfirm: () -> Unit = {},
-    viewModel: ScreenshotViewModel = hiltViewModel(),
+    isButtonVisible: Boolean = true,
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(key1 = uiState.screenState) {
-        when (uiState.screenState) {
-            ScreenState.Finished -> {
-                onSuccess()
-                viewModel.resetScreenState()
-            }
-
-            ScreenState.Started -> {
-                onConfirm()
-            }
-
-            ScreenState.Idle -> {}
-        }
-    }
-
     val context = LocalContext.current
     val mediaProjectionManager =
         context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
@@ -61,10 +39,11 @@ fun SaveScreenshot(
             }
         }
 
-    if (uiState.isButtonVisible)
+    if (isButtonVisible)
         GmDraggableButton(
             icon = GmIcons.CameraFilled,
             onClick = {
+                onClick()
                 screenCaptureLauncher.launch(screenCaptureIntent)
             },
             modifier = modifier

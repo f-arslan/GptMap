@@ -1,10 +1,18 @@
 package com.espressodev.gptmap.core.model
 
+import kotlinx.collections.immutable.PersistentSet
+import kotlinx.collections.immutable.persistentSetOf
+
 data class EditableItemUiState<out T>(
     val selectedItem: T,
-    val uiIsInEditMode: Boolean = false,
+    val isUiInEditMode: Boolean = false,
     val editDialogState: Boolean = false,
     val deleteDialogState: Boolean = false,
+    val selectedItemsCount: Int = 0,
+    val isSelectedItemAboveOne: Boolean = false,
+    val topBarTitle: String = "",
+    val isLoading: Boolean = false,
+    val selectedItemsIds: PersistentSet<String> = persistentSetOf()
 )
 
 sealed class EditableItemUiEvent {

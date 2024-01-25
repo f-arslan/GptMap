@@ -15,7 +15,7 @@ import com.espressodev.gptmap.core.mongodb.RealmAccountService
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -24,19 +24,20 @@ class SignInUpWithGoogleUseCase @Inject constructor(
     private val googleAuthService: GoogleAuthService,
     private val realmAccountService: RealmAccountService,
     private val firestoreService: FirestoreService,
+    private val ioDispatcher: CoroutineDispatcher
 ) {
     suspend fun oneTapSignUpWithGoogle(): OneTapSignInUpResponse =
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             googleAuthService.oneTapSignUpWithGoogle()
         }
 
     suspend fun oneTapSignInWithGoogle(): OneTapSignInUpResponse =
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             googleAuthService.oneTapSignInWithGoogle()
         }
 
     suspend fun firebaseSignInUpWithGoogle(googleCredential: AuthCredential): SignInUpWithGoogleResponse =
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             try {
                 val authResult = googleAuthService.firebaseSignInWithGoogle(googleCredential)
 

@@ -2,22 +2,22 @@ package com.espressodev.gptmap.core.domain
 
 import android.graphics.Bitmap
 import com.espressodev.gptmap.core.data.StorageService
-import com.espressodev.gptmap.core.data.impl.StorageServiceImpl.Companion.ANALYSIS_IMAGE_REFERENCE
+import com.espressodev.gptmap.core.data.StorageService.Companion.ANALYSIS_IMAGE_REFERENCE
 import com.espressodev.gptmap.core.model.ext.compressImage
 import com.espressodev.gptmap.core.model.ext.resizeImage
 import com.espressodev.gptmap.core.model.realm.RealmImageAnalysis
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
 import java.util.UUID
 import javax.inject.Inject
 
 class SaveImageAnalysisToStorageUseCase @Inject constructor(
     private val storageService: StorageService,
-    private val realmSyncService: RealmSyncService
+    private val realmSyncService: RealmSyncService,
+    private val ioDispatcher: CoroutineDispatcher
 ) {
-    suspend operator fun invoke(bitmap: Bitmap, title: String) = withContext(Dispatchers.IO) {
+    suspend operator fun invoke(bitmap: Bitmap, title: String) = withContext(ioDispatcher) {
         runCatching {
             val byteArray = bitmap.resizeImage(320, 320).compressImage()
             val imageId = UUID.randomUUID().toString()

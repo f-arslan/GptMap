@@ -9,35 +9,25 @@ import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-typealias SignUpResponse = Result<Boolean>
 
 class SignUpWithEmailAndPasswordUseCase @Inject constructor(
     private val accountService: AccountService,
     private val firestoreService: FirestoreService,
+    private val ioDispatcher: CoroutineDispatcher
 ) {
-    suspend operator fun invoke(email: String, password: String, fullName: String): SignUpResponse =
-        withContext(Dispatchers.IO) {
-            try {
+    suspend operator fun invoke(email: String, password: String, fullName: String): Result<Unit> =
+        withContext(ioDispatcher) {
+            runCatching {
                 val authResult =
                     accountService.firebaseSignUpWithEmailAndPassword(email, password, fullName)
-
                 saveUserToDatabaseIfUserNotExist(authResult, email, fullName)
-
                 accountService.sendEmailVerification()
-
-                Result.success(value = true)
-            } catch (e: FirebaseAuthUserCollisionException) {
-                Result.failure(e)
-            } catch (e: FirebaseAuthWeakPasswordException) {
-                Result.failure(e)
-            } catch (e: FirebaseAuthInvalidCredentialsException) {
-                Result.failure(e)
-            } catch (e: FirebaseAuthException) {
-                Result.failure(e)
+                Unit
             }
         }
 

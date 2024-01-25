@@ -2,15 +2,16 @@ package com.espressodev.gptmap.core.domain
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class SaveImageToInternalStorageUseCase @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val ioDispatcher: CoroutineDispatcher,
     private val downloadAndCompressImageUseCase: DownloadAndCompressImageUseCase
 ) {
-    suspend operator fun invoke(imageUrl: String, fileId: String) = withContext(Dispatchers.IO) {
+    suspend operator fun invoke(imageUrl: String, fileId: String) = withContext(ioDispatcher) {
         val imageData = downloadAndCompressImageUseCase(imageUrl).getOrThrow()
         saveToInternalStorage(imageData, fileId)
     }

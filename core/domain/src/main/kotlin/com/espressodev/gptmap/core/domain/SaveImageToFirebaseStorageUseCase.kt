@@ -1,7 +1,7 @@
 package com.espressodev.gptmap.core.domain
 
 import com.espressodev.gptmap.core.data.StorageService
-import com.espressodev.gptmap.core.data.impl.StorageServiceImpl.Companion.IMAGE_REFERENCE
+import com.espressodev.gptmap.core.data.StorageService.Companion.IMAGE_REFERENCE
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import kotlinx.coroutines.Dispatchers

@@ -13,11 +13,11 @@ import com.espressodev.gptmap.core.mongodb.module.RealmModule.realm
 import com.espressodev.gptmap.core.mongodb.module.RealmModule.realmUser
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
+import io.realm.kotlin.query.RealmResults
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class RealmSyncServiceImpl : RealmSyncService {
-
     private val realmUserId: String
         get() = realmUser.id
 
@@ -94,6 +94,14 @@ class RealmSyncServiceImpl : RealmSyncService {
             delete(imageAnalysisToDelete)
         }
         true
+    }
+
+    override suspend fun deleteImageAnalyses(imageAnalysesIds: Set<String>): Result<Unit> = runCatching {
+        realm.write {
+            val imageAnalysesToDelete: RealmResults<RealmImageAnalysis> = query<RealmImageAnalysis>("userId == $0 AND imageId IN $1", realmUserId, imageAnalysesIds)
+                .find()
+            delete(imageAnalysesToDelete)
+        }
     }
 
     override suspend fun updateImageAnalysisText(

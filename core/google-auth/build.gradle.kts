@@ -13,8 +13,6 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.designsystem)
 
-    implementation(libs.androidx.compose.runtime)
-    implementation(libs.androidx.activity.compose)
     implementation(libs.firebase.auth)
     implementation(libs.play.services.auth)
 }

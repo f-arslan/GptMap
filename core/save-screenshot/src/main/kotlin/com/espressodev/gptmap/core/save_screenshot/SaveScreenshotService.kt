@@ -48,7 +48,8 @@ class SaveScreenshotService : Service() {
                 var fos: FileOutputStream? = null
                 var bitmap: Bitmap? = null
                 try {
-                    reader.acquireLatestImage()?.use { image ->
+                    val image = reader.acquireLatestImage()
+                    image?.use {
                         val planes = image.planes
                         val buffer = planes[0].buffer
                         val pixelStride = planes[0].pixelStride
@@ -101,7 +102,6 @@ class SaveScreenshotService : Service() {
     @Suppress("DEPRECATION")
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         startForegroundWithNotification()
-
         // Extract the result code and data from the intent to start the media projection
         val resultCode = intent.getIntExtra(RESULT_CODE, Activity.RESULT_CANCELED)
         val data: Intent? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -110,9 +110,10 @@ class SaveScreenshotService : Service() {
             intent.getParcelableExtra(DATA)
         }
         startProjection(resultCode, data)
-        sendBroadcast(Intent(ACTION_SERVICE_STARTED).apply {
-            setPackage(applicationContext.packageName)
-        }
+        sendBroadcast(Intent(ACTION_SERVICE_STARTED)
+            .apply {
+                setPackage(applicationContext.packageName)
+            }
         )
         return START_NOT_STICKY
     }

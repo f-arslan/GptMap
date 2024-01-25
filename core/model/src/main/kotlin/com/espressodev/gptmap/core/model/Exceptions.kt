@@ -9,5 +9,4 @@ object Exceptions {
     class FirebasePhotoUrlNullException : Exception()
     class RealmFailedToLoadFavouritesException : Exception()
     class RealmFailedToLoadImageAnalysesException : Exception()
-    class RealmFailedToLoadImageAnalysisException : Exception()
 }
