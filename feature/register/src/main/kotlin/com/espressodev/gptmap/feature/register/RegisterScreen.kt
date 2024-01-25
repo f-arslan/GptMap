@@ -17,7 +17,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.espressodev.gptmap.core.designsystem.Constants.HIGH_PADDING
 import com.espressodev.gptmap.core.designsystem.Constants.PRIVACY_POLICY
 import com.espressodev.gptmap.core.designsystem.Constants.PRIVACY_POLICY_DESC
 import com.espressodev.gptmap.core.designsystem.Constants.PRIVACY_POLICY_LINK
@@ -30,7 +29,7 @@ import com.espressodev.gptmap.core.designsystem.component.DayHeader
 import com.espressodev.gptmap.core.designsystem.component.DefaultButton
 import com.espressodev.gptmap.core.designsystem.component.DefaultTextField
 import com.espressodev.gptmap.core.designsystem.component.ExtFloActionButton
-import com.espressodev.gptmap.core.designsystem.component.GmCircularIndicator
+import com.espressodev.gptmap.core.designsystem.component.GmProgressIndicator
 import com.espressodev.gptmap.core.designsystem.component.HeaderWrapper
 import com.espressodev.gptmap.core.designsystem.component.HyperlinkText
 import com.espressodev.gptmap.core.designsystem.component.PasswordTextField
@@ -50,7 +49,7 @@ fun RegisterRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     when {
         uiState.loadingState is LoadingState.Loading -> {
-            GmCircularIndicator()
+            GmProgressIndicator()
         }
 
         uiState.verificationAlertState is LoadingState.Loading -> {
@@ -144,7 +143,7 @@ fun RegisterScreen(
         Spacer(Modifier.weight(1f))
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(bottom = HIGH_PADDING)
+            modifier = Modifier.padding(bottom = 16.dp)
         ) {
             Text(
                 text = stringResource(id = AppText.already_have_account),

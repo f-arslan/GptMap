@@ -17,6 +17,10 @@ fun NavGraphBuilder.profileScreen(
     navigateToInfo: () -> Unit
 ) {
     composable(ProfileRoute) {
-        ProfileRoute(popUp = popUp, navigateToLogin = navigateToLogin, navigateToInfo = navigateToInfo)
+        ProfileRoute(
+            popUp = popUp,
+            navigateToLogin = navigateToLogin,
+            navigateToInfo = navigateToInfo
+        )
     }
 }

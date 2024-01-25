@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.data.FirestoreService
-import com.espressodev.gptmap.core.data.LogService
+import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.model.Exceptions.FirebaseUserIsNullException
 import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.model.User

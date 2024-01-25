@@ -1,7 +1,7 @@
 package com.espressodev.gptmap.feature.screenshot
 
 import com.espressodev.gptmap.core.common.GmViewModel
-import com.espressodev.gptmap.core.data.LogService
+import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.domain.SaveImageAnalysisToStorageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay

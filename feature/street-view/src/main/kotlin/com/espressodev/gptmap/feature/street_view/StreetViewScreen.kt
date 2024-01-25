@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espressodev.gptmap.core.designsystem.IconType
@@ -37,6 +38,7 @@ fun StreetViewRoute(
     navigateToScreenshot: () -> Unit,
     viewModel: StreetViewViewModel = hiltViewModel()
 ) {
+
     LaunchedEffect(key1 = latitude, key2 = longitude) {
         viewModel.getStreetView(latitude, longitude)
     }
@@ -55,7 +57,17 @@ fun StreetViewRoute(
         StreetViewScreen(modifier = Modifier.padding(it), uiState)
     }
 
-    SaveScreenshot(onSuccess = navigateToScreenshot)
+    SaveScreenshot(
+        onClick = viewModel::initializeScreenCaptureBroadcastReceiver,
+        isButtonVisible = uiState.isScreenshotButtonVisible
+    )
+
+    LaunchedEffect(key1 = uiState.screenshotState) {
+        if (uiState.screenshotState == ScreenshotState.FINISHED) {
+            viewModel.reset()
+            navigateToScreenshot()
+        }
+    }
 }
 
 @OptIn(MapsExperimentalFeature::class)
@@ -64,16 +76,16 @@ fun StreetViewScreen(modifier: Modifier, uiState: StreetViewUiState) {
     var isStreetViewLoaded by remember { mutableStateOf(value = false) }
 
     Box(modifier = modifier.fillMaxSize()) {
-
         StreetView(
             streetViewPanoramaOptionsFactory = {
                 StreetViewPanoramaOptions().position(uiState.latLng)
             },
         )
-        if (!isStreetViewLoaded) {
-            LottieAnimationPlaceholder(AppRaw.earth_orbit)
-        }
-
+        LottieAnimationPlaceholder(
+            rawRes = AppRaw.earth_orbit,
+            visible = !isStreetViewLoaded,
+            modifier = Modifier.zIndex(5f)
+        )
         // StreetView composable doesn't have a callback for when the street view is loaded
         LaunchedEffect(key1 = uiState.latLng) {
             delay(2000L)

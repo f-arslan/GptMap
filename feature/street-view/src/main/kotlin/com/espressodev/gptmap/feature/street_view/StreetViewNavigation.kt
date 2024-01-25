@@ -9,15 +9,15 @@ import androidx.navigation.navArgument
 
 const val LATITUDE_ID = "latitudeId"
 const val LONGITUDE_ID = "longitudeId"
-const val streetViewRoute = "streetViewRoute"
-
+const val StreetViewRoute = "streetViewRoute"
+const val StreetViewRouteWithArg = "$StreetViewRoute/{$LATITUDE_ID}/{$LONGITUDE_ID}"
 fun NavController.navigateToStreetView(latitude: Float, longitude: Float) {
-    navigate("$streetViewRoute/$latitude/$longitude")
+    navigate("$StreetViewRoute/$latitude/$longitude")
 }
 
 fun NavGraphBuilder.streetViewScreen(popUp: () -> Unit, navigateToScreenshot: () -> Unit) {
     composable(
-        route = "$streetViewRoute/{$LATITUDE_ID}/{$LONGITUDE_ID}",
+        route = StreetViewRouteWithArg,
         arguments = listOf(
             navArgument(LATITUDE_ID) { type = NavType.FloatType },
             navArgument(LONGITUDE_ID) { type = NavType.FloatType }

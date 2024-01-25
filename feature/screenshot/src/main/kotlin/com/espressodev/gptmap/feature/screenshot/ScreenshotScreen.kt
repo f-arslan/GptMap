@@ -71,7 +71,7 @@ import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.R
 import com.espressodev.gptmap.core.designsystem.TextType
 import com.espressodev.gptmap.core.designsystem.component.DefaultTextField
-import com.espressodev.gptmap.core.designsystem.component.GmCircularIndicator
+import com.espressodev.gptmap.core.designsystem.component.GmProgressIndicator
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
 import com.espressodev.gptmap.feature.screenshot.ScreenState.AfterSelectingTheField
 import com.espressodev.gptmap.feature.screenshot.ScreenState.Initial
@@ -89,7 +89,6 @@ fun ScreenshotRoute(
     viewModel: ScreenshotViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
     Scaffold(
         topBar = {
             GmTopAppBar(
@@ -128,15 +127,13 @@ fun ScreenshotRoute(
     ) {
         ScreenshotScreen(
             uiState = uiState,
-            onEvent = { event ->
-                viewModel.onEvent(event)
-            },
+            onEvent = viewModel::onEvent,
             modifier = Modifier.padding(it)
         )
     }
 
     if (uiState.isSaveStateStarted)
-        GmCircularIndicator()
+        GmProgressIndicator()
 }
 
 @Composable

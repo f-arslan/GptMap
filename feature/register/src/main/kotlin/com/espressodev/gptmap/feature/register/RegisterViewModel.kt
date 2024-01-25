@@ -1,12 +1,12 @@
 package com.espressodev.gptmap.feature.register
 
 import com.espressodev.gptmap.core.common.GmViewModel
-import com.espressodev.gptmap.core.common.ext.isValidEmail
-import com.espressodev.gptmap.core.common.ext.isValidName
-import com.espressodev.gptmap.core.common.ext.isValidPassword
-import com.espressodev.gptmap.core.common.ext.passwordMatches
+import com.espressodev.gptmap.core.model.ext.isValidEmail
+import com.espressodev.gptmap.core.model.ext.isValidName
+import com.espressodev.gptmap.core.model.ext.isValidPassword
+import com.espressodev.gptmap.core.model.ext.passwordMatches
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
-import com.espressodev.gptmap.core.data.LogService
+import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.domain.SignInUpWithGoogleUseCase
 import com.espressodev.gptmap.core.domain.SignUpWithEmailAndPasswordUseCase
 import com.espressodev.gptmap.core.model.LoadingState

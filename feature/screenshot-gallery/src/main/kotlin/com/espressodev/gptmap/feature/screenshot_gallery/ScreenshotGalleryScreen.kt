@@ -26,7 +26,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -70,7 +69,8 @@ import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import com.espressodev.gptmap.core.model.EditableItemUiEvent
 import com.espressodev.gptmap.core.model.ImageSummary
 import com.espressodev.gptmap.core.model.Response
-import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.PersistentSet
 import java.time.LocalDateTime
 import kotlin.math.absoluteValue
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
@@ -90,8 +90,9 @@ fun ScreenshotGalleryRoute(
                 text = TextType.Res(AppText.screenshot_gallery),
                 icon = IconType.Vector(GmIcons.ImageSearchDefault),
                 onBackClick = popUp,
-                editText = uiState.selectedItem.title,
-                isInEditMode = uiState.uiIsInEditMode,
+                editText = uiState.topBarTitle,
+                isInEditMode = uiState.isUiInEditMode,
+                selectedItemsCount = uiState.selectedItemsCount,
                 onEditClick = { viewModel.onEvent(EditableItemUiEvent.OnEditClick) },
                 onDeleteClick = { viewModel.onEvent(EditableItemUiEvent.OnDeleteClick) },
                 onCancelClick = { viewModel.onEvent(EditableItemUiEvent.OnCancelClick) }
@@ -114,8 +115,8 @@ fun ScreenshotGalleryRoute(
                                 EditableItemUiEvent.OnLongClickToItem(imageSummary)
                             )
                         },
-                        selectedId = uiState.selectedItem.id,
-                        isUiInEditMode = uiState.uiIsInEditMode
+                        selectedItemsIds = uiState.selectedItemsIds,
+                        isUiInEditMode = uiState.isUiInEditMode
                     )
                 } else {
                     LottieAnimationPlaceholder(
@@ -128,7 +129,7 @@ fun ScreenshotGalleryRoute(
     }
 
     BackHandler {
-        if (uiState.uiIsInEditMode) {
+        if (uiState.isUiInEditMode) {
             viewModel.onEvent(EditableItemUiEvent.Reset)
         }
     }
@@ -142,9 +143,14 @@ fun ScreenshotGalleryRoute(
         )
     }
 
+    val deleteDialogTitle =
+        if (uiState.isSelectedItemAboveOne)
+            AppText.screenshot_gallery_multiple_item_delete_dialog_title
+        else AppText.screenshot_gallery_delete_dialog_title
+
     if (uiState.deleteDialogState) {
         GmAlertDialog(
-            title = AppText.screenshot_gallery_delete_dialog_title,
+            title = deleteDialogTitle,
             onConfirm = { viewModel.onEvent(EditableItemUiEvent.OnDeleteDialogConfirm) },
             onDismiss = { viewModel.onEvent(EditableItemUiEvent.OnDeleteDialogDismiss) }
         )
@@ -153,15 +159,14 @@ fun ScreenshotGalleryRoute(
 
 @Composable
 fun ScreenshotGalleryScreen(
-    images: PersistentList<ImageSummary>,
+    images: ImmutableList<ImageSummary>,
     onLongClick: (ImageSummary) -> Unit,
-    selectedId: String,
+    selectedItemsIds: PersistentSet<String>,
     modifier: Modifier = Modifier,
     isUiInEditMode: Boolean,
 ) {
     var currentPage by rememberSaveable { mutableIntStateOf(0) }
     var dialogState by rememberSaveable { mutableStateOf(value = false) }
-    Log.d("ScreenshotGalleryScreen", "ScreenshotGalleryScreen: $images $currentPage")
     if (dialogState) {
         GalleryView(
             images = images,
@@ -191,7 +196,7 @@ fun ScreenshotGalleryScreen(
                     }
                 },
                 onLongClick = { onLongClick(imageSummary) },
-                isSelected = selectedId == imageSummary.id
+                isSelected = selectedItemsIds.contains(imageSummary.id)
             )
         }
     }
@@ -249,7 +254,7 @@ fun ImageCard(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun GalleryView(
-    images: PersistentList<ImageSummary>,
+    images: ImmutableList<ImageSummary>,
     currentPage: Int,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
