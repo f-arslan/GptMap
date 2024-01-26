@@ -1,55 +1,237 @@
 package com.espressodev.gptmap.feature.favourite
 
-import app.cash.turbine.test
 import com.espressodev.gptmap.core.common.LogService
+import com.espressodev.gptmap.core.data.StorageService
+import com.espressodev.gptmap.core.data.StorageService.Companion.IMAGE_REFERENCE
+import com.espressodev.gptmap.core.model.EditableItemUiEvent
 import com.espressodev.gptmap.core.model.Favourite
+import com.espressodev.gptmap.core.model.FavouriteUiState
 import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
-import io.mockk.clearAllMocks
+import io.mockk.Called
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.spyk
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.StandardTestDispatcher
+import io.mockk.slot
+import io.mockk.verify
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestCoroutineScheduler
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import java.time.LocalDateTime
 
 class FavouriteViewModelTest : BaseTest() {
+    @Test
+    fun `emits Success when getFavourites is successful`() = runTest {
+        val realmSyncService: RealmSyncService = mockk()
+        coEvery { realmSyncService.getFavourites() } returns flow { emit(listOf(Favourite())) }
+        val logService: LogService = mockk(relaxed = true)
+        val viewModel = createViewModel(realmSyncService, logService)
 
-    private lateinit var viewModel: FavouriteViewModel
-    private val realmSyncService: RealmSyncService = mockk(relaxed = true)
-    private val logService: LogService = mockk(relaxed = true)
-    private val testDispatcher = StandardTestDispatcher()
-    private val favouriteList = listOf(Favourite(date = LocalDateTime.now()))
+        val result = viewModel.favourites.first()
 
-    @BeforeEach
-    override fun beforeEach() {
-        super.beforeEach()
-        coEvery { realmSyncService.getFavourites() } returns flowOf(favouriteList)
-        viewModel = spyk(
-            FavouriteViewModel(
-                realmSyncService = realmSyncService,
-                logService = logService,
-                ioDispatcher = testDispatcher
-            )
-        )
+        assertTrue(result is Response.Success)
+        verify { logService wasNot Called }
     }
 
-    @AfterEach
-    override fun afterEach() {
-        super.afterEach()
-        clearAllMocks()
+
+    @Test
+    fun `when deleteFavourite fails, should not reset UI state`() = runTest {
+        val realmSyncService: RealmSyncService = mockk(relaxed = true)
+        val storageService: StorageService = mockk()
+        val exception = RuntimeException("Deletion failed")
+        coEvery { realmSyncService.deleteFavourite(any()) } returns Result.failure(exception)
+        coEvery { storageService.deleteImage(any(), any()) } returns Result.success(Unit)
+
+        val viewModel = createViewModel(
+            realmSyncService = realmSyncService,
+            storageService = storageService,
+        )
+
+        // Assume that the UI state has a selected item
+        val selectedItem = Favourite(favouriteId = TEST_ID)
+        viewModel.onEvent(EditableItemUiEvent.OnLongClickToItem(selectedItem))
+        viewModel.onEvent(EditableItemUiEvent.OnDeleteDialogConfirm)
+
+        advanceUntilIdle()
+
+        // Confirm that the UI state was not reset
+        assertNotEquals(FavouriteUiState(selectedItem = Favourite()), viewModel.uiState.value)
     }
 
     @Test
-    fun favouritesFlowEmitsExpectedValues() = runTest {
-        viewModel.favourites.test {
-            val item = awaitItem()
-            assert(item is Response.Loading)
-            cancelAndIgnoreRemainingEvents()
+    fun `when getFavourites emits multiple values, should emit Success for each value`() = runTest {
+        val realmSyncService: RealmSyncService = mockk()
+        val favouritesFlow = flow {
+            emit(listOf(Favourite(favouriteId = "id1")))
+            emit(listOf(Favourite(favouriteId = "id2"), Favourite(favouriteId = "id3")))
         }
+        coEvery { realmSyncService.getFavourites() } returns favouritesFlow.also(::println)
+
+        val viewModel =
+            createViewModel(
+                realmSyncService = realmSyncService,
+                ioDispatcher = testScheduler
+            )
+
+        val emissions = mutableListOf<Response<List<Favourite>>>()
+        backgroundScope.launch { viewModel.favourites.toList(emissions) }
+        advanceUntilIdle()
+
+        assertTrue(emissions.all { it is Response.Success })
+        if (emissions.size > 0 && emissions[0] is Response.Success) {
+            assertEquals(2, (emissions[0] as Response.Success).data.size)
+        }
+    }
+
+    @Test
+    fun `favourites emits Loading initially`() = runTest {
+        val viewModel = createViewModel()
+        val loadingState = viewModel.favourites.first().also(::println)
+        assert(loadingState is Response.Loading)
+    }
+
+    @Test
+    fun `favourites emits Success with correct data`() = runTest {
+        val realmSyncService: RealmSyncService = mockk()
+        coEvery { realmSyncService.getFavourites() } returns flow {
+            emit(listOf(Favourite(favouriteId = TEST_ID)))
+        }
+        val viewModel = createViewModel(realmSyncService)
+        viewModel.favourites.first().also { result ->
+            assert(result is Response.Success)
+        }
+    }
+
+    @Test
+    fun `favourites emits Failure when getFavourites fails`() = runTest {
+        val realmSyncService: RealmSyncService = mockk()
+        coEvery { realmSyncService.getFavourites() } returns flow {
+            emit(listOf(Favourite(favouriteId = TEST_ID)))
+            throw Exception()
+        }
+
+        val viewModel =
+            createViewModel(
+                realmSyncService = realmSyncService,
+                ioDispatcher = testScheduler
+            )
+
+
+        val emissions = mutableListOf<Response<List<Favourite>>>()
+        backgroundScope.launch { viewModel.favourites.take(2).toList(emissions) }
+        advanceUntilIdle()
+        assertTrue(emissions.also(::println).any { it is Response.Failure })
+    }
+
+
+    @Test
+    fun `onDeleteDialogConfirmClick deletes favourite and resets UI state`() = runTest {
+        val realmSyncService: RealmSyncService = mockk(relaxed = true)
+        val storageService: StorageService = mockk()
+
+        // Assume deletion is successful
+        coEvery { realmSyncService.deleteFavourite(any()) } returns Result.success(value = true)
+
+        val imageIdSlot = slot<String>()
+        val imageRefSlot = slot<String>()
+        coEvery {
+            storageService.deleteImage(
+                capture(imageIdSlot),
+                capture(imageRefSlot)
+            )
+        } returns Result.success(Unit)
+
+
+        val viewModel = createViewModel(
+            realmSyncService = realmSyncService,
+            storageService = storageService,
+        )
+
+
+        // Assume that the UI state has a selected item
+        val selectedItem = Favourite(favouriteId = TEST_ID)
+        viewModel.onEvent(EditableItemUiEvent.OnLongClickToItem(selectedItem))
+        assertTrue(
+            viewModel.uiState.value == FavouriteUiState(
+                selectedItem = selectedItem,
+                isUiInEditMode = true
+            )
+        )
+
+        viewModel.onEvent(EditableItemUiEvent.OnDeleteDialogConfirm)
+
+        // Confirm that the delete functions were called
+        coVerify { realmSyncService.deleteFavourite(TEST_ID) }
+        coVerify { storageService.deleteImage(TEST_ID, IMAGE_REFERENCE) }
+
+        // Check the captured arguments
+        assertEquals(TEST_ID, imageIdSlot.captured)
+        assertEquals(IMAGE_REFERENCE, imageRefSlot.captured)
+        // Confirm that the UI state was reset
+        assert(viewModel.uiState.value == FavouriteUiState(selectedItem = Favourite()))
+    }
+
+    @Test
+    fun `onEditDialogConfirmClick updates favourite text and resets UI state`() = runTest {
+        val realmSyncService: RealmSyncService = mockk(relaxed = true)
+        coEvery {
+            realmSyncService.updateFavouriteText(
+                any(),
+                any()
+            )
+        } returns Result.success(value = true)
+
+        val viewModel = createViewModel(realmSyncService = realmSyncService)
+
+        val selectedItem = Favourite(favouriteId = TEST_ID)
+        viewModel.onEvent(EditableItemUiEvent.OnLongClickToItem(selectedItem))
+        val newText = "Updated Text"
+
+        viewModel.onEvent(EditableItemUiEvent.OnEditDialogConfirm(newText))
+        // Confirm that the update function was called
+        coVerify { realmSyncService.updateFavouriteText(TEST_ID, newText) }
+
+        // Confirm that the UI state was reset
+        assert(viewModel.uiState.value == FavouriteUiState(selectedItem = Favourite()))
+    }
+
+    @Test
+    fun `reset resets UI state correctly`() = runTest {
+        val viewModel = createViewModel()
+
+        val selectedItem = Favourite(favouriteId = TEST_ID)
+        viewModel.onEvent(EditableItemUiEvent.OnLongClickToItem(selectedItem))
+
+        viewModel.onEvent(EditableItemUiEvent.Reset)
+
+        // Confirm that the UI state was reset
+        assert(viewModel.uiState.value == FavouriteUiState(selectedItem = Favourite()))
+    }
+
+    private fun createViewModel(
+        realmSyncService: RealmSyncService = mockk(relaxed = true),
+        logService: LogService = mockk(relaxed = true),
+        storageService: StorageService = mockk(relaxed = true),
+        ioDispatcher: TestCoroutineScheduler = testDispatcher
+    ): FavouriteViewModel {
+        return FavouriteViewModel(
+            realmSyncService = realmSyncService,
+            storageService = storageService,
+            logService = logService,
+            ioDispatcher = UnconfinedTestDispatcher(ioDispatcher)
+        )
+    }
+
+    companion object {
+        private const val TEST_ID = "test_id"
     }
 }

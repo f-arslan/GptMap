@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -78,12 +77,13 @@ class FavouriteViewModel @Inject constructor(
     }
 
     private fun onDeleteDialogConfirmClick() = launchCatching {
+        val favId = favouriteId
         withContext(ioDispatcher) {
-            launch {
-                realmSyncService.deleteFavourite(favouriteId).getOrThrow()
-                reset()
-            }
-            launch { storageService.deleteImage(favouriteId, IMAGE_REFERENCE).getOrThrow() }
+            realmSyncService.deleteFavourite(favId)
+                .onSuccess {
+                    reset()
+                    storageService.deleteImage(favId, IMAGE_REFERENCE)
+                }
         }
     }
 
