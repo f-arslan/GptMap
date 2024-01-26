@@ -66,5 +66,9 @@ gradlePlugin {
             id = "gptmap.android.detekt"
             implementationClass = "AndroidDetektConventionPlugin"
         }
+        register("viewmodelTesting") {
+            id = "gptmap.viewmodel.testing"
+            implementationClass = "ViewmodelTestingConventionPlugin"
+        }
     }
 }
