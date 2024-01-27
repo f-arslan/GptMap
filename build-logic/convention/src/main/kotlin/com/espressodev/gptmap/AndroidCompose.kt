@@ -1,6 +1,9 @@
 package com.espressodev.gptmap
 
 import com.android.build.api.dsl.CommonExtension
+import com.espressodev.gptmap.ext.androidTestImplementation
+import com.espressodev.gptmap.ext.debugImplementation
+import com.espressodev.gptmap.ext.implementation
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.withType
@@ -16,29 +19,31 @@ internal fun Project.configureAndroidCompose(
         }
 
         composeOptions {
-            kotlinCompilerExtensionVersion = libs.findVersion("androidxComposeCompiler").get().toString()
+            kotlinCompilerExtensionVersion =
+                libs.findVersion("androidxComposeCompiler").get().toString()
         }
 
         dependencies {
             val bom = libs.findLibrary("androidx-compose-bom").get()
-            add("implementation", platform(bom))
-            add("androidTestImplementation", platform(bom))
-            add("debugImplementation", libs.findLibrary("androidx-compose-ui-testManifest").get())
-            add("implementation", libs.findLibrary("androidx-activity-compose").get())
-            add("implementation", libs.findLibrary("androidx-compose-foundation").get())
-            add("implementation", libs.findLibrary("androidx-compose-foundation-layout").get())
-            add("implementation", libs.findLibrary("androidx-compose-material3").get())
-            add("implementation", libs.findLibrary("androidx-compose-runtime").get())
-            add("debugImplementation", libs.findLibrary("androidx-compose-ui-tooling").get())
-            add("implementation", libs.findLibrary("androidx-compose-ui-tooling-preview").get())
-            add("implementation", libs.findLibrary("androidx-compose-ui-util").get())
-            add("debugImplementation", libs.findLibrary("androidx-compose-ui-testManifest").get())
+            implementation(platform(bom))
+            androidTestImplementation(platform(bom))
+            implementation(libs.findLibrary("androidx-activity-compose").get())
+            implementation(libs.findLibrary("androidx-compose-foundation").get())
+            implementation(libs.findLibrary("androidx-compose-foundation-layout").get())
+            implementation(libs.findLibrary("androidx-compose-material3").get())
+            implementation(libs.findLibrary("androidx-compose-runtime").get())
+            debugImplementation(libs.findLibrary("androidx-compose-ui-tooling").get())
+            implementation(libs.findLibrary("androidx-compose-ui-tooling-preview").get())
+            implementation(libs.findLibrary("androidx-compose-ui-util").get())
+             androidTestImplementation(libs.findLibrary("androidx-compose-ui-test").get())
+            androidTestImplementation(libs.findLibrary("androidx-compose-ui-test-junit4").get())
+            debugImplementation(libs.findLibrary("androidx-compose-ui-testManifest").get())
         }
     }
 
     tasks.withType<KotlinCompile>().configureEach {
         kotlinOptions {
-            freeCompilerArgs = freeCompilerArgs + buildComposeMetricsParameters()
+            freeCompilerArgs += buildComposeMetricsParameters()
         }
     }
 }

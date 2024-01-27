@@ -1,3 +1,4 @@
+import com.espressodev.gptmap.ext.implementation
 import com.espressodev.gptmap.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -12,14 +13,14 @@ class AndroidApplicationFirebaseConventionPlugin : Plugin<Project> {
             }
 
             dependencies {
-                "implementation"(libs.findLibrary("firebase-auth").get())
-                "implementation"(libs.findLibrary("firebase-firestore").get())
-                "implementation"(libs.findLibrary("firebase-crashlytics").get())
-                "implementation"(libs.findLibrary("firebase-storage").get())
-                "implementation"(libs.findLibrary("firebase-analytics").get())
-                "implementation"(libs.findLibrary("play-services-auth").get())
-                "implementation"(libs.findLibrary("play-services-location").get())
-                "implementation"(libs.findLibrary("play-services-maps").get())
+                implementation(libs.findLibrary("firebase-auth").get())
+                implementation(libs.findLibrary("firebase-firestore").get())
+                implementation(libs.findLibrary("firebase-crashlytics").get())
+                implementation(libs.findLibrary("firebase-storage").get())
+                implementation(libs.findLibrary("firebase-analytics").get())
+                implementation(libs.findLibrary("play-services-auth").get())
+                implementation(libs.findLibrary("play-services-location").get())
+                implementation(libs.findLibrary("play-services-maps").get())
             }
         }
     }

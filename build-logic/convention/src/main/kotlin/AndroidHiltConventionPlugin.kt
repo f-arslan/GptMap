@@ -1,3 +1,4 @@
+import com.espressodev.gptmap.ext.implementation
 import com.espressodev.gptmap.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -12,7 +13,7 @@ class AndroidHiltConventionPlugin : Plugin<Project> {
             }
 
             dependencies {
-                "implementation"(libs.findLibrary("hilt-android").get())
+                implementation(libs.findLibrary("hilt-android").get())
                 "ksp"(libs.findLibrary("hilt-compiler").get())
             }
         }

@@ -2,6 +2,7 @@ import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.LibraryExtension
 import com.espressodev.gptmap.configureKotlinAndroid
 import com.espressodev.gptmap.disableUnnecessaryAndroidTests
+import com.espressodev.gptmap.ext.testImplementation
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -25,7 +26,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 disableUnnecessaryAndroidTests(target)
             }
             dependencies {
-                add("testImplementation", kotlin("test"))
+                testImplementation(kotlin("test"))
             }
         }
     }

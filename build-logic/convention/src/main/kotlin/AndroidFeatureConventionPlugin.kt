@@ -1,3 +1,4 @@
+import com.espressodev.gptmap.ext.implementation
 import com.espressodev.gptmap.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -13,18 +14,18 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             }
 
             dependencies {
-                add("implementation", project(":core:model"))
-                add("implementation", project(":core:designsystem"))
-                add("implementation", project(":core:data"))
-                add("implementation", project(":core:common"))
-                add("implementation", project(":core:domain"))
-                add("implementation", project(":core:mongodb"))
+                implementation(project(":core:model"))
+                implementation(project(":core:designsystem"))
+                implementation(project(":core:data"))
+                implementation(project(":core:common"))
+                implementation(project(":core:domain"))
+                implementation(project(":core:mongodb"))
 
-                add("implementation", libs.findLibrary("androidx-hilt-navigation-compose").get())
-                add("implementation", libs.findLibrary("androidx-lifecycle-runtimeCompose").get())
-                add("implementation", libs.findLibrary("androidx-lifecycle-viewModelCompose").get())
-                add("implementation", libs.findLibrary("kotlinx-coroutines-android").get())
-                add("implementation", libs.findLibrary("kotlinx-collections-immutable").get())
+                implementation(libs.findLibrary("androidx-hilt-navigation-compose").get())
+                implementation(libs.findLibrary("androidx-lifecycle-runtimeCompose").get())
+                implementation(libs.findLibrary("androidx-lifecycle-viewModelCompose").get())
+                implementation(libs.findLibrary("kotlinx-coroutines-android").get())
+                implementation(libs.findLibrary("kotlinx-collections-immutable").get())
             }
         }
     }

@@ -1,6 +1,8 @@
 package com.espressodev.gptmap
 
 import com.android.build.api.dsl.CommonExtension
+import com.espressodev.gptmap.ext.androidTestImplementation
+import com.espressodev.gptmap.ext.implementation
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
@@ -39,9 +41,9 @@ internal fun Project.configureKotlinAndroid(
 
     dependencies {
         add("coreLibraryDesugaring", libs.findLibrary("android-desugarJdkLibs").get())
-        add("implementation", libs.findLibrary("androidx-test-ext").get())
-        add("androidTestImplementation", libs.findLibrary("androidx-junit").get())
-        add("androidTestImplementation", libs.findLibrary("androidx-test-runner").get())
+        implementation(libs.findLibrary("androidx-test-ext").get())
+        androidTestImplementation(libs.findLibrary("androidx-junit").get())
+        androidTestImplementation(libs.findLibrary("androidx-test-runner").get())
     }
 }
 
@@ -70,7 +72,7 @@ private fun Project.configureKotlin() {
             // Override by setting warningsAsErrors=true in your ~/.gradle/gradle.properties
             val warningsAsErrors: String? by project
             allWarningsAsErrors = warningsAsErrors.toBoolean()
-            freeCompilerArgs = freeCompilerArgs + listOf(
+            freeCompilerArgs += listOf(
                 "-opt-in=kotlin.RequiresOptIn",
                 // Enable experimental coroutines APIs, including Flow
                 "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
