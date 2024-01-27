@@ -7,7 +7,6 @@ plugins {
 
 android {
     namespace = "com.espressodev.gptmap.feature.favourite"
-
 }
 
 dependencies {

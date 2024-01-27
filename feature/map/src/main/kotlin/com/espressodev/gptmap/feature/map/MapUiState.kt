@@ -17,7 +17,7 @@ enum class ScreenshotState {
 
 data class MapUiState(
     val searchValue: String = "",
-    val location:Location = Location(),
+    val location: Location = Location(),
     val userFirstChar: Char = 'H',
     val componentLoadingState: ComponentLoadingState = ComponentLoadingState.NOTHING,
     val bottomSheetState: MapBottomSheetState = MapBottomSheetState.BOTTOM_SHEET_HIDDEN,
@@ -31,8 +31,8 @@ data class MapUiState(
     val screenshotState: ScreenshotState = ScreenshotState.IDLE,
     val imageGalleryState: Pair<Int, Boolean> = Pair(0, false)
 ) {
-    fun getCoordinates(): LatLng =
-        location.content.coordinates.let { LatLng(it.latitude, it.longitude) }
+    val coordinatesLatLng: LatLng
+        get() = location.content.coordinates.let { LatLng(it.latitude, it.longitude) }
 }
 
 sealed class MapUiEvent {
@@ -41,9 +41,9 @@ sealed class MapUiEvent {
     data object OnImageDismiss : MapUiEvent()
     data class OnImageClick(val pos: Int) : MapUiEvent()
     data object OnFavouriteClick : MapUiEvent()
-    data object OnDetailSheetBackClick: MapUiEvent()
-    data object OnBackClick: MapUiEvent()
-    data object OnExploreWithAiClick: MapUiEvent()
-    data object OnScreenshotProcessStarted: MapUiEvent()
+    data object OnDetailSheetBackClick : MapUiEvent()
+    data object OnBackClick : MapUiEvent()
+    data object OnExploreWithAiClick : MapUiEvent()
+    data object OnScreenshotProcessStarted : MapUiEvent()
     data class OnStreetViewClick(val latLng: Pair<Double, Double>) : MapUiEvent()
 }

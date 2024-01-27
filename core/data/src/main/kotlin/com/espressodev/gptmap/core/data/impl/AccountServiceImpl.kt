@@ -6,7 +6,6 @@ import com.espressodev.gptmap.core.data.RevokeAccessResponse
 import com.espressodev.gptmap.core.data.SendEmailVerificationResponse
 import com.espressodev.gptmap.core.data.SendPasswordResetEmailResponse
 import com.espressodev.gptmap.core.data.UpdatePasswordResponse
-import com.espressodev.gptmap.core.model.Exceptions.FirebaseUserIsNullException
 import com.espressodev.gptmap.core.model.Response
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth

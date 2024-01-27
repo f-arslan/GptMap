@@ -89,7 +89,7 @@ class FavouriteViewModel @Inject constructor(
 
     private fun onEditDialogConfirmClick(text: String) = launchCatching {
         withContext(ioDispatcher) {
-            realmSyncService.updateFavouriteText(favouriteId, text).getOrThrow()
+            realmSyncService.updateFavouriteText(favouriteId, text)
         }
         reset()
     }

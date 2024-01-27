@@ -29,6 +29,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -73,21 +74,38 @@ fun FavouriteRoute(
             )
         },
     ) {
-        FavouriteScreen(
-            onCardClick = navigateToMap,
-            favourites = favourites,
-            onLongClick = { favourite ->
-                viewModel.onEvent(EditableItemUiEvent.OnLongClickToItem(favourite))
-            },
-            selectedId = uiState.selectedItem.favouriteId,
-            isUiInEditMode = uiState.isUiInEditMode,
-            modifier = Modifier.padding(it)
-        )
+        when (val result = favourites) {
+            is Response.Success -> {
+                if (result.data.isEmpty()) {
+                    LottieAnimationPlaceholder(AppRaw.nothing_here_anim)
+                } else {
+                    FavouriteScreen(
+                        onCardClick = navigateToMap,
+                        favourites = result.data,
+                        onLongClick = { favourite ->
+                            viewModel.onEvent(EditableItemUiEvent.OnLongClickToItem(favourite))
+                        },
+                        selectedId = uiState.selectedItem.favouriteId,
+                        isUiInEditMode = uiState.isUiInEditMode,
+                        modifier = Modifier.padding(it)
+                    )
+                }
+            }
+
+            is Response.Failure -> {
+                LottieAnimationPlaceholder(AppRaw.confused_man_404)
+            }
+
+            Response.Loading -> {}
+        }
+
     }
 
     BackHandler {
         if (uiState.isUiInEditMode) {
             viewModel.onEvent(EditableItemUiEvent.Reset)
+        } else {
+            popUp()
         }
     }
 
@@ -109,53 +127,39 @@ fun FavouriteRoute(
     }
 }
 
+internal const val LazyColumnTestTag = "lazy_column_test_tag"
+
 @Composable
 fun FavouriteScreen(
-    favourites: Response<List<Favourite>>,
+    favourites: List<Favourite>,
     selectedId: String,
     onCardClick: (String) -> Unit,
     onLongClick: (Favourite) -> Unit,
     isUiInEditMode: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    when (favourites) {
-        is Response.Success -> {
-            if (favourites.data.isNotEmpty()) {
-                LazyColumn(
-                    modifier = modifier
-                        .fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    contentPadding = PaddingValues(16.dp)
-                ) {
-                    items(favourites.data, key = { favourite -> favourite.id }) { favourite ->
-                        FavouriteCard(
-                            favourite = favourite,
-                            onClick = {
-                                if (isUiInEditMode) {
-                                    onLongClick(favourite)
-                                } else {
-                                    onCardClick(favourite.favouriteId)
-                                }
-                            },
-                            onLongClick = { onLongClick(favourite) },
-                            isSelected = favourite.favouriteId == selectedId,
-                        )
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+            .testTag(LazyColumnTestTag),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        contentPadding = PaddingValues(16.dp)
+    ) {
+        items(favourites, key = { favourite -> favourite.id }) { favourite ->
+            FavouriteCard(
+                favourite = favourite,
+                onClick = {
+                    if (isUiInEditMode) {
+                        onLongClick(favourite)
+                    } else {
+                        onCardClick(favourite.favouriteId)
                     }
-                }
-            } else {
-                LottieAnimationPlaceholder(
-                    modifier = modifier,
-                    rawRes = AppRaw.nothing_here_anim
-                )
-            }
+                },
+                onLongClick = { onLongClick(favourite) },
+                isSelected = favourite.favouriteId == selectedId,
+            )
         }
-
-        is Response.Failure -> {
-            LottieAnimationPlaceholder(AppRaw.confused_man_404)
-        }
-
-        Response.Loading -> {}
     }
 }
 

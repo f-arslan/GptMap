@@ -58,6 +58,7 @@ materialVersion = "1.11.0"
 junit5Plugin = "1.10.0.0"
 logback = "1.2.11"
 material3 = "1.2.0-beta02"  # Bom version has Circular Progress Ind. problem
+fixture = "1.2.0"
 [libraries]
 
 # Compose
@@ -74,7 +75,8 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 androidx-compose-ui-util = { group = "androidx.compose.ui", name = "ui-util" }
 androidx-lifecycle-runtimeCompose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidxLifecycle" }
 androidx-lifecycle-viewModelCompose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "androidxLifecycle" }
-androidx-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-junit4" }  # Android Compose VC
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }  # Android Compose VC
+androidx-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test" }  # Android Compose VC
 androidx-compose-ui-testManifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }  # Android Compose VC
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }  # Android Compose VC
 # End of it
@@ -112,6 +114,7 @@ mockito-inline = { group = "org.mockito", name = "mockito-inline", version.ref =
 mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito" }
 core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "coreTesting" }
 logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
+fixture = { group = "com.appmattus.fixture", name = "fixture", version.ref = "fixture" }
 # End of it
 
 # Hilt

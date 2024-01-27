@@ -10,4 +10,6 @@ android {
 dependencies {
     implementation(libs.androidx.lifecycle.viewModelCompose)
     implementation(libs.firebase.crashlytics)
+    testImplementation(libs.fixture)
+    implementation(kotlin("reflect"))
 }

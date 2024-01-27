@@ -2,7 +2,6 @@ package com.espressodev.gptmap.feature.map
 
 import StreetView
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
@@ -137,7 +136,6 @@ private fun MapScreen(
         location = uiState.location,
         onDismiss = { onEvent(MapUiEvent.OnImageDismiss) }
     )
-    Log.d("MapScreen", "MapScreen: ${uiState.bottomSheetState}")
     Box(modifier = modifier.fillMaxSize()) {
         if (uiState.searchBarState) {
             MapSearchBar(
@@ -268,7 +266,6 @@ private fun MapSearchBar(
 @Composable
 private fun MapSection(uiState: MapUiState, isPinVisible: Boolean, onEvent: (MapUiEvent) -> Unit) {
     val context = LocalContext.current
-    val latLng = uiState.getCoordinates()
     var isMapLoaded by remember { mutableStateOf(value = false) }
     val mapProperties = remember {
         MapProperties(
@@ -278,13 +275,12 @@ private fun MapSection(uiState: MapUiState, isPinVisible: Boolean, onEvent: (Map
             )
         )
     }
-
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(latLng, 14f)
+        position = CameraPosition.fromLatLngZoom(uiState.coordinatesLatLng, 14f)
     }
 
-    LaunchedEffect(uiState.getCoordinates()) {
-        cameraPositionState.animate(CameraUpdateFactory.newLatLng(latLng))
+    LaunchedEffect(uiState.coordinatesLatLng) {
+        cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(uiState.coordinatesLatLng, 14f))
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -299,7 +295,6 @@ private fun MapSection(uiState: MapUiState, isPinVisible: Boolean, onEvent: (Map
             )
         }
         LocationPin(isPinVisible = isPinVisible, isCameraMoving = cameraPositionState.isMoving)
-        Log.d("MapSection", "MapSection: $isMapLoaded")
         LottieAnimationPlaceholder(
             rawRes = AppRaw.transistor_earth,
             visible = !isMapLoaded,

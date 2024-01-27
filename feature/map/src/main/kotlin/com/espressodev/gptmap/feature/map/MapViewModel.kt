@@ -134,7 +134,7 @@ class MapViewModel @Inject constructor(
                     }
                 }
 
-            }.onFailure { exception ->
+            }.onFailure {
                 _uiState.update {
                     it.copy(
                         componentLoadingState = ComponentLoadingState.NOTHING,
@@ -143,7 +143,6 @@ class MapViewModel @Inject constructor(
                         searchBarState = true
                     )
                 }
-                throw exception
             }
     }
 

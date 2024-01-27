@@ -18,9 +18,6 @@ object SnackbarManager {
         messages.update { SnackbarMessage.StringSnackbar(message) }
     }
 
-    fun showMessage(message: SnackbarMessage) {
-        messages.update { message }
-    }
     fun clean() {
         messages.update { null }
     }

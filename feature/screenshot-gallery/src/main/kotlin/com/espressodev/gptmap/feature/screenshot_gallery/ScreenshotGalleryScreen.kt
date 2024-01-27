@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.feature.screenshot_gallery
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -131,6 +130,8 @@ fun ScreenshotGalleryRoute(
     BackHandler {
         if (uiState.isUiInEditMode) {
             viewModel.onEvent(EditableItemUiEvent.Reset)
+        } else {
+            popUp()
         }
     }
 
