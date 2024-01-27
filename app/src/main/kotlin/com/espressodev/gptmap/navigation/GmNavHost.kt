@@ -90,8 +90,8 @@ private fun NavHostController.NavigationListener() {
             println("Arguments: $arguments")
         }
         this@NavigationListener.currentBackStack.collect {
-            it.forEach {
-                println("Back stack: ${it.destination.route}")
+            it.forEach { backStackEntry ->
+                println("Back stack: ${backStackEntry.destination.route}")
             }
         }
     }
