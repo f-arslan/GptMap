@@ -1,6 +1,7 @@
 package com.espressodev.gptmap
 
 import android.content.res.Resources
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -22,7 +23,10 @@ import com.espressodev.gptmap.navigation.TopLevelDestination.FAVOURITE
 import com.espressodev.gptmap.navigation.TopLevelDestination.MAP
 import com.espressodev.gptmap.navigation.TopLevelDestination.SCREENSHOT_GALLERY
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 @Stable
@@ -37,12 +41,24 @@ class GmAppState(
     init {
         coroutineScope.launch {
             snackbarManager.snackbarMessages.filterNotNull().collect { snackbarMessage ->
-                val text = snackbarMessage.toMessage(resources)
-                snackbarHostState.showSnackbar(text, withDismissAction = true)
+                val text = snackbarMessage.first.toMessage(resources)
+                snackbarHostState.showSnackbar(
+                    text,
+                    withDismissAction = true,
+                    duration = snackbarMessage.second ?: SnackbarDuration.Short
+                )
                 snackbarManager.clean()
             }
         }
     }
+
+    val isOffline = networkMonitor.isOnline
+        .map(Boolean::not)
+        .stateIn(
+            scope = coroutineScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = false,
+        )
 
     val topLevelDestination: List<TopLevelDestination> = TopLevelDestination.entries
 

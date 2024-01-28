@@ -63,10 +63,7 @@ fun GmNavHost(
             popUp = navController::popBackStack,
             navigateToMap = navController::navigateToMap
         )
-        screenshotScreen(
-            popUp = navController::popBackStack,
-            navigateToMap = navController::navigateToMap
-        )
+        screenshotScreen(popUp = navController::popBackStack)
         screenshotGalleryScreen(popUp = navController::popBackStack)
         profileScreen(
             popUp = navController::popBackStack,
