@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 class NetworkMonitorImpl @Inject constructor(
     @ApplicationContext private val context: Context,
-): NetworkMonitor {
+) : NetworkMonitor {
     override val isOnline: Flow<Boolean> = callbackFlow {
         val connectivityManager = context.getSystemService<ConnectivityManager>()
         if (connectivityManager == null) {
