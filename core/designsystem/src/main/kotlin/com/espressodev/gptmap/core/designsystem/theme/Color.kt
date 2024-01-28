@@ -71,7 +71,6 @@ val seed = Color(0xFF00DDB3)
 val lightBottomColor = Color(0xFFf9fcf4)
 val darkBottomBarColor = Color(0xFF181a17)
 
-
 val LightGmColorsPalette = GmColorPalette(
     bottomBarColor = lightBottomColor
 )

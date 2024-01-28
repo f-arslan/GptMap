@@ -52,7 +52,8 @@
     <string name="explore">Explore</string>
     <string name="saved">Saved</string>
     <string name="gallery">Gallery</string>
-
+    <string name="my_location">My Location</string>
+    <string name="not_connected">📶😊 It looks like you\'re offline right now</string>
 
     <!-- Map -->
     <string name="map_text_field_placeholder">Search here</string>
@@ -63,6 +64,7 @@
     <string name="info">Information</string>
     <string name="back_to_info">Back to Info</string>
     <string name="explore_with_ai">Explore more with AI</string>
+    <string name="loading_your_location">Loading your location…</string>
 
     <!-- Register -->
     <string name="register">Register</string>

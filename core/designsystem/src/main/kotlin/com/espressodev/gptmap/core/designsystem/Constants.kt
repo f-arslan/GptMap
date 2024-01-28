@@ -1,7 +1,5 @@
 package com.espressodev.gptmap.core.designsystem
 
-import androidx.compose.ui.unit.dp
-
 object Constants {
     // User Agreements
     const val PRIVACY_POLICY_DESC = "By signing up, you agree to accept our privacy policy and terms & conditions."

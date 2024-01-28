@@ -21,7 +21,7 @@ class RealmSyncServiceImpl : RealmSyncService {
     private val realmUserId: String
         get() = realmUser.id
 
-    override suspend fun saveUser(realmUser: RealmUser): Result<Boolean> = runCatching {
+    override suspend fun saveUser(realmUser: RealmUser): Result<Unit> = runCatching {
         realm.write {
             copyToRealm(
                 realmUser.apply {
@@ -29,13 +29,13 @@ class RealmSyncServiceImpl : RealmSyncService {
                 }, updatePolicy = UpdatePolicy.ALL
             )
         }
-        true
+        Unit
     }.onFailure {
         Log.e("RealmSyncServiceImpl", "addUser: failure $it")
         Result.failure<Throwable>(it)
     }
 
-    override suspend fun saveFavourite(realmFavourite: RealmFavourite): Result<Boolean> =
+    override suspend fun saveFavourite(realmFavourite: RealmFavourite): Result<Unit> =
         runCatching {
             realm.write {
                 copyToRealm(
@@ -44,13 +44,13 @@ class RealmSyncServiceImpl : RealmSyncService {
                     }, updatePolicy = UpdatePolicy.ALL
                 )
             }
-            true
+            Unit
         }.onFailure {
             Log.e("RealmSyncServiceImpl", "addLocation: failure $it")
             Result.failure<Throwable>(it)
         }
 
-    override suspend fun saveImageAnalysis(realmImageAnalysis: RealmImageAnalysis): Result<Boolean> {
+    override suspend fun saveImageAnalysis(realmImageAnalysis: RealmImageAnalysis): Result<Unit> {
         return runCatching {
             realm.write {
                 copyToRealm(
@@ -59,7 +59,7 @@ class RealmSyncServiceImpl : RealmSyncService {
                     }, updatePolicy = UpdatePolicy.ALL
                 )
             }
-            true
+            Unit
         }.onFailure {
             Log.e("RealmSyncServiceImpl", "addImageAnalysis: failure $it")
             Result.failure<Throwable>(it)
@@ -86,58 +86,77 @@ class RealmSyncServiceImpl : RealmSyncService {
         realm.query<RealmUser>("userId == $0", realmUserId).first().find() != null
     }
 
-    override suspend fun deleteImageAnalysis(imageAnalysisId: String): Result<Boolean> = runCatching {
-        realm.write {
-            val imageAnalysisToDelete: RealmImageAnalysis = query<RealmImageAnalysis>("userId == $0 AND imageId == $1", realmUserId, imageAnalysisId)
-                .find()
-                .first()
-            delete(imageAnalysisToDelete)
-        }
-        true
-    }
-
-    override suspend fun deleteImageAnalyses(imageAnalysesIds: Set<String>): Result<Unit> = runCatching {
-        realm.write {
-            val imageAnalysesToDelete: RealmResults<RealmImageAnalysis> = query<RealmImageAnalysis>("userId == $0 AND imageId IN $1", realmUserId, imageAnalysesIds)
-                .find()
-            delete(imageAnalysesToDelete)
-        }
-    }
-
-    override suspend fun updateImageAnalysisText(
-        imageAnalysisId: String,
-        text: String
-    ): Result<Boolean> = runCatching {
-        realm.write {
-            val imageAnalysisToUpdate: RealmImageAnalysis = query<RealmImageAnalysis>("userId == $0 AND imageId == $1", realmUserId, imageAnalysisId)
-                .find()
-                .first()
-            findLatest(imageAnalysisToUpdate)?.let { realmImageAnalysis ->
-               realmImageAnalysis.title = text
+    override suspend fun deleteImageAnalysis(imageAnalysisId: String): Result<Unit> =
+        runCatching {
+            realm.write {
+                val imageAnalysisToDelete: RealmImageAnalysis = query<RealmImageAnalysis>(
+                    "userId == $0 AND imageId == $1",
+                    realmUserId,
+                    imageAnalysisId
+                )
+                    .find()
+                    .first()
+                delete(imageAnalysisToDelete)
             }
         }
-        true
-    }
 
-    override suspend fun deleteFavourite(favouriteId: String): Result<Boolean> = runCatching {
+    override suspend fun deleteImageAnalyses(imageAnalysesIds: Set<String>): Result<Unit> =
+        runCatching {
+            realm.write {
+                val imageAnalysesToDelete: RealmResults<RealmImageAnalysis> =
+                    query<RealmImageAnalysis>(
+                        "userId == $0 AND imageId IN $1",
+                        realmUserId,
+                        imageAnalysesIds
+                    )
+                        .find()
+                delete(imageAnalysesToDelete)
+            }
+        }
+
+    override suspend fun updateImageAnalysisText(imageAnalysisId: String, text: String) =
+        runCatching {
+            realm.write {
+                val imageAnalysisToUpdate: RealmImageAnalysis = query<RealmImageAnalysis>(
+                    "userId == $0 AND imageId == $1",
+                    realmUserId,
+                    imageAnalysisId
+                )
+                    .find()
+                    .first()
+                findLatest(imageAnalysisToUpdate)?.let { realmImageAnalysis ->
+                    realmImageAnalysis.title = text
+                }
+            }
+            Unit
+        }
+
+    override suspend fun deleteFavourite(favouriteId: String): Result<Unit> = runCatching {
         realm.write {
-            val favouriteToDelete: RealmFavourite = query<RealmFavourite>("userId == $0 AND favouriteId == $1", realmUserId, favouriteId)
+            val favouriteToDelete: RealmFavourite = query<RealmFavourite>(
+                "userId == $0 AND favouriteId == $1",
+                realmUserId,
+                favouriteId
+            )
                 .find()
                 .first()
             delete(favouriteToDelete)
         }
-        true
     }
 
-    override suspend fun updateFavouriteText(favouriteId: String, text: String): Result<Boolean> = runCatching {
-        realm.write {
-            val favouriteToUpdate: RealmFavourite = query<RealmFavourite>("userId == $0 AND favouriteId == $1", realmUserId, favouriteId)
-                .find()
-                .first()
-            findLatest(favouriteToUpdate)?.let { realmFavourite ->
-               realmFavourite.title = text
+    override suspend fun updateFavouriteText(favouriteId: String, text: String): Result<Unit> =
+        runCatching {
+            realm.write {
+                val favouriteToUpdate: RealmFavourite = query<RealmFavourite>(
+                    "userId == $0 AND favouriteId == $1",
+                    realmUserId,
+                    favouriteId
+                )
+                    .find()
+                    .first()
+                findLatest(favouriteToUpdate)?.let { realmFavourite ->
+                    realmFavourite.title = text
+                }
             }
         }
-        true
-    }
 }

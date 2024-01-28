@@ -5,15 +5,9 @@ import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.model.Exceptions.FirebaseUserIdIsNullException
 import com.espressodev.gptmap.core.model.User
 import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseAuthException
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-
 
 class SignUpWithEmailAndPasswordUseCase @Inject constructor(
     private val accountService: AccountService,

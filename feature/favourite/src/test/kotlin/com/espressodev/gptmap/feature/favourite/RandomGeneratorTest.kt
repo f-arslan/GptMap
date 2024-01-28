@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import kotlin.random.Random
 
-
 @Suppress("USELESS_IS_CHECK")
 class MakeRandomInstanceTest {
     class A {
@@ -84,7 +83,6 @@ class MakeRandomInstanceTest {
         assertTrue(makeRandomInstance<Float>() is Float)
         assertTrue(makeRandomInstance<Char>() is Char)
         assertTrue(makeRandomInstance<String>() is String)
-        //... etc. Don't forget about arrays
     }
 
     @Test

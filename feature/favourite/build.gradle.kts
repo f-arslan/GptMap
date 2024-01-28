@@ -7,6 +7,9 @@ plugins {
 
 android {
     namespace = "com.espressodev.gptmap.feature.favourite"
+    defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
 }
 
 dependencies {

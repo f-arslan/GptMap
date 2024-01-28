@@ -8,7 +8,7 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.googleAuth)
+    implementation(projects.core.google)
     implementation(libs.play.services.auth)
     implementation(libs.firebase.auth)
 }

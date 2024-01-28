@@ -20,7 +20,7 @@ sealed class EditableItemUiEvent {
     data object OnCancelClick : EditableItemUiEvent()
     data object OnDeleteClick : EditableItemUiEvent()
     data object OnEditClick : EditableItemUiEvent()
-    data object Reset: EditableItemUiEvent()
+    data object Reset : EditableItemUiEvent()
     data object OnEditDialogDismiss : EditableItemUiEvent()
     data class OnEditDialogConfirm(val text: String) : EditableItemUiEvent()
     data object OnDeleteDialogConfirm : EditableItemUiEvent()

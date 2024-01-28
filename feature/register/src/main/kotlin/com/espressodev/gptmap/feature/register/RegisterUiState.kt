@@ -1,7 +1,7 @@
 package com.espressodev.gptmap.feature.register
 
-import com.espressodev.gptmap.core.google_auth.OneTapSignInUpResponse
-import com.espressodev.gptmap.core.google_auth.SignInUpWithGoogleResponse
+import com.espressodev.gptmap.core.google.OneTapSignInUpResponse
+import com.espressodev.gptmap.core.google.SignInUpWithGoogleResponse
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.google.GoogleResponse
 

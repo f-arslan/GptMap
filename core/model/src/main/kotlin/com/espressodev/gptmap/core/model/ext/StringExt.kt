@@ -10,23 +10,23 @@ import java.util.regex.Pattern
 fun String.toLocation(): Location =
     Location(id = UUID.randomUUID().toString(), Json.decodeFromString<Content>(this))
 
-private const val MIN_PASS_LENGTH = 8
-private const val PASS_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{4,}$"
-private const val NAME_PASS_PATTERN = "^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*\$"
+private const val MinPassPattern = 8
+private const val PassPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{4,}$"
+private const val NamePassPattern = "^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*\$"
 
 fun String.isValidEmail(): Boolean {
     return this.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(this).matches()
 }
 
 fun String.isValidName(): Boolean {
-    return this.isNotBlank() && this.length > 2 && Pattern.compile(NAME_PASS_PATTERN).matcher(this)
+    return this.isNotBlank() && this.length > 2 && Pattern.compile(NamePassPattern).matcher(this)
         .matches()
 }
 
 fun String.isValidPassword(): Boolean {
     return this.isNotBlank() &&
-            this.length >= MIN_PASS_LENGTH &&
-            Pattern.compile(PASS_PATTERN).matcher(this).matches()
+        this.length >= MinPassPattern &&
+        Pattern.compile(PassPattern).matcher(this).matches()
 }
 
 fun String.passwordMatches(repeated: String): Boolean {

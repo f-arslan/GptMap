@@ -12,4 +12,5 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     testImplementation(libs.fixture)
     implementation(kotlin("reflect"))
+    implementation(libs.androidx.compose.material3)
 }

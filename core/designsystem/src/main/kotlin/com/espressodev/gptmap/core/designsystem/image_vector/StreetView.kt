@@ -142,4 +142,3 @@ val StreetView: ImageVector
         }.build()
         return Street_ViewMut!!
     }
-

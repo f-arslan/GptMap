@@ -8,11 +8,11 @@ import com.espressodev.gptmap.core.model.realm.RealmUser
 import kotlinx.coroutines.flow.Flow
 
 interface RealmSyncService {
-    suspend fun saveUser(realmUser: RealmUser): Result<Boolean>
+    suspend fun saveUser(realmUser: RealmUser): Result<Unit>
 
-    suspend fun saveFavourite(realmFavourite: RealmFavourite): Result<Boolean>
+    suspend fun saveFavourite(realmFavourite: RealmFavourite): Result<Unit>
 
-    suspend fun saveImageAnalysis(realmImageAnalysis: RealmImageAnalysis): Result<Boolean>
+    suspend fun saveImageAnalysis(realmImageAnalysis: RealmImageAnalysis): Result<Unit>
 
     fun isUserInDatabase(): Result<Boolean>
 
@@ -22,13 +22,13 @@ interface RealmSyncService {
 
     fun getImageAnalyses(): Flow<List<ImageAnalysis>>
 
-    suspend fun deleteImageAnalysis(imageAnalysisId: String): Result<Boolean>
+    suspend fun deleteImageAnalysis(imageAnalysisId: String): Result<Unit>
 
     suspend fun deleteImageAnalyses(imageAnalysesIds: Set<String>): Result<Unit>
 
-    suspend fun updateImageAnalysisText(imageAnalysisId: String, text: String): Result<Boolean>
+    suspend fun updateImageAnalysisText(imageAnalysisId: String, text: String): Result<Unit>
 
-    suspend fun deleteFavourite(favouriteId: String): Result<Boolean>
+    suspend fun deleteFavourite(favouriteId: String): Result<Unit>
 
-    suspend fun updateFavouriteText(favouriteId: String, text: String): Result<Boolean>
+    suspend fun updateFavouriteText(favouriteId: String, text: String): Result<Unit>
 }

@@ -9,4 +9,8 @@ object Exceptions {
     class FirebasePhotoUrlNullException : Exception()
     class RealmFailedToLoadFavouritesException : Exception()
     class RealmFailedToLoadImageAnalysesException : Exception()
+    class GpsNotEnabledException : Exception("Please enable GPS")
+    class LocationNullException : Exception("Location is not available")
+    class LocationNullThrowable : Throwable("Location is not available")
+    class ResponseTextNotFoundException : Exception()
 }

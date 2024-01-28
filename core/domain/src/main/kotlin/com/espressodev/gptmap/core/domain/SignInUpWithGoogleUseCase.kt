@@ -1,9 +1,9 @@
 package com.espressodev.gptmap.core.domain
 
 import com.espressodev.gptmap.core.data.FirestoreService
-import com.espressodev.gptmap.core.google_auth.GoogleAuthService
-import com.espressodev.gptmap.core.google_auth.OneTapSignInUpResponse
-import com.espressodev.gptmap.core.google_auth.SignInUpWithGoogleResponse
+import com.espressodev.gptmap.core.google.GoogleAuthService
+import com.espressodev.gptmap.core.google.OneTapSignInUpResponse
+import com.espressodev.gptmap.core.google.SignInUpWithGoogleResponse
 import com.espressodev.gptmap.core.model.Exceptions.FirebaseDisplayNameNullException
 import com.espressodev.gptmap.core.model.Exceptions.FirebaseEmailNullException
 import com.espressodev.gptmap.core.model.Exceptions.FirebasePhotoUrlNullException

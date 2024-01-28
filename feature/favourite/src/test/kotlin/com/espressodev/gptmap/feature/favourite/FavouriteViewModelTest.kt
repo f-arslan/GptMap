@@ -42,7 +42,6 @@ class FavouriteViewModelTest : BaseTest() {
         verify { logService wasNot Called }
     }
 
-
     @Test
     fun `when deleteFavourite fails, should not reset UI state`() = runTest {
         val realmSyncService: RealmSyncService = mockk(relaxed = true)
@@ -132,14 +131,13 @@ class FavouriteViewModelTest : BaseTest() {
         assertTrue(emissions.also(::println).any { it is Response.Failure })
     }
 
-
     @Test
     fun `onDeleteDialogConfirmClick deletes favourite and resets UI state`() = runTest {
         val realmSyncService: RealmSyncService = mockk(relaxed = true)
         val storageService: StorageService = mockk()
 
         // Assume deletion is successful
-        coEvery { realmSyncService.deleteFavourite(any()) } returns Result.success(value = true)
+        coEvery { realmSyncService.deleteFavourite(any()) } returns Result.success(Unit)
 
         val imageIdSlot = slot<String>()
         val imageRefSlot = slot<String>()
@@ -188,7 +186,7 @@ class FavouriteViewModelTest : BaseTest() {
                 any(),
                 any()
             )
-        } returns Result.success(value = true)
+        } returns Result.success(Unit)
 
         val viewModel = createViewModel(realmSyncService = realmSyncService)
 

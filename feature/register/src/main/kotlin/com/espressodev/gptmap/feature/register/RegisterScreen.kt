@@ -33,7 +33,7 @@ import com.espressodev.gptmap.core.designsystem.component.GmProgressIndicator
 import com.espressodev.gptmap.core.designsystem.component.HeaderWrapper
 import com.espressodev.gptmap.core.designsystem.component.HyperlinkText
 import com.espressodev.gptmap.core.designsystem.component.PasswordTextField
-import com.espressodev.gptmap.core.google_auth.composable.OneTapLauncher
+import com.espressodev.gptmap.core.google.composable.OneTapLauncher
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.google.GoogleResponse
 import kotlinx.collections.immutable.persistentMapOf

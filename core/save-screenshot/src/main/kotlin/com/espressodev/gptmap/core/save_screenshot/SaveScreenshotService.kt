@@ -110,10 +110,11 @@ class SaveScreenshotService : Service() {
             intent.getParcelableExtra(DATA)
         }
         startProjection(resultCode, data)
-        sendBroadcast(Intent(ACTION_SERVICE_STARTED)
-            .apply {
-                setPackage(applicationContext.packageName)
-            }
+        sendBroadcast(
+            Intent(ACTION_SERVICE_STARTED)
+                .apply {
+                    setPackage(applicationContext.packageName)
+                }
         )
         return START_NOT_STICKY
     }
