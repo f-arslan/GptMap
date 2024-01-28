@@ -1,7 +1,10 @@
+@file:OptIn(ExperimentalPermissionsApi::class)
+
 package com.espressodev.gptmap.feature.map
 
 import StreetView
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
@@ -24,6 +27,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -34,7 +39,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -73,6 +77,8 @@ import com.espressodev.gptmap.feature.map.ComponentLoadingState.MAP
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.BOTTOM_SHEET_HIDDEN
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.DETAIL_CARD
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.SMALL_INFORMATION_CARD
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.MapStyleOptions
@@ -88,7 +94,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MapRoute(
-    navigateToStreetView: (Float, Float) -> Unit,
+    navigateToStreetView: (Pair<Float, Float>) -> Unit,
     navigateToScreenshot: () -> Unit,
     navigateToProfile: () -> Unit,
     favouriteId: String,
@@ -102,9 +108,7 @@ fun MapRoute(
             onEvent = { event ->
                 viewModel.onEvent(
                     event = event,
-                    navigateToStreetView = { latLng ->
-                        navigateToStreetView(latLng.first.toFloat(), latLng.second.toFloat())
-                    }
+                    navigateToStreetView = navigateToStreetView
                 )
             },
             onAvatarClick = navigateToProfile,
@@ -162,7 +166,7 @@ private fun MapScreen(
         DisplayBottomSheet(
             bottomSheetState = uiState.bottomSheetState,
             location = uiState.location,
-            onEvent = onEvent
+            onEvent = onEvent,
         )
     }
 }
@@ -186,25 +190,63 @@ private fun DisplayImageGallery(
 private fun BoxScope.DisplayBottomSheet(
     bottomSheetState: MapBottomSheetState,
     location: Location,
-    onEvent: (MapUiEvent) -> Unit
+    onEvent: (MapUiEvent) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     when (bottomSheetState) {
-        SMALL_INFORMATION_CARD -> {
-            SmallInformationCard(
-                content = location.content,
-                onExploreWithAiClick = { onEvent(MapUiEvent.OnExploreWithAiClick) },
-                onBackClick = { onEvent(MapUiEvent.OnBackClick) },
-            )
-        }
+        SMALL_INFORMATION_CARD -> SmallInformationCard(
+            content = location.content,
+            onExploreWithAiClick = { onEvent(MapUiEvent.OnExploreWithAiClick) },
+            onBackClick = { onEvent(MapUiEvent.OnBackClick) },
+            modifier = modifier
+        )
 
-        DETAIL_CARD -> {
-            DetailSheet(location = location, onEvent = onEvent)
-        }
+        DETAIL_CARD -> DetailSheet(location = location, onEvent = onEvent, modifier = modifier)
 
         BOTTOM_SHEET_HIDDEN -> {}
     }
 }
 
+@Composable
+fun BoxScope.MyCurrentLocationButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val locationPermissionState = rememberMultiplePermissionsState(
+        permissions = listOf(
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+    )
+
+    val (shouldShowDialog, setShouldShowDialog) = remember { mutableStateOf(value = false) }
+
+    LaunchedEffect(shouldShowDialog) {
+        if (shouldShowDialog) {
+            if (!locationPermissionState.allPermissionsGranted) {
+                locationPermissionState.launchMultiplePermissionRequest()
+            } else {
+                onClick()
+            }
+        }
+        setShouldShowDialog(false)
+    }
+
+    FilledTonalIconButton(
+        onClick = {
+            if (locationPermissionState.allPermissionsGranted) {
+                onClick()
+            } else {
+                setShouldShowDialog(true)
+            }
+        },
+        modifier = modifier
+            .align(Alignment.BottomEnd)
+            .padding(8.dp)
+    ) {
+        Icon(
+            imageVector = GmIcons.MyLocationOutlined,
+            contentDescription = stringResource(id = AppText.my_location)
+        )
+    }
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -266,7 +308,7 @@ private fun MapSearchBar(
 @Composable
 private fun MapSection(uiState: MapUiState, isPinVisible: Boolean, onEvent: (MapUiEvent) -> Unit) {
     val context = LocalContext.current
-    var isMapLoaded by remember { mutableStateOf(value = false) }
+    val (isMapLoaded, setMapLoaded) = remember { mutableStateOf(value = false) }
     val mapProperties = remember {
         MapProperties(
             mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
@@ -280,7 +322,24 @@ private fun MapSection(uiState: MapUiState, isPinVisible: Boolean, onEvent: (Map
     }
 
     LaunchedEffect(uiState.coordinatesLatLng) {
-        cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(uiState.coordinatesLatLng, 14f))
+        cameraPositionState.animate(
+            CameraUpdateFactory.newLatLngZoom(
+                uiState.coordinatesLatLng,
+                14f
+            )
+        )
+    }
+    Log.d("MapScreen", "MapSection: ${uiState.myCurrentLocationState}")
+    LaunchedEffect(uiState.myCurrentLocationState) {
+        if (uiState.myCurrentLocationState.first) {
+            cameraPositionState.animate(
+                CameraUpdateFactory.newLatLngZoom(
+                    uiState.myCoordinatesLatLng,
+                    14f
+                )
+            )
+            onEvent(MapUiEvent.OnUnsetMyCurrentLocationState)
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -305,8 +364,13 @@ private fun MapSection(uiState: MapUiState, isPinVisible: Boolean, onEvent: (Map
             cameraPositionState = cameraPositionState,
             uiSettings = MapUiSettings(zoomControlsEnabled = false),
             properties = mapProperties,
-            onMapLoaded = { isMapLoaded = true }
+            onMapLoaded = { setMapLoaded(true) },
         )
+        if (uiState.isMyLocationButtonVisible)
+            MyCurrentLocationButton(
+                onClick = { onEvent(MapUiEvent.OnMyCurrentLocationClick) },
+                modifier = Modifier.zIndex(1f)
+            )
     }
 }
 
@@ -316,7 +380,7 @@ private fun BoxScope.LoadingDialog(
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
-        visible = loadingState == MAP,
+        visible = loadingState != ComponentLoadingState.NOTHING,
         modifier = modifier
             .zIndex(1f)
             .align(Alignment.TopCenter)
@@ -325,6 +389,11 @@ private fun BoxScope.LoadingDialog(
             .padding(top = 72.dp)
             .padding(horizontal = 32.dp)
     ) {
+        val title = when (loadingState) {
+            MAP -> AppText.discovering_your_dream_place
+            ComponentLoadingState.MY_LOCATION -> AppText.loading_your_location
+            ComponentLoadingState.NOTHING -> AppText.not_valid_name
+        }
         Surface(
             shape = RoundedCornerShape(16.dp),
             color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
@@ -335,7 +404,7 @@ private fun BoxScope.LoadingDialog(
             ) {
                 DefaultLoadingAnimation()
                 Text(
-                    text = stringResource(AppText.discovering_your_dream_place),
+                    text = stringResource(title),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Medium,
@@ -380,7 +449,8 @@ private fun BoxScope.LocationPin(
             animationSpec = tween(
                 durationMillis = if (isCameraMoving) 800 else 2000,
                 easing = LinearEasing
-            ), label = "lottie animation progress"
+            ),
+            label = "lottie animation progress"
         )
 
         LottieAnimation(

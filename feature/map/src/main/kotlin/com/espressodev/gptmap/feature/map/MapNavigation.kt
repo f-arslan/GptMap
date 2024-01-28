@@ -9,8 +9,8 @@ import androidx.navigation.navArgument
 import androidx.navigation.navOptions
 
 const val MapRoute = "map_route"
-const val FAVOURITE_ID = "favId"
-const val MapRouteWithArg = "$MapRoute/{$FAVOURITE_ID}"
+const val FavouriteId = "favId"
+const val MapRouteWithArg = "$MapRoute/{$FavouriteId}"
 fun NavController.navigateToMap(
     favouriteId: String = "default",
     navOptions: NavOptions? = navOptions {
@@ -27,12 +27,14 @@ fun NavGraphBuilder.mapScreen(
     navigateToProfile: () -> Unit
 ) {
     composable(
-        route = "$MapRoute/{$FAVOURITE_ID}",
-        arguments = listOf(navArgument(FAVOURITE_ID) { type = NavType.StringType })
+        route = "$MapRoute/{$FavouriteId}",
+        arguments = listOf(navArgument(FavouriteId) { type = NavType.StringType })
     ) {
-        val favouriteId = it.arguments?.getString(FAVOURITE_ID) ?: "default"
+        val favouriteId = it.arguments?.getString(FavouriteId) ?: "default"
         MapRoute(
-            navigateToStreetView = navigateToStreetView,
+            navigateToStreetView = { locPair ->
+                navigateToStreetView(locPair.first, locPair.second)
+            },
             navigateToScreenshot = navigateToScreenshot,
             navigateToProfile = navigateToProfile,
             favouriteId = favouriteId

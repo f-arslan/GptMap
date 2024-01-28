@@ -20,5 +20,5 @@ dependencies {
     implementation(libs.maps.compose)
     implementation(libs.coil.compose)
     implementation(libs.lottie.compose)
-    implementation(libs.androidx.activity.compose)
+    implementation(libs.accompanist.permissions)
 }

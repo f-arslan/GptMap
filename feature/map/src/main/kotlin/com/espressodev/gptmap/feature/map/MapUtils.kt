@@ -17,7 +17,7 @@ object MapUtils {
      * This function will check whether a location is available on StreetView or not.
      *
      * @param latLng The `LatLng` object representing the location for which you want to fetch Street View data.
-     * @param source The source of the Street View panorama. It is optional parameter and default value is `Source.DEFAULT`
+     * @param source It is optional parameter and default value is `Source.DEFAULT`
      *   - `Source.DEFAULT`: Use the default Street View source.
      *   - `Source.OUTDOOR`: Use the outdoor Street View source.
      * @return A Status value specifying if the location is available on Street View or not,
@@ -27,7 +27,6 @@ object MapUtils {
         latLng: LatLng,
         source: Source = Source.OUTDOOR
     ): Status {
-
         val urlString = buildString {
             append("https://maps.googleapis.com/maps/api/streetview/metadata")
             append("?location=${latLng.latitude},${latLng.longitude}")

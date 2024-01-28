@@ -8,7 +8,7 @@ enum class MapBottomSheetState {
 }
 
 enum class ComponentLoadingState {
-    STREET_VIEW, MAP, NOTHING
+    MY_LOCATION, MAP, NOTHING
 }
 
 enum class ScreenshotState {
@@ -28,11 +28,16 @@ data class MapUiState(
     val isLocationPinVisible: Boolean = true,
     val isStreetViewButtonVisible: Boolean = true,
     val isScreenshotButtonVisible: Boolean = true,
+    val myCurrentLocationState: Pair<Boolean, Pair<Double, Double>> = Pair(false, Pair(0.0, 0.0)),
     val screenshotState: ScreenshotState = ScreenshotState.IDLE,
-    val imageGalleryState: Pair<Int, Boolean> = Pair(0, false)
+    val imageGalleryState: Pair<Int, Boolean> = Pair(0, false),
+    val isMyLocationButtonVisible: Boolean = true,
 ) {
     val coordinatesLatLng: LatLng
         get() = location.content.coordinates.let { LatLng(it.latitude, it.longitude) }
+
+    val myCoordinatesLatLng: LatLng
+        get() = myCurrentLocationState.second.let { LatLng(it.first, it.second) }
 }
 
 sealed class MapUiEvent {
@@ -46,4 +51,7 @@ sealed class MapUiEvent {
     data object OnExploreWithAiClick : MapUiEvent()
     data object OnScreenshotProcessStarted : MapUiEvent()
     data class OnStreetViewClick(val latLng: Pair<Double, Double>) : MapUiEvent()
+    data object OnMyCurrentLocationClick : MapUiEvent()
+
+    data object OnUnsetMyCurrentLocationState : MapUiEvent()
 }

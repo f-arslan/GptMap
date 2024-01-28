@@ -27,28 +27,28 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.espressodev.gptmap.core.designsystem.ext.clipPolygon
+
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
+import com.espressodev.gptmap.core.designsystem.R.string as AppText
 import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
 import com.espressodev.gptmap.core.designsystem.component.SquareButton
+import com.espressodev.gptmap.core.designsystem.ext.clipPolygon
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
-import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @Composable
 internal fun BoxScope.DetailSheet(
     location: Location,
     onEvent: (MapUiEvent) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     BackHandler { onEvent(MapUiEvent.OnDetailSheetBackClick) }
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clipPolygon(MaterialTheme.colorScheme.surface)
-
             .align(Alignment.BottomCenter)
-
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

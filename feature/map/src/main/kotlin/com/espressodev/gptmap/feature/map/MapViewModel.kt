@@ -13,7 +13,9 @@ import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
 import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.domain.AddDatabaseIfUserIsNewUseCase
+import com.espressodev.gptmap.core.domain.GetCurrentLocationUseCase
 import com.espressodev.gptmap.core.domain.SaveImageToFirebaseStorageUseCase
+import com.espressodev.gptmap.core.model.Exceptions
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.espressodev.gptmap.core.save_screenshot.SaveScreenshotService
 import com.google.android.gms.maps.model.LatLng
@@ -36,11 +38,15 @@ class MapViewModel @Inject constructor(
     private val addDatabaseIfUserIsNewUseCase: AddDatabaseIfUserIsNewUseCase,
     private val realmSyncService: RealmSyncService,
     private val firestoreService: FirestoreService,
+    private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
     @ApplicationContext private val applicationContext: Context,
     logService: LogService,
 ) : GmViewModel(logService) {
     private val _uiState = MutableStateFlow(MapUiState())
     val uiState = _uiState.asStateFlow()
+
+    private val myCurrentLocationState
+        get() = uiState.value.myCurrentLocationState
 
     private val serviceStateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -75,7 +81,7 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: MapUiEvent, navigateToStreetView: (Pair<Double, Double>) -> Unit = {}) {
+    fun onEvent(event: MapUiEvent, navigateToStreetView: (Pair<Float, Float>) -> Unit = {}) {
         when (event) {
             is MapUiEvent.OnSearchValueChanged -> _uiState.update { it.copy(searchValue = event.text) }
             is MapUiEvent.OnSearchClick -> onSearchClick()
@@ -92,8 +98,10 @@ class MapViewModel @Inject constructor(
                 onStreetViewClick(event.latLng, navigateToStreetView)
             }
 
-            MapUiEvent.OnExploreWithAiClick -> _uiState.update { it.copy(bottomSheetState = MapBottomSheetState.DETAIL_CARD) }
-            MapUiEvent.OnDetailSheetBackClick -> _uiState.update { it.copy(bottomSheetState = MapBottomSheetState.SMALL_INFORMATION_CARD) }
+            MapUiEvent.OnExploreWithAiClick ->
+                _uiState.update { it.copy(bottomSheetState = MapBottomSheetState.DETAIL_CARD) }
+            MapUiEvent.OnDetailSheetBackClick ->
+                _uiState.update { it.copy(bottomSheetState = MapBottomSheetState.SMALL_INFORMATION_CARD) }
             MapUiEvent.OnBackClick -> _uiState.update {
                 it.copy(
                     bottomSheetState = MapBottomSheetState.BOTTOM_SHEET_HIDDEN,
@@ -102,6 +110,65 @@ class MapViewModel @Inject constructor(
             }
 
             MapUiEvent.OnScreenshotProcessStarted -> initializeScreenCaptureBroadcastReceiver()
+            MapUiEvent.OnMyCurrentLocationClick -> getMyCurrentLocation()
+            MapUiEvent.OnUnsetMyCurrentLocationState -> _uiState.update {
+                it.copy(myCurrentLocationState = Pair(false, myCurrentLocationState.second))
+            }
+        }
+    }
+
+    private fun getMyCurrentLocation() = launchCatching {
+        if (myCurrentLocationState.second.first != 0.0) {
+            _uiState.update {
+                it.copy(
+                    myCurrentLocationState = Pair(
+                        true,
+                        myCurrentLocationState.second
+                    )
+                )
+            }
+            return@launchCatching
+        }
+
+        _uiState.update {
+            it.copy(
+                isMyLocationButtonVisible = false,
+                componentLoadingState = ComponentLoadingState.MY_LOCATION
+            )
+        }
+
+        getCurrentLocationUseCase().collect { locationResult ->
+            locationResult
+                .onSuccess { location ->
+                    _uiState.update { it.copy(myCurrentLocationState = Pair(true, location)) }
+                    finishLoadingMyLocation()
+                }
+                .onFailure { throwable ->
+                    val message = throwable.message ?: "Something went wrong"
+                    when (throwable) {
+                        is Exceptions.GpsNotEnabledException -> {
+                            SnackbarManager.showMessage(message)
+                        }
+
+                        is Exceptions.LocationNullException -> {
+                            SnackbarManager.showMessage(message)
+                        }
+
+                        else -> {
+                            SnackbarManager.showMessage(message)
+                        }
+                    }
+                    finishLoadingMyLocation()
+                }
+        }
+    }
+
+    private fun finishLoadingMyLocation() {
+        _uiState.update {
+            it.copy(
+                isMyLocationButtonVisible = true,
+                componentLoadingState = ComponentLoadingState.NOTHING
+            )
         }
     }
 
@@ -133,7 +200,6 @@ class MapViewModel @Inject constructor(
                         _uiState.update { it.copy(location = location.copy(locationImages = locationImages)) }
                     }
                 }
-
             }.onFailure {
                 _uiState.update {
                     it.copy(
@@ -185,27 +251,22 @@ class MapViewModel @Inject constructor(
 
     private fun onStreetViewClick(
         latLng: Pair<Double, Double>,
-        navigateToStreetView: (Pair<Double, Double>) -> Unit
+        navigateToStreetView: (Pair<Float, Float>) -> Unit
     ) =
         launchCatching {
-            _uiState.update { it.copy(componentLoadingState = ComponentLoadingState.STREET_VIEW) }
-
             val isStreetAvailable = withContext(Dispatchers.IO) {
                 MapUtils.fetchStreetViewData(LatLng(latLng.first, latLng.second))
             }
             when (isStreetAvailable) {
                 Status.OK -> {
-                    _uiState.update { it.copy(componentLoadingState = ComponentLoadingState.NOTHING) }
                     delay(25L)
-                    navigateToStreetView(latLng)
+                    navigateToStreetView(Pair(latLng.first.toFloat(), latLng.second.toFloat()))
                 }
 
                 else -> {
-                    _uiState.update { it.copy(componentLoadingState = ComponentLoadingState.NOTHING) }
                     SnackbarManager.showMessage("Street View is not available for this location")
                 }
             }
-
         }
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
