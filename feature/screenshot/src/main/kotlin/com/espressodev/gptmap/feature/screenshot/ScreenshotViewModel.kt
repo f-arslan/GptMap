@@ -18,7 +18,7 @@ class ScreenshotViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ScreenshotUiState())
     val uiState = _uiState.asStateFlow()
 
-    fun onEvent(event: ScreenshotUiEvent, navigateToMap: () -> Unit = {}) {
+    fun onEvent(event: ScreenshotUiEvent, navigate: () -> Unit = {}) {
         when (event) {
             is ScreenshotUiEvent.OnBitmapChanged ->
                 _uiState.update { currentState ->
@@ -41,7 +41,7 @@ class ScreenshotViewModel @Inject constructor(
 
             is ScreenshotUiEvent.OnTitleChanged -> _uiState.update { it.copy(title = event.value) }
 
-            ScreenshotUiEvent.OnSaveClicked -> onSaveClick(navigateToMap)
+            ScreenshotUiEvent.OnSaveClicked -> onSaveClick(navigate)
         }
     }
 

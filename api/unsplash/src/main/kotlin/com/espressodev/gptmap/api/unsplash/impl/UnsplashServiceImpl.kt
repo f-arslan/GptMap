@@ -15,7 +15,6 @@ class UnsplashServiceImpl(private val unsplashApi: UnsplashApi) : UnsplashServic
             response.isSuccessful.let { success ->
                 when {
                     success -> {
-                        Log.d(classTag(), unsplashApi.getTwoPhotos(query).body().toString())
                         response.body()?.let {
                             Result.success(it)
                         } ?: Result.failure(Throwable(UnsplashApiException()))

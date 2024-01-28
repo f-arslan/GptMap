@@ -85,7 +85,6 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 @Composable
 fun ScreenshotRoute(
     popUp: () -> Unit,
-    navigateToMap: () -> Unit,
     viewModel: ScreenshotViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -115,7 +114,7 @@ fun ScreenshotRoute(
                             onSaveClick = {
                                 viewModel.onEvent(
                                     event = ScreenshotUiEvent.OnSaveClicked,
-                                    navigateToMap
+                                    navigate = popUp
                                 )
                             }
                         )
