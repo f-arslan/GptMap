@@ -7,7 +7,9 @@ enum class ScreenshotState {
 }
 
 data class StreetViewUiState(
-    val latLng: LatLng = LatLng(0.0, 0.0),
+    val latLng: Pair<Double, Double> = Pair(0.0, 0.0),
     val isScreenshotButtonVisible: Boolean = true,
     val screenshotState: ScreenshotState = ScreenshotState.IDLE,
-)
+) {
+    fun toLatLng(): LatLng = LatLng(latLng.first, latLng.second)
+}

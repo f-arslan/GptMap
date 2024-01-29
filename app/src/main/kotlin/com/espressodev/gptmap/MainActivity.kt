@@ -16,6 +16,8 @@ import com.espressodev.gptmap.core.common.NetworkMonitor
 import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,8 +36,8 @@ class MainActivity : ComponentActivity() {
         var isEmailVerified by mutableStateOf(AccountState.Loading)
 
         scopeWithLifecycle {
-            viewModel.accountService.collect {
-                isEmailVerified = it
+            viewModel.accountState.filter { it != AccountState.Loading }.first().let { state ->
+                isEmailVerified = state
             }
         }
 

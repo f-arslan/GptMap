@@ -1,6 +1,7 @@
 package com.espressodev.gptmap.navigation
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -34,7 +35,6 @@ fun GmNavHost(
     startDestination: String = LoginRoute
 ) {
     val navController = appState.navController
-
     NavHost(
         modifier = modifier,
         navController = navController,

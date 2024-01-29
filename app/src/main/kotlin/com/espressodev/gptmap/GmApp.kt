@@ -1,7 +1,7 @@
 package com.espressodev.gptmap
 
+import android.annotation.SuppressLint
 import android.content.res.Resources
-import android.util.Log
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,6 +41,8 @@ import com.espressodev.gptmap.navigation.GmNavHost
 import com.espressodev.gptmap.navigation.TopLevelDestination
 import kotlinx.coroutines.CoroutineScope
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun GmApp(
     networkMonitor: NetworkMonitor,
@@ -84,7 +86,6 @@ fun GmApp(
         ) {
             GmNavHost(
                 appState = appState,
-                modifier = Modifier.padding(it),
                 startDestination = startDestination
             )
         }

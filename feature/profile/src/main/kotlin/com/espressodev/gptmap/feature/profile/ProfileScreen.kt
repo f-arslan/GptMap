@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -85,6 +86,7 @@ fun ProfileScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LetterInCircle(letter = user.fullName.first(), modifier = Modifier.size(120.dp))
+        Text(text = user.fullName, style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(8.dp))
         ProfileItem(GmIcons.InfoOutlined, AppText.info, onInfoClick)
         ProfileItem(GmIcons.LogoutOutlined, AppText.logout, onLogOutClick)
@@ -115,4 +117,17 @@ fun ProfileItem(icon: ImageVector, @StringRes textId: Int, onClick: () -> Unit) 
             contentDescription = null,
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProfileScreenPreview() {
+    ProfileScreen(
+        user = User(
+            fullName = "John Doe",
+            email = ""
+        ),
+        onInfoClick = {},
+        onLogOutClick = {}
+    )
 }

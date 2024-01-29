@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.espressodev.gptmap.core.designsystem.Constants.BOTTOM_BAR_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.TextType
@@ -73,6 +74,7 @@ fun FavouriteRoute(
                 onCancelClick = { viewModel.onEvent(EditableItemUiEvent.OnCancelClick) }
             )
         },
+        modifier = Modifier.padding(bottom = BOTTOM_BAR_PADDING)
     ) {
         when (val result = favourites) {
             is Response.Success -> {

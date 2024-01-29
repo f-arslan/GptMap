@@ -39,7 +39,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -74,6 +73,7 @@ import java.time.LocalDateTime
 import kotlin.math.absoluteValue
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
+import com.espressodev.gptmap.core.designsystem.Constants.BOTTOM_BAR_PADDING
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,7 +96,8 @@ fun ScreenshotGalleryRoute(
                 onDeleteClick = { viewModel.onEvent(EditableItemUiEvent.OnDeleteClick) },
                 onCancelClick = { viewModel.onEvent(EditableItemUiEvent.OnCancelClick) }
             )
-        }
+        },
+        modifier = Modifier.padding(bottom = BOTTOM_BAR_PADDING)
     ) {
         when (val result = imageAnalysesResponse) {
             is Response.Failure -> {
@@ -166,13 +167,13 @@ fun ScreenshotGalleryScreen(
     modifier: Modifier = Modifier,
     isUiInEditMode: Boolean,
 ) {
-    var currentPage by rememberSaveable { mutableIntStateOf(0) }
-    var dialogState by rememberSaveable { mutableStateOf(value = false) }
+    val (currentPage, setCurrentPage) = rememberSaveable { mutableIntStateOf(0) }
+    val (dialogState, setDialogState) = rememberSaveable { mutableStateOf(value = false) }
     if (dialogState) {
         GalleryView(
             images = images,
             currentPage = currentPage,
-            onDismiss = { dialogState = false }
+            onDismiss = { setDialogState(false) }
         )
     }
     LazyVerticalGrid(
@@ -192,8 +193,8 @@ fun ScreenshotGalleryScreen(
                     if (isUiInEditMode) {
                         onLongClick(imageSummary)
                     } else {
-                        currentPage = index
-                        dialogState = true
+                        setCurrentPage(index)
+                        setDialogState(true)
                     }
                 },
                 onLongClick = { onLongClick(imageSummary) },
@@ -212,7 +213,7 @@ fun ImageCard(
     onClick: () -> Unit = {},
     onLongClick: () -> Unit = {}
 ) {
-    var isImageLoaded by remember { mutableStateOf(value = false) }
+    val (isImageLoaded, setImageLoaded) = remember { mutableStateOf(value = false) }
     val borderStroke = if (isSelected) 3.dp else 0.dp
     val elevation = if (isSelected) 8.dp else 0.dp
     val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
@@ -229,7 +230,7 @@ fun ImageCard(
         ShimmerImage(
             imageSummary.imageUrl,
             modifier = Modifier.aspectRatio(1f),
-            onSuccess = { isImageLoaded = true }
+            onSuccess = { setImageLoaded(true) },
         )
         if (isImageLoaded)
             Box(

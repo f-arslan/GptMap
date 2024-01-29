@@ -4,7 +4,6 @@ package com.espressodev.gptmap.feature.map
 
 import StreetView
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
@@ -90,6 +89,7 @@ import kotlin.math.absoluteValue
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
+import com.espressodev.gptmap.core.designsystem.Constants.BOTTOM_BAR_PADDING
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -102,7 +102,7 @@ fun MapRoute(
     viewModel: MapViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    Scaffold(modifier = modifier) {
+    Scaffold(modifier = modifier.padding(bottom = BOTTOM_BAR_PADDING)) {
         MapScreen(
             uiState = uiState,
             onEvent = { event ->
@@ -320,7 +320,6 @@ private fun MapSection(uiState: MapUiState, isPinVisible: Boolean, onEvent: (Map
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(uiState.coordinatesLatLng, 14f)
     }
-
     LaunchedEffect(uiState.coordinatesLatLng) {
         cameraPositionState.animate(
             CameraUpdateFactory.newLatLngZoom(
@@ -329,7 +328,6 @@ private fun MapSection(uiState: MapUiState, isPinVisible: Boolean, onEvent: (Map
             )
         )
     }
-    Log.d("MapScreen", "MapSection: ${uiState.myCurrentLocationState}")
     LaunchedEffect(uiState.myCurrentLocationState) {
         if (uiState.myCurrentLocationState.first) {
             cameraPositionState.animate(

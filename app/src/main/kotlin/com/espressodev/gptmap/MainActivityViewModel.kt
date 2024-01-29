@@ -24,18 +24,15 @@ class MainActivityViewModel @Inject constructor(
     realmAccountService: RealmAccountService,
 ) : ViewModel() {
     private val _accountState = MutableStateFlow(AccountState.Loading)
-    val accountService = _accountState.asStateFlow()
+    val accountState = _accountState.asStateFlow()
 
     init {
         viewModelScope.launch {
             runCatching {
                 if (accountService.isEmailVerified) {
                     accountService.firebaseUser?.getIdToken(true)?.await()?.token?.let {
-                        realmAccountService.loginWithEmail(it).getOrElse {
-                            _accountState.update { AccountState.UserNotSignIn }
-                        }.run {
-                            _accountState.update { AccountState.UserAlreadySignIn }
-                        }
+                        realmAccountService.loginWithEmail(it).getOrThrow()
+                        _accountState.update { AccountState.UserAlreadySignIn }
                     }
                 } else {
                     _accountState.update { AccountState.UserNotSignIn }

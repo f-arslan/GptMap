@@ -1,5 +1,7 @@
 package com.espressodev.gptmap.feature.street_view
 
+import android.util.Log
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -27,6 +29,9 @@ fun NavGraphBuilder.streetViewScreen(popUp: () -> Unit, navigateToScreenshot: ()
             backStackEntry.arguments?.getFloat(LATITUDE_ID)?.toDouble() ?: return@composable
         val longitude =
             backStackEntry.arguments?.getFloat(LONGITUDE_ID)?.toDouble() ?: return@composable
+        LaunchedEffect(latitude, longitude) {
+            Log.d("streetViewScreen", "latitude: $latitude, longitude: $longitude")
+        }
         StreetViewRoute(
             latitude = latitude,
             longitude = longitude,

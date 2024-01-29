@@ -66,7 +66,7 @@ class StreetViewViewModel @Inject constructor(
     }
 
     fun getStreetView(latitude: Double, longitude: Double) {
-        _uiState.update { it.copy(latLng = LatLng(latitude, longitude)) }
+        _uiState.update { it.copy(latLng = Pair(latitude, longitude)) }
     }
 
     fun reset() {
