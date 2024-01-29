@@ -10,12 +10,8 @@ import kotlinx.coroutines.withContext
 class PalmServiceImpl(private val palmApi: PalmApi) : PalmService {
     override suspend fun getLocationInfo(textContent: String): Result<Location> =
         withContext(Dispatchers.IO) {
-            try {
-                palmApi.generateText(locationPreText + textContent).toLocation().let {
-                    Result.success(it)
-                }
-            } catch (e: Exception) {
-                Result.failure(e)
+            runCatching {
+                palmApi.generateText(locationPreText + textContent).toLocation()
             }
         }
 }

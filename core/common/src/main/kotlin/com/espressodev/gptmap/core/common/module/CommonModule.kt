@@ -11,10 +11,10 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class CommonModule {
+interface CommonModule {
     @Binds
-    abstract fun bindsNetworkMonitor(networkMonitor: NetworkMonitorImpl): NetworkMonitor
+    fun bindsNetworkMonitor(networkMonitor: NetworkMonitorImpl): NetworkMonitor
 
     @Binds
-    abstract fun provideLogService(impl: LogServiceImpl): LogService
+    fun provideLogService(impl: LogServiceImpl): LogService
 }

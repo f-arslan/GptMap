@@ -54,7 +54,8 @@ fun LottieAnimationPlaceholder(
         ) {
             LottieAnimation(
                 composition = composition,
-                progress = { progress }
+                progress = { progress },
+                modifier = Modifier.fillMaxSize(0.50f)
             )
         }
 }

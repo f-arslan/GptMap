@@ -13,4 +13,5 @@ object Exceptions {
     class LocationNullException : Exception("Location is not available")
     class LocationNullThrowable : Throwable("Location is not available")
     class ResponseTextNotFoundException : Exception()
+    class RealmUserNotLoggedInException : Exception()
 }
