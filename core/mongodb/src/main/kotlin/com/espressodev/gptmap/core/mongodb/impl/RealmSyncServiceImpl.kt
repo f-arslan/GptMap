@@ -144,6 +144,15 @@ class RealmSyncServiceImpl : RealmSyncService {
         }
     }
 
+    override suspend fun deleteUser(): Result<Unit> = runCatching {
+        realm.write {
+            val userToDelete: RealmUser = query<RealmUser>("userId == $0", realmUserId)
+                .find()
+                .first()
+            delete(userToDelete)
+        }
+    }
+
     override suspend fun updateFavouriteText(favouriteId: String, text: String): Result<Unit> =
         runCatching {
             realm.write {

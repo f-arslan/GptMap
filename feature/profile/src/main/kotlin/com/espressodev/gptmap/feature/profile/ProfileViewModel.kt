@@ -1,25 +1,17 @@
 package com.espressodev.gptmap.feature.profile
 
-import androidx.lifecycle.viewModelScope
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.common.LogService
-import com.espressodev.gptmap.core.model.Exceptions.FirebaseUserIsNullException
 import com.espressodev.gptmap.core.model.Response
-import com.espressodev.gptmap.core.model.User
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.retryWhen
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,41 +19,29 @@ class ProfileViewModel @Inject constructor(
     private val accountService: AccountService,
     private val realmAccountService: RealmAccountService,
     firestoreService: FirestoreService,
+    logService: LogService,
     ioDispatcher: CoroutineDispatcher,
-    logService: LogService
 ) : GmViewModel(logService) {
-    val user = firestoreService
-        .getUserFlow()
-        .retryWhen { cause, attempt ->
-            if (cause is CancellationException && attempt < MAX_RETRY_ATTEMPTS) {
-                delay(RETRY_DELAY_MS)
-                true
-            } else {
-                false
-            }
-        }
-        .mapNotNull { it }
-        .map<User, Response<User>> { Response.Success(it) }
-        .catch { exception ->
-            logService.logNonFatalCrash(exception)
-            emit(Response.Failure(FirebaseUserIsNullException()))
-        }
-        .flowOn(ioDispatcher)
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            Response.Loading
-        )
+    private val _userName = MutableStateFlow<Response<String>>(Response.Loading)
+    val fullName = _userName.asStateFlow()
 
+    init {
+        launchCatching {
+            val fullNameResult = withContext(ioDispatcher) { firestoreService.getUserFullName() }
+            fullNameResult
+                .onSuccess { fullName ->
+                    _userName.update { Response.Success(fullName) }
+                }
+                .onFailure { throwable ->
+                    _userName.update { Response.Failure(Exception(throwable.localizedMessage)) }
+                    throw throwable
+                }
+        }
+    }
 
     fun onLogoutClick(navigate: () -> Unit) = launchCatching {
         accountService.signOut()
         realmAccountService.logOut()
         navigate()
-    }
-
-    companion object {
-        private const val MAX_RETRY_ATTEMPTS = 3L
-        private const val RETRY_DELAY_MS = 2000L
     }
 }

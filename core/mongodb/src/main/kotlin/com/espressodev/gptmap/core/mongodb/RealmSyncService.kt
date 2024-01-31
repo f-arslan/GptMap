@@ -30,5 +30,6 @@ interface RealmSyncService {
 
     suspend fun deleteFavourite(favouriteId: String): Result<Unit>
 
+    suspend fun deleteUser(): Result<Unit>
     suspend fun updateFavouriteText(favouriteId: String, text: String): Result<Unit>
 }

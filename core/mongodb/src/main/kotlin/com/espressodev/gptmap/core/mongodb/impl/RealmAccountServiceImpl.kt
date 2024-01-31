@@ -16,4 +16,8 @@ class RealmAccountServiceImpl : RealmAccountService {
     override suspend fun logOut() {
         app.currentUser?.logOut()
     }
+
+    override suspend fun revokeAccess(): Result<Unit> = runCatching {
+        app.currentUser?.delete()
+    }
 }
