@@ -1,13 +1,14 @@
 package com.espressodev.gptmap.navigation
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.espressodev.gptmap.GmAppState
+import com.espressodev.gptmap.feature.delete_profile.deleteProfileScreen
+import com.espressodev.gptmap.feature.delete_profile.navigateToDeleteProfile
 import com.espressodev.gptmap.feature.favourite.favouriteScreen
 import com.espressodev.gptmap.feature.forgot_password.forgotPasswordScreen
 import com.espressodev.gptmap.feature.forgot_password.navigateToForgotPassword
@@ -27,6 +28,8 @@ import com.espressodev.gptmap.feature.screenshot.screenshotScreen
 import com.espressodev.gptmap.feature.screenshot_gallery.screenshotGalleryScreen
 import com.espressodev.gptmap.feature.street_view.navigateToStreetView
 import com.espressodev.gptmap.feature.street_view.streetViewScreen
+import com.espressodev.gptmap.feature.verify_password.navigateToVerifyPassword
+import com.espressodev.gptmap.feature.verify_password.verifyPasswordScreen
 
 @Composable
 fun GmNavHost(
@@ -68,9 +71,21 @@ fun GmNavHost(
         profileScreen(
             popUp = navController::popBackStack,
             navigateToLogin = navController::navigateToLogin,
-            navigateToInfo = navController::navigateToInfo
+            navigateToInfo = navController::navigateToInfo,
+            navigateToDelete = navController::navigateToVerifyPassword
         )
         infoScreen(popUp = navController::popBackStack)
+        deleteProfileScreen(
+            popUp = {
+                navController.popBackStack()
+                navController.popBackStack()
+            },
+            navigateToLogin = navController::navigateToLogin
+        )
+        verifyPasswordScreen(
+            popUp = navController::popBackStack,
+            navigateToDelete = navController::navigateToDeleteProfile
+        )
     }
 
     // Debug purposes

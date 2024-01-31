@@ -60,14 +60,18 @@ dependencies {
     implementation(projects.feature.screenshotGallery)
     implementation(projects.feature.profile)
     implementation(projects.feature.info)
+    implementation(projects.feature.deleteProfile)
+    implementation(projects.feature.verifyPassword)
 
     implementation(projects.core.designsystem)
     implementation(projects.core.common)
     implementation(projects.core.data)
     implementation(projects.core.domain)
     implementation(projects.core.mongodb)
+    implementation(projects.core.saveScreenshot)
 
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.runtimeCompose)
+    implementation(libs.androidx.work.ktx)
 }
