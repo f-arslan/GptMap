@@ -15,4 +15,6 @@ dependencies {
 
     implementation(libs.firebase.auth)
     implementation(libs.realm.library.sync)
+    implementation(libs.hilt.ext.work)
+    implementation(libs.androidx.work.ktx)
 }
