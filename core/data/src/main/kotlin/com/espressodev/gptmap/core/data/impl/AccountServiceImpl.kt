@@ -2,7 +2,6 @@ package com.espressodev.gptmap.core.data.impl
 
 import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.data.ReloadUserResponse
-import com.espressodev.gptmap.core.data.RevokeAccessResponse
 import com.espressodev.gptmap.core.data.SendEmailVerificationResponse
 import com.espressodev.gptmap.core.data.SendPasswordResetEmailResponse
 import com.espressodev.gptmap.core.data.UpdatePasswordResponse
@@ -22,13 +21,15 @@ class AccountServiceImpl @Inject constructor(
     override val isEmailVerified: Boolean
         get() = auth.currentUser?.isEmailVerified == true
 
+    override val email: String?
+        get() = auth.currentUser?.email
+
     override val firebaseUser: FirebaseUser?
         get() = auth.currentUser
 
     override suspend fun firebaseSignUpWithEmailAndPassword(
         email: String,
         password: String,
-        fullName: String
     ): AuthResult {
         return auth.createUserWithEmailAndPassword(email, password).await()
     }
@@ -42,10 +43,15 @@ class AccountServiceImpl @Inject constructor(
         }
     }
 
-    override suspend fun firebaseSignInWithEmailAndPassword(
+    override suspend fun firebaseSignInWithEmailAndPasswordAndReturnResult(
         email: String,
         password: String,
     ): AuthResult = auth.signInWithEmailAndPassword(email, password).await()
+
+
+    override suspend fun firebaseSignInWithEmailAndPassword(email: String, password: String) {
+        auth.signInWithEmailAndPassword(email, password).await()
+    }
 
     override suspend fun reloadFirebaseUser(): ReloadUserResponse {
         return try {
@@ -76,12 +82,7 @@ class AccountServiceImpl @Inject constructor(
 
     override fun signOut() = auth.signOut()
 
-    override suspend fun revokeAccess(): RevokeAccessResponse {
-        return try {
-            auth.currentUser?.delete()?.await()
-            Response.Success(data = true)
-        } catch (e: Exception) {
-            Response.Failure(e)
-        }
+    override suspend fun revokeAccess(): Result<Unit> = runCatching {
+        auth.currentUser?.delete()?.await()
     }
 }

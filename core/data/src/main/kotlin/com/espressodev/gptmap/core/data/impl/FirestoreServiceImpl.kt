@@ -2,6 +2,7 @@ package com.espressodev.gptmap.core.data.impl
 
 import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.data.FirestoreService
+import com.espressodev.gptmap.core.model.Exceptions.FirestoreUserNotExistsException
 import com.espressodev.gptmap.core.model.Exceptions.FirebaseUserIsNullException
 import com.espressodev.gptmap.core.model.User
 import com.google.firebase.firestore.FirebaseFirestore
@@ -15,8 +16,8 @@ class FirestoreServiceImpl @Inject constructor(
     private val accountService: AccountService,
 ) : FirestoreService {
 
-    override fun saveUser(user: User) {
-        userColRef.document(user.userId).set(user)
+    override suspend fun saveUser(user: User) {
+        userColRef.document(user.userId).set(user).await()
     }
 
     override suspend fun isUserInDatabase(email: String): Result<Boolean> = runCatching {
@@ -33,6 +34,18 @@ class FirestoreServiceImpl @Inject constructor(
         accountService.userId?.let { userId ->
             getUserDocRef(userId).dataObjects<User>()
         } ?: throw FirebaseUserIsNullException()
+
+    override suspend fun getUserFullName(): Result<String> {
+        return runCatching { getUser().fullName }
+    }
+
+    override suspend fun deleteUser(): Result<User> = runCatching {
+        val userId = accountService.userId ?: throw FirebaseUserIsNullException()
+        val user = getUserDocRef(userId).get().await().toObject(User::class.java)
+            ?: throw FirestoreUserNotExistsException()
+        getUserDocRef(userId).delete().await()
+        user
+    }
 
     private val userColRef by lazy { firestore.collection(USERS) }
     private fun getUserDocRef(id: String) = userColRef.document(id)
