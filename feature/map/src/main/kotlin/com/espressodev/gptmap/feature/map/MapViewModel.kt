@@ -12,6 +12,7 @@ import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
 import com.espressodev.gptmap.core.data.FirestoreService
+import com.espressodev.gptmap.core.designsystem.Constants.GENERIC_ERROR_MSG
 import com.espressodev.gptmap.core.domain.AddDatabaseIfUserIsNewUseCase
 import com.espressodev.gptmap.core.domain.GetCurrentLocationUseCase
 import com.espressodev.gptmap.core.domain.SaveImageToFirebaseStorageUseCase
@@ -144,7 +145,7 @@ class MapViewModel @Inject constructor(
                     finishLoadingMyLocation()
                 }
                 .onFailure { throwable ->
-                    val message = throwable.message ?: "Something went wrong"
+                    val message = throwable.message ?: GENERIC_ERROR_MSG
                     when (throwable) {
                         is Exceptions.GpsNotEnabledException -> {
                             SnackbarManager.showMessage(message)

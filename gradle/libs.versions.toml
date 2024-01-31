@@ -63,6 +63,7 @@ material3 = "1.2.0-beta02"  # Bom version has Circular Progress Ind. problem
 fixture = "1.2.0"
 accompanist = "0.34.0"
 roborazzi = "1.6.0"
+kotlin2 = "1.9.0"
 [libraries]
 
 # Compose
@@ -213,5 +214,6 @@ gptmap-jvm-library = { id = "gptmap.jvm.library", version = "unspecified" }
 gptmap-ktor = { id = "gptmap.ktor", version = "unspecified" }
 gptmap-android-detekt = { id = "gptmap.android.detekt", version = "unspecified" }
 gptmap-viewmodel-testing = { id = "gptmap.viewmodel.testing", version = "unspecified" }
+jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin2" }
 # End of it
 

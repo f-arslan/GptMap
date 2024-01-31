@@ -90,6 +90,7 @@ import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 import com.espressodev.gptmap.core.designsystem.Constants.BOTTOM_BAR_PADDING
+import com.google.maps.android.compose.CameraPositionState
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -158,16 +159,17 @@ private fun MapScreen(
             isButtonVisible = uiState.isScreenshotButtonVisible
         )
         LoadingDialog(uiState.componentLoadingState)
-        MapSection(
-            isPinVisible = uiState.isLocationPinVisible,
-            uiState = uiState,
-            onEvent = onEvent
-        )
+        MapCameraSection(uiState = uiState, onEvent = onEvent)
         DisplayBottomSheet(
             bottomSheetState = uiState.bottomSheetState,
             location = uiState.location,
             onEvent = onEvent,
         )
+        if (uiState.isMyLocationButtonVisible)
+            MyCurrentLocationButton(
+                onClick = { onEvent(MapUiEvent.OnMyCurrentLocationClick) },
+                modifier = Modifier.zIndex(1f)
+            )
     }
 }
 
@@ -306,17 +308,7 @@ private fun MapSearchBar(
 }
 
 @Composable
-private fun MapSection(uiState: MapUiState, isPinVisible: Boolean, onEvent: (MapUiEvent) -> Unit) {
-    val context = LocalContext.current
-    val (isMapLoaded, setMapLoaded) = remember { mutableStateOf(value = false) }
-    val mapProperties = remember {
-        MapProperties(
-            mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
-                context,
-                AppRaw.map_style
-            )
-        )
-    }
+private fun BoxScope.MapCameraSection(uiState: MapUiState, onEvent: (MapUiEvent) -> Unit) {
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(uiState.coordinatesLatLng, 14f)
     }
@@ -340,36 +332,45 @@ private fun MapSection(uiState: MapUiState, isPinVisible: Boolean, onEvent: (Map
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        AnimatedVisibility(
-            visible = uiState.isStreetViewButtonVisible,
-            modifier = Modifier.zIndex(1f)
-        ) {
-            GmDraggableButton(
-                icon = StreetView,
-                initialAlignment = Alignment.CenterStart,
-                onClick = { onEvent(MapUiEvent.OnStreetViewClick(cameraPositionState.toLatitudeLongitude())) }
-            )
-        }
-        LocationPin(isPinVisible = isPinVisible, isCameraMoving = cameraPositionState.isMoving)
-        LottieAnimationPlaceholder(
-            rawRes = AppRaw.transistor_earth,
-            visible = !isMapLoaded,
-            modifier = Modifier.zIndex(2f)
+    AnimatedVisibility(
+        visible = uiState.isStreetViewButtonVisible,
+        modifier = Modifier.zIndex(1f)
+    ) {
+        GmDraggableButton(
+            icon = StreetView,
+            initialAlignment = Alignment.CenterStart,
+            onClick = { onEvent(MapUiEvent.OnStreetViewClick(cameraPositionState.toLatitudeLongitude())) }
         )
-        GoogleMap(
-            modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraPositionState,
-            uiSettings = MapUiSettings(zoomControlsEnabled = false),
-            properties = mapProperties,
-            onMapLoaded = { setMapLoaded(true) },
-        )
-        if (uiState.isMyLocationButtonVisible)
-            MyCurrentLocationButton(
-                onClick = { onEvent(MapUiEvent.OnMyCurrentLocationClick) },
-                modifier = Modifier.zIndex(1f)
-            )
     }
+    LocationPin(
+        isPinVisible = uiState.isLocationPinVisible,
+        isCameraMoving = cameraPositionState.isMoving
+    )
+
+    MapSection(cameraPositionState)
+}
+
+@Composable
+private fun MapSection(cameraPositionState: CameraPositionState) {
+    val context = LocalContext.current
+    val (isMapLoaded, setMapLoaded) = remember { mutableStateOf(value = false) }
+    LottieAnimationPlaceholder(
+        rawRes = AppRaw.transistor_earth,
+        visible = !isMapLoaded,
+        modifier = Modifier.zIndex(2f)
+    )
+    GoogleMap(
+        modifier = Modifier.fillMaxSize(),
+        cameraPositionState = cameraPositionState,
+        uiSettings = MapUiSettings(zoomControlsEnabled = false, compassEnabled = false),
+        properties = MapProperties(
+            mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
+                /* clientContext = */ context,
+                /* resourceId = */ AppRaw.map_style
+            ),
+        ),
+        onMapLoaded = { setMapLoaded(true) },
+    )
 }
 
 @Composable

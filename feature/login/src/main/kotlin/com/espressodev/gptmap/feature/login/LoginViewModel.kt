@@ -1,12 +1,14 @@
 package com.espressodev.gptmap.feature.login
 
-import com.espressodev.gptmap.core.model.Exceptions
+import android.util.Log
+import com.espressodev.gptmap.core.model.Exceptions.FirebaseEmailVerificationIsFalseException
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.model.ext.isValidEmail
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.domain.SignInUpWithGoogleUseCase
 import com.espressodev.gptmap.core.domain.SignInWithEmailAndPasswordUseCase
+import com.espressodev.gptmap.core.model.Exceptions
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.google.GoogleResponse
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -27,7 +29,7 @@ class LoginViewModel @Inject constructor(
     logService: LogService
 ) : GmViewModel(logService) {
     private val _uiState =
-        MutableStateFlow(LoginUiState(email = "jogek78962@visignal.com", password = "Gptmap123"))
+        MutableStateFlow(LoginUiState(email = "tetow88667@giratex.com", password = "Gptmap123"))
     val uiState = _uiState.asStateFlow()
 
     private val email get() = uiState.value.email
@@ -53,7 +55,7 @@ class LoginViewModel @Inject constructor(
                 delay(25L)
                 navigateToMap()
             }.onFailure {
-                if (it == Exceptions.FirebaseEmailVerificationIsFalseException()) {
+                if (it is FirebaseEmailVerificationIsFalseException) {
                     SnackbarManager.showMessage(AppText.please_verify_email)
                 } else {
                     it.message?.let { message -> SnackbarManager.showMessage(message) }

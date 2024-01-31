@@ -18,14 +18,21 @@ class SignUpWithEmailAndPasswordUseCase @Inject constructor(
         withContext(ioDispatcher) {
             runCatching {
                 val authResult =
-                    accountService.firebaseSignUpWithEmailAndPassword(email, password, fullName)
-                saveUserToDatabaseIfUserNotExist(authResult, email, fullName)
+                    accountService.firebaseSignUpWithEmailAndPassword(
+                        email = email,
+                        password = password,
+                    )
+                saveUserToDatabaseIfUserNotExist(
+                    authResult = authResult,
+                    email = email,
+                    fullName = fullName
+                )
                 accountService.sendEmailVerification()
                 Unit
             }
         }
 
-    private fun saveUserToDatabaseIfUserNotExist(
+    private suspend fun saveUserToDatabaseIfUserNotExist(
         authResult: AuthResult,
         email: String,
         fullName: String,

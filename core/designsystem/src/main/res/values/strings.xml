@@ -77,7 +77,7 @@
     <string name="repeat_password">Repeat Password</string>
     <string name="already_have_account">Already have an account?</string>
     <string name="confirm_password">Confirm Password</string>
-    <string name="password_error">Your password should have at least six digits and include one digit, one lower case letter and one upper case letter.</string>
+    <string name="password_error">Your password should have at least eight digits and include one digit, one lower case letter and one upper case letter.</string>
     <string name="password_match_error">Passwords do not match.</string>
     <string name="email_error">Please insert a valid email.</string>
     <string name="not_valid_name">Please insert a valid name.</string>
@@ -120,4 +120,18 @@
     <!-- Info -->
     <string name="info_app_slogan">Navigate Your World Smarter</string>
     <string name="info_app_description">Embark on a journey with precision and intelligence. Our app combines dynamic maps and AI to guide you effortlessly to your destinations. Explore, navigate, and enjoy personalized travel insights. Your adventure starts here – smarter, simpler, and more intuitive.</string>
+    
+    <!-- Delete Profile -->
+    <string name="delete_profile_title">Delete Profile</string>
+    <string name="delete_confirm">Delete Confirmation</string>
+    <string name="delete_confirm_sub">Are you sure you want to delete your profile? Deleting your profile means that all your account information and data will be permanently removed from our platform. Here\'s what you need to know:</string>
+    <string name="after_deleting_happening_list">• Your profile will be deleted.\n• All your contents and media files will be irreversibly removed.\n• You won\'t be able to access your account or recover any data after deletion.</string>
+    <string name="important_cons">Important Considerations:</string>
+    <string name="important_cons_list">• You can create a new account with the same email address, but you will lose all previous data.\n• If you decide to come back to our platform in the future, you will start with a fresh account and no access to your previous data.</string>
+    <string name="delete_my_account">Delete My Account</string>
+    <string name="delete_confirm_message_dialog">Are you sure you want to delete your account? This action is irreversible, and all your data will be permanently deleted.</string>
+
+    <!-- Verify Password -->
+    <string name="password_insurance">Please re-enter your current password below. We require you to verify your identity before proceeding with the password change to ensure the security of your account.</string>
+    <string name="verify_password_title">Verify Password</string>
 </resources>

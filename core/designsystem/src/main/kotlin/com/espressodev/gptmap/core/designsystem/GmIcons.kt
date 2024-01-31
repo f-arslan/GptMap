@@ -13,10 +13,12 @@ import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.ImageSearch
+import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Screenshot
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Title
 import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.ArrowCircleLeft
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Delete
@@ -45,7 +47,7 @@ object GmIcons {
     val FaceOutlined = Icons.Outlined.Face
     val EmailOutlined = Icons.Outlined.Email
     val MarkEmailUnreadOutlined = Icons.Outlined.MarkEmailUnread
-    val ArrowBackOutlined = Icons.AutoMirrored.Outlined.ArrowBack
+    val ArrowBackOutlined = Icons.Outlined.ArrowCircleLeft
     val FingerPrintFilled = Icons.Filled.Fingerprint
     val LocationCityOutlined = Icons.Outlined.LocationCity
     val MyLocationOutlined = Icons.Outlined.MyLocation
@@ -65,4 +67,5 @@ object GmIcons {
     val DeleteOutlined = Icons.Outlined.Delete
     val BookmarkOutlined = Icons.Outlined.BookmarkBorder
     val BookmarkFilled = Icons.Filled.Bookmark
+    val PasswordFilled = Icons.Filled.Password
 }

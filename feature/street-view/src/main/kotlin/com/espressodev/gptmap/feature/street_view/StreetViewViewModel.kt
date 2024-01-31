@@ -9,7 +9,6 @@ import android.os.Build
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.save_screenshot.SaveScreenshotService
-import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -64,11 +63,6 @@ class StreetViewViewModel @Inject constructor(
             applicationContext.registerReceiver(serviceStateReceiver, filter)
         }
     }
-
-    fun getStreetView(latitude: Double, longitude: Double) {
-        _uiState.update { it.copy(latLng = Pair(latitude, longitude)) }
-    }
-
     fun reset() {
         _uiState.update {
             it.copy(

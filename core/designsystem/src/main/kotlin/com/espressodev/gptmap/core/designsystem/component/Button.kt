@@ -5,7 +5,9 @@ import androidx.annotation.StringRes
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -16,12 +18,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,13 +42,17 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
+import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @Composable
 fun ExtFloActionButton(
@@ -54,7 +61,7 @@ fun ExtFloActionButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    ExtendedFloatingActionButton(onClick = onClick, modifier = modifier) {
+    OutlinedButton(onClick = onClick, modifier = modifier, shape = RoundedCornerShape(16.dp)) {
         Image(
             painter = painterResource(icon),
             contentDescription = null
@@ -90,13 +97,13 @@ fun DefaultButton(
 fun GmTonalIconButton(
     icon: ImageVector,
     modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.primaryContainer
+    color: Color = MaterialTheme.colorScheme.onBackground
 ) {
     Surface(
         modifier = modifier
-            .size(40.dp)
-            .clip(CircleShape),
-        color = color
+            .size(40.dp),
+        shape = CircleShape,
+        border = BorderStroke(1.dp, color)
     ) {
         Icon(
             imageVector = icon,
@@ -127,6 +134,7 @@ fun GmDraggableButton(
             screenWidth - buttonSizePx - marginPx,
             (screenHeight - buttonSizePx) / 2
         )
+
         else -> Pair(
             screenWidth - buttonSizePx - marginPx,
             (screenHeight - buttonSizePx) / 2
@@ -225,4 +233,10 @@ fun SquareButton(
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ButtonPreview() {
+    GmTonalIconButton(icon = GmIcons.DeleteOutlined)
 }

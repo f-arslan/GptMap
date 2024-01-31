@@ -11,13 +11,12 @@ class AddDatabaseIfUserIsNewUseCase @Inject constructor(
     private val realmSyncService: RealmSyncService,
     private val ioDispatcher: CoroutineDispatcher
 ) {
-    suspend operator fun invoke(): Result<Boolean> = withContext(ioDispatcher) {
+    suspend operator fun invoke(): Result<Unit> = withContext(ioDispatcher) {
         runCatching {
             val isUserInRealmDb = realmSyncService.isUserInDatabase().getOrThrow()
-            if (isUserInRealmDb) return@runCatching true
+            if (isUserInRealmDb) return@runCatching
             val realmUser = firestoreService.getUser().toRealmUser()
             realmSyncService.saveUser(realmUser).getOrThrow()
-            true
         }
     }
 }

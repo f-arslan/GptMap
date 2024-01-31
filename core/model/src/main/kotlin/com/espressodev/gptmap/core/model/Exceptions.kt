@@ -14,4 +14,5 @@ object Exceptions {
     class LocationNullThrowable : Throwable("Location is not available")
     class ResponseTextNotFoundException : Exception()
     class RealmUserNotLoggedInException : Exception()
+    class FirestoreUserNotExistsException : Exception()
 }

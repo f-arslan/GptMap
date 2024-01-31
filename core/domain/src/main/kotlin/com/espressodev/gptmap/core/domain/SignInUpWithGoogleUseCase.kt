@@ -57,7 +57,7 @@ class SignInUpWithGoogleUseCase @Inject constructor(
         } ?: throw FirebaseUserIdIsNullException()
     }
 
-    private fun addUserToDatabaseIfUserIsNew(authResult: AuthResult) {
+    private suspend fun addUserToDatabaseIfUserIsNew(authResult: AuthResult) {
         authResult.additionalUserInfo?.isNewUser?.also {
             if (it) {
                 authResult.user?.also { user ->
@@ -67,7 +67,7 @@ class SignInUpWithGoogleUseCase @Inject constructor(
         }
     }
 
-    private fun addUserToFirestore(firebaseUser: FirebaseUser): Result<Boolean> {
+    private suspend fun addUserToFirestore(firebaseUser: FirebaseUser): Result<Boolean> {
         firebaseUser.apply {
             val displayName = displayName ?: throw FirebaseDisplayNameNullException()
             val email = email ?: throw FirebaseEmailNullException()

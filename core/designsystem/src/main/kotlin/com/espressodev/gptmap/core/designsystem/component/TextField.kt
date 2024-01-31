@@ -110,6 +110,10 @@ fun DefaultTextField(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     isError: Boolean = false,
+    keyboardActions: KeyboardActions = KeyboardActions(),
+    keyboardOptions: KeyboardOptions = KeyboardOptions(
+        imeAction = ImeAction.Next,
+    )
 ) {
     val showClearIcon by remember(value) { derivedStateOf { value.isNotEmpty() } }
     OutlinedTextField(
@@ -130,6 +134,8 @@ fun DefaultTextField(
         },
         onValueChange = onValueChange,
         isError = isError,
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
     )
 }
 
@@ -140,7 +146,12 @@ fun PasswordTextField(
     @StringRes label: Int,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    onConfirmClick: () -> Unit = {}
+    enabled: Boolean = true,
+    keyboardOptions: KeyboardOptions = KeyboardOptions(
+        imeAction = ImeAction.Next,
+        keyboardType = KeyboardType.Password
+    ),
+    keyboardActions: KeyboardActions = KeyboardActions(),
 ) {
     val shouldShowPasswordVisibility by remember(value) { derivedStateOf { value.isNotEmpty() } }
     var passwordVisibility by remember(shouldShowPasswordVisibility) { mutableStateOf(false) }
@@ -164,14 +175,10 @@ fun PasswordTextField(
         },
         leadingIcon = { Icon(imageVector = icon, contentDescription = null) },
         label = { Text(stringResource(id = label)) },
-        keyboardOptions = KeyboardOptions.Default.copy(
-            imeAction = ImeAction.Next,
-            keyboardType = KeyboardType.Password
-        ),
-        keyboardActions = KeyboardActions(
-            onNext = { onConfirmClick() }
-        ),
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
         shape = RoundedCornerShape(8.dp),
+        enabled = enabled,
         onValueChange = { if (it.length < 30) onValueChange(it) },
         visualTransformation = if (passwordVisibility) VisualTransformation.None
         else PasswordVisualTransformation()

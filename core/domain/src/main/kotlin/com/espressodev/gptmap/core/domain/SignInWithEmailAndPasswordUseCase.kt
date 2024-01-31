@@ -17,15 +17,13 @@ class SignInWithEmailAndPasswordUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(email: String, password: String) = withContext(ioDispatcher) {
         runCatching {
-            val authResult = accountService.firebaseSignInWithEmailAndPassword(email, password)
+            val authResult = accountService.firebaseSignInWithEmailAndPasswordAndReturnResult(email, password)
             accountService.reloadFirebaseUser()
 
             val isEmailVerified = authResult.user?.isEmailVerified == true
             if (!isEmailVerified) throw FirebaseEmailVerificationIsFalseException()
 
             loginToRealm(authResult)
-
-            true
         }
     }
 
