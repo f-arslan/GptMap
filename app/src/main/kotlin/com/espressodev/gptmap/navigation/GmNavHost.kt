@@ -12,6 +12,8 @@ import com.espressodev.gptmap.feature.delete_profile.navigateToDeleteProfile
 import com.espressodev.gptmap.feature.favourite.favouriteScreen
 import com.espressodev.gptmap.feature.forgot_password.forgotPasswordScreen
 import com.espressodev.gptmap.feature.forgot_password.navigateToForgotPassword
+import com.espressodev.gptmap.feature.image_analysis.navigateToSnapToScript
+import com.espressodev.gptmap.feature.image_analysis.snapToScriptScreen
 import com.espressodev.gptmap.feature.info.infoScreen
 import com.espressodev.gptmap.feature.info.navigateToInfo
 import com.espressodev.gptmap.feature.login.LoginRoute
@@ -28,8 +30,8 @@ import com.espressodev.gptmap.feature.screenshot.screenshotScreen
 import com.espressodev.gptmap.feature.screenshot_gallery.screenshotGalleryScreen
 import com.espressodev.gptmap.feature.street_view.navigateToStreetView
 import com.espressodev.gptmap.feature.street_view.streetViewScreen
-import com.espressodev.gptmap.feature.verify_password.navigateToVerifyPassword
-import com.espressodev.gptmap.feature.verify_password.verifyPasswordScreen
+import com.espressodev.gptmap.feature.verify_auth.navigateToVerifyAuth
+import com.espressodev.gptmap.feature.verify_auth.verifyAuthScreen
 
 @Composable
 fun GmNavHost(
@@ -67,24 +69,35 @@ fun GmNavHost(
             navigateToMap = navController::navigateToMap
         )
         screenshotScreen(popUp = navController::popBackStack)
-        screenshotGalleryScreen(popUp = navController::popBackStack)
+        screenshotGalleryScreen(
+            popUp = navController::popBackStack,
+            navigateToSnapToScript = navController::navigateToSnapToScript,
+            nestedGraphs = {
+                snapToScriptScreen(
+                    navController = navController,
+                    popUp = navController::popBackStack
+                )
+            }
+        )
         profileScreen(
             popUp = navController::popBackStack,
             navigateToLogin = navController::navigateToLogin,
             navigateToInfo = navController::navigateToInfo,
-            navigateToDelete = navController::navigateToVerifyPassword
-        )
-        infoScreen(popUp = navController::popBackStack)
-        deleteProfileScreen(
-            popUp = {
-                navController.popBackStack()
-                navController.popBackStack()
-            },
-            navigateToLogin = navController::navigateToLogin
-        )
-        verifyPasswordScreen(
-            popUp = navController::popBackStack,
-            navigateToDelete = navController::navigateToDeleteProfile
+            navigateToDelete = navController::navigateToVerifyAuth,
+            nestedGraphs = {
+                infoScreen(popUp = navController::popBackStack)
+                deleteProfileScreen(
+                    popUp = {
+                        navController.popBackStack()
+                        navController.popBackStack()
+                    },
+                    navigateToLogin = navController::navigateToLogin
+                )
+                verifyAuthScreen(
+                    popUp = navController::popBackStack,
+                    navigateToDelete = navController::navigateToDeleteProfile
+                )
+            }
         )
     }
 

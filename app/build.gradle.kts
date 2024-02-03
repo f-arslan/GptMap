@@ -61,7 +61,8 @@ dependencies {
     implementation(projects.feature.profile)
     implementation(projects.feature.info)
     implementation(projects.feature.deleteProfile)
-    implementation(projects.feature.verifyPassword)
+    implementation(projects.feature.verifyAuth)
+    implementation(projects.feature.snapToScript)
 
     implementation(projects.core.designsystem)
     implementation(projects.core.common)
