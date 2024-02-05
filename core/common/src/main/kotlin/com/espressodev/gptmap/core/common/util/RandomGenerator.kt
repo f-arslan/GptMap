@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.core.common.random_gen
+package com.espressodev.gptmap.core.common.util
 
 import java.lang.reflect.GenericArrayType
 import java.lang.reflect.ParameterizedType
