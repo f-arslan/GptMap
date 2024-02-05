@@ -1,8 +1,11 @@
 package com.espressodev.gptmap.feature.screenshot_gallery
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.espressodev.gptmap.api.gemini.GeminiService
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
+import com.espressodev.gptmap.core.common.SpeechToText
 import com.espressodev.gptmap.core.data.StorageService
 import com.espressodev.gptmap.core.data.StorageService.Companion.ANALYSIS_IMAGE_REFERENCE
 import com.espressodev.gptmap.core.model.EditableItemUiEvent
@@ -11,6 +14,7 @@ import com.espressodev.gptmap.core.model.ImageAnalysis
 import com.espressodev.gptmap.core.model.ImageSummary
 import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.model.ScreenshotGalleryUiState
+import com.espressodev.gptmap.core.model.ext.classTag
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -33,6 +37,8 @@ class ScreenshotGalleryViewModel @Inject constructor(
     private val storageService: StorageService,
     logService: LogService,
     private val ioDispatcher: CoroutineDispatcher,
+    private val geminiService: GeminiService,
+    private val speechToText: SpeechToText,
 ) : GmViewModel(logService) {
     val imageAnalyses = realmSyncService
         .getImageAnalyses()
@@ -55,6 +61,9 @@ class ScreenshotGalleryViewModel @Inject constructor(
         MutableStateFlow(ScreenshotGalleryUiState(selectedItem = ImageSummary()))
     val uiState = _uiState.asStateFlow()
 
+    private val _snapToScriptUiState = MutableStateFlow(SnapToScriptUiState())
+    val snapToScriptUiState = _snapToScriptUiState.asStateFlow()
+
     private val imageSummaryId
         get() = uiState.value.selectedItemsIds.first()
 
@@ -63,6 +72,10 @@ class ScreenshotGalleryViewModel @Inject constructor(
 
     private val selectedItemCount
         get() = uiState.value.selectedItemsCount
+
+    init {
+        Log.d(classTag(), this.hashCode().toString())
+    }
 
     fun onEvent(event: EditableItemUiEvent) {
         when (event) {
@@ -79,11 +92,55 @@ class ScreenshotGalleryViewModel @Inject constructor(
         }
     }
 
+    fun onSnapToScriptEvent(event: SnapToScriptUiEvent) {
+        when (event) {
+            is SnapToScriptUiEvent.OnTextFieldEnabledStateChanged -> {
+                _snapToScriptUiState.update { it.copy(isTextFieldEnabled = event.value) }
+            }
+
+            is SnapToScriptUiEvent.OnValueChanged -> {
+                _snapToScriptUiState.update { it.copy(value = event.value) }
+            }
+
+            SnapToScriptUiEvent.OnMicClick -> onMicClick()
+            SnapToScriptUiEvent.OnMicOffClick -> onMicOffClick()
+
+            SnapToScriptUiEvent.OnReset -> resetSnapToScriptUiState()
+            SnapToScriptUiEvent.OnKeyboardClick -> {
+                _snapToScriptUiState.update { it.copy(inputSelector = InputSelector.Keyboard) }
+            }
+
+            SnapToScriptUiEvent.OnSendClick -> {}
+        }
+    }
+
+    private fun onMicOffClick() = launchCatching {
+        _snapToScriptUiState.update { it.copy(inputSelector = InputSelector.Keyboard) }
+        speechToText.stopListening()
+    }
+
+    private fun onMicClick() = launchCatching {
+        _snapToScriptUiState.update { it.copy(inputSelector = InputSelector.MicBox) }
+        speechToText.startListening().collect { (value, rms, isFinished) ->
+            if (value.isNotEmpty()) {
+                val joinedString = value.joinToString(" ")
+                val totalValue = snapToScriptUiState.value.value + joinedString
+                _snapToScriptUiState.update { it.copy(value = totalValue) }
+            }
+            if (rms > 0) {
+                _snapToScriptUiState.update { it.copy(rmsValue = rms) }
+            }
+            if (isFinished) {
+                _snapToScriptUiState.update { it.copy(inputSelector = InputSelector.Keyboard) }
+            }
+        }
+    }
+
     private fun itemOnLongClick(imageSummary: ImageSummary) {
         val id = imageSummary.id
         _uiState.update { currentState ->
             val newSelectedItems =
-                if (currentState.selectedItemsIds.contains(id)) {
+                if (id in currentState.selectedItemsIds) {
                     currentState.selectedItemsIds.remove(id)
                 } else {
                     currentState.selectedItemsIds.add(id)
@@ -115,7 +172,8 @@ class ScreenshotGalleryViewModel @Inject constructor(
                 if (selectedItemCount == 1) {
                     realmSyncService.deleteImageAnalysis(imageSummaryId).getOrThrow()
                 } else {
-                    realmSyncService.deleteImageAnalyses(imageAnalysesIds = selectedItemsIds).getOrThrow()
+                    realmSyncService.deleteImageAnalyses(imageAnalysesIds = selectedItemsIds)
+                        .getOrThrow()
                 }
                 reset()
             }
@@ -136,5 +194,9 @@ class ScreenshotGalleryViewModel @Inject constructor(
 
     private fun reset() {
         _uiState.update { ScreenshotGalleryUiState(selectedItem = ImageSummary()) }
+    }
+
+    private fun resetSnapToScriptUiState() {
+        _snapToScriptUiState.update { SnapToScriptUiState() }
     }
 }

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -28,6 +29,10 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -44,8 +49,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -74,11 +82,13 @@ import kotlin.math.absoluteValue
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 import com.espressodev.gptmap.core.designsystem.Constants.BOTTOM_BAR_PADDING
+import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScreenshotGalleryRoute(
     popUp: () -> Unit,
+    navigateToSnapToScript: () -> Unit,
     viewModel: ScreenshotGalleryViewModel = hiltViewModel()
 ) {
     val imageAnalysesResponse by viewModel.imageAnalyses.collectAsStateWithLifecycle()
@@ -87,7 +97,7 @@ fun ScreenshotGalleryRoute(
         topBar = {
             GmTopAppBar(
                 text = TextType.Res(AppText.screenshot_gallery),
-                icon = IconType.Vector(GmIcons.ImageSearchDefault),
+                icon = IconType.Vector(GmIcons.ImageDefault),
                 onBackClick = popUp,
                 editText = uiState.topBarTitle,
                 isInEditMode = uiState.isUiInEditMode,
@@ -116,7 +126,8 @@ fun ScreenshotGalleryRoute(
                             )
                         },
                         selectedItemsIds = uiState.selectedItemsIds,
-                        isUiInEditMode = uiState.isUiInEditMode
+                        isUiInEditMode = uiState.isUiInEditMode,
+                        navigate = navigateToSnapToScript
                     )
                 } else {
                     LottieAnimationPlaceholder(
@@ -164,6 +175,7 @@ fun ScreenshotGalleryScreen(
     images: ImmutableList<ImageSummary>,
     onLongClick: (ImageSummary) -> Unit,
     selectedItemsIds: PersistentSet<String>,
+    navigate: () -> Unit,
     modifier: Modifier = Modifier,
     isUiInEditMode: Boolean,
 ) {
@@ -177,7 +189,7 @@ fun ScreenshotGalleryScreen(
         )
     }
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+        columns = GridCells.Adaptive(150.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(8.dp),
@@ -198,7 +210,8 @@ fun ScreenshotGalleryScreen(
                     }
                 },
                 onLongClick = { onLongClick(imageSummary) },
-                isSelected = selectedItemsIds.contains(imageSummary.id)
+                isSelected = selectedItemsIds.contains(imageSummary.id),
+                exploreWithAiClick = navigate
             )
         }
     }
@@ -211,7 +224,8 @@ fun ImageCard(
     modifier: Modifier = Modifier,
     isSelected: Boolean = false,
     onClick: () -> Unit = {},
-    onLongClick: () -> Unit = {}
+    onLongClick: () -> Unit = {},
+    exploreWithAiClick: () -> Unit = {}
 ) {
     val (isImageLoaded, setImageLoaded) = remember { mutableStateOf(value = false) }
     val borderStroke = if (isSelected) 3.dp else 0.dp
@@ -232,12 +246,13 @@ fun ImageCard(
             modifier = Modifier.aspectRatio(1f),
             onSuccess = { setImageLoaded(true) },
         )
-        if (isImageLoaded)
+        if (isImageLoaded) {
             Box(
                 modifier = Modifier
                     .matchParentSize()
                     .background(brush = darkBottomOverlayBrush)
             )
+        }
         Text(
             text = imageSummary.title,
             modifier = Modifier
@@ -249,7 +264,24 @@ fun ImageCard(
             textAlign = TextAlign.Center,
             color = Color.White
         )
-
+        if (!isSelected) {
+            FilledIconButton(
+                onClick = exploreWithAiClick,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .offset(x = 4.dp, y = (-4).dp),
+                shape = RectangleShape,
+                colors = IconButtonDefaults.filledIconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f),
+                    contentColor = MaterialTheme.colorScheme.onSecondary
+                )
+            ) {
+                Icon(
+                    painter = painterResource(id = AppDrawable.stars),
+                    contentDescription = stringResource(id = AppText.explore_with_ai),
+                )
+            }
+        }
     }
 }
 
@@ -378,7 +410,7 @@ fun ScreenshotGalleryPreview() {
                     title = "himenaeos",
                     date = LocalDateTime.now()
                 ),
-                isSelected = true,
+                isSelected = false,
                 onClick = {},
                 onLongClick = {},
                 modifier = Modifier.padding(8.dp)
