@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.feature.verify_password
+package com.espressodev.gptmap.feature.verify_auth
 
 import org.junit.Test
 

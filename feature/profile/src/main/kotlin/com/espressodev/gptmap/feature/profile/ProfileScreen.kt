@@ -35,7 +35,9 @@ import com.espressodev.gptmap.core.designsystem.component.GmTonalIconButton
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
 import com.espressodev.gptmap.core.designsystem.component.LetterInCircle
 import com.espressodev.gptmap.core.designsystem.component.LottieAnimationPlaceholder
+import com.espressodev.gptmap.core.model.Provider
 import com.espressodev.gptmap.core.model.Response
+import com.espressodev.gptmap.core.model.User
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
@@ -48,7 +50,7 @@ fun ProfileRoute(
     navigateToDelete: () -> Unit,
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
-    val fullName by viewModel.fullName.collectAsStateWithLifecycle()
+    val user by viewModel.user.collectAsStateWithLifecycle()
     Scaffold(
         topBar = {
             GmTopAppBar(
@@ -58,11 +60,11 @@ fun ProfileRoute(
             )
         },
     ) {
-        when (val result = fullName) {
+        when (val result = user) {
             is Response.Failure -> LottieAnimationPlaceholder(AppRaw.confused_man_404)
             Response.Loading -> {}
             is Response.Success -> ProfileScreen(
-                fullName = result.data,
+                user = result.data,
                 onInfoClick = navigateToInfo,
                 onLogOutClick = { viewModel.onLogoutClick(navigateToLogin) },
                 onDeleteClick = navigateToDelete,
@@ -74,7 +76,7 @@ fun ProfileRoute(
 
 @Composable
 fun ProfileScreen(
-    fullName: String,
+    user: User,
     onInfoClick: () -> Unit,
     onLogOutClick: () -> Unit,
     onDeleteClick: () -> Unit,
@@ -87,8 +89,8 @@ fun ProfileScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        LetterInCircle(letter = fullName.first(), modifier = Modifier.size(120.dp))
-        Text(text = fullName, style = MaterialTheme.typography.headlineMedium)
+        LetterInCircle(letter = user.fullName.first(), modifier = Modifier.size(120.dp))
+        Text(text = user.fullName, style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(8.dp))
         ProfileItem(GmIcons.InfoOutlined, AppText.info, onInfoClick)
         ProfileItem(GmIcons.DeleteOutlined, AppText.delete_profile_title, onDeleteClick)
@@ -126,7 +128,7 @@ fun ProfileItem(icon: ImageVector, @StringRes textId: Int, onClick: () -> Unit) 
 @Composable
 fun ProfileScreenPreview() {
     ProfileScreen(
-        fullName = "Fatih Arslan",
+        user = User(fullName = "Fatih Arslan"),
         onInfoClick = {},
         onLogOutClick = {},
         {}

@@ -35,8 +35,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.espressodev.gptmap.core.common.NetworkMonitor
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
+import com.espressodev.gptmap.feature.image_analysis.SnapToScriptRoute
 import com.espressodev.gptmap.feature.login.LoginRoute
 import com.espressodev.gptmap.feature.map.MapRouteWithArg
+import com.espressodev.gptmap.feature.screenshot_gallery.ScreenshotGalleryGraph
+import com.espressodev.gptmap.feature.screenshot_gallery.ScreenshotGalleryRoute
 import com.espressodev.gptmap.navigation.GmNavHost
 import com.espressodev.gptmap.navigation.TopLevelDestination
 import kotlinx.coroutines.CoroutineScope

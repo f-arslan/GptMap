@@ -1,8 +1,8 @@
 package com.espressodev.gptmap.feature.favourite
 
-import com.espressodev.gptmap.core.common.random_gen.MakeRandomInstanceConfig
-import com.espressodev.gptmap.core.common.random_gen.NoUsableConstructor
-import com.espressodev.gptmap.core.common.random_gen.makeRandomInstance
+import com.espressodev.gptmap.core.common.util.MakeRandomInstanceConfig
+import com.espressodev.gptmap.core.common.util.NoUsableConstructor
+import com.espressodev.gptmap.core.common.util.makeRandomInstance
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test

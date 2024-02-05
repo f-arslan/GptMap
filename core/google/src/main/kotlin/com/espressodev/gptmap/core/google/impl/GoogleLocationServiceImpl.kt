@@ -43,7 +43,6 @@ class GoogleLocationServiceImpl @Inject constructor(
                 locationResult.lastLocation?.let { newLocation ->
                     trySend(Result.success(Pair(newLocation.latitude, newLocation.longitude)))
                 } ?: trySend(Result.failure(LocationNullThrowable()))
-
                 close()
             }
         }

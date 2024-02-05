@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.feature.verify_password
+package com.espressodev.gptmap.feature.verify_auth
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

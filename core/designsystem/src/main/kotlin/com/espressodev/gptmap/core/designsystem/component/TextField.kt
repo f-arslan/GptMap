@@ -13,6 +13,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -48,8 +49,14 @@ fun MapTextField(
     onAvatarClick: () -> Unit,
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(24.dp),
+    colors: TextFieldColors = TextFieldDefaults.colors(
+        unfocusedIndicatorColor = Color.Transparent,
+        focusedIndicatorColor = Color.Transparent,
+        focusedContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+        unfocusedContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
+    )
 ) {
-    val shouldShownClearIcon by remember(value) { derivedStateOf { value.isNotBlank() } }
+    val shouldShownClearIcon by remember { derivedStateOf { value.isNotBlank() } }
     val keyboardController = LocalSoftwareKeyboardController.current
     OutlinedTextField(
         value = value,
@@ -92,12 +99,7 @@ fun MapTextField(
             onSearchClick()
         },
         maxLines = 1,
-        colors = TextFieldDefaults.colors(
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedIndicatorColor = Color.Transparent,
-            focusedContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
-        )
+        colors = colors
     )
 }
 
@@ -115,7 +117,7 @@ fun DefaultTextField(
         imeAction = ImeAction.Next,
     )
 ) {
-    val showClearIcon by remember(value) { derivedStateOf { value.isNotEmpty() } }
+    val showClearIcon by remember { derivedStateOf { value.isNotEmpty() } }
     OutlinedTextField(
         modifier = modifier.fillMaxWidth(),
         value = value,
@@ -153,8 +155,8 @@ fun PasswordTextField(
     ),
     keyboardActions: KeyboardActions = KeyboardActions(),
 ) {
-    val shouldShowPasswordVisibility by remember(value) { derivedStateOf { value.isNotEmpty() } }
-    var passwordVisibility by remember(shouldShowPasswordVisibility) { mutableStateOf(false) }
+    val shouldShowPasswordVisibility by remember { derivedStateOf { value.isNotEmpty() } }
+    var passwordVisibility by remember(shouldShowPasswordVisibility) { mutableStateOf(value = false) }
 
     OutlinedTextField(
         modifier = modifier.fillMaxWidth(),

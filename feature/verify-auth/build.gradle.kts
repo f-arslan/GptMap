@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.espressodev.gptmap.feature.verify_password"
+    namespace = "com.espressodev.gptmap.feature.verify_auth"
 }
 
 dependencies {

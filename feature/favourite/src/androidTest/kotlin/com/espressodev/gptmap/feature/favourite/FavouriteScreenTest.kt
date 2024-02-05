@@ -7,7 +7,7 @@ import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
-import com.espressodev.gptmap.core.common.random_gen.makeRandomInstance
+import com.espressodev.gptmap.core.common.util.makeRandomInstance
 import com.espressodev.gptmap.core.model.Favourite
 import org.junit.Assert.assertTrue
 import org.junit.Rule

@@ -10,26 +10,22 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -43,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -60,8 +55,10 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.espressodev.gptmap.core.designsystem.Constants.BOTTOM_BAR_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
+import com.espressodev.gptmap.core.designsystem.component.ExploreWithAiButton
 import com.espressodev.gptmap.core.designsystem.component.GmDraggableButton
 import com.espressodev.gptmap.core.designsystem.component.LottieAnimationPlaceholder
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
@@ -70,6 +67,7 @@ import com.espressodev.gptmap.core.designsystem.component.SquareButton
 import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.chatgpt.Content
+import com.espressodev.gptmap.core.model.chatgpt.Coordinates
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
 import com.espressodev.gptmap.core.save_screenshot.composable.SaveScreenshot
 import com.espressodev.gptmap.feature.map.ComponentLoadingState.MAP
@@ -81,16 +79,14 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlin.math.absoluteValue
-import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
-import com.espressodev.gptmap.core.designsystem.Constants.BOTTOM_BAR_PADDING
-import com.google.maps.android.compose.CameraPositionState
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -164,6 +160,7 @@ private fun MapScreen(
             bottomSheetState = uiState.bottomSheetState,
             location = uiState.location,
             onEvent = onEvent,
+            modifier = Modifier.zIndex(2f)
         )
         if (uiState.isMyLocationButtonVisible)
             MyCurrentLocationButton(
@@ -316,7 +313,7 @@ private fun BoxScope.MapCameraSection(uiState: MapUiState, onEvent: (MapUiEvent)
         cameraPositionState.animate(
             CameraUpdateFactory.newLatLngZoom(
                 uiState.coordinatesLatLng,
-                14f
+                12f
             )
         )
     }
@@ -325,7 +322,7 @@ private fun BoxScope.MapCameraSection(uiState: MapUiState, onEvent: (MapUiEvent)
             cameraPositionState.animate(
                 CameraUpdateFactory.newLatLngZoom(
                     uiState.myCoordinatesLatLng,
-                    14f
+                    12f
                 )
             )
             onEvent(MapUiEvent.OnUnsetMyCurrentLocationState)
@@ -503,24 +500,7 @@ fun BoxScope.SmallInformationCard(
                     style = MaterialTheme.typography.titleMedium,
                     fontStyle = FontStyle.Italic
                 )
-                Surface(
-                    shadowElevation = 4.dp,
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier.padding(top = 8.dp)
-                ) {
-                    OutlinedButton(
-                        onClick = onExploreWithAiClick,
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Image(
-                            painter = painterResource(id = AppDrawable.sparkling),
-                            contentDescription = null,
-                            modifier = Modifier.size(32.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = stringResource(id = AppText.explore_with_ai))
-                    }
-                }
+                ExploreWithAiButton(onClick = onExploreWithAiClick)
             }
         }
     }
@@ -529,13 +509,20 @@ fun BoxScope.SmallInformationCard(
 @Preview(showBackground = true)
 @Composable
 fun MapPreview() {
-    GptmapTheme {
-        MapSearchBar(
-            value = "libris",
-            userFirstChar = 'F',
-            onValueChange = {},
-            onSearchClick = {},
-            {}
-        )
+    GptmapTheme(darkTheme = true) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            SmallInformationCard(content = Content(
+                coordinates = Coordinates(
+                    latitude = 4.5,
+                    longitude = 6.7
+                ),
+                city = "Hill Valley",
+                district = null,
+                country = "Sao Tome and Principe",
+                poeticDescription = "elaboraret",
+                normalDescription = "docendi"
+            ), onExploreWithAiClick = {}, onBackClick = {}, modifier = Modifier
+            )
+        }
     }
 }

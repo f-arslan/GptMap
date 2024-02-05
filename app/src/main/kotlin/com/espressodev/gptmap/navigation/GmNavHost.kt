@@ -74,8 +74,8 @@ fun GmNavHost(
             navigateToSnapToScript = navController::navigateToSnapToScript,
             nestedGraphs = {
                 snapToScriptScreen(
-                    navController = navController,
-                    popUp = navController::popBackStack
+                    popUp = navController::popBackStack,
+                    navController = navController
                 )
             }
         )

@@ -1,7 +1,6 @@
 package com.espressodev.gptmap.core.domain
 
 import android.content.Context
-import android.util.Log
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.espressodev.gptmap.core.data.AccountService
@@ -27,11 +26,8 @@ class DeleteUserUseCase @Inject constructor(
                 throw throwable
             }
             launch {
-                Log.d("DeleteUserUseCase", "invoke: launch")
                 deleteUserFromRealm()
-                Log.d("DeleteUserUseCase", "invoke: launch success")
             }
-            Log.d("DeleteUserUseCase", "invoke: success")
             Unit
         }
     }

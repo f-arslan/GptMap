@@ -1,9 +1,9 @@
 package com.espressodev.gptmap.core.designsystem
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.automirrored.outlined.NavigateNext
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Clear
@@ -12,8 +12,11 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.ImageSearch
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Password
+import androidx.compose.material.icons.filled.RadioButtonChecked
 import androidx.compose.material.icons.filled.Screenshot
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Title
@@ -30,6 +33,8 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocationCity
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.MarkEmailUnread
+import androidx.compose.material.icons.outlined.Mic
+import androidx.compose.material.icons.outlined.MicOff
 import androidx.compose.material.icons.outlined.MyLocation
 import androidx.compose.material.icons.outlined.Screenshot
 import androidx.compose.material.icons.outlined.Visibility
@@ -55,7 +60,7 @@ object GmIcons {
     val DoneDefault = Icons.Default.Done
     val ScreenshotFilled = Icons.Filled.Screenshot
     val ScreenshotOutlined = Icons.Outlined.Screenshot
-    val ImageSearchDefault = Icons.Default.ImageSearch
+    val ImageDefault = Icons.Default.Image
     val TitleDefault = Icons.Default.Title
     val AccountCircleOutlined = Icons.Outlined.AccountCircle
     val EditDefault = Icons.Default.Edit
@@ -68,4 +73,9 @@ object GmIcons {
     val BookmarkOutlined = Icons.Outlined.BookmarkBorder
     val BookmarkFilled = Icons.Filled.Bookmark
     val PasswordFilled = Icons.Filled.Password
+    val ImageSearchDefault = Icons.Default.ImageSearch
+    val ArrowUpwardDefault = Icons.Default.ArrowUpward
+    val MicOutlined = Icons.Outlined.Mic
+    val MicOffOutlined = Icons.Outlined.MicOff
+    val RecordDefault = Icons.Default.RadioButtonChecked
 }

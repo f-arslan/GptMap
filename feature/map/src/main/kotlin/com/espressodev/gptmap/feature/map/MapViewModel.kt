@@ -22,7 +22,7 @@ import com.espressodev.gptmap.core.save_screenshot.SaveScreenshotService
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
@@ -41,6 +42,7 @@ class MapViewModel @Inject constructor(
     private val firestoreService: FirestoreService,
     private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
     @ApplicationContext private val applicationContext: Context,
+    private val ioDispatcher: CoroutineDispatcher,
     logService: LogService,
 ) : GmViewModel(logService) {
     private val _uiState = MutableStateFlow(MapUiState())
@@ -58,6 +60,7 @@ class MapViewModel @Inject constructor(
                             isScreenshotButtonVisible = false,
                             isStreetViewButtonVisible = false,
                             isLocationPinVisible = false,
+                            searchBarState = false,
                             screenshotState = ScreenshotState.STARTED
                         )
                     }
@@ -101,8 +104,10 @@ class MapViewModel @Inject constructor(
 
             MapUiEvent.OnExploreWithAiClick ->
                 _uiState.update { it.copy(bottomSheetState = MapBottomSheetState.DETAIL_CARD) }
+
             MapUiEvent.OnDetailSheetBackClick ->
                 _uiState.update { it.copy(bottomSheetState = MapBottomSheetState.SMALL_INFORMATION_CARD) }
+
             MapUiEvent.OnBackClick -> _uiState.update {
                 it.copy(
                     bottomSheetState = MapBottomSheetState.BOTTOM_SHEET_HIDDEN,
@@ -255,7 +260,7 @@ class MapViewModel @Inject constructor(
         navigateToStreetView: (Pair<Float, Float>) -> Unit
     ) =
         launchCatching {
-            val isStreetAvailable = withContext(Dispatchers.IO) {
+            val isStreetAvailable = withContext(ioDispatcher) {
                 MapUtils.fetchStreetViewData(LatLng(latLng.first, latLng.second))
             }
             when (isStreetAvailable) {
@@ -264,9 +269,7 @@ class MapViewModel @Inject constructor(
                     navigateToStreetView(Pair(latLng.first.toFloat(), latLng.second.toFloat()))
                 }
 
-                else -> {
-                    SnackbarManager.showMessage("Street View is not available for this location")
-                }
+                else -> SnackbarManager.showMessage(AppText.street_view_not_available)
             }
         }
 
@@ -288,7 +291,7 @@ class MapViewModel @Inject constructor(
     }
 
     fun loadLocationFromFavourite(favouriteId: String) = launchCatching {
-        val location = withContext(Dispatchers.IO) {
+        val location = withContext(ioDispatcher) {
             realmSyncService.getFavourite(favouriteId)
         }.toLocation()
 

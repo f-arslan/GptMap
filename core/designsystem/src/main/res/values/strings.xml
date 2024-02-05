@@ -36,8 +36,6 @@
     <string name="done">Done</string>
     <string name="selected_image">Selected image</string>
     <string name="edit_screenshot">Edit Screenshot</string>
-    <string name="image_analyses">Image Analyses</string>
-    <string name="image_analysis">Image Analysis</string>
     <string name="title">Title</string>
     <string name="send">Send</string>
     <string name="message">Message</string>
@@ -53,7 +51,9 @@
     <string name="saved">Saved</string>
     <string name="gallery">Gallery</string>
     <string name="my_location">My Location</string>
+    <string name="mic">Mic</string>
     <string name="not_connected">📶😊 It looks like you\'re offline right now</string>
+    <string name="tap_to_stop_record">Tap to stop recording</string>
 
     <!-- Map -->
     <string name="map_text_field_placeholder">Search here</string>
@@ -104,7 +104,7 @@
 
     <!-- Street View -->
     <string name="street_view_loading_header">Preparing an immersive Street View experience for you!</string>
-
+    <string name="street_view_not_available">Street View is not available for this location</string>
     <!-- Favourite -->
     <string name="favourite">Favourite</string>
 
@@ -134,4 +134,7 @@
     <!-- Verify Password -->
     <string name="password_insurance">Please re-enter your current password below. We require you to verify your identity before proceeding with the password change to ensure the security of your account.</string>
     <string name="verify_password_title">Verify Password</string>
+
+    <!-- SnapTo Script -->
+    <string name="snapTo_script_title">Snap to Script</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.feature.verify_password
+package com.espressodev.gptmap.feature.verify_auth
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -37,16 +37,18 @@ import com.espressodev.gptmap.core.designsystem.TextType
 import com.espressodev.gptmap.core.designsystem.component.GmProgressIndicator
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
 import com.espressodev.gptmap.core.designsystem.component.PasswordTextField
-import com.espressodev.gptmap.core.designsystem.util.keyboardAsState
+import com.espressodev.gptmap.core.designsystem.util.rememberKeyboardAsState
+import com.espressodev.gptmap.core.model.Provider
+import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VerifyPasswordRoute(
+fun VerifyAuthRoute(
     popUp: () -> Unit,
     navigateToDelete: () -> Unit,
-    viewModel: VerifyPasswordViewModel = hiltViewModel(),
+    viewModel: VerifyAuthViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
@@ -58,7 +60,7 @@ fun VerifyPasswordRoute(
             )
         }
     ) {
-        VerifyPasswordScreen(
+        VerifyAuthScreen(
             modifier = Modifier.padding(it),
             uiState = uiState,
             onValueChange = viewModel::onPasswordChanged,
@@ -70,17 +72,17 @@ fun VerifyPasswordRoute(
 
 
 @Composable
-fun VerifyPasswordScreen(
+fun VerifyAuthScreen(
     modifier: Modifier,
-    uiState: VerifyPasswordUiState,
+    uiState: VerifyAuthUiState,
     onValueChange: (String) -> Unit,
     onDone: () -> Unit
 ) {
     val scrollState = rememberScrollState()
-    val isKeyboardOpened by keyboardAsState()
+    val isKeyboardOpened by rememberKeyboardAsState()
     val keyboard = LocalSoftwareKeyboardController.current
     LaunchedEffect(isKeyboardOpened) {
-        if (isKeyboardOpened) {
+        if (isKeyboardOpened.first) {
             scrollState.animateScrollTo(Int.MAX_VALUE)
         }
     }
@@ -102,31 +104,42 @@ fun VerifyPasswordScreen(
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(16.dp))
-        PasswordTextField(
-            value = uiState.password,
-            icon = GmIcons.LockOutlined,
-            label = AppText.password,
-            onValueChange = onValueChange,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
-            ),
-            enabled = !uiState.isLoading,
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    keyboard?.hide()
-                    onDone()
+        when (val result = uiState.user) {
+            is Response.Failure -> {}
+            Response.Loading -> {}
+            is Response.Success -> {
+                when (result.data.provider) {
+                    Provider.GOOGLE.name -> {}
+                    Provider.DEFAULT.name -> {
+                        PasswordTextField(
+                            value = uiState.password,
+                            icon = GmIcons.LockOutlined,
+                            label = AppText.password,
+                            onValueChange = onValueChange,
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Password,
+                                imeAction = ImeAction.Done
+                            ),
+                            enabled = !uiState.isLoading,
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    keyboard?.hide()
+                                    onDone()
+                                }
+                            ),
+                            modifier = Modifier.imePadding()
+                        )
+                    }
                 }
-            ),
-            modifier = Modifier.imePadding()
-        )
+            }
+        }
     }
 }
 
 @Composable
 @Preview(showBackground = true, device = "id:pixel")
-fun VerifyPasswordPreview() {
-    VerifyPasswordScreen(modifier = Modifier, uiState = VerifyPasswordUiState(
+fun VerifyAuthPreview() {
+    VerifyAuthScreen(modifier = Modifier, uiState = VerifyAuthUiState(
         password = "",
         isLoading = false
     ), onValueChange = {}, onDone = {})
