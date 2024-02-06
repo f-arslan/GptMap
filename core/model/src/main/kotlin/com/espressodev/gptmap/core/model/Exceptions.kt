@@ -15,4 +15,9 @@ object Exceptions {
     class ResponseTextNotFoundException : Exception()
     class RealmUserNotLoggedInException : Exception()
     class FirestoreUserNotExistsException : Exception()
+    class FailedToCreateDirectoryException : IllegalStateException("Failed to create directory")
+
+    class FailedToGetDirectoryException : IllegalStateException("Failed to get directory")
+    class FailedToReadBitmapFromExternalStorageException :
+        IllegalStateException("Failed to read bitmap from external storage")
 }

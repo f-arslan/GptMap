@@ -9,6 +9,9 @@ import com.espressodev.gptmap.core.model.PromptUtil.locationPreText
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
 
 class GeminiServiceImpl(
@@ -23,17 +26,13 @@ class GeminiServiceImpl(
             }
         }
 
-    override suspend fun getImageDescription(image: Bitmap, text: String): Result<String> =
-        withContext(Dispatchers.IO) {
-            runCatching {
-                val inputContent = content {
-                    image(image)
-                    text(text)
-                }
-                generativeModelForImage.generateContentStream(inputContent).collect { chunk ->
-                    println(chunk)
-                }
-                ""
-            }
+    override fun getImageDescription(bitmap: Bitmap, text: String): Flow<String> {
+        val inputContent = content {
+            image(bitmap)
+            text(text)
         }
+        return generativeModelForImage.generateContentStream(inputContent)
+            .map { it.text }
+            .mapNotNull { it }
+    }
 }

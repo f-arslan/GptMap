@@ -12,8 +12,8 @@ import com.espressodev.gptmap.feature.delete_profile.navigateToDeleteProfile
 import com.espressodev.gptmap.feature.favourite.favouriteScreen
 import com.espressodev.gptmap.feature.forgot_password.forgotPasswordScreen
 import com.espressodev.gptmap.feature.forgot_password.navigateToForgotPassword
-import com.espressodev.gptmap.feature.image_analysis.navigateToSnapToScript
-import com.espressodev.gptmap.feature.image_analysis.snapToScriptScreen
+import com.espressodev.gptmap.feature.snapTo_script.navigateToSnapToScript
+import com.espressodev.gptmap.feature.snapTo_script.snapToScriptScreen
 import com.espressodev.gptmap.feature.info.infoScreen
 import com.espressodev.gptmap.feature.info.navigateToInfo
 import com.espressodev.gptmap.feature.login.LoginRoute
@@ -73,10 +73,7 @@ fun GmNavHost(
             popUp = navController::popBackStack,
             navigateToSnapToScript = navController::navigateToSnapToScript,
             nestedGraphs = {
-                snapToScriptScreen(
-                    popUp = navController::popBackStack,
-                    navController = navController
-                )
+                snapToScriptScreen(popUp = navController::popBackStack)
             }
         )
         profileScreen(

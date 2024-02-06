@@ -9,6 +9,6 @@ interface SpeechToText {
 
 data class SpeechRecognitionResult(
     val recognizedText: List<String>,
-    val rmsValue: Int,
+    val rmsValue: Int = 0,
     val isFinished: Boolean = false
 )

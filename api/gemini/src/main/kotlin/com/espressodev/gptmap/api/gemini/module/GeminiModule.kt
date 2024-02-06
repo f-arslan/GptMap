@@ -43,7 +43,7 @@ object GeminiModule {
     @Singleton
     @Provides
     fun provideGenerativeModelForImage(): GenerativeModel = GenerativeModel(
-        modelName = "gemini-pro",
+        modelName = "gemini-pro-vision",
         apiKey = PALM_API_KEY,
         safetySettings = listOf(harassmentSafety, hateSpeechSafety),
         generationConfig = config
@@ -61,6 +61,6 @@ object GeminiModule {
         )
 
 
-    const val TEXT_MODEL = "text_model"
-    const val IMAGE_MODEL = "image_model"
+    private const val TEXT_MODEL = "text_model"
+    private const val IMAGE_MODEL = "image_model"
 }

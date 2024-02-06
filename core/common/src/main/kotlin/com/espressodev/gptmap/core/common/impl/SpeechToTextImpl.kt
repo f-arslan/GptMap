@@ -36,8 +36,8 @@ class SpeechToTextImpl @Inject constructor(
 
             override fun onRmsChanged(rmsdB: Float) {
                 Log.d("SpeechRecognizer", "RMS has changed: $rmsdB")
-                lastRmsValue = rmsdB.roundToInt()
-                trySend(SpeechRecognitionResult(emptyList(), lastRmsValue))
+//                lastRmsValue = rmsdB.roundToInt()
+//                trySend(SpeechRecognitionResult(emptyList(), lastRmsValue))
             }
 
             override fun onBufferReceived(buffer: ByteArray?) {

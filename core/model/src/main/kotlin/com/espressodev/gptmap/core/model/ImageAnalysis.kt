@@ -9,7 +9,7 @@ data class ImageAnalysis(
     val imageUrl: String = "",
     val title: String = "",
     val messages: List<ImageMessage> = listOf(),
-    val date: LocalDateTime
+    val date: LocalDateTime = LocalDateTime.MIN
 ) {
     fun toImageAnalysisSummary() =
         ImageSummary(
@@ -20,8 +20,10 @@ data class ImageAnalysis(
         )
 }
 
+fun ImageAnalysis.sortByDate() = copy(messages = messages.sortedByDescending { it.date })
+
 data class ImageMessage(
     val request: String,
     val response: String,
-    val date: LocalDateTime
+    val date: LocalDateTime = LocalDateTime.MIN
 )

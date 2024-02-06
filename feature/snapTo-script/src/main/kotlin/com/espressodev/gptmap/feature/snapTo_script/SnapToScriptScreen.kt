@@ -2,10 +2,12 @@ package com.espressodev.gptmap.feature.image_analysis
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -103,7 +105,6 @@ fun SnapToScriptScreen(
     uiState: SnapToScriptUiState,
     onEvent: (SnapToScriptUiEvent) -> Unit
 ) {
-
     val keyboardState by rememberKeyboardAsState()
     val (keyboardHeight, setKeyboardHeight) = remember { mutableStateOf(300.dp) }
     LaunchedEffect(key1 = keyboardState) {
@@ -112,6 +113,8 @@ fun SnapToScriptScreen(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
+        Image(bitmap = , contentDescription = )
+
         ChatTextSection(
             value = uiState.value,
             keyboardHeight = keyboardHeight,
@@ -270,7 +273,10 @@ private fun MicBox(keyboardHeight: Dp, onClick: () -> Unit) {
         val animation = infiniteTransition.animateFloat(
             initialValue = 0.5f,
             targetValue = 1f,
-            animationSpec = infiniteRepeatable(tween(3000)),
+            animationSpec = infiniteRepeatable(
+                animation = tween(3000),
+                repeatMode = RepeatMode.Reverse
+            ),
             label = "animation volume"
         )
         Box(modifier = Modifier.fillMaxSize()) {
