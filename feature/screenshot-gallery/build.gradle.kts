@@ -8,8 +8,6 @@ android {
 }
 
 dependencies {
-    implementation(projects.api.gemini)
-
     implementation(projects.core.mongodb)
 
     implementation(libs.coil.compose)

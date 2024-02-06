@@ -31,7 +31,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -62,6 +61,7 @@ import androidx.compose.ui.util.lerp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.espressodev.gptmap.core.designsystem.Constants.BOTTOM_BAR_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.TextType
@@ -77,18 +77,16 @@ import com.espressodev.gptmap.core.model.ImageSummary
 import com.espressodev.gptmap.core.model.Response
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentSet
-import java.time.LocalDateTime
 import kotlin.math.absoluteValue
+import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
-import com.espressodev.gptmap.core.designsystem.Constants.BOTTOM_BAR_PADDING
-import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScreenshotGalleryRoute(
     popUp: () -> Unit,
-    navigateToSnapToScript: () -> Unit,
+    navigateToSnapToScript: (String) -> Unit,
     viewModel: ScreenshotGalleryViewModel = hiltViewModel()
 ) {
     val imageAnalysesResponse by viewModel.imageAnalyses.collectAsStateWithLifecycle()
@@ -127,7 +125,13 @@ fun ScreenshotGalleryRoute(
                         },
                         selectedItemsIds = uiState.selectedItemsIds,
                         isUiInEditMode = uiState.isUiInEditMode,
-                        navigate = navigateToSnapToScript
+                        navigate = { imageId, imageUrl ->
+                            viewModel.navigateToSnapToScript(
+                                imageId = imageId,
+                                imageUrl = imageUrl,
+                                navigate = navigateToSnapToScript
+                            )
+                        }
                     )
                 } else {
                     LottieAnimationPlaceholder(
@@ -175,7 +179,7 @@ fun ScreenshotGalleryScreen(
     images: ImmutableList<ImageSummary>,
     onLongClick: (ImageSummary) -> Unit,
     selectedItemsIds: PersistentSet<String>,
-    navigate: () -> Unit,
+    navigate: (imageId: String, imageUrl: String) -> Unit,
     modifier: Modifier = Modifier,
     isUiInEditMode: Boolean,
 ) {
@@ -211,7 +215,7 @@ fun ScreenshotGalleryScreen(
                 },
                 onLongClick = { onLongClick(imageSummary) },
                 isSelected = selectedItemsIds.contains(imageSummary.id),
-                exploreWithAiClick = navigate
+                exploreWithAiClick = { navigate(imageSummary.id, imageSummary.imageUrl) }
             )
         }
     }
@@ -404,16 +408,11 @@ fun ScreenshotGalleryPreview() {
     GptmapTheme {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             ImageCard(
-                imageSummary = ImageSummary(
-                    id = "debet",
-                    imageUrl = "https://www.google.com/#q=fames",
-                    title = "himenaeos",
-                    date = LocalDateTime.now()
-                ),
+                imageSummary = ImageSummary(),
                 isSelected = false,
                 onClick = {},
                 onLongClick = {},
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier.padding(8.dp), exploreWithAiClick = {}
             )
         }
     }

@@ -15,7 +15,7 @@ fun NavController.navigateToScreenshotGallery(navOptions: NavOptions? = null) {
 
 fun NavGraphBuilder.screenshotGalleryScreen(
     popUp: () -> Unit,
-    navigateToSnapToScript: () -> Unit,
+    navigateToSnapToScript: (String) -> Unit,
     nestedGraphs: NavGraphBuilder.() -> Unit
 ) {
     navigation(route = ScreenshotGalleryGraph, startDestination = ScreenshotGalleryRoute) {
