@@ -4,6 +4,7 @@ import com.espressodev.gptmap.core.model.Favourite
 import com.espressodev.gptmap.core.model.ImageAnalysis
 import com.espressodev.gptmap.core.model.realm.RealmFavourite
 import com.espressodev.gptmap.core.model.realm.RealmImageAnalysis
+import com.espressodev.gptmap.core.model.realm.RealmImageMessage
 import com.espressodev.gptmap.core.model.realm.RealmUser
 import kotlinx.coroutines.flow.Flow
 
@@ -22,6 +23,8 @@ interface RealmSyncService {
 
     fun getImageAnalyses(): Flow<List<ImageAnalysis>>
 
+    fun getImageAnalysis(id: String): Result<ImageAnalysis>
+
     suspend fun deleteImageAnalysis(imageAnalysisId: String): Result<Unit>
 
     suspend fun deleteImageAnalyses(imageAnalysesIds: Set<String>): Result<Unit>
@@ -32,4 +35,6 @@ interface RealmSyncService {
 
     suspend fun deleteUser(): Result<Unit>
     suspend fun updateFavouriteText(favouriteId: String, text: String): Result<Unit>
+
+    suspend fun addImageMessageToImageAnalysis(imageAnalysisId: String, message: RealmImageMessage): Result<Unit>
 }

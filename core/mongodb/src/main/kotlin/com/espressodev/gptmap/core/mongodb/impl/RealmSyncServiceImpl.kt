@@ -5,9 +5,11 @@ import com.espressodev.gptmap.core.model.Favourite
 import com.espressodev.gptmap.core.model.ImageAnalysis
 import com.espressodev.gptmap.core.model.realm.RealmFavourite
 import com.espressodev.gptmap.core.model.realm.RealmImageAnalysis
+import com.espressodev.gptmap.core.model.realm.RealmImageMessage
 import com.espressodev.gptmap.core.model.realm.RealmUser
 import com.espressodev.gptmap.core.model.realm.toFavourite
 import com.espressodev.gptmap.core.model.realm.toImageAnalysis
+import com.espressodev.gptmap.core.model.sortByDate
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.espressodev.gptmap.core.mongodb.module.RealmModule.realm
 import com.espressodev.gptmap.core.mongodb.module.RealmModule.realmUser
@@ -81,6 +83,14 @@ class RealmSyncServiceImpl : RealmSyncService {
         realm.query<RealmImageAnalysis>("userId == $0", realmUserId).find().asFlow().map {
             it.list.map { realmImageAnalysis -> realmImageAnalysis.toImageAnalysis() }
         }
+
+    override fun getImageAnalysis(id: String): Result<ImageAnalysis> = runCatching {
+        realm.query<RealmImageAnalysis>("userId == $0 AND imageId == $1", realmUserId, id)
+            .find()
+            .first()
+            .toImageAnalysis()
+            .sortByDate()
+    }
 
     override fun isUserInDatabase(): Result<Boolean> = runCatching {
         realm.query<RealmUser>("userId == $0", realmUserId).first().find() != null
@@ -168,4 +178,24 @@ class RealmSyncServiceImpl : RealmSyncService {
                 }
             }
         }
+
+    override suspend fun addImageMessageToImageAnalysis(
+        imageAnalysisId: String,
+        message: RealmImageMessage
+    ): Result<Unit> {
+        return runCatching {
+            realm.write {
+                val imageAnalysisToUpdate: RealmImageAnalysis = query<RealmImageAnalysis>(
+                    "userId == $0 AND imageId == $1",
+                    realmUserId,
+                    imageAnalysisId
+                )
+                    .find()
+                    .first()
+                findLatest(imageAnalysisToUpdate)?.let { realmImageAnalysis ->
+                    realmImageAnalysis.messages?.add(message)
+                }
+            }
+        }
+    }
 }
