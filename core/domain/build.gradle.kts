@@ -8,6 +8,8 @@ android {
 }
 
 dependencies {
+    implementation(projects.api.gemini)
+
     implementation(projects.core.mongodb)
     implementation(projects.core.model)
     implementation(projects.core.data)
