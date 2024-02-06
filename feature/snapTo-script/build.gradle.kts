@@ -8,6 +8,10 @@ android {
 }
 
 dependencies {
+    implementation(projects.api.gemini)
+
     implementation(projects.feature.screenshotGallery)
+
     implementation(libs.accompanist.permissions)
+    implementation(libs.coil.compose)
 }

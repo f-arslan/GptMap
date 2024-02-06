@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.feature.image_analysis
+package com.espressodev.gptmap.feature.snapTo_script
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -7,7 +7,6 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +18,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,6 +46,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusEvent
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -53,15 +55,19 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.TextType
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
 import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import com.espressodev.gptmap.core.designsystem.util.rememberKeyboardAsState
+import com.espressodev.gptmap.core.model.ImageAnalysis
+import com.espressodev.gptmap.core.model.ImageMessage
+import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.feature.screenshot_gallery.InputSelector
-import com.espressodev.gptmap.feature.screenshot_gallery.ScreenshotGalleryViewModel
 import com.espressodev.gptmap.feature.screenshot_gallery.SnapToScriptUiEvent
 import com.espressodev.gptmap.feature.screenshot_gallery.SnapToScriptUiState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -75,8 +81,15 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SnapToScriptRoute(popUp: () -> Unit, viewModel: ScreenshotGalleryViewModel) {
+fun SnapToScriptRoute(
+    imageId: String,
+    popUp: () -> Unit,
+    viewModel: SnapToScriptViewModel = hiltViewModel()
+) {
+    LaunchedEffect(key1 = imageId) { viewModel.initializeImageAnalysis(imageId) }
     val uiState by viewModel.snapToScriptUiState.collectAsStateWithLifecycle()
+    val imageAnalysis by viewModel.imageAnalysis.collectAsStateWithLifecycle()
+
     Scaffold(
         topBar = {
             GmTopAppBar(
@@ -89,12 +102,14 @@ fun SnapToScriptRoute(popUp: () -> Unit, viewModel: ScreenshotGalleryViewModel) 
         SnapToScriptScreen(
             modifier = Modifier.padding(it),
             uiState = uiState,
-            onEvent = viewModel::onSnapToScriptEvent
+            imageAnalysis = imageAnalysis,
+            onEvent = viewModel::onEvent,
+            onSendClick = { viewModel.onSendClick() }
         )
     }
 
     BackHandler {
-        viewModel.onSnapToScriptEvent(SnapToScriptUiEvent.OnReset)
+        viewModel.onEvent(SnapToScriptUiEvent.OnReset)
         popUp()
     }
 }
@@ -103,7 +118,9 @@ fun SnapToScriptRoute(popUp: () -> Unit, viewModel: ScreenshotGalleryViewModel) 
 fun SnapToScriptScreen(
     modifier: Modifier,
     uiState: SnapToScriptUiState,
-    onEvent: (SnapToScriptUiEvent) -> Unit
+    imageAnalysis: ImageAnalysis,
+    onEvent: (SnapToScriptUiEvent) -> Unit,
+    onSendClick: () -> Unit,
 ) {
     val keyboardState by rememberKeyboardAsState()
     val (keyboardHeight, setKeyboardHeight) = remember { mutableStateOf(300.dp) }
@@ -112,21 +129,64 @@ fun SnapToScriptScreen(
             setKeyboardHeight(keyboardState.second)
     }
 
+
+
     Box(modifier = modifier.fillMaxSize()) {
-        Image(bitmap = , contentDescription = )
+
+        Column(modifier = Modifier.fillMaxSize()) {
+            Messages(imageAnalysis.messages)
+            ImageSection(
+                imageUrl = imageAnalysis.imageUrl,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+        }
 
         ChatTextSection(
             value = uiState.value,
             keyboardHeight = keyboardHeight,
             inputSelector = uiState.inputSelector,
             onValueChange = { onEvent(SnapToScriptUiEvent.OnValueChanged(it)) },
-            onSendClick = { onEvent(SnapToScriptUiEvent.OnSendClick) },
+            onSendClick = onSendClick,
             onMicClick = { onEvent(SnapToScriptUiEvent.OnMicClick) },
             onMicOffClick = { onEvent(SnapToScriptUiEvent.OnMicOffClick) },
             onKeyboardClick = { onEvent(SnapToScriptUiEvent.OnKeyboardClick) },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .imePadding()
+        )
+    }
+}
+
+@Composable
+fun Messages(messages : List<ImageMessage>) {
+    LazyColumn {
+        items(messages) {
+            UserMessage()
+            BotMessage()
+        }
+    }
+}
+
+@Composable
+fun BotMessage() {
+
+}
+
+@Composable
+fun UserMessage() {
+
+}
+
+@Composable
+fun ImageSection(imageUrl: String, modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier.size(200.dp),
+        shape = RoundedCornerShape(16.dp),
+        shadowElevation = 4.dp
+    ) {
+        AsyncImage(
+            model = imageUrl,
+            contentDescription = stringResource(id = AppText.selected_image),
         )
     }
 }
@@ -315,7 +375,26 @@ private fun MicBox(keyboardHeight: Dp, onClick: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun SnapToScriptPreview() {
+    val messages = listOf(
+        ImageMessage(
+            request = "Hello",
+            response = "Hi"
+        ),
+        ImageMessage(
+            request = "How are you?",
+            response = "I'm fine"
+        ),
+        ImageMessage(
+            request = "What's your name?",
+            response = "I'm GPT-3"
+        ),
+        ImageMessage(
+            request = "What's your name?",
+            response = "I'm GPT-3"
+        ),
+    )
+
     GptmapTheme {
-        SnapToScriptScreen(Modifier, SnapToScriptUiState()) {}
+        Messages(messages = messages)
     }
 }

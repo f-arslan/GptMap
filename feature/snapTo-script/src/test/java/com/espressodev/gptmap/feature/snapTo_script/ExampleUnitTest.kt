@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.feature.image_analysis
+package com.espressodev.gptmap.feature.snapTo_script
 
 import org.junit.Test
 

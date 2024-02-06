@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.feature.image_analysis
+package com.espressodev.gptmap.feature.snapTo_script
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

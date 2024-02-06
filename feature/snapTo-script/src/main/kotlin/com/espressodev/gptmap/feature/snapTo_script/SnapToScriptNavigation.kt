@@ -1,27 +1,27 @@
-package com.espressodev.gptmap.feature.image_analysis
+package com.espressodev.gptmap.feature.snapTo_script
 
-import androidx.compose.runtime.remember
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import com.espressodev.gptmap.feature.screenshot_gallery.ScreenshotGalleryRoute
-import com.espressodev.gptmap.feature.screenshot_gallery.ScreenshotGalleryViewModel
+import androidx.navigation.navArgument
 
+const val IMAGE_ID = "imageId"
 const val SnapToScriptRoute = "snapTo_script_route"
+const val SnapToScriptRouteWithArg = "$SnapToScriptRoute/{$IMAGE_ID}"
 
-fun NavController.navigateToSnapToScript(navOptions: NavOptions? = null) {
-    navigate(SnapToScriptRoute, navOptions)
+fun NavController.navigateToSnapToScript(imageId: String, navOptions: NavOptions? = null) {
+    navigate("$SnapToScriptRoute/$imageId", navOptions)
 }
 
-fun NavGraphBuilder.snapToScriptScreen(popUp: () -> Unit, navController: NavHostController) {
-    composable(SnapToScriptRoute) { navBackStackEntry ->
-        val parentEntry = remember(navBackStackEntry) {
-            navController.getBackStackEntry(ScreenshotGalleryRoute)
-        }
-        val parentViewModel = hiltViewModel<ScreenshotGalleryViewModel>(viewModelStoreOwner = parentEntry)
-        SnapToScriptRoute(popUp = popUp, viewModel = parentViewModel)
+fun NavGraphBuilder.snapToScriptScreen(popUp: () -> Unit) {
+    composable(
+        route = SnapToScriptRouteWithArg,
+        arguments = listOf(navArgument(IMAGE_ID) { type = NavType.StringType })
+    ) { backStackEntry ->
+        val imageId = backStackEntry.arguments?.getString(IMAGE_ID) ?: return@composable
+
+        SnapToScriptRoute(imageId = imageId, popUp = popUp)
     }
 }
