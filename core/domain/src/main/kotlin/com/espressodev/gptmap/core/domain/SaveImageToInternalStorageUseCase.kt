@@ -2,11 +2,13 @@ package com.espressodev.gptmap.core.domain
 
 import android.content.Context
 import android.graphics.Bitmap
+import com.espressodev.gptmap.core.common.DataStoreService
 import com.espressodev.gptmap.core.model.Exceptions.FailedToCreateDirectoryException
 import com.espressodev.gptmap.core.model.Exceptions.FailedToGetDirectoryException
 import com.espressodev.gptmap.core.model.ext.toBitmap
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
@@ -15,12 +17,19 @@ import javax.inject.Inject
 class SaveImageToInternalStorageUseCase @Inject constructor(
     @ApplicationContext private val context: Context,
     private val ioDispatcher: CoroutineDispatcher,
-    private val downloadAndCompressImageUseCase: DownloadAndCompressImageUseCase
+    private val downloadAndCompressImageUseCase: DownloadAndCompressImageUseCase,
+    private val dataStoreService: DataStoreService
 ) {
     suspend operator fun invoke(imageUrl: String, fileId: String) = runCatching {
         withContext(ioDispatcher) {
-            val imageData = downloadAndCompressImageUseCase(imageUrl).getOrThrow().toBitmap()
-            saveToInternalStorageIfNotExist(imageData, fileId)
+            launch {
+                val imageData = downloadAndCompressImageUseCase(imageUrl).getOrThrow().toBitmap()
+                saveToInternalStorageIfNotExist(imageData, fileId)
+            }
+            launch {
+                dataStoreService.setImageUrl(imageUrl)
+            }
+            Unit
         }
     }
 

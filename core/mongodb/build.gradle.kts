@@ -13,4 +13,5 @@ dependencies {
 
     implementation(libs.realm.library.base)
     implementation(libs.realm.library.sync)
+    implementation(libs.kotlinx.collections.immutable)
 }

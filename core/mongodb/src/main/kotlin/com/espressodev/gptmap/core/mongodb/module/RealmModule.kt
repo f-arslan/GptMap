@@ -54,7 +54,7 @@ object RealmModule {
                 RealmImageMessage::class
             )
         )
-            .maxNumberOfActiveVersions(17)
+            .maxNumberOfActiveVersions(20)
             .initialSubscriptions { realm: Realm ->
                 add(realm.query<RealmUser>("userId == $0", currentUser.id))
                 add(

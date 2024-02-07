@@ -10,3 +10,7 @@ sealed interface LoadingState {
     data object Idle : LoadingState
     data object Loading : LoadingState
 }
+
+enum class AiResponseStatus {
+    Idle, Loading, Success, Error
+}

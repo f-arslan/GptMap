@@ -23,7 +23,8 @@ data class ImageAnalysis(
 fun ImageAnalysis.sortByDate() = copy(messages = messages.sortedByDescending { it.date })
 
 data class ImageMessage(
-    val request: String,
-    val response: String,
+    val id: String = "",
+    val request: String = "",
+    val response: String = "",
     val date: LocalDateTime = LocalDateTime.MIN
 )

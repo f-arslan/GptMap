@@ -2,6 +2,7 @@ package com.espressodev.gptmap.core.mongodb
 
 import com.espressodev.gptmap.core.model.Favourite
 import com.espressodev.gptmap.core.model.ImageAnalysis
+import com.espressodev.gptmap.core.model.ImageMessage
 import com.espressodev.gptmap.core.model.realm.RealmFavourite
 import com.espressodev.gptmap.core.model.realm.RealmImageAnalysis
 import com.espressodev.gptmap.core.model.realm.RealmImageMessage
@@ -25,6 +26,8 @@ interface RealmSyncService {
 
     fun getImageAnalysis(id: String): Result<ImageAnalysis>
 
+    fun getImageAnalysisMessages(imageAnalysisId: String): Flow<List<ImageMessage>>
+
     suspend fun deleteImageAnalysis(imageAnalysisId: String): Result<Unit>
 
     suspend fun deleteImageAnalyses(imageAnalysesIds: Set<String>): Result<Unit>
@@ -36,5 +39,14 @@ interface RealmSyncService {
     suspend fun deleteUser(): Result<Unit>
     suspend fun updateFavouriteText(favouriteId: String, text: String): Result<Unit>
 
-    suspend fun addImageMessageToImageAnalysis(imageAnalysisId: String, message: RealmImageMessage): Result<Unit>
+    suspend fun addImageMessageToImageAnalysis(
+        imageAnalysisId: String,
+        message: RealmImageMessage
+    ): Result<Unit>
+
+    suspend fun updateImageMessageInImageAnalysis(
+        imageAnalysisId: String,
+        messageId: String,
+        text: String,
+    ): Result<Unit>
 }

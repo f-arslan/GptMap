@@ -14,6 +14,7 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.data)
     implementation(projects.core.google)
+    implementation(projects.core.common)
 
     implementation(libs.firebase.auth)
     implementation(libs.realm.library.sync)

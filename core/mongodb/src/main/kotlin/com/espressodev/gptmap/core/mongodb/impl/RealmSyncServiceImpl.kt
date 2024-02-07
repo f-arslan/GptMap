@@ -3,6 +3,7 @@ package com.espressodev.gptmap.core.mongodb.impl
 import android.util.Log
 import com.espressodev.gptmap.core.model.Favourite
 import com.espressodev.gptmap.core.model.ImageAnalysis
+import com.espressodev.gptmap.core.model.ImageMessage
 import com.espressodev.gptmap.core.model.realm.RealmFavourite
 import com.espressodev.gptmap.core.model.realm.RealmImageAnalysis
 import com.espressodev.gptmap.core.model.realm.RealmImageMessage
@@ -91,6 +92,21 @@ class RealmSyncServiceImpl : RealmSyncService {
             .toImageAnalysis()
             .sortByDate()
     }
+
+    override fun getImageAnalysisMessages(imageAnalysisId: String): Flow<List<ImageMessage>> =
+        realm.query<RealmImageAnalysis>(
+            "userId == $0 AND imageId == $1",
+            realmUserId,
+            imageAnalysisId
+        )
+            .find()
+            .asFlow()
+            .map { results ->
+                results.list.flatMap { realmImageAnalysis ->
+                    realmImageAnalysis.toImageAnalysis().sortByDate().messages
+                }
+            }
+
 
     override fun isUserInDatabase(): Result<Boolean> = runCatching {
         realm.query<RealmUser>("userId == $0", realmUserId).first().find() != null
@@ -198,4 +214,25 @@ class RealmSyncServiceImpl : RealmSyncService {
             }
         }
     }
+
+    override suspend fun updateImageMessageInImageAnalysis(
+        imageAnalysisId: String,
+        messageId: String,
+        text: String,
+    ): Result<Unit> = runCatching {
+        realm.write {
+            val imageAnalysis: RealmImageAnalysis = query<RealmImageAnalysis>(
+                "userId == $0 AND imageId == $1",
+                realmUserId,
+                imageAnalysisId
+            )
+                .find()
+                .first()
+
+            findLatest(imageAnalysis)?.let { realmImageAnalysis ->
+                realmImageAnalysis.messages?.find { it.id == messageId }?.response = text
+            }
+        }
+    }
 }
+

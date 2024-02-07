@@ -10,6 +10,7 @@ import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PersistedName
 import io.realm.kotlin.types.annotations.PrimaryKey
 import org.mongodb.kbson.ObjectId
+import java.util.UUID
 
 open class RealmImageAnalysis : RealmObject {
     @PrimaryKey
@@ -34,12 +35,14 @@ fun RealmImageAnalysis.toImageAnalysis() = ImageAnalysis(
 )
 
 open class RealmImageMessage : EmbeddedRealmObject {
+    var id: String = UUID.randomUUID().toString()
     var request: String = ""
     var response: String = ""
     var date: RealmInstant = RealmInstant.from(System.currentTimeMillis(), 0)
 }
 
 fun RealmImageMessage.toImageMessage() = ImageMessage(
+    id = id,
     request = request,
     response = response,
     date = date.toJavaInstant().toLocalDateTime()
