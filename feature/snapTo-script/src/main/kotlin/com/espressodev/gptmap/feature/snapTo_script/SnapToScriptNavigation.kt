@@ -19,9 +19,7 @@ fun NavGraphBuilder.snapToScriptScreen(popUp: () -> Unit) {
     composable(
         route = SnapToScriptRouteWithArg,
         arguments = listOf(navArgument(IMAGE_ID) { type = NavType.StringType })
-    ) { backStackEntry ->
-        val imageId = backStackEntry.arguments?.getString(IMAGE_ID) ?: return@composable
-
-        SnapToScriptRoute(imageId = imageId, popUp = popUp)
+    ) {
+        SnapToScriptRoute(popUp = popUp)
     }
 }

@@ -35,7 +35,6 @@ import com.espressodev.gptmap.core.designsystem.component.GmTonalIconButton
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
 import com.espressodev.gptmap.core.designsystem.component.LetterInCircle
 import com.espressodev.gptmap.core.designsystem.component.LottieAnimationPlaceholder
-import com.espressodev.gptmap.core.model.Provider
 import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.model.User
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw

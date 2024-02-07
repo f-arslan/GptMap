@@ -8,6 +8,7 @@ import android.content.IntentFilter
 import android.os.Build
 import com.espressodev.gptmap.api.gemini.GeminiService
 import com.espressodev.gptmap.api.unsplash.UnsplashService
+import com.espressodev.gptmap.core.common.DataStoreService
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
@@ -40,6 +41,7 @@ class MapViewModel @Inject constructor(
     private val addDatabaseIfUserIsNewUseCase: AddDatabaseIfUserIsNewUseCase,
     private val realmSyncService: RealmSyncService,
     private val firestoreService: FirestoreService,
+    private val dataStoreService: DataStoreService,
     private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
     @ApplicationContext private val applicationContext: Context,
     private val ioDispatcher: CoroutineDispatcher,
@@ -238,9 +240,14 @@ class MapViewModel @Inject constructor(
     }
 
     private fun getUserFirstChar() = launchCatching {
-        firestoreService.getUser().run {
-            _uiState.update { it.copy(userFirstChar = fullName.first()) }
-        }
+        val fullName = dataStoreService.getUserFullName().takeIf { it.isNotEmpty() }
+            ?: firestoreService.getUser().fullName.also { fullName ->
+                launch {
+                    dataStoreService.setUserFullName(fullName)
+                }
+            }
+
+        _uiState.update { it.copy(userFirstChar = fullName.first()) }
     }
 
     fun reset() {

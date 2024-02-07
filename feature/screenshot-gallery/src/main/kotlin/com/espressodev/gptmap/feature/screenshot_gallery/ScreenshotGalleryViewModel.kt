@@ -65,9 +65,6 @@ class ScreenshotGalleryViewModel @Inject constructor(
     private val selectedItemsIds
         get() = uiState.value.selectedItemsIds
 
-    private val imageUrl
-        get() = uiState.value.selectedItem.imageUrl
-
     private val selectedItemCount
         get() = uiState.value.selectedItemsCount
 

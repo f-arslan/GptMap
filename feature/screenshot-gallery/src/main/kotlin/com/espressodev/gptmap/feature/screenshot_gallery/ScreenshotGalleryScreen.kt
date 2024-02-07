@@ -5,6 +5,7 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.border
@@ -30,7 +31,9 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -269,20 +272,14 @@ fun ImageCard(
             color = Color.White
         )
         if (!isSelected) {
-            FilledIconButton(
+            IconButton(
                 onClick = exploreWithAiClick,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .offset(x = 4.dp, y = (-4).dp),
-                shape = RectangleShape,
-                colors = IconButtonDefaults.filledIconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f),
-                    contentColor = MaterialTheme.colorScheme.onSecondary
-                )
+                modifier = Modifier.align(Alignment.TopEnd),
             ) {
-                Icon(
-                    painter = painterResource(id = AppDrawable.stars),
+                Image(
+                    painter = painterResource(id = AppDrawable.ai_icon),
                     contentDescription = stringResource(id = AppText.explore_with_ai),
+                    modifier = Modifier.padding(4.dp)
                 )
             }
         }
@@ -405,8 +402,8 @@ fun DotsIndicator(
 @Preview(showBackground = true)
 @Composable
 fun ScreenshotGalleryPreview() {
-    GptmapTheme {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    GptmapTheme(darkTheme = true) {
+        Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background), contentAlignment = Alignment.Center) {
             ImageCard(
                 imageSummary = ImageSummary(),
                 isSelected = false,

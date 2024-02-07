@@ -1,49 +1,75 @@
 package com.espressodev.gptmap.feature.snapTo_script
 
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
+import com.espressodev.gptmap.core.common.DataStoreService
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.common.SpeechToText
 import com.espressodev.gptmap.core.domain.AddImageMessageUseCase
-import com.espressodev.gptmap.core.model.ImageAnalysis
+import com.espressodev.gptmap.core.model.AiResponseStatus
+import com.espressodev.gptmap.core.model.ImageMessage
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
-import com.espressodev.gptmap.feature.screenshot_gallery.AiResponseStatus
 import com.espressodev.gptmap.feature.screenshot_gallery.InputSelector
 import com.espressodev.gptmap.feature.screenshot_gallery.SnapToScriptUiEvent
 import com.espressodev.gptmap.feature.screenshot_gallery.SnapToScriptUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @HiltViewModel
 class SnapToScriptViewModel @Inject constructor(
     private val speechToText: SpeechToText,
-    private val realmSyncService: RealmSyncService,
     private val addImageMessageUseCase: AddImageMessageUseCase,
+    private val dataStoreService: DataStoreService,
+    realmSyncService: RealmSyncService,
+    ioDispatcher: CoroutineDispatcher,
+    savedStateHandle: SavedStateHandle,
     logService: LogService
 ) : GmViewModel(logService) {
+    private val imageId: String = checkNotNull(savedStateHandle[IMAGE_ID])
+    val messages: StateFlow<ImmutableList<ImageMessage>> = realmSyncService
+        .getImageAnalysisMessages(imageId)
+        .map { it.toImmutableList() }
+        .flowOn(ioDispatcher)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = persistentListOf()
+        )
+
     private val _snapToScriptUiState = MutableStateFlow(SnapToScriptUiState())
     val snapToScriptUiState = _snapToScriptUiState.asStateFlow()
-
-    private val _imageAnalysis = MutableStateFlow(ImageAnalysis())
-    val imageAnalysis = _imageAnalysis.asStateFlow()
 
     private val value
         get() = snapToScriptUiState.value.value
 
-    fun initializeImageAnalysis(imageId: String) = launchCatching {
-        realmSyncService.getImageAnalysis(imageId)
-            .onSuccess { imageAnalysis ->
-                _imageAnalysis.update { imageAnalysis }
+    init {
+        launchCatching {
+            launch {
+                val fullName = dataStoreService.getUserFullName()
+                _snapToScriptUiState.update { it.copy(userFirstChar = fullName.first()) }
             }
-            .onFailure { throwable ->
-                throw Exception(throwable.localizedMessage ?: "Failed to load image analysis")
+            launch {
+                val imageUrl = dataStoreService.getImageUrl()
+                _snapToScriptUiState.update { it.copy(imageUrl = imageUrl) }
             }
+        }
     }
-
 
     fun onEvent(event: SnapToScriptUiEvent) {
         when (event) {
@@ -62,18 +88,18 @@ class SnapToScriptViewModel @Inject constructor(
             SnapToScriptUiEvent.OnKeyboardClick -> {
                 _snapToScriptUiState.update { it.copy(inputSelector = InputSelector.Keyboard) }
             }
+            SnapToScriptUiEvent.OnSendClick -> onSendClick()
         }
     }
 
-    fun onSendClick() = launchCatching {
+    private fun onSendClick() = launchCatching {
         _snapToScriptUiState.update { it.copy(aiResponseStatus = AiResponseStatus.Loading) }
 
-        addImageMessageUseCase(imageId = imageAnalysis.value.imageId, text = value)
+        addImageMessageUseCase(imageId = imageId, text = value)
             .onSuccess {
-                _snapToScriptUiState.update { it.copy(aiResponseStatus = AiResponseStatus.Idle) }
+                _snapToScriptUiState.update { it.copy(aiResponseStatus = AiResponseStatus.Success) }
             }
             .onFailure { throwable ->
-                _snapToScriptUiState.update { it.copy(aiResponseStatus = AiResponseStatus.Error) }
                 Log.e("SnapToScriptViewModel", "onSendClick: failure: $throwable")
             }
     }
@@ -103,5 +129,4 @@ class SnapToScriptViewModel @Inject constructor(
     private fun resetSnapToScriptUiState() {
         _snapToScriptUiState.update { SnapToScriptUiState() }
     }
-
 }
