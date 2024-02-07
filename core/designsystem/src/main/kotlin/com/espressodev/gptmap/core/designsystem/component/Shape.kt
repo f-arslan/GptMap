@@ -5,9 +5,12 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -72,5 +75,22 @@ fun LetterInCircle(
         ) {
             Text(text = letter.uppercase(), style = textStyle, color = textColor)
         }
+    }
+}
+
+@Composable
+fun LetterInCircleNotAnimated(
+    modifier: Modifier = Modifier,
+    size: Dp = 20.dp,
+    content: @Composable BoxScope.() -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(size)
+            .clip(CircleShape)
+            .then(modifier),
+        contentAlignment = Alignment.Center,
+    ) {
+        content()
     }
 }

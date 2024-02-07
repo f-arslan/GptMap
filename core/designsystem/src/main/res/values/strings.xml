@@ -54,7 +54,8 @@
     <string name="mic">Mic</string>
     <string name="not_connected">📶😊 It looks like you\'re offline right now</string>
     <string name="tap_to_stop_record">Tap to stop recording</string>
-
+    <string name="gemini">Gemini</string>
+    <string name="you">You</string>
     <!-- Map -->
     <string name="map_text_field_placeholder">Search here</string>
     <string name="loading_dialog_text">Discovering your dream place…</string>

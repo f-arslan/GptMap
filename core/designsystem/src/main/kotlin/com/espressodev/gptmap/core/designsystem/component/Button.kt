@@ -78,14 +78,14 @@ fun ExploreWithAiButton(onClick: () -> Unit) {
         shape = RoundedCornerShape(16.dp),
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                painter = painterResource(id = AppDrawable.stars),
+            Image(
+                painter = painterResource(id = AppDrawable.ai_icon),
                 contentDescription = null,
                 modifier = Modifier
-                    .offset(y = (-2).dp)
-                    .size(24.dp),
+                    .size(20.dp)
+                    .offset(x = (-8).dp),
             )
             Text(
                 text = stringResource(id = AppText.explore_with_ai),
@@ -264,5 +264,5 @@ fun SquareButton(
 @Preview(showBackground = true)
 @Composable
 fun ButtonPreview() {
-    GmTonalIconButton(icon = GmIcons.DeleteOutlined)
+   ExploreWithAiButton { }
 }
