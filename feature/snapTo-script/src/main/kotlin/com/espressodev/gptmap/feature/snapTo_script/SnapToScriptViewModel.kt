@@ -15,16 +15,13 @@ import com.espressodev.gptmap.feature.screenshot_gallery.InputSelector
 import com.espressodev.gptmap.feature.screenshot_gallery.SnapToScriptUiEvent
 import com.espressodev.gptmap.feature.screenshot_gallery.SnapToScriptUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -42,14 +39,13 @@ class SnapToScriptViewModel @Inject constructor(
     logService: LogService
 ) : GmViewModel(logService) {
     private val imageId: String = checkNotNull(savedStateHandle[IMAGE_ID])
-    val messages: StateFlow<ImmutableList<ImageMessage>> = realmSyncService
+    val messages: StateFlow<List<ImageMessage>> = realmSyncService
         .getImageAnalysisMessages(imageId)
-        .map { it.toImmutableList() }
         .flowOn(ioDispatcher)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = persistentListOf()
+            initialValue = listOf()
         )
 
     private val _snapToScriptUiState = MutableStateFlow(SnapToScriptUiState())
@@ -85,43 +81,57 @@ class SnapToScriptViewModel @Inject constructor(
             SnapToScriptUiEvent.OnMicOffClick -> onMicOffClick()
 
             SnapToScriptUiEvent.OnReset -> resetSnapToScriptUiState()
-            SnapToScriptUiEvent.OnKeyboardClick -> {
-                _snapToScriptUiState.update { it.copy(inputSelector = InputSelector.Keyboard) }
-            }
             SnapToScriptUiEvent.OnSendClick -> onSendClick()
+            SnapToScriptUiEvent.OnTypingEnd -> {
+                _snapToScriptUiState.update { it.copy(aiResponseStatus = AiResponseStatus.Idle) }
+            }
         }
     }
 
     private fun onSendClick() = launchCatching {
         _snapToScriptUiState.update { it.copy(aiResponseStatus = AiResponseStatus.Loading) }
 
-        addImageMessageUseCase(imageId = imageId, text = value)
+        val addMessageResult = addImageMessageUseCase(imageId = imageId, text = value)
+
+        _snapToScriptUiState.update { it.copy(value = "") }
+
+        addMessageResult
             .onSuccess {
                 _snapToScriptUiState.update { it.copy(aiResponseStatus = AiResponseStatus.Success) }
             }
             .onFailure { throwable ->
+                _snapToScriptUiState.update {
+                    it.copy(
+                        aiResponseStatus = AiResponseStatus.Error(
+                            throwable
+                        )
+                    )
+                }
                 Log.e("SnapToScriptViewModel", "onSendClick: failure: $throwable")
             }
     }
 
     private fun onMicOffClick() = launchCatching {
-        _snapToScriptUiState.update { it.copy(inputSelector = InputSelector.Keyboard) }
+        _snapToScriptUiState.update { it.copy(inputSelector = InputSelector.None) }
         speechToText.stopListening()
     }
 
-    private fun onMicClick() = launchCatching {
-        _snapToScriptUiState.update { it.copy(inputSelector = InputSelector.MicBox) }
-        speechToText.startListening().collect { (value, rms, isFinished) ->
-            if (value.isNotEmpty()) {
-                val joinedString = value.joinToString(" ")
-                val totalValue = snapToScriptUiState.value.value + joinedString
-                _snapToScriptUiState.update { it.copy(value = totalValue) }
-            }
-            if (rms > 0) {
-                _snapToScriptUiState.update { it.copy(rmsValue = rms) }
-            }
-            if (isFinished) {
-                _snapToScriptUiState.update { it.copy(inputSelector = InputSelector.Keyboard) }
+    private fun onMicClick() {
+        launchCatching {
+            _snapToScriptUiState.update { it.copy(inputSelector = InputSelector.MicBox) }
+
+            speechToText.startListening().collect { (value, rms, isFinished) ->
+                if (value.isNotEmpty()) {
+                    val joinedString = value.joinToString(" ")
+                    val totalValue = snapToScriptUiState.value.value + joinedString
+                    _snapToScriptUiState.update { it.copy(value = totalValue) }
+                }
+                if (rms > 0) {
+                    _snapToScriptUiState.update { it.copy(rmsValue = rms) }
+                }
+                if (isFinished) {
+                    _snapToScriptUiState.update { it.copy(inputSelector = InputSelector.Keyboard) }
+                }
             }
         }
     }

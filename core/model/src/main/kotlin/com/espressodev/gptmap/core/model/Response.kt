@@ -11,6 +11,9 @@ sealed interface LoadingState {
     data object Loading : LoadingState
 }
 
-enum class AiResponseStatus {
-    Idle, Loading, Success, Error
+sealed class AiResponseStatus {
+    data object Idle : AiResponseStatus()
+    data object Loading : AiResponseStatus()
+    data object Success : AiResponseStatus()
+    data class Error(val t: Throwable) : AiResponseStatus()
 }

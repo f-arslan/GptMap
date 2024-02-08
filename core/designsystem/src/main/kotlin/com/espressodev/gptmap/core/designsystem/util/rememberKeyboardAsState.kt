@@ -1,7 +1,6 @@
 package com.espressodev.gptmap.core.designsystem.util
 
 import android.graphics.Rect
-import android.util.Log
 import android.view.ViewTreeObserver
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -16,9 +15,11 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+data class KeyboardState(val isVisible: Boolean = false, val keypadHeight: Dp = 0.dp)
+
 @Composable
-fun rememberKeyboardAsState(): State<Pair<Boolean, Dp>> {
-    val keyboardState = remember { mutableStateOf(Pair(false, 0.dp)) }
+fun rememberKeyboardAsState(): State<KeyboardState> {
+    val keyboardState = remember { mutableStateOf(KeyboardState()) }
     val view = LocalView.current
     val density = LocalDensity.current
     var lastKeypadHeight by remember { mutableIntStateOf(0) }
@@ -35,7 +36,7 @@ fun rememberKeyboardAsState(): State<Pair<Boolean, Dp>> {
                 lastKeypadHeight = keypadHeight
                 val isKeyboardOpen = keypadHeight > screenHeight * 0.15
                 val keypadHeightDp = with(density) { keypadHeight.toDp() }
-                keyboardState.value = Pair(isKeyboardOpen, keypadHeightDp)
+                keyboardState.value = KeyboardState(isKeyboardOpen, keypadHeightDp)
             }
         }
         view.viewTreeObserver.addOnGlobalLayoutListener(onGlobalListener)

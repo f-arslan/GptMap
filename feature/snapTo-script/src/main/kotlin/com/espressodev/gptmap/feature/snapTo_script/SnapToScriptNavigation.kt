@@ -20,6 +20,6 @@ fun NavGraphBuilder.snapToScriptScreen(popUp: () -> Unit) {
         route = SnapToScriptRouteWithArg,
         arguments = listOf(navArgument(IMAGE_ID) { type = NavType.StringType })
     ) {
-        SnapToScriptRoute(popUp = popUp)
+        SnapToScriptRoute()
     }
 }
