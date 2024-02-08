@@ -22,16 +22,7 @@ fun NavGraphBuilder.streetViewScreen(popUp: () -> Unit, navigateToScreenshot: ()
             navArgument(LATITUDE_ID) { type = NavType.FloatType },
             navArgument(LONGITUDE_ID) { type = NavType.FloatType }
         )
-    ) { backStackEntry ->
-        val latitude =
-            backStackEntry.arguments?.getFloat(LATITUDE_ID)?.toDouble() ?: return@composable
-        val longitude =
-            backStackEntry.arguments?.getFloat(LONGITUDE_ID)?.toDouble() ?: return@composable
-        StreetViewRoute(
-            latitude = latitude,
-            longitude = longitude,
-            popUp = popUp,
-            navigateToScreenshot = navigateToScreenshot
-        )
+    ) {
+        StreetViewRoute(popUp = popUp, navigateToScreenshot = navigateToScreenshot)
     }
 }

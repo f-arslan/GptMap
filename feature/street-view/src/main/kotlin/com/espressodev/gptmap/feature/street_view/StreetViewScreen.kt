@@ -31,8 +31,6 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StreetViewRoute(
-    latitude: Double,
-    longitude: Double,
     popUp: () -> Unit,
     navigateToScreenshot: () -> Unit,
     viewModel: StreetViewViewModel = hiltViewModel()
@@ -47,7 +45,7 @@ fun StreetViewRoute(
             )
         }
     ) {
-        StreetViewScreen(modifier = Modifier.padding(it), latitude, longitude)
+        StreetViewScreen(modifier = Modifier.padding(it), uiState.latitude, uiState.longitude)
     }
 
     SaveScreenshot(

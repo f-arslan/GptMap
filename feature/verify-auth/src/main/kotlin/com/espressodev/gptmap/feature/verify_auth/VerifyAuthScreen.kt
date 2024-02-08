@@ -82,7 +82,7 @@ fun VerifyAuthScreen(
     val isKeyboardOpened by rememberKeyboardAsState()
     val keyboard = LocalSoftwareKeyboardController.current
     LaunchedEffect(isKeyboardOpened) {
-        if (isKeyboardOpened.first) {
+        if (isKeyboardOpened.isVisible) {
             scrollState.animateScrollTo(Int.MAX_VALUE)
         }
     }

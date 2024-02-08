@@ -109,4 +109,3 @@ class SpeechToTextImpl @Inject constructor(
         }
     }
 }
-

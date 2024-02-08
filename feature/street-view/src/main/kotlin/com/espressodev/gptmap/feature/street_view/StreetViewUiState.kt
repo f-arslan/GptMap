@@ -5,6 +5,8 @@ enum class ScreenshotState {
 }
 
 data class StreetViewUiState(
+    val latitude: Double,
+    val longitude: Double,
     val isScreenshotButtonVisible: Boolean = true,
     val screenshotState: ScreenshotState = ScreenshotState.IDLE,
 )

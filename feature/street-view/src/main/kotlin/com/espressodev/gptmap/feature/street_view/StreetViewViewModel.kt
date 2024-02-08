@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
+import androidx.lifecycle.SavedStateHandle
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.save_screenshot.SaveScreenshotService
@@ -19,10 +20,19 @@ import javax.inject.Inject
 @HiltViewModel
 class StreetViewViewModel @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
-    logService: LogService
+    logService: LogService,
+    savedStateHandle: SavedStateHandle
 ) : GmViewModel(logService) {
 
-    private val _uiState = MutableStateFlow(StreetViewUiState())
+    private val latitude: Float = checkNotNull(savedStateHandle[LATITUDE_ID])
+    private val longitude: Float = checkNotNull(savedStateHandle[LONGITUDE_ID])
+
+    private val _uiState = MutableStateFlow(
+        StreetViewUiState(
+            latitude = latitude.toDouble(),
+            longitude = longitude.toDouble()
+        )
+    )
     val uiState = _uiState.asStateFlow()
 
     private val serviceStateReceiver = object : BroadcastReceiver() {
@@ -63,6 +73,7 @@ class StreetViewViewModel @Inject constructor(
             applicationContext.registerReceiver(serviceStateReceiver, filter)
         }
     }
+
     fun reset() {
         _uiState.update {
             it.copy(
