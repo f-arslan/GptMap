@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -30,11 +29,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.FilledTonalIconButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -45,19 +40,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -74,11 +68,9 @@ import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
 import com.espressodev.gptmap.core.designsystem.component.LottieAnimationPlaceholder
 import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
 import com.espressodev.gptmap.core.designsystem.component.darkBottomOverlayBrush
-import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import com.espressodev.gptmap.core.model.EditableItemUiEvent
 import com.espressodev.gptmap.core.model.ImageSummary
 import com.espressodev.gptmap.core.model.Response
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentSet
 import kotlin.math.absoluteValue
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
@@ -94,6 +86,13 @@ fun ScreenshotGalleryRoute(
 ) {
     val imageAnalysesResponse by viewModel.imageAnalyses.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val onEvent by rememberUpdatedState(newValue = viewModel::onEvent)
+    val onNavigateToSnapToScript by rememberUpdatedState(
+        newValue =
+        { imageId: String, imageUrl: String, navigate: (String) -> Unit ->
+            viewModel.navigateToSnapToScript(imageId, imageUrl, navigate)
+        }
+    )
     Scaffold(
         topBar = {
             GmTopAppBar(
@@ -103,9 +102,9 @@ fun ScreenshotGalleryRoute(
                 editText = uiState.topBarTitle,
                 isInEditMode = uiState.isUiInEditMode,
                 selectedItemsCount = uiState.selectedItemsCount,
-                onEditClick = { viewModel.onEvent(EditableItemUiEvent.OnEditClick) },
-                onDeleteClick = { viewModel.onEvent(EditableItemUiEvent.OnDeleteClick) },
-                onCancelClick = { viewModel.onEvent(EditableItemUiEvent.OnCancelClick) }
+                onEditClick = { onEvent(EditableItemUiEvent.OnEditClick) },
+                onDeleteClick = { onEvent(EditableItemUiEvent.OnDeleteClick) },
+                onCancelClick = { onEvent(EditableItemUiEvent.OnCancelClick) }
             )
         },
         modifier = Modifier.padding(bottom = BOTTOM_BAR_PADDING)
@@ -122,18 +121,12 @@ fun ScreenshotGalleryRoute(
                         modifier = Modifier.padding(it),
                         images = result.data,
                         onLongClick = { imageSummary ->
-                            viewModel.onEvent(
-                                EditableItemUiEvent.OnLongClickToItem(imageSummary)
-                            )
+                            onEvent(EditableItemUiEvent.OnLongClickToItem(imageSummary))
                         },
                         selectedItemsIds = uiState.selectedItemsIds,
                         isUiInEditMode = uiState.isUiInEditMode,
                         navigate = { imageId, imageUrl ->
-                            viewModel.navigateToSnapToScript(
-                                imageId = imageId,
-                                imageUrl = imageUrl,
-                                navigate = navigateToSnapToScript
-                            )
+                            onNavigateToSnapToScript(imageId, imageUrl, navigateToSnapToScript)
                         }
                     )
                 } else {
@@ -148,7 +141,7 @@ fun ScreenshotGalleryRoute(
 
     BackHandler {
         if (uiState.isUiInEditMode) {
-            viewModel.onEvent(EditableItemUiEvent.Reset)
+            onEvent(EditableItemUiEvent.Reset)
         } else {
             popUp()
         }
@@ -158,8 +151,8 @@ fun ScreenshotGalleryRoute(
         GmEditAlertDialog(
             title = AppText.rename,
             textFieldLabel = AppText.screenshot_gallery_edit_dialog_text_field_placeholder,
-            onConfirm = { viewModel.onEvent(EditableItemUiEvent.OnEditDialogConfirm(it)) },
-            onDismiss = { viewModel.onEvent(EditableItemUiEvent.OnEditDialogDismiss) }
+            onConfirm = { onEvent(EditableItemUiEvent.OnEditDialogConfirm(it)) },
+            onDismiss = { onEvent(EditableItemUiEvent.OnEditDialogDismiss) }
         )
     }
 
@@ -171,15 +164,15 @@ fun ScreenshotGalleryRoute(
     if (uiState.deleteDialogState) {
         GmAlertDialog(
             title = deleteDialogTitle,
-            onConfirm = { viewModel.onEvent(EditableItemUiEvent.OnDeleteDialogConfirm) },
-            onDismiss = { viewModel.onEvent(EditableItemUiEvent.OnDeleteDialogDismiss) }
+            onConfirm = { onEvent(EditableItemUiEvent.OnDeleteDialogConfirm) },
+            onDismiss = { onEvent(EditableItemUiEvent.OnDeleteDialogDismiss) }
         )
     }
 }
 
 @Composable
 fun ScreenshotGalleryScreen(
-    images: ImmutableList<ImageSummary>,
+    images: List<ImageSummary>,
     onLongClick: (ImageSummary) -> Unit,
     selectedItemsIds: PersistentSet<String>,
     navigate: (imageId: String, imageUrl: String) -> Unit,
@@ -188,6 +181,16 @@ fun ScreenshotGalleryScreen(
 ) {
     val (currentPage, setCurrentPage) = rememberSaveable { mutableIntStateOf(0) }
     val (dialogState, setDialogState) = rememberSaveable { mutableStateOf(value = false) }
+    val onClickLambda by rememberUpdatedState(
+        newValue = { imageSummary: ImageSummary, index: Int ->
+            if (isUiInEditMode) {
+                onLongClick(imageSummary)
+            } else {
+                setCurrentPage(index)
+                setDialogState(true)
+            }
+        }
+    )
     if (dialogState) {
         GalleryView(
             images = images,
@@ -208,14 +211,7 @@ fun ScreenshotGalleryScreen(
         ) { index, imageSummary ->
             ImageCard(
                 imageSummary = imageSummary,
-                onClick = {
-                    if (isUiInEditMode) {
-                        onLongClick(imageSummary)
-                    } else {
-                        setCurrentPage(index)
-                        setDialogState(true)
-                    }
-                },
+                onClick = { onClickLambda(imageSummary, index) },
                 onLongClick = { onLongClick(imageSummary) },
                 isSelected = selectedItemsIds.contains(imageSummary.id),
                 exploreWithAiClick = { navigate(imageSummary.id, imageSummary.imageUrl) }
@@ -289,7 +285,7 @@ fun ImageCard(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun GalleryView(
-    images: ImmutableList<ImageSummary>,
+    images: List<ImageSummary>,
     currentPage: Int,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
@@ -394,22 +390,6 @@ fun DotsIndicator(
                     .background(
                         color = if (index == selectedIndex) activeDotColor else inactiveDotColor
                     )
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ScreenshotGalleryPreview() {
-    GptmapTheme(darkTheme = true) {
-        Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background), contentAlignment = Alignment.Center) {
-            ImageCard(
-                imageSummary = ImageSummary(),
-                isSelected = false,
-                onClick = {},
-                onLongClick = {},
-                modifier = Modifier.padding(8.dp), exploreWithAiClick = {}
             )
         }
     }

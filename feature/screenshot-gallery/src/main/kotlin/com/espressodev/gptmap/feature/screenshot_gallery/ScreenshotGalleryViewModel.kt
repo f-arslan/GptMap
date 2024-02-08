@@ -39,10 +39,9 @@ class ScreenshotGalleryViewModel @Inject constructor(
 ) : GmViewModel(logService) {
     val imageAnalyses = realmSyncService
         .getImageAnalyses()
-        .map<List<ImageAnalysis>, Response<ImmutableList<ImageSummary>>> {
+        .map<List<ImageAnalysis>, Response<List<ImageSummary>>> {
             Response.Success(
                 it.map { imageAnalysis -> imageAnalysis.toImageAnalysisSummary() }
-                    .toImmutableList()
             )
         }
         .catch {

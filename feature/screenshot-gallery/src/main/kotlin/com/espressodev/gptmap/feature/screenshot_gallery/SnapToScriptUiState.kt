@@ -25,6 +25,6 @@ sealed class SnapToScriptUiEvent {
     data object OnMicClick: SnapToScriptUiEvent()
     data object OnMicOffClick: SnapToScriptUiEvent()
     data object OnReset: SnapToScriptUiEvent()
-    data object OnKeyboardClick: SnapToScriptUiEvent()
     data object OnSendClick: SnapToScriptUiEvent()
+    data object OnTypingEnd: SnapToScriptUiEvent()
 }
