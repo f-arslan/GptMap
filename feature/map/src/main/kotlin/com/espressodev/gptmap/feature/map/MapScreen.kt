@@ -34,6 +34,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -99,15 +100,27 @@ fun MapRoute(
     viewModel: MapViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    /**
+     * Uses [rememberUpdatedState] for `onEvent` to prevent unnecessary recompositions by maintaining
+     * a stable reference. This method ensures minimal performance impact and efficient UI updates by
+     * allowing `onEvent` to adapt dynamically to state changes without causing full screen
+     * recompositions, thus optimizing UI responsiveness and performance.
+     */
+
+    val onEvent by rememberUpdatedState(
+        newValue = { event: MapUiEvent, navigate: (Pair<Float, Float>) -> Unit ->
+            viewModel.onEvent(
+                event = event,
+                navigate = navigate
+            )
+        }
+    )
+
     Scaffold(modifier = modifier.padding(bottom = BOTTOM_BAR_PADDING)) {
         MapScreen(
             uiState = uiState,
-            onEvent = { event ->
-                viewModel.onEvent(
-                    event = event,
-                    navigateToStreetView = navigateToStreetView
-                )
-            },
+            onEvent = { event -> onEvent(event, navigateToStreetView) },
             onAvatarClick = navigateToProfile,
         )
     }

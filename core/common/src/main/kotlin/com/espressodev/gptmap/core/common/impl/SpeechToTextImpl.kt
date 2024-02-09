@@ -24,6 +24,8 @@ class SpeechToTextImpl @Inject constructor(
 
     override fun startListening(): Flow<SpeechRecognitionResult> = callbackFlow {
         var lastRmsValue = 0
+        var lastUpdateTime = System.currentTimeMillis()
+        val throttleDelay = 100L
 
         val listener = object : RecognitionListener {
             override fun onReadyForSpeech(params: Bundle?) {
@@ -35,9 +37,12 @@ class SpeechToTextImpl @Inject constructor(
             }
 
             override fun onRmsChanged(rmsdB: Float) {
-                Log.d("SpeechRecognizer", "RMS has changed: $rmsdB")
-//                lastRmsValue = rmsdB.roundToInt()
-//                trySend(SpeechRecognitionResult(emptyList(), lastRmsValue))
+                val currentTime = System.currentTimeMillis()
+                if (currentTime - lastUpdateTime >= throttleDelay) {
+                    lastRmsValue = rmsdB.roundToInt()
+                    trySend(SpeechRecognitionResult(emptyList(), lastRmsValue))
+                    lastUpdateTime = currentTime
+                }
             }
 
             override fun onBufferReceived(buffer: ByteArray?) {

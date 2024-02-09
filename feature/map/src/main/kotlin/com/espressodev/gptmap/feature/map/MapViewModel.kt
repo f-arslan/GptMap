@@ -87,7 +87,7 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: MapUiEvent, navigateToStreetView: (Pair<Float, Float>) -> Unit = {}) {
+    fun onEvent(event: MapUiEvent, navigate: (Pair<Float, Float>) -> Unit = {}) {
         when (event) {
             is MapUiEvent.OnSearchValueChanged -> _uiState.update { it.copy(searchValue = event.text) }
             is MapUiEvent.OnSearchClick -> onSearchClick()
@@ -101,7 +101,7 @@ class MapViewModel @Inject constructor(
 
             MapUiEvent.OnFavouriteClick -> onFavouriteClick()
             is MapUiEvent.OnStreetViewClick -> {
-                onStreetViewClick(event.latLng, navigateToStreetView)
+                onStreetViewClick(event.latLng, navigate)
             }
 
             MapUiEvent.OnExploreWithAiClick ->

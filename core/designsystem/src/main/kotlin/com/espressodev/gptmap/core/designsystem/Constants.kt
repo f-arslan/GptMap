@@ -4,7 +4,6 @@ import androidx.compose.ui.unit.dp
 
 object Constants {
     val BOTTOM_BAR_PADDING = 80.dp
-
     const val GENERIC_ERROR_MSG = "Something went wrong"
 
     // User Agreements

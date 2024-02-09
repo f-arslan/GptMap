@@ -1,6 +1,7 @@
 package com.espressodev.gptmap.core.domain
 
 import android.content.Context
+import android.util.Log
 import com.espressodev.gptmap.api.gemini.GeminiService
 import com.espressodev.gptmap.core.model.Exceptions.FailedToReadBitmapFromExternalStorageException
 import com.espressodev.gptmap.core.model.ext.readBitmapFromExternalStorage
@@ -20,7 +21,6 @@ class AddImageMessageUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(imageId: String, text: String) = withContext(ioDispatcher) {
         runCatching {
-
             val realmImageMessage = RealmImageMessage().apply {
                 request = text
             }
@@ -41,9 +41,16 @@ class AddImageMessageUseCase @Inject constructor(
                     ?: throw FailedToReadBitmapFromExternalStorageException()
 
             val stringBuilder = StringBuilder()
-            geminiService.getImageDescription(bitmap = bitmap, text = text).collect { chunk ->
-                stringBuilder.append(chunk)
-            }
+            geminiService.getImageDescription(bitmap = bitmap, text = text)
+                .onSuccess { chunkFlow ->
+                    chunkFlow.collect { chunk ->
+                        stringBuilder.append(chunk)
+                    }
+                }
+                .onFailure { throwable ->
+                    stringBuilder.append(throwable.message ?: "Something went wrong")
+                    Log.e("AddImageMessageUseCase", "invoke: ", throwable)
+                }
             val fullResponseText = stringBuilder.toString().trim()
 
             realmSyncService.updateImageMessageInImageAnalysis(

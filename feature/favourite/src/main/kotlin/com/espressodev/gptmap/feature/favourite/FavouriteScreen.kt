@@ -23,6 +23,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -60,6 +61,7 @@ fun FavouriteRoute(
 ) {
     val favourites by viewModel.favourites.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val onEvent by rememberUpdatedState(newValue = viewModel::onEvent)
     Scaffold(
         topBar = {
             GmTopAppBar(
@@ -69,9 +71,9 @@ fun FavouriteRoute(
                 selectedItemsCount = 1,
                 editText = uiState.selectedItem.title,
                 isInEditMode = uiState.isUiInEditMode,
-                onEditClick = { viewModel.onEvent(EditableItemUiEvent.OnEditClick) },
-                onDeleteClick = { viewModel.onEvent(EditableItemUiEvent.OnDeleteClick) },
-                onCancelClick = { viewModel.onEvent(EditableItemUiEvent.OnCancelClick) }
+                onEditClick = { onEvent(EditableItemUiEvent.OnEditClick) },
+                onDeleteClick = { onEvent(EditableItemUiEvent.OnDeleteClick) },
+                onCancelClick = { onEvent(EditableItemUiEvent.OnCancelClick) }
             )
         },
         modifier = Modifier.padding(bottom = BOTTOM_BAR_PADDING)
@@ -85,7 +87,7 @@ fun FavouriteRoute(
                         onCardClick = navigateToMap,
                         favourites = result.data,
                         onLongClick = { favourite ->
-                            viewModel.onEvent(EditableItemUiEvent.OnLongClickToItem(favourite))
+                            onEvent(EditableItemUiEvent.OnLongClickToItem(favourite))
                         },
                         selectedId = uiState.selectedItem.favouriteId,
                         isUiInEditMode = uiState.isUiInEditMode,
@@ -105,7 +107,7 @@ fun FavouriteRoute(
 
     BackHandler {
         if (uiState.isUiInEditMode) {
-            viewModel.onEvent(EditableItemUiEvent.Reset)
+            onEvent(EditableItemUiEvent.Reset)
         } else {
             popUp()
         }
@@ -115,16 +117,16 @@ fun FavouriteRoute(
         GmEditAlertDialog(
             title = AppText.rename,
             textFieldLabel = AppText.screenshot_gallery_edit_dialog_text_field_placeholder,
-            onConfirm = { viewModel.onEvent(EditableItemUiEvent.OnEditDialogConfirm(it)) },
-            onDismiss = { viewModel.onEvent(EditableItemUiEvent.OnEditDialogDismiss) }
+            onConfirm = { onEvent(EditableItemUiEvent.OnEditDialogConfirm(it)) },
+            onDismiss = { onEvent(EditableItemUiEvent.OnEditDialogDismiss) }
         )
     }
 
     if (uiState.deleteDialogState) {
         GmAlertDialog(
             title = AppText.screenshot_gallery_delete_dialog_title,
-            onConfirm = { viewModel.onEvent(EditableItemUiEvent.OnDeleteDialogConfirm) },
-            onDismiss = { viewModel.onEvent(EditableItemUiEvent.OnDeleteDialogDismiss) }
+            onConfirm = { onEvent(EditableItemUiEvent.OnDeleteDialogConfirm) },
+            onDismiss = { onEvent(EditableItemUiEvent.OnDeleteDialogDismiss) }
         )
     }
 }

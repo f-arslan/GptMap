@@ -34,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -88,6 +89,12 @@ fun ScreenshotRoute(
     viewModel: ScreenshotViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val onCaptureClickEvent by rememberUpdatedState(
+        newValue = { viewModel.onEvent(ScreenshotUiEvent.OnCaptureClicked) }
+    )
+    val onSaveClickEvent by rememberUpdatedState(
+        newValue = { viewModel.onEvent(ScreenshotUiEvent.OnSaveClicked, popUp) }
+    )
     Scaffold(
         topBar = {
             GmTopAppBar(
@@ -108,14 +115,16 @@ fun ScreenshotRoute(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     when (uiState.screenState) {
-                        Initial -> InitialBottomBar(onClick = { viewModel.onEvent(ScreenshotUiEvent.OnCaptureClicked) })
+                        Initial -> InitialBottomBar(
+                            onClick = {
+                                onCaptureClickEvent()
+                            }
+                        )
+
                         AfterSelectingTheField -> AfterBottomBar(
                             onCancelClick = popUp,
                             onSaveClick = {
-                                viewModel.onEvent(
-                                    event = ScreenshotUiEvent.OnSaveClicked,
-                                    navigate = popUp
-                                )
+                                onSaveClickEvent()
                             }
                         )
                     }

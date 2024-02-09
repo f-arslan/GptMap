@@ -56,6 +56,9 @@
     <string name="tap_to_stop_record">Tap to stop recording</string>
     <string name="gemini">Gemini</string>
     <string name="you">You</string>
+    <string name="fullscreen">Fullscreen</string>
+    <string name="pin">Pin</string>
+
     <!-- Map -->
     <string name="map_text_field_placeholder">Search here</string>
     <string name="loading_dialog_text">Discovering your dream place…</string>

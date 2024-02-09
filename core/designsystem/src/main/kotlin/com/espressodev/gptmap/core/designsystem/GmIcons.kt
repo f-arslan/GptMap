@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowDown
 import androidx.compose.material.icons.filled.Password
@@ -28,12 +29,14 @@ import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.Face
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.FullscreenExit
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocationCity
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.MarkEmailUnread
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.MyLocation
+import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.outlined.Screenshot
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
@@ -75,4 +78,7 @@ object GmIcons {
     val MicOutlined = Icons.Outlined.Mic
     val RecordDefault = Icons.Default.RadioButtonChecked
     val DoubleDownDefault = Icons.Default.KeyboardDoubleArrowDown
+    val FullScreenDefault = Icons.Default.Fullscreen
+    val PushPinOutlined = Icons.Outlined.PushPin
+    val FullScreenExitOutlined = Icons.Outlined.FullscreenExit
 }

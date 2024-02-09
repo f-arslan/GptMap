@@ -26,13 +26,14 @@ class GeminiServiceImpl(
             }
         }
 
-    override fun getImageDescription(bitmap: Bitmap, text: String): Flow<String> {
-        val inputContent = content {
-            image(bitmap)
-            text(text)
+    override fun getImageDescription(bitmap: Bitmap, text: String): Result<Flow<String>> =
+        runCatching {
+            val inputContent = content {
+                image(bitmap)
+                text(text)
+            }
+            generativeModelForImage.generateContentStream(inputContent)
+                .map { it.text }
+                .mapNotNull { it }
         }
-        return generativeModelForImage.generateContentStream(inputContent)
-            .map { it.text }
-            .mapNotNull { it }
-    }
 }

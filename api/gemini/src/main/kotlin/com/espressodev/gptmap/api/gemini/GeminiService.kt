@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface GeminiService {
     suspend fun getLocationInfo(textContent: String): Result<Location>
-    fun getImageDescription(bitmap: Bitmap, text: String): Flow<String>
+    fun getImageDescription(bitmap: Bitmap, text: String): Result<Flow<String>>
 }

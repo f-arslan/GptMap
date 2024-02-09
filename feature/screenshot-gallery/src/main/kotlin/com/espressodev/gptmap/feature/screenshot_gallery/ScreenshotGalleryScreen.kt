@@ -5,7 +5,6 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.border
@@ -29,7 +28,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -52,6 +52,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -88,8 +89,7 @@ fun ScreenshotGalleryRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val onEvent by rememberUpdatedState(newValue = viewModel::onEvent)
     val onNavigateToSnapToScript by rememberUpdatedState(
-        newValue =
-        { imageId: String, imageUrl: String, navigate: (String) -> Unit ->
+        newValue = { imageId: String, imageUrl: String, navigate: (String) -> Unit ->
             viewModel.navigateToSnapToScript(imageId, imageUrl, navigate)
         }
     )
@@ -251,9 +251,7 @@ fun ImageCard(
         )
         if (isImageLoaded) {
             Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .background(brush = darkBottomOverlayBrush)
+                modifier = Modifier.matchParentSize().background(brush = darkBottomOverlayBrush)
             )
         }
         Text(
@@ -268,14 +266,14 @@ fun ImageCard(
             color = Color.White
         )
         if (!isSelected) {
-            IconButton(
+            FilledTonalIconButton(
                 onClick = exploreWithAiClick,
                 modifier = Modifier.align(Alignment.TopEnd),
             ) {
-                Image(
+                Icon(
                     painter = painterResource(id = AppDrawable.ai_icon),
                     contentDescription = stringResource(id = AppText.explore_with_ai),
-                    modifier = Modifier.padding(4.dp)
+                    modifier = Modifier.padding(6.dp)
                 )
             }
         }
@@ -392,5 +390,19 @@ fun DotsIndicator(
                     )
             )
         }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun ImageCardPreview() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        ImageCard(
+            imageSummary = ImageSummary(
+                id = "1",
+                title = "Title",
+                imageUrl = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+            )
+        )
     }
 }

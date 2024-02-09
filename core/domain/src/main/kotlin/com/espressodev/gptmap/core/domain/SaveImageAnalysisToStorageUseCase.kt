@@ -1,6 +1,8 @@
 package com.espressodev.gptmap.core.domain
 
 import android.graphics.Bitmap
+import com.espressodev.gptmap.core.model.Constants.STORAGE_IMAGE_HEIGHT
+import com.espressodev.gptmap.core.model.Constants.STORAGE_IMAGE_WIDTH
 import com.espressodev.gptmap.core.data.StorageService
 import com.espressodev.gptmap.core.data.StorageService.Companion.ANALYSIS_IMAGE_REFERENCE
 import com.espressodev.gptmap.core.model.ext.compressImage
@@ -19,7 +21,8 @@ class SaveImageAnalysisToStorageUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(bitmap: Bitmap, title: String) = withContext(ioDispatcher) {
         runCatching {
-            val byteArray = bitmap.resizeImage(320, 320).compressImage()
+            val byteArray =
+                bitmap.resizeImage(STORAGE_IMAGE_WIDTH, STORAGE_IMAGE_HEIGHT).compressImage()
             val imageId = UUID.randomUUID().toString()
             val imageUrl = storageService.uploadImage(
                 byteArray,

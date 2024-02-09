@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
+import com.espressodev.gptmap.core.model.Constants.COMPRESS_RATE_BEFORE_STORAGE
+import com.espressodev.gptmap.core.model.Constants.DOWNLOAD_IMAGE_TIMEOUT
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.net.HttpURLConnection
@@ -15,9 +17,9 @@ fun Bitmap.resizeImage(width: Int, height: Int): Bitmap {
 
 fun Bitmap.compressImage(): ByteArray = ByteArrayOutputStream().use { stream ->
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        compress(Bitmap.CompressFormat.WEBP_LOSSY, 50, stream)
+        compress(Bitmap.CompressFormat.WEBP_LOSSY, COMPRESS_RATE_BEFORE_STORAGE, stream)
     } else {
-        compress(Bitmap.CompressFormat.JPEG, 50, stream)
+        compress(Bitmap.CompressFormat.JPEG, COMPRESS_RATE_BEFORE_STORAGE, stream)
     }
     stream.toByteArray()
 }
@@ -25,8 +27,8 @@ fun Bitmap.compressImage(): ByteArray = ByteArrayOutputStream().use { stream ->
 fun String.downloadImage(): Bitmap {
     val url = URL(this)
     val connection = url.openConnection() as HttpURLConnection
-    connection.connectTimeout = 10000
-    connection.readTimeout = 10000
+    connection.connectTimeout = DOWNLOAD_IMAGE_TIMEOUT
+    connection.readTimeout = DOWNLOAD_IMAGE_TIMEOUT
     return connection.inputStream.use { inputStream ->
         BitmapFactory.decodeStream(inputStream)
     }
