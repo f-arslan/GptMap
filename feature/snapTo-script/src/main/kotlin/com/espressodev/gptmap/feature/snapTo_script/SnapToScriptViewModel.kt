@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.feature.snapTo_script
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.espressodev.gptmap.core.common.DataStoreService
@@ -15,11 +14,12 @@ import com.espressodev.gptmap.feature.screenshot_gallery.InputSelector
 import com.espressodev.gptmap.feature.screenshot_gallery.SnapToScriptUiEvent
 import com.espressodev.gptmap.feature.screenshot_gallery.SnapToScriptUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
@@ -51,8 +51,14 @@ class SnapToScriptViewModel @Inject constructor(
     private val _snapToScriptUiState = MutableStateFlow(SnapToScriptUiState())
     val snapToScriptUiState = _snapToScriptUiState.asStateFlow()
 
+    private val _rmsFlow = MutableSharedFlow<Int>(replay = 1)
+    val rmsFlow = _rmsFlow.asSharedFlow()
+
     private val value
         get() = snapToScriptUiState.value.value
+
+    private val isPinned
+        get() = snapToScriptUiState.value.isPinned
 
     init {
         launchCatching {
@@ -85,30 +91,39 @@ class SnapToScriptViewModel @Inject constructor(
             SnapToScriptUiEvent.OnTypingEnd -> {
                 _snapToScriptUiState.update { it.copy(aiResponseStatus = AiResponseStatus.Idle) }
             }
+
+            SnapToScriptUiEvent.OnKeyboardClick -> {
+                _snapToScriptUiState.update { it.copy(inputSelector = InputSelector.Keyboard) }
+            }
+            SnapToScriptUiEvent.OnPinClick -> {
+                _snapToScriptUiState.update { it.copy(isPinned = !isPinned) }
+            }
         }
     }
 
     private fun onSendClick() = launchCatching {
-        _snapToScriptUiState.update { it.copy(aiResponseStatus = AiResponseStatus.Loading) }
+        val value = value.trim()
+
+        _snapToScriptUiState.update {
+            it.copy(
+                aiResponseStatus = AiResponseStatus.Loading,
+                inputSelector = InputSelector.None,
+                isTextFieldEnabled = false,
+                value = ""
+            )
+        }
 
         val addMessageResult = addImageMessageUseCase(imageId = imageId, text = value)
 
-        _snapToScriptUiState.update { it.copy(value = "") }
-
-        addMessageResult
-            .onSuccess {
-                _snapToScriptUiState.update { it.copy(aiResponseStatus = AiResponseStatus.Success) }
-            }
-            .onFailure { throwable ->
-                _snapToScriptUiState.update {
-                    it.copy(
-                        aiResponseStatus = AiResponseStatus.Error(
-                            throwable
-                        )
-                    )
-                }
-                Log.e("SnapToScriptViewModel", "onSendClick: failure: $throwable")
-            }
+        addMessageResult.getOrElse {
+            _snapToScriptUiState.update { it.copy(aiResponseStatus = AiResponseStatus.Idle) }
+        }
+        _snapToScriptUiState.update {
+            it.copy(
+                aiResponseStatus = AiResponseStatus.Success,
+                isTextFieldEnabled = true
+            )
+        }
     }
 
     private fun onMicOffClick() = launchCatching {
@@ -126,11 +141,11 @@ class SnapToScriptViewModel @Inject constructor(
                     val totalValue = snapToScriptUiState.value.value + joinedString
                     _snapToScriptUiState.update { it.copy(value = totalValue) }
                 }
-                if (rms > 0) {
-                    _snapToScriptUiState.update { it.copy(rmsValue = rms) }
-                }
                 if (isFinished) {
                     _snapToScriptUiState.update { it.copy(inputSelector = InputSelector.Keyboard) }
+                }
+                if (rms > 0) {
+                    _rmsFlow.emit(rms)
                 }
             }
         }
