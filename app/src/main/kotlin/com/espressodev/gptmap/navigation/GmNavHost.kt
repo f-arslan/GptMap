@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.espressodev.gptmap.GmAppState
@@ -12,8 +13,6 @@ import com.espressodev.gptmap.feature.delete_profile.navigateToDeleteProfile
 import com.espressodev.gptmap.feature.favourite.favouriteScreen
 import com.espressodev.gptmap.feature.forgot_password.forgotPasswordScreen
 import com.espressodev.gptmap.feature.forgot_password.navigateToForgotPassword
-import com.espressodev.gptmap.feature.snapTo_script.navigateToSnapToScript
-import com.espressodev.gptmap.feature.snapTo_script.snapToScriptScreen
 import com.espressodev.gptmap.feature.info.infoScreen
 import com.espressodev.gptmap.feature.info.navigateToInfo
 import com.espressodev.gptmap.feature.login.LoginRoute
@@ -27,7 +26,10 @@ import com.espressodev.gptmap.feature.register.navigateToRegister
 import com.espressodev.gptmap.feature.register.registerScreen
 import com.espressodev.gptmap.feature.screenshot.navigateToScreenshot
 import com.espressodev.gptmap.feature.screenshot.screenshotScreen
+import com.espressodev.gptmap.feature.screenshot_gallery.navigateToScreenshotGallery
 import com.espressodev.gptmap.feature.screenshot_gallery.screenshotGalleryScreen
+import com.espressodev.gptmap.feature.snapTo_script.navigateToSnapToScript
+import com.espressodev.gptmap.feature.snapTo_script.snapToScriptScreen
 import com.espressodev.gptmap.feature.street_view.navigateToStreetView
 import com.espressodev.gptmap.feature.street_view.streetViewScreen
 import com.espressodev.gptmap.feature.verify_auth.navigateToVerifyAuth
@@ -48,7 +50,11 @@ fun GmNavHost(
         mapScreen(
             navigateToStreetView = navController::navigateToStreetView,
             navigateToScreenshot = navController::navigateToScreenshot,
-            navigateToProfile = navController::navigateToProfile
+            navigateToProfile = navController::navigateToProfile,
+            navigateToSnapToScript = navController::navigateToSnapToScript,
+            navigateToGallery = {
+                appState.navigateToTopLevelDestination(TopLevelDestination.SCREENSHOT_GALLERY)
+            }
         )
         loginScreen(
             navigateToMap = navController::navigateToMap,
@@ -65,33 +71,31 @@ fun GmNavHost(
             navigateToScreenshot = navController::navigateToScreenshot
         )
         favouriteScreen(
-            popUp = navController::popBackStack,
+            popUp = navController::safePopBackStack,
             navigateToMap = navController::navigateToMap
         )
-        screenshotScreen(popUp = navController::popBackStack)
+        screenshotScreen(popUp = navController::safePopBackStack)
         screenshotGalleryScreen(
-            popUp = navController::popBackStack,
+            popUp = navController::safePopBackStack,
             navigateToSnapToScript = navController::navigateToSnapToScript,
-            nestedGraphs = {
-                snapToScriptScreen(popUp = navController::popBackStack)
-            }
         )
+        snapToScriptScreen(popUp = navController::safePopBackStack)
         profileScreen(
-            popUp = navController::popBackStack,
+            popUp = navController::safePopBackStack,
             navigateToLogin = navController::navigateToLogin,
             navigateToInfo = navController::navigateToInfo,
             navigateToDelete = navController::navigateToVerifyAuth,
             nestedGraphs = {
-                infoScreen(popUp = navController::popBackStack)
+                infoScreen(popUp = navController::safePopBackStack)
                 deleteProfileScreen(
                     popUp = {
                         navController.popBackStack()
-                        navController.popBackStack()
+                        navController.safePopBackStack()
                     },
                     navigateToLogin = navController::navigateToLogin
                 )
                 verifyAuthScreen(
-                    popUp = navController::popBackStack,
+                    popUp = navController::safePopBackStack,
                     navigateToDelete = navController::navigateToDeleteProfile
                 )
             }
@@ -100,6 +104,11 @@ fun GmNavHost(
 
     // Debug purposes
     // navController.NavigationListener()
+}
+
+fun NavHostController.safePopBackStack() {
+    if (currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED)
+        popBackStack()
 }
 
 @SuppressLint("RestrictedApi")

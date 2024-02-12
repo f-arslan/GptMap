@@ -75,4 +75,5 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.work.ktx)
+    implementation(libs.hilt.ext.work)
 }
