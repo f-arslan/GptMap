@@ -29,7 +29,7 @@ object UnsplashModule {
                 val newRequestBuilder = request.newBuilder()
                     .addHeader("Content-Type", "application/json")
 
-                val token = runBlocking { getFirebaseToken() }.also(::println)
+                val token = runBlocking { getFirebaseToken() }
 
                 if (token != null) {
                     newRequestBuilder.addHeader("Authorization", "Bearer $token")
