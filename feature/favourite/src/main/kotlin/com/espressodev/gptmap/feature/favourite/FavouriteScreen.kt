@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.feature.favourite
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
@@ -22,6 +23,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
@@ -176,7 +178,6 @@ fun FavouriteCard(
     onLongClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     val borderStroke = if (isSelected) 3.dp else 0.dp
     val elevation = if (isSelected) 8.dp else 0.dp
     val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent

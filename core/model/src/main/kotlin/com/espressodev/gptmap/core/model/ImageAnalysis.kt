@@ -8,6 +8,7 @@ data class ImageAnalysis(
     val userId: String = "",
     val imageUrl: String = "",
     val title: String = "",
+    var imageType: String = ImageType.Screenshot.name,
     val messages: List<ImageMessage> = listOf(),
     val date: LocalDateTime = LocalDateTime.MIN
 ) {
@@ -18,6 +19,10 @@ data class ImageAnalysis(
             title = title,
             date = date
         )
+}
+
+enum class ImageType {
+    Screenshot, Favourite
 }
 
 fun ImageAnalysis.sortByDate() = copy(messages = messages.sortedByDescending { it.date })

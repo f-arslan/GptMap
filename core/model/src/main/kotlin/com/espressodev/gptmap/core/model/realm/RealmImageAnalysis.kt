@@ -20,6 +20,7 @@ open class RealmImageAnalysis : RealmObject {
     var userId: String = ""
     var imageUrl: String = ""
     var title: String = ""
+    var imageType: String = ""
     var messages: RealmList<RealmImageMessage>? = realmListOf()
     var date = RealmInstant.from(System.currentTimeMillis(), 0)
 }
@@ -30,6 +31,7 @@ fun RealmImageAnalysis.toImageAnalysis() = ImageAnalysis(
     userId = userId,
     imageUrl = imageUrl,
     title = title,
+    imageType = imageType,
     messages = messages?.map { it.toImageMessage() } ?: emptyList(),
     date = date.toJavaInstant().toLocalDateTime()
 )

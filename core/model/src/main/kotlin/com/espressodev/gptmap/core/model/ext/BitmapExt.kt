@@ -4,10 +4,13 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
+import com.espressodev.gptmap.core.model.Constants
 import com.espressodev.gptmap.core.model.Constants.COMPRESS_RATE_BEFORE_STORAGE
 import com.espressodev.gptmap.core.model.Constants.DOWNLOAD_IMAGE_TIMEOUT
+import com.espressodev.gptmap.core.model.Exceptions
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -45,4 +48,20 @@ fun Context.readBitmapFromExternalStorage(directoryName: String, filename: Strin
         }
     }
     return null
+}
+
+fun Bitmap.saveToInternalStorageIfNotExist(context: Context, filename: String) {
+    context.getExternalFilesDir(null)?.let { dir ->
+        val imagesDirectory = File(dir, Constants.PHONE_IMAGE_DIR)
+        if (!imagesDirectory.exists() && !imagesDirectory.mkdirs()) {
+            throw Exceptions.FailedToCreateDirectoryException()
+        }
+        val file = File(imagesDirectory, "$filename.jpg")
+        if (file.exists()) {
+            return
+        }
+        FileOutputStream(file).use { fos ->
+            compress(Bitmap.CompressFormat.JPEG, 100, fos)
+        }
+    } ?: throw Exceptions.FailedToGetDirectoryException()
 }

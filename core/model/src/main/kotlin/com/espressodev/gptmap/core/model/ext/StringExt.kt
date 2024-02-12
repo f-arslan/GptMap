@@ -1,6 +1,7 @@
 package com.espressodev.gptmap.core.model.ext
 
 import android.util.Patterns
+import com.espressodev.gptmap.core.model.ImageType
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.chatgpt.Content
 import kotlinx.serialization.json.Json
@@ -25,10 +26,16 @@ fun String.isValidName(): Boolean {
 
 fun String.isValidPassword(): Boolean {
     return this.isNotBlank() &&
-        this.length >= MinPassPattern &&
-        Pattern.compile(PassPattern).matcher(this).matches()
+            this.length >= MinPassPattern &&
+            Pattern.compile(PassPattern).matcher(this).matches()
 }
 
 fun String.passwordMatches(repeated: String): Boolean {
     return this == repeated
+}
+
+fun String.toImageType(): ImageType = when (this) {
+    "Screenshot" -> ImageType.Screenshot
+    "Favourite" -> ImageType.Favourite
+    else -> throw IllegalArgumentException("Invalid image type")
 }

@@ -107,6 +107,15 @@ class RealmSyncServiceImpl : RealmSyncService {
                 }
             }
 
+    override fun getImageType(imageAnalysisId: String): String =
+        realm.query<RealmImageAnalysis>(
+            "userId == $0 AND imageId == $1",
+            realmUserId,
+            imageAnalysisId
+        )
+            .find()
+            .first()
+            .imageType
 
     override fun isUserInDatabase(): Result<Boolean> = runCatching {
         realm.query<RealmUser>("userId == $0", realmUserId).first().find() != null
@@ -194,6 +203,27 @@ class RealmSyncServiceImpl : RealmSyncService {
                 }
             }
         }
+
+    override suspend fun updateImageAnalysisId(
+        favouriteId: String,
+        messageId: String,
+        imageAnalysisId: String
+    ): Result<Unit> = runCatching {
+        println("updateImageAnalysisId: $favouriteId, $messageId, $imageAnalysisId")
+        realm.write {
+            val favouriteToUpdate: RealmFavourite = query<RealmFavourite>(
+                "userId == $0 AND favouriteId == $1",
+                realmUserId,
+                favouriteId
+            )
+                .find()
+                .first().also(::println)
+            findLatest(favouriteToUpdate)?.let { realmFavourite ->
+                realmFavourite.locationImages?.find { it.id == messageId }?.analysisId =
+                    imageAnalysisId
+            }
+        }
+    }
 
     override suspend fun addImageMessageToImageAnalysis(
         imageAnalysisId: String,

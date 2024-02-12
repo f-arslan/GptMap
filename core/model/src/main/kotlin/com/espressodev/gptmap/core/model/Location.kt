@@ -10,10 +10,18 @@ import io.realm.kotlin.ext.toRealmList
 data class Location(
     val id: String = "default",
     val content: Content = Content(),
-    val locationImages: List<LocationImage> = List(2) { LocationImage("", "") },
-    val addToFavouriteButtonState: Boolean = true
+    val locationImages: List<LocationImage> = List(2) {
+        LocationImage(
+            id = "",
+            analysisId = "",
+            imageUrl = "",
+            imageAuthor = "",
+        )
+    },
+    val addToFavouriteButtonState: Boolean = true,
+    val favouriteId: String = ""
 ) {
-    fun toRealmLocation(): RealmFavourite = RealmFavourite().apply {
+    fun toRealmFavourite(): RealmFavourite = RealmFavourite().apply {
         favouriteId = this@Location.id
         content = this@Location.content.toRealmContent()
         locationImages =

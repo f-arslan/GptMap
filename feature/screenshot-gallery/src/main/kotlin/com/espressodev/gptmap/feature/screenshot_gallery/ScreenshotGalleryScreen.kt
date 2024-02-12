@@ -29,8 +29,9 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
-import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -49,8 +50,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -66,6 +65,7 @@ import com.espressodev.gptmap.core.designsystem.TextType
 import com.espressodev.gptmap.core.designsystem.component.GmAlertDialog
 import com.espressodev.gptmap.core.designsystem.component.GmEditAlertDialog
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
+import com.espressodev.gptmap.core.designsystem.component.GradientOverImage
 import com.espressodev.gptmap.core.designsystem.component.LottieAnimationPlaceholder
 import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
 import com.espressodev.gptmap.core.designsystem.component.darkBottomOverlayBrush
@@ -214,6 +214,7 @@ fun ScreenshotGalleryScreen(
                 onClick = { onClickLambda(imageSummary, index) },
                 onLongClick = { onLongClick(imageSummary) },
                 isSelected = selectedItemsIds.contains(imageSummary.id),
+                isUiInEditMode = isUiInEditMode,
                 exploreWithAiClick = { navigate(imageSummary.id, imageSummary.imageUrl) }
             )
         }
@@ -226,6 +227,7 @@ fun ImageCard(
     imageSummary: ImageSummary,
     modifier: Modifier = Modifier,
     isSelected: Boolean = false,
+    isUiInEditMode: Boolean = false,
     onClick: () -> Unit = {},
     onLongClick: () -> Unit = {},
     exploreWithAiClick: () -> Unit = {}
@@ -251,7 +253,9 @@ fun ImageCard(
         )
         if (isImageLoaded) {
             Box(
-                modifier = Modifier.matchParentSize().background(brush = darkBottomOverlayBrush)
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(brush = darkBottomOverlayBrush)
             )
         }
         Text(
@@ -265,16 +269,12 @@ fun ImageCard(
             textAlign = TextAlign.Center,
             color = Color.White
         )
-        if (!isSelected) {
+        if (!isUiInEditMode) {
             FilledTonalIconButton(
                 onClick = exploreWithAiClick,
                 modifier = Modifier.align(Alignment.TopEnd),
             ) {
-                Icon(
-                    painter = painterResource(id = AppDrawable.ai_icon),
-                    contentDescription = stringResource(id = AppText.explore_with_ai),
-                    modifier = Modifier.padding(6.dp)
-                )
+                GradientOverImage(painterId = AppDrawable.ai_icon, modifier = Modifier.size(24.dp))
             }
         }
     }

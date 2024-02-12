@@ -20,6 +20,7 @@ data class Favourite(
         id = id,
         content = content.toChatgptContent(),
         locationImages = locationImages,
-        addToFavouriteButtonState = false
+        addToFavouriteButtonState = false,
+        favouriteId = favouriteId
     )
 }
