@@ -26,20 +26,22 @@ fun NavController.navigateToMap(
 fun NavGraphBuilder.mapScreen(
     navigateToStreetView: (Float, Float) -> Unit,
     navigateToScreenshot: () -> Unit,
-    navigateToProfile: () -> Unit
+    navigateToProfile: () -> Unit,
+    navigateToSnapToScript: (String) -> Unit,
+    navigateToGallery: () -> Unit
 ) {
     composable(
         route = "$MapRoute/{$FavouriteId}",
         arguments = listOf(navArgument(FavouriteId) { type = NavType.StringType })
     ) {
-        val favouriteId = it.arguments?.getString(FavouriteId) ?: "default"
         MapRoute(
             navigateToStreetView = { locPair ->
                 navigateToStreetView(locPair.first, locPair.second)
             },
             navigateToScreenshot = navigateToScreenshot,
             navigateToProfile = navigateToProfile,
-            favouriteId = favouriteId
+            navigateToSnapToScript = navigateToSnapToScript,
+            navigateToGallery = navigateToGallery,
         )
     }
 }

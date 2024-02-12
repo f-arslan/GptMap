@@ -1,22 +1,28 @@
 package com.espressodev.gptmap.feature.snapTo_script
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -30,6 +36,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -42,6 +49,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -50,8 +58,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -69,15 +77,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
@@ -89,9 +101,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.R.drawable.ai_icon
+import com.espressodev.gptmap.core.designsystem.ext.gradientBackground
 import com.espressodev.gptmap.core.designsystem.util.rememberKeyboardAsState
 import com.espressodev.gptmap.core.model.AiResponseStatus
 import com.espressodev.gptmap.core.model.ImageMessage
+import com.espressodev.gptmap.core.model.ImageType
 import com.espressodev.gptmap.feature.screenshot_gallery.InputSelector
 import com.espressodev.gptmap.feature.screenshot_gallery.SnapToScriptUiEvent
 import com.espressodev.gptmap.feature.screenshot_gallery.SnapToScriptUiState
@@ -111,14 +125,13 @@ fun SnapToScriptRoute(viewModel: SnapToScriptViewModel = hiltViewModel()) {
     val uiState by viewModel.snapToScriptUiState.collectAsStateWithLifecycle()
     val messages by viewModel.messages.collectAsStateWithLifecycle()
     val onEvent by rememberUpdatedState(newValue = viewModel::onEvent)
-
+    println(messages)
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .statusBarsPadding()
+        modifier = Modifier.fillMaxSize()
     ) {
         SnapToScriptScreen(
             uiState = uiState,
+            imageType = viewModel.imageType,
             rmsFlow = viewModel.rmsFlow,
             messages = messages,
             onEvent = onEvent
@@ -128,6 +141,7 @@ fun SnapToScriptRoute(viewModel: SnapToScriptViewModel = hiltViewModel()) {
     if (!uiState.isPinned) {
         DraggableImage(
             imageUrl = uiState.imageUrl,
+            imageType = viewModel.imageType,
             onPinClick = { onEvent(SnapToScriptUiEvent.OnPinClick) },
         )
     }
@@ -136,6 +150,7 @@ fun SnapToScriptRoute(viewModel: SnapToScriptViewModel = hiltViewModel()) {
 @Composable
 fun SnapToScriptScreen(
     uiState: SnapToScriptUiState,
+    imageType: ImageType,
     rmsFlow: SharedFlow<Int>,
     messages: List<ImageMessage>,
     onEvent: (SnapToScriptUiEvent) -> Unit,
@@ -149,11 +164,14 @@ fun SnapToScriptScreen(
             setKeyboardHeight(keyboardState.keypadHeight)
         }
     }
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(
+        modifier = modifier.fillMaxSize()
+    ) {
         Messages(
             messages = messages,
             userFirstChar = uiState.userFirstChar,
             imageUrl = uiState.imageUrl,
+            imageType = imageType,
             aiResponseStatus = uiState.aiResponseStatus,
             isPinned = uiState.isPinned,
             onTypingEnd = { onEvent(SnapToScriptUiEvent.OnTypingEnd) },
@@ -174,7 +192,6 @@ fun SnapToScriptScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .imePadding()
-                .statusBarsPadding()
         )
     }
 }
@@ -184,6 +201,7 @@ fun Messages(
     messages: List<ImageMessage>,
     userFirstChar: Char,
     imageUrl: String,
+    imageType: ImageType,
     aiResponseStatus: AiResponseStatus,
     isPinned: Boolean,
     onTypingEnd: () -> Unit,
@@ -193,52 +211,69 @@ fun Messages(
     val scope = rememberCoroutineScope()
     val scrollState = rememberLazyListState()
 
+    val biggerImageWidth = if (imageType == ImageType.Screenshot) 275.dp else 350.dp
+    val smallWidth = if (imageType == ImageType.Screenshot) 175.dp else 250.dp
+
     var isFullScreen by remember { mutableStateOf(value = false) }
     if (isFullScreen) {
         Dialog(onDismissRequest = { isFullScreen = false }) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                NaiveImage(imageUrl = imageUrl, size = 350.dp)
+                NaiveImage(imageUrl = imageUrl, width = biggerImageWidth, height = 275.dp)
             }
         }
     }
     val isListEmpty = messages.isEmpty()
+    val keyboardState by rememberKeyboardAsState()
 
-    Box(modifier = modifier.padding(8.dp)) {
+    Box(modifier = modifier) {
         Column {
             if (isPinned) {
                 DefaultImage(
                     imageUrl = imageUrl,
                     onPinClick = onPinClick,
+                    height = 175.dp,
+                    width = smallWidth,
                     onFullScreenClick = { isFullScreen = true },
                 )
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            LazyColumn(
-                reverseLayout = true,
-                state = scrollState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f)
-            ) {
-                item {
-                    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.ime))
-                }
+            if (!isListEmpty) {
+                LazyColumn(
+                    reverseLayout = true,
+                    state = scrollState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f)
+                        .padding(horizontal = 8.dp),
+                    contentPadding = PaddingValues(vertical = 8.dp)
+                ) {
+                    item {
+                        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.ime))
+                    }
 
-                item {
-                    Spacer(modifier = Modifier.padding(bottom = 72.dp))
-                }
+                    item {
+                        Spacer(modifier = Modifier.padding(bottom = 56.dp))
+                    }
 
-                if (!isListEmpty) {
                     messageList(messages, aiResponseStatus, onTypingEnd, userFirstChar)
-                } else {
-                    // TODO: Add
-                }
 
-                item {
-                    Spacer(modifier = Modifier.padding(8.dp))
+                    if (!isPinned) {
+                        item {
+                            Spacer(Modifier.statusBarsPadding())
+                        }
+                    }
                 }
             }
         }
+
+        if (isListEmpty && !keyboardState.isVisible) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                TypeWriterRepeat(stringResource(id = AppText.snapTo_script_placeholder))
+            }
+        }
+
 
         val jumpThreshold = with(LocalDensity.current) { 64.dp.toPx() }
 
@@ -262,6 +297,7 @@ fun Messages(
         )
     }
 }
+
 
 private fun LazyListScope.messageList(
     messages: List<ImageMessage>,
@@ -338,6 +374,7 @@ fun UserMessageSection(message: String, firstChar: Char) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BotMessageSection(
     message: String,
@@ -345,7 +382,20 @@ fun BotMessageSection(
     aiResponseStatus: AiResponseStatus,
     onTypingEnd: () -> Unit
 ) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val clipboardManager = LocalClipboardManager.current
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+            .combinedClickable(
+                interactionSource = interactionSource,
+                indication = LocalIndication.current,
+                onLongClick = {
+                    clipboardManager.setText(AnnotatedString(message))
+                },
+                onClick = {}
+            )
+    ) {
         BotImage()
         Column {
             Text(
@@ -361,7 +411,7 @@ fun BotMessageSection(
                 aiResponseStatus == AiResponseStatus.Loading && isLastItem -> {
                     PulsingBox(
                         size = 16.dp,
-                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
                     )
                 }
 
@@ -393,48 +443,51 @@ private fun BotImage() {
 
 @Composable
 fun TypeWriterRepeat(
-    message: String,
-    typeDelayMillis: Long = 10L,
-    repeatEffect: Boolean = true,
-    repeatDelayMillis: Long = 1000L
+    baseText: String,
+    delayForwardInMillis: Long = 50L,
+    delayBackwardInMillis: Long = 25L,
+    delayBetweenForwardAndReverseInMillis: Long = 500L,
+    delayInEachInMillis: Long = 1000L
 ) {
-    var textToDisplay by remember { mutableStateOf(value = "") }
-    var currentIndex by remember { mutableIntStateOf(value = 0) }
-    var isTypingForward by remember { mutableStateOf(value = true) }
+    val charactersWithAlphas =
+        remember { mutableStateListOf<Float>().apply { repeat(baseText.length) { add(0f) } } }
 
-    LaunchedEffect(message, repeatEffect) {
-        while (repeatEffect) {
-            if (isTypingForward && currentIndex > message.length) {
-                // Once the message is fully typed, pause, then start erasing
-                delay(repeatDelayMillis) // Pause at the end
-                isTypingForward = false
-            } else if (!isTypingForward && currentIndex < 0) {
-                // Once the message is fully erased, pause, then start typing
-                delay(repeatDelayMillis) // Pause at the start
-                isTypingForward = true
+    LaunchedEffect(key1 = Unit) {
+        while (true) {
+            for (i in baseText.indices) {
+                charactersWithAlphas[i] = 1f
+                delay(delayForwardInMillis)
             }
 
-            textToDisplay = if (isTypingForward) {
-                // Typing forward: add characters
-                if (currentIndex >= 0 && currentIndex <= message.length) {
-                    message.substring(0, currentIndex)
-                } else ""
-            } else {
-                // Erasing: remove characters from the end
-                if (currentIndex >= 0 && currentIndex <= message.length) {
-                    message.substring(0, currentIndex)
-                } else ""
+            delay(delayBetweenForwardAndReverseInMillis)
+
+            for (i in baseText.indices.reversed()) {
+                charactersWithAlphas[i] = 0f
+                delay(delayBackwardInMillis)
             }
 
-            currentIndex += if (isTypingForward) 1 else -1
-            delay(typeDelayMillis)
+            delay(delayInEachInMillis)
         }
     }
 
-    Text(
-        text = textToDisplay,
-        style = MaterialTheme.typography.bodyLarge
-    )
+    Row(Modifier.padding(4.dp)) {
+        baseText.forEachIndexed { index, char ->
+            val alpha by animateFloatAsState(
+                targetValue = charactersWithAlphas.getOrElse(index) { 0f },
+                animationSpec = tween(durationMillis = 200),
+                label = "Character animation"
+            )
+            Text(
+                text = char.toString(),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = alpha),
+                style = TextStyle(
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 24.sp,
+                    letterSpacing = -(1).sp,
+                ),
+            )
+        }
+    }
 }
 
 
@@ -472,34 +525,54 @@ private fun DefaultImage(
     onPinClick: () -> Unit,
     onFullScreenClick: () -> Unit,
     modifier: Modifier = Modifier,
-    size: Dp = 175.dp
+    height: Dp = 175.dp,
+    width: Dp = 175.dp
 ) {
-    Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-        Box {
-            Surface(
-                modifier = Modifier
-                    .size(size)
-                    .shadow(2.dp, RoundedCornerShape(8.dp))
-                    .clickable(onClick = onFullScreenClick),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                AsyncImage(
-                    model = imageUrl,
-                    contentDescription = stringResource(id = AppText.selected_image),
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(bottomEnd = 16.dp, bottomStart = 16.dp))
+            .gradientBackground()
+    ) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Box(modifier = Modifier.statusBarsPadding()) {
+                Surface(
+                    modifier = Modifier
+                        .height(height)
+                        .width(width)
+                        .shadow(2.dp, RoundedCornerShape(8.dp))
+                        .clickable(onClick = onFullScreenClick),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    AsyncImage(
+                        model = imageUrl,
+                        contentDescription = stringResource(id = AppText.selected_image),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                PinButton(
+                    onClick = onPinClick,
+                    icon = GmIcons.PushPinOutlined,
+                    modifier = Modifier.align(Alignment.TopEnd)
                 )
             }
-            PinButton(
-                onClick = onPinClick,
-                icon = GmIcons.PushPinOutlined,
-                modifier = Modifier.align(Alignment.TopEnd)
-            )
         }
     }
 }
 
 @Composable
 private fun PinButton(onClick: () -> Unit, icon: ImageVector, modifier: Modifier = Modifier) {
-    FilledTonalIconButton(onClick = onClick, modifier = modifier) {
+    FilledTonalIconButton(
+        onClick = onClick,
+        modifier = modifier,
+        colors = IconButtonDefaults.filledTonalIconButtonColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)
+        )
+    ) {
         Icon(
             imageVector = icon,
             contentDescription = stringResource(id = AppText.pin)
@@ -512,20 +585,21 @@ private fun PinButton(onClick: () -> Unit, icon: ImageVector, modifier: Modifier
 private fun DraggableImage(
     imageUrl: String,
     onPinClick: () -> Unit,
+    imageType: ImageType,
     modifier: Modifier = Modifier
 ) {
-    // State to hold the parent size
     var parentSize by remember { mutableStateOf(IntSize.Zero) }
     var offset by remember { mutableStateOf(Offset(0f, 0f)) }
 
-    // Assuming the image size is known and constant
     val imageSize = with(LocalDensity.current) { 175.dp.roundToPx() }
+    val biggerImageWidth = if (imageType == ImageType.Screenshot) 275.dp else 350.dp
+    val smallWidth = if (imageType == ImageType.Screenshot) 175.dp else 250.dp
 
     var isFullScreen by remember { mutableStateOf(value = false) }
     if (isFullScreen) {
         Dialog(onDismissRequest = { isFullScreen = false }) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                NaiveImage(imageUrl = imageUrl, size = 350.dp)
+                NaiveImage(imageUrl = imageUrl, width = biggerImageWidth, height = 275.dp)
             }
         }
     }
@@ -541,11 +615,9 @@ private fun DraggableImage(
         Box(
             modifier = Modifier
                 .offset {
-                    // Calculate the max offset to keep the image within the parent bounds
                     val maxX = parentSize.width - imageSize.toFloat()
                     val maxY = parentSize.height - imageSize.toFloat()
 
-                    // Constrain the offset to the bounds
                     val constrainedX = offset.x.coerceIn(0f, maxX)
                     val constrainedY = offset.y.coerceIn(0f, maxY)
 
@@ -557,7 +629,6 @@ private fun DraggableImage(
                         val maxX = parentSize.width - imageSize.toFloat()
                         val maxY = parentSize.height - imageSize.toFloat()
 
-                        // Update the offset with constraints
                         offset = Offset(
                             x = proposedOffset.x.coerceIn(0f, maxX),
                             y = proposedOffset.y.coerceIn(0f, maxY)
@@ -567,7 +638,7 @@ private fun DraggableImage(
                 }
                 .clickable { isFullScreen = true }
         ) {
-            NaiveImage(imageUrl)
+            NaiveImage(imageUrl, width = smallWidth)
             PinButton(
                 onClick = onPinClick,
                 icon = GmIcons.PushPinOutlined,
@@ -578,16 +649,18 @@ private fun DraggableImage(
 }
 
 @Composable
-private fun NaiveImage(imageUrl: String, size: Dp = 175.dp) {
+private fun NaiveImage(imageUrl: String, width: Dp = 175.dp, height: Dp = 175.dp) {
     Surface(
         modifier = Modifier
-            .size(size)
+            .width(width)
+            .height(height)
             .shadow(2.dp, RoundedCornerShape(8.dp)),
         shape = RoundedCornerShape(8.dp)
     ) {
         AsyncImage(
             model = imageUrl,
-            contentDescription = stringResource(id = AppText.selected_image)
+            contentDescription = stringResource(id = AppText.selected_image),
+            contentScale = ContentScale.Crop,
         )
     }
 }
@@ -778,37 +851,32 @@ fun PulsingBox(size: Dp, color: Color, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun PulsingBoxWithAudio(size: Dp, color: Color, modifier: Modifier = Modifier, scale: Float = 1.0f) {
-    val shouldAnimate = scale != 1.0f
-
-    val infiniteTransition = rememberInfiniteTransition(label = "Infinite Pulsing transition 1")
-    val animation = if (shouldAnimate) {
-        infiniteTransition.animateFloat(
-            initialValue = scale * 0.7f,
-            targetValue = scale,
-            animationSpec = infiniteRepeatable(
-                animation = tween(
-                    durationMillis = 1500,
-                    easing = FastOutSlowInEasing
-                ),
-                repeatMode = RepeatMode.Reverse
-            ), label = "infinite pulsing animation 2"
-        )
-    } else {
-        remember { mutableFloatStateOf(scale) }
-    }
+fun PulsingBoxWithAudio(
+    size: Dp,
+    color: Color,
+    rmsScale: Float,
+    modifier: Modifier = Modifier,
+) {
+    val animationScale by animateFloatAsState(
+        targetValue = rmsScale,
+        animationSpec = tween(
+            durationMillis = 300, // Adjust duration for smoother transitions
+            easing = LinearOutSlowInEasing // Consider easing options for smoother effect
+        ), label = "PulsingBoxWithAudio animation"
+    )
 
     Box(
         modifier = modifier
             .size(size)
             .graphicsLayer {
-                scaleX = animation.value
-                scaleY = animation.value
+                scaleX = animationScale
+                scaleY = animationScale
             }
             .clip(CircleShape)
             .background(color)
     )
 }
+
 
 @Composable
 private fun MicBox(keyboardHeight: Dp, rmsFlow: SharedFlow<Int>, onClick: () -> Unit) {
@@ -820,11 +888,12 @@ private fun MicBox(keyboardHeight: Dp, rmsFlow: SharedFlow<Int>, onClick: () -> 
         }
     }
 
-    val flow by rmsFlow.collectAsStateWithLifecycle(initialValue = 0)
-
     val minRms = 0
     val maxRms = 10
-    val scale = mapRmsToScale(flow, minRms, maxRms, 0.5f, 1.5f)
+
+    val rms by rmsFlow.collectAsStateWithLifecycle(initialValue = 0)
+
+    val scale = mapRmsToScale(rms, minRms, maxRms, 0.5f, 1.5f)
 
     Surface(
         modifier = Modifier
@@ -837,7 +906,7 @@ private fun MicBox(keyboardHeight: Dp, rmsFlow: SharedFlow<Int>, onClick: () -> 
             PulsingBoxWithAudio(
                 size = 100.dp,
                 color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.5f),
-                scale = scale,
+                rmsScale = scale,
                 modifier = Modifier.align(Alignment.Center)
             )
 
@@ -870,16 +939,4 @@ private fun MicBox(keyboardHeight: Dp, rmsFlow: SharedFlow<Int>, onClick: () -> 
 fun mapRmsToScale(rms: Int, minRms: Int, maxRms: Int, minScale: Float, maxScale: Float): Float {
     val clampedRms = rms.coerceIn(minRms, maxRms).toFloat()
     return minScale + (clampedRms - minRms) / (maxRms - minRms) * (maxScale - minScale)
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ImageSectionPreview() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-    ) {
-        TypeWriterRepeat(message = "Hello World!", typeDelayMillis = 10)
-    }
 }

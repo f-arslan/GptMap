@@ -9,6 +9,8 @@ import com.espressodev.gptmap.core.common.SpeechToText
 import com.espressodev.gptmap.core.domain.AddImageMessageUseCase
 import com.espressodev.gptmap.core.model.AiResponseStatus
 import com.espressodev.gptmap.core.model.ImageMessage
+import com.espressodev.gptmap.core.model.ImageType
+import com.espressodev.gptmap.core.model.ext.toImageType
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import com.espressodev.gptmap.feature.screenshot_gallery.InputSelector
 import com.espressodev.gptmap.feature.screenshot_gallery.SnapToScriptUiEvent
@@ -39,6 +41,7 @@ class SnapToScriptViewModel @Inject constructor(
     logService: LogService
 ) : GmViewModel(logService) {
     private val imageId: String = checkNotNull(savedStateHandle[IMAGE_ID])
+
     val messages: StateFlow<List<ImageMessage>> = realmSyncService
         .getImageAnalysisMessages(imageId)
         .flowOn(ioDispatcher)
@@ -47,6 +50,8 @@ class SnapToScriptViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = listOf()
         )
+
+    val imageType: ImageType = realmSyncService.getImageType(imageId).toImageType()
 
     private val _snapToScriptUiState = MutableStateFlow(SnapToScriptUiState())
     val snapToScriptUiState = _snapToScriptUiState.asStateFlow()
@@ -61,17 +66,9 @@ class SnapToScriptViewModel @Inject constructor(
         get() = snapToScriptUiState.value.isPinned
 
     init {
-        launchCatching {
-            launch {
-                val fullName = dataStoreService.getUserFullName()
-                _snapToScriptUiState.update { it.copy(userFirstChar = fullName.first()) }
-            }
-            launch {
-                val imageUrl = dataStoreService.getImageUrl()
-                _snapToScriptUiState.update { it.copy(imageUrl = imageUrl) }
-            }
-        }
+        getNameImageAndCacheIdWithDataStore()
     }
+
 
     fun onEvent(event: SnapToScriptUiEvent) {
         when (event) {
@@ -95,6 +92,7 @@ class SnapToScriptViewModel @Inject constructor(
             SnapToScriptUiEvent.OnKeyboardClick -> {
                 _snapToScriptUiState.update { it.copy(inputSelector = InputSelector.Keyboard) }
             }
+
             SnapToScriptUiEvent.OnPinClick -> {
                 _snapToScriptUiState.update { it.copy(isPinned = !isPinned) }
             }
@@ -144,11 +142,26 @@ class SnapToScriptViewModel @Inject constructor(
                 if (isFinished) {
                     _snapToScriptUiState.update { it.copy(inputSelector = InputSelector.Keyboard) }
                 }
-                if (rms > 0) {
-                    _rmsFlow.emit(rms)
-                }
+                _rmsFlow.emit(rms)
             }
         }
+    }
+
+    private fun getNameImageAndCacheIdWithDataStore() = launchCatching {
+        launch {
+            val fullName = dataStoreService.getUserFullName()
+            _snapToScriptUiState.update { it.copy(userFirstChar = fullName.first()) }
+        }
+        launch {
+            val imageUrl = dataStoreService.getImageUrl()
+            _snapToScriptUiState.update { it.copy(imageUrl = imageUrl) }
+        }
+//        launch {
+//            val latestImageIdForChat = dataStoreService.getLatestImageIdForChat()
+//            if (latestImageIdForChat != imageId) {
+//                dataStoreService.setLatestImageIdForChat(imageId)
+//            }
+//        }
     }
 
     private fun resetSnapToScriptUiState() {

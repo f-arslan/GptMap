@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -24,6 +25,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -35,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -61,6 +65,8 @@ import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.component.ExploreWithAiButton
 import com.espressodev.gptmap.core.designsystem.component.GmDraggableButton
+import com.espressodev.gptmap.core.designsystem.component.GmProgressIndicator
+import com.espressodev.gptmap.core.designsystem.component.GradientOverImage
 import com.espressodev.gptmap.core.designsystem.component.LottieAnimationPlaceholder
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
 import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
@@ -86,6 +92,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlin.math.absoluteValue
+import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
@@ -95,7 +102,8 @@ fun MapRoute(
     navigateToStreetView: (Pair<Float, Float>) -> Unit,
     navigateToScreenshot: () -> Unit,
     navigateToProfile: () -> Unit,
-    favouriteId: String,
+    navigateToSnapToScript: (String) -> Unit,
+    navigateToGallery: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MapViewModel = hiltViewModel(),
 ) {
@@ -116,18 +124,30 @@ fun MapRoute(
             )
         }
     )
+    val onNavigateToSnapToScript by rememberUpdatedState(
+        newValue = {
+            viewModel.onChatAiClick(navigateToSnapToScript, navigateToGallery)
+        }
+    )
+
+    val onExploreWithAiClickImage by rememberUpdatedState(
+        newValue = { index: Int ->
+            viewModel.onExploreWithAiClick(index, navigateToSnapToScript, navigateToGallery)
+        }
+    )
 
     Scaffold(modifier = modifier.padding(bottom = BOTTOM_BAR_PADDING)) {
         MapScreen(
             uiState = uiState,
             onEvent = { event -> onEvent(event, navigateToStreetView) },
             onAvatarClick = navigateToProfile,
+            navigateToSnapToScript = {
+                onNavigateToSnapToScript()
+            },
+            onExploreWithAiClickFromImage = { index ->
+                onExploreWithAiClickImage(index)
+            }
         )
-    }
-
-    LaunchedEffect(favouriteId) {
-        if (favouriteId != "default")
-            viewModel.loadLocationFromFavourite(favouriteId)
     }
 
     LaunchedEffect(uiState.screenshotState) {
@@ -136,6 +156,10 @@ fun MapRoute(
             navigateToScreenshot()
         }
     }
+
+    if (uiState.isLoading) {
+        GmProgressIndicator()
+    }
 }
 
 @Composable
@@ -143,14 +167,34 @@ private fun MapScreen(
     uiState: MapUiState,
     onEvent: (MapUiEvent) -> Unit,
     onAvatarClick: () -> Unit,
+    navigateToSnapToScript: () -> Unit,
+    onExploreWithAiClickFromImage: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    DisplayImageGallery(
-        imageGalleryState = uiState.imageGalleryState,
-        location = uiState.location,
-        onDismiss = { onEvent(MapUiEvent.OnImageDismiss) }
-    )
+    if (uiState.imageGalleryState.second) {
+        ImageGallery(
+            initialPage = uiState.imageGalleryState.first,
+            images = uiState.location.locationImages,
+            onDismiss = { onEvent(MapUiEvent.OnImageDismiss) },
+            onExploreWithAiClick = onExploreWithAiClickFromImage
+        )
+    }
+
     Box(modifier = modifier.fillMaxSize()) {
+        AnimatedVisibility(
+            visible = uiState.isMapButtonsVisible,
+            modifier = Modifier
+                .zIndex(1f)
+                .offset(y = 72.dp)
+        ) {
+            GmDraggableButton(
+                icon = IconType.Bitmap(AppDrawable.ai_icon),
+                containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                initialAlignment = Alignment.CenterEnd,
+                onClick = navigateToSnapToScript
+            )
+        }
+
         if (uiState.searchBarState) {
             MapSearchBar(
                 value = uiState.searchValue,
@@ -165,7 +209,7 @@ private fun MapScreen(
         }
         SaveScreenshot(
             onClick = { onEvent(MapUiEvent.OnScreenshotProcessStarted) },
-            isButtonVisible = uiState.isScreenshotButtonVisible
+            isButtonVisible = uiState.isMapButtonsVisible
         )
         LoadingDialog(uiState.componentLoadingState)
         MapCameraSection(uiState = uiState, onEvent = onEvent)
@@ -180,21 +224,6 @@ private fun MapScreen(
                 onClick = { onEvent(MapUiEvent.OnMyCurrentLocationClick) },
                 modifier = Modifier.zIndex(1f)
             )
-    }
-}
-
-@Composable
-private fun DisplayImageGallery(
-    imageGalleryState: Pair<Int, Boolean>,
-    location: Location,
-    onDismiss: () -> Unit,
-) {
-    if (imageGalleryState.second) {
-        ImageGallery(
-            initialPage = imageGalleryState.first,
-            images = location.locationImages,
-            onDismiss = onDismiss
-        )
     }
 }
 
@@ -262,7 +291,12 @@ fun BoxScope.MyCurrentLocationButton(onClick: () -> Unit, modifier: Modifier = M
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun ImageGallery(initialPage: Int, images: List<LocationImage>, onDismiss: () -> Unit) {
+private fun ImageGallery(
+    initialPage: Int,
+    images: List<LocationImage>,
+    onDismiss: () -> Unit,
+    onExploreWithAiClick: (Int) -> Unit
+) {
     val pagerState = rememberPagerState(pageCount = { 2 }, initialPage = initialPage)
     Dialog(onDismissRequest = onDismiss) {
         HorizontalPager(state = pagerState, pageSpacing = 8.dp) { page ->
@@ -288,6 +322,16 @@ private fun ImageGallery(initialPage: Int, images: List<LocationImage>, onDismis
                         .height(240.dp)
                 )
                 UnsplashBanner(name = images[page].imageAuthor)
+                FloatingActionButton(
+                    onClick = { onExploreWithAiClick(page) },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .offset(x = (-4).dp, y = 4.dp),
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                    elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp),
+                ) {
+                    GradientOverImage(painterId = AppDrawable.ai_icon)
+                }
             }
         }
     }
@@ -343,17 +387,18 @@ private fun BoxScope.MapCameraSection(uiState: MapUiState, onEvent: (MapUiEvent)
     }
 
     AnimatedVisibility(
-        visible = uiState.isStreetViewButtonVisible,
+        visible = uiState.isMapButtonsVisible,
         modifier = Modifier.zIndex(1f)
     ) {
         GmDraggableButton(
-            icon = StreetView,
+            icon = IconType.Vector(StreetView),
             initialAlignment = Alignment.CenterStart,
             onClick = { onEvent(MapUiEvent.OnStreetViewClick(cameraPositionState.toLatitudeLongitude())) }
         )
     }
+
     LocationPin(
-        isPinVisible = uiState.isLocationPinVisible,
+        isPinVisible = uiState.isMapButtonsVisible,
         isCameraMoving = cameraPositionState.isMoving
     )
 
@@ -523,18 +568,36 @@ fun BoxScope.SmallInformationCard(
 @Composable
 fun MapPreview() {
     GptmapTheme(darkTheme = true) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            SmallInformationCard(content = Content(
-                coordinates = Coordinates(
-                    latitude = 4.5,
-                    longitude = 6.7
+        Box(modifier = Modifier.fillMaxSize()) {
+            MapCameraSection(uiState = MapUiState(
+                searchValue = "",
+                location = Location(
+                    id = "", content = Content(
+                        coordinates = Coordinates(
+                            latitude = 0.0,
+                            longitude = 0.0
+                        ),
+                        city = "",
+                        district = null,
+                        country = "",
+                        poeticDescription = "",
+                        normalDescription = ""
+                    ), locationImages = listOf(), addToFavouriteButtonState = false
                 ),
-                city = "Hill Valley",
-                district = null,
-                country = "Sao Tome and Principe",
-                poeticDescription = "elaboraret",
-                normalDescription = "docendi"
-            ), onExploreWithAiClick = {}, onBackClick = {}, modifier = Modifier
+                userFirstChar = 'A',
+                componentLoadingState = ComponentLoadingState.MY_LOCATION,
+                bottomSheetState = SMALL_INFORMATION_CARD,
+                searchButtonEnabledState = false,
+                searchTextFieldEnabledState = false,
+                searchBarState = false,
+                isFavouriteButtonPlaying = false,
+                isMapButtonsVisible = true,
+                myCurrentLocationState = Pair(false, Pair(0.0, 0.0)),
+                screenshotState = ScreenshotState.IDLE,
+                imageGalleryState = Pair(0, false),
+                isMyLocationButtonVisible = false
+            ),
+                onEvent = {}
             )
         }
     }

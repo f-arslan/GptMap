@@ -25,13 +25,12 @@ data class MapUiState(
     val searchTextFieldEnabledState: Boolean = true,
     val searchBarState: Boolean = true,
     val isFavouriteButtonPlaying: Boolean = false,
-    val isLocationPinVisible: Boolean = true,
-    val isStreetViewButtonVisible: Boolean = true,
-    val isScreenshotButtonVisible: Boolean = true,
+    val isMapButtonsVisible: Boolean = true,
     val myCurrentLocationState: Pair<Boolean, Pair<Double, Double>> = Pair(false, Pair(0.0, 0.0)),
     val screenshotState: ScreenshotState = ScreenshotState.IDLE,
     val imageGalleryState: Pair<Int, Boolean> = Pair(0, false),
     val isMyLocationButtonVisible: Boolean = true,
+    val isLoading: Boolean = false,
 ) {
     val coordinatesLatLng: LatLng
         get() = location.content.coordinates.let { LatLng(it.latitude, it.longitude) }
