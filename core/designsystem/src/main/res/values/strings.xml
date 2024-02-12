@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Gptmap</string>
+    <string name="app_name">GPTmap</string>
 
     <!-- Common -->
     <string name="clear">Clear</string>
@@ -58,6 +58,8 @@
     <string name="you">You</string>
     <string name="fullscreen">Fullscreen</string>
     <string name="pin">Pin</string>
+    <string name="chat">Chat</string>
+    <string name="copy">Copy</string>
 
     <!-- Map -->
     <string name="map_text_field_placeholder">Search here</string>
@@ -141,4 +143,5 @@
 
     <!-- SnapTo Script -->
     <string name="snapTo_script_title">Snap to Script</string>
+    <string name="snapTo_script_placeholder">Got a question? Just ask!</string>
 </resources>

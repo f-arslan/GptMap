@@ -2,11 +2,11 @@ package com.espressodev.gptmap.core.domain
 
 import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.data.FirestoreService
+import com.espressodev.gptmap.core.ext.runCatchingWithContext
 import com.espressodev.gptmap.core.model.Exceptions.FirebaseUserIdIsNullException
 import com.espressodev.gptmap.core.model.User
 import com.google.firebase.auth.AuthResult
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class SignUpWithEmailAndPasswordUseCase @Inject constructor(
@@ -14,22 +14,20 @@ class SignUpWithEmailAndPasswordUseCase @Inject constructor(
     private val firestoreService: FirestoreService,
     private val ioDispatcher: CoroutineDispatcher
 ) {
-    suspend operator fun invoke(email: String, password: String, fullName: String): Result<Unit> =
-        withContext(ioDispatcher) {
-            runCatching {
-                val authResult =
-                    accountService.firebaseSignUpWithEmailAndPassword(
-                        email = email,
-                        password = password,
-                    )
-                saveUserToDatabaseIfUserNotExist(
-                    authResult = authResult,
+    suspend operator fun invoke(email: String, password: String, fullName: String) =
+        runCatchingWithContext(ioDispatcher) {
+            val authResult =
+                accountService.firebaseSignUpWithEmailAndPassword(
                     email = email,
-                    fullName = fullName
+                    password = password,
                 )
-                accountService.sendEmailVerification()
-                Unit
-            }
+            saveUserToDatabaseIfUserNotExist(
+                authResult = authResult,
+                email = email,
+                fullName = fullName
+            )
+            accountService.sendEmailVerification()
+            Unit
         }
 
     private suspend fun saveUserToDatabaseIfUserNotExist(

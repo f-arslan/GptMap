@@ -1,17 +1,13 @@
 package com.espressodev.gptmap.core.domain
 
 import android.content.Context
-import android.graphics.Bitmap
 import com.espressodev.gptmap.core.common.DataStoreService
-import com.espressodev.gptmap.core.model.Exceptions.FailedToCreateDirectoryException
-import com.espressodev.gptmap.core.model.Exceptions.FailedToGetDirectoryException
+import com.espressodev.gptmap.core.ext.runCatchingWithContext
+import com.espressodev.gptmap.core.model.ext.saveToInternalStorageIfNotExist
 import com.espressodev.gptmap.core.model.ext.toBitmap
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
 import javax.inject.Inject
 
 class SaveImageToInternalStorageUseCase @Inject constructor(
@@ -20,32 +16,17 @@ class SaveImageToInternalStorageUseCase @Inject constructor(
     private val downloadAndCompressImageUseCase: DownloadAndCompressImageUseCase,
     private val dataStoreService: DataStoreService
 ) {
-    suspend operator fun invoke(imageUrl: String, fileId: String) = runCatching {
-        withContext(ioDispatcher) {
+    suspend operator fun invoke(imageUrl: String, fileId: String, size: Int) =
+        runCatchingWithContext(ioDispatcher) {
             launch {
-                val imageData = downloadAndCompressImageUseCase(imageUrl).getOrThrow().toBitmap()
-                saveToInternalStorageIfNotExist(imageData, fileId)
+                downloadAndCompressImageUseCase(imageUrl = imageUrl, width = size, height = size)
+                    .getOrThrow()
+                    .toBitmap()
+                    .saveToInternalStorageIfNotExist(context, fileId)
             }
             launch {
                 dataStoreService.setImageUrl(imageUrl)
             }
             Unit
         }
-    }
-
-    private fun saveToInternalStorageIfNotExist(bitmap: Bitmap, filename: String) {
-        context.getExternalFilesDir(null)?.let { dir ->
-            val imagesDirectory = File(dir, "images")
-            if (!imagesDirectory.exists() && !imagesDirectory.mkdirs()) {
-                throw FailedToCreateDirectoryException()
-            }
-            val file = File(imagesDirectory, "$filename.jpg")
-            if (file.exists()) {
-                return
-            }
-            FileOutputStream(file).use { fos ->
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
-            }
-        } ?: throw FailedToGetDirectoryException()
-    }
 }

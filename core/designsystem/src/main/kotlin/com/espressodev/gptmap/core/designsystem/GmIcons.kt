@@ -6,13 +6,14 @@ import androidx.compose.material.icons.automirrored.outlined.NavigateNext
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Camera
+import androidx.compose.material.icons.filled.ChatBubble
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.CopyAll
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Fingerprint
-import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowDown
 import androidx.compose.material.icons.filled.Password
@@ -24,12 +25,12 @@ import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.ArrowCircleLeft
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.Cancel
+import androidx.compose.material.icons.outlined.ChatBubble
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.Face
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.FullscreenExit
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocationCity
 import androidx.compose.material.icons.outlined.Lock
@@ -78,7 +79,6 @@ object GmIcons {
     val MicOutlined = Icons.Outlined.Mic
     val RecordDefault = Icons.Default.RadioButtonChecked
     val DoubleDownDefault = Icons.Default.KeyboardDoubleArrowDown
-    val FullScreenDefault = Icons.Default.Fullscreen
     val PushPinOutlined = Icons.Outlined.PushPin
-    val FullScreenExitOutlined = Icons.Outlined.FullscreenExit
+    val CopyAllFilled = Icons.Default.CopyAll
 }

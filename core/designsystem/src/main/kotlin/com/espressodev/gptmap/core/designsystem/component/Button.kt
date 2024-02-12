@@ -2,13 +2,18 @@ package com.espressodev.gptmap.core.designsystem.component
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,6 +33,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -47,7 +53,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -80,7 +85,7 @@ fun ExploreWithAiButton(onClick: () -> Unit) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
+            Icon(
                 painter = painterResource(id = AppDrawable.ai_icon),
                 contentDescription = null,
                 modifier = Modifier
@@ -141,10 +146,11 @@ fun GmTonalIconButton(
 
 @Composable
 fun GmDraggableButton(
-    icon: ImageVector,
+    icon: IconType,
     modifier: Modifier = Modifier,
     initialAlignment: Alignment = Alignment.CenterEnd,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    containerColor: Color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
 ) {
     val localDensity = LocalDensity.current
     val screenWidth = with(localDensity) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
@@ -181,7 +187,7 @@ fun GmDraggableButton(
 
     FloatingActionButton(
         onClick = onClick,
-        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
+        containerColor = containerColor,
         elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp),
         modifier = modifier
             .zIndex(1f)
@@ -221,8 +227,40 @@ fun GmDraggableButton(
                 }
             }
     ) {
-        Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(48.dp))
+        when (icon) {
+            is IconType.Bitmap -> {
+                GradientOverImage(painterId = icon.painterId)
+            }
+
+            is IconType.Vector -> {
+                Icon(
+                    imageVector = icon.imageVector,
+                    contentDescription = null,
+                    modifier = Modifier.size(48.dp)
+                )
+            }
+        }
     }
+}
+
+@Composable
+fun GradientOverImage(@DrawableRes painterId: Int, modifier: Modifier = Modifier) {
+    val infiniteTransition = rememberInfiniteTransition(label = "infinite Transition animation")
+    val bgColor by infiniteTransition.animateColor(
+        initialValue = Color(0xFF9C27B0),
+        targetValue = Color(0xFFFF9800),
+        animationSpec = infiniteRepeatable(
+            animation = tween(3000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "bgColor animation"
+    )
+    Icon(
+        painter = painterResource(id = painterId),
+        contentDescription = null,
+        modifier = modifier.size(48.dp),
+        tint = bgColor
+    )
 }
 
 @Composable
@@ -264,5 +302,5 @@ fun SquareButton(
 @Preview(showBackground = true)
 @Composable
 fun ButtonPreview() {
-   ExploreWithAiButton { }
+    ExploreWithAiButton { }
 }

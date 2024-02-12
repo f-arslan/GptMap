@@ -1,9 +1,9 @@
 package com.espressodev.gptmap.core.domain
 
 import com.espressodev.gptmap.core.data.FirestoreService
+import com.espressodev.gptmap.core.ext.runCatchingWithContext
 import com.espressodev.gptmap.core.mongodb.RealmSyncService
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class AddDatabaseIfUserIsNewUseCase @Inject constructor(
@@ -11,12 +11,11 @@ class AddDatabaseIfUserIsNewUseCase @Inject constructor(
     private val realmSyncService: RealmSyncService,
     private val ioDispatcher: CoroutineDispatcher
 ) {
-    suspend operator fun invoke(): Result<Unit> = withContext(ioDispatcher) {
-        runCatching {
-            val isUserInRealmDb = realmSyncService.isUserInDatabase().getOrThrow()
-            if (isUserInRealmDb) return@runCatching
-            val realmUser = firestoreService.getUser().toRealmUser()
-            realmSyncService.saveUser(realmUser).getOrThrow()
-        }
+    suspend operator fun invoke(): Result<Unit> = runCatchingWithContext(ioDispatcher) {
+        val isUserInRealmDb = realmSyncService.isUserInDatabase().getOrThrow()
+        if (isUserInRealmDb) return@runCatchingWithContext
+        val realmUser = firestoreService.getUser().toRealmUser()
+        realmSyncService.saveUser(realmUser).getOrThrow()
     }
 }
+

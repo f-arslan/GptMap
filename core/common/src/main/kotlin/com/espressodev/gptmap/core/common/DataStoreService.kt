@@ -6,4 +6,8 @@ interface DataStoreService {
 
     suspend fun setImageUrl(imageUrl: String)
     suspend fun getImageUrl(): String
+
+    suspend fun setLatestImageIdForChat(imageId: String)
+    suspend fun getLatestImageIdForChat(): String
+    suspend fun clear()
 }

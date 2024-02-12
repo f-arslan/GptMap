@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.espressodev.gptmap.core.common.DataStoreService
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
@@ -33,8 +34,26 @@ class DataStoreServiceImpl @Inject constructor(
         return preferences[IMAGE_URL] ?: ""
     }
 
-    companion object {
-        private val USER_FULL_NAME = stringPreferencesKey("user_full_name")
-        private val IMAGE_URL = stringPreferencesKey("image_url")
+    override suspend fun setLatestImageIdForChat(imageId: String) {
+        userDataStorePreferences.edit { preferences ->
+            preferences[LATEST_IMAGE_ID_FOR_CHAT] = imageId
+        }
+    }
+
+    override suspend fun getLatestImageIdForChat(): String {
+        val preferences = userDataStorePreferences.data.first()
+        return preferences[LATEST_IMAGE_ID_FOR_CHAT] ?: ""
+    }
+
+    override suspend fun clear() {
+        userDataStorePreferences.edit { preferences ->
+            preferences.clear()
+        }
+    }
+
+    private companion object {
+        val USER_FULL_NAME = stringPreferencesKey("user_full_name")
+        val IMAGE_URL = stringPreferencesKey("image_url")
+        val LATEST_IMAGE_ID_FOR_CHAT = stringPreferencesKey("latest_image_id_for_chat")
     }
 }

@@ -56,7 +56,7 @@ fun MapTextField(
         unfocusedContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
     )
 ) {
-    val shouldShownClearIcon by remember { derivedStateOf { value.isNotBlank() } }
+    val shouldShownClearIcon by remember(value) { derivedStateOf { value.isNotBlank() } }
     val keyboardController = LocalSoftwareKeyboardController.current
     OutlinedTextField(
         value = value,
@@ -98,7 +98,7 @@ fun MapTextField(
             keyboardController?.hide()
             onSearchClick()
         },
-        maxLines = 1,
+        maxLines = 3,
         colors = colors
     )
 }
@@ -117,7 +117,7 @@ fun DefaultTextField(
         imeAction = ImeAction.Next,
     )
 ) {
-    val showClearIcon by remember { derivedStateOf { value.isNotEmpty() } }
+    val showClearIcon by remember(value) { derivedStateOf { value.isNotEmpty() } }
     OutlinedTextField(
         modifier = modifier.fillMaxWidth(),
         value = value,
@@ -155,7 +155,7 @@ fun PasswordTextField(
     ),
     keyboardActions: KeyboardActions = KeyboardActions(),
 ) {
-    val shouldShowPasswordVisibility by remember { derivedStateOf { value.isNotEmpty() } }
+    val shouldShowPasswordVisibility by remember(value) { derivedStateOf { value.isNotEmpty() } }
     var passwordVisibility by remember(shouldShowPasswordVisibility) { mutableStateOf(value = false) }
 
     OutlinedTextField(
