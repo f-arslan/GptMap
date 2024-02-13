@@ -49,8 +49,8 @@ sealed class MapUiEvent {
     data object OnBackClick : MapUiEvent()
     data object OnExploreWithAiClick : MapUiEvent()
     data object OnScreenshotProcessStarted : MapUiEvent()
+    data object OnScreenshotProcessCancelled : MapUiEvent()
     data class OnStreetViewClick(val latLng: Pair<Double, Double>) : MapUiEvent()
     data object OnMyCurrentLocationClick : MapUiEvent()
-
     data object OnUnsetMyCurrentLocationState : MapUiEvent()
 }

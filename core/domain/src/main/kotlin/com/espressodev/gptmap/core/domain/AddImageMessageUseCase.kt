@@ -42,16 +42,16 @@ class AddImageMessageUseCase @Inject constructor(
                     ?: throw FailedToReadBitmapFromExternalStorageException()
 
             val stringBuilder = StringBuilder()
-            geminiService.getImageDescription(bitmap = bitmap, text = text)
-                .onSuccess { chunkFlow ->
-                    chunkFlow.collect { chunk ->
+
+            runCatching {
+                geminiService.getImageDescription(bitmap = bitmap, text = text).getOrThrow()
+                    .collect { chunk ->
                         stringBuilder.append(chunk)
                     }
-                }
-                .onFailure { throwable ->
-                    stringBuilder.append(throwable.message ?: "Something went wrong")
-                    Log.e("AddImageMessageUseCase", "invoke: ", throwable)
-                }
+            }.onFailure {
+                stringBuilder.append(it.message)
+            }
+
             val fullResponseText = stringBuilder.toString().trim()
 
             realmSyncService.updateImageMessageInImageAnalysis(

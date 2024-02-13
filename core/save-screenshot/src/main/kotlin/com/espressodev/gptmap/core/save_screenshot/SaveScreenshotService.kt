@@ -16,11 +16,6 @@ import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 
@@ -35,7 +30,6 @@ class SaveScreenshotService : Service() {
     private var mDensity = 0
     private var mWidth = 0
     private var mHeight = 0
-    private val serviceScope = CoroutineScope(Dispatchers.IO)
 
     /**
      * Listener for new images available for processing.
@@ -44,46 +38,44 @@ class SaveScreenshotService : Service() {
      */
     private inner class ImageAvailableListener : ImageReader.OnImageAvailableListener {
         override fun onImageAvailable(reader: ImageReader) {
-            serviceScope.launch {
-                var fos: FileOutputStream? = null
-                var bitmap: Bitmap? = null
-                try {
-                    val image = reader.acquireLatestImage()
-                    image?.use {
-                        val planes = image.planes
-                        val buffer = planes[0].buffer
-                        val pixelStride = planes[0].pixelStride
-                        val rowStride = planes[0].rowStride
-                        val rowPadding = rowStride - pixelStride * mWidth
+            var fos: FileOutputStream? = null
+            var bitmap: Bitmap? = null
+            try {
+                val image = reader.acquireLatestImage()
+                image?.use {
+                    val planes = image.planes
+                    val buffer = planes[0].buffer
+                    val pixelStride = planes[0].pixelStride
+                    val rowStride = planes[0].rowStride
+                    val rowPadding = rowStride - pixelStride * mWidth
 
-                        // Create bitmap
-                        bitmap = Bitmap.createBitmap(
-                            mWidth + rowPadding / pixelStride,
-                            mHeight,
-                            Bitmap.Config.ARGB_8888
-                        )
-                        bitmap?.copyPixelsFromBuffer(buffer)
+                    // Create bitmap
+                    bitmap = Bitmap.createBitmap(
+                        mWidth + rowPadding / pixelStride,
+                        mHeight,
+                        Bitmap.Config.ARGB_8888
+                    )
+                    bitmap?.copyPixelsFromBuffer(buffer)
 
-                        fos = FileOutputStream("$mStoreDir/screenshot.png")
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            bitmap?.compress(Bitmap.CompressFormat.WEBP_LOSSY, 80, fos!!)
-                        } else {
-                            bitmap?.compress(Bitmap.CompressFormat.JPEG, 80, fos!!)
-                        }
-                        Log.e(TAG, "Screenshot captured")
-                        sendBroadcast(
-                            Intent(ACTION_SERVICE_STOPPED).apply {
-                                setPackage(applicationContext.packageName)
-                            }
-                        )
+                    fos = FileOutputStream("$mStoreDir/screenshot.png")
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        bitmap?.compress(Bitmap.CompressFormat.WEBP_LOSSY, 80, fos!!)
+                    } else {
+                        bitmap?.compress(Bitmap.CompressFormat.JPEG, 80, fos!!)
                     }
-                } catch (e: Exception) {
-                    Log.e(TAG, "Failed to capture screenshot because: ${e.message}")
-                } finally {
-                    fos?.close()
-                    bitmap?.recycle()
-                    stopSelf() // Stop the service after taking the screenshot
+                    Log.d(TAG, "Screenshot captured")
+                    sendBroadcast(
+                        Intent(ACTION_SERVICE_STOPPED).apply {
+                            setPackage(applicationContext.packageName)
+                        }
+                    )
                 }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to capture screenshot because: ${e.message}")
+            } finally {
+                fos?.close()
+                bitmap?.recycle()
+                stopSelf() // Stop the service after taking the screenshot
             }
         }
     }
@@ -171,17 +163,18 @@ class SaveScreenshotService : Service() {
             mWidth = metrics.widthPixels
             mHeight = metrics.heightPixels
 
-            // Initialize the ImageReader for capturing the screen
-            mImageReader =
-                ImageReader.newInstance(mWidth, mHeight, PixelFormat.RGBA_8888, 2).apply {
+            // Check if mImageReader is already initialized
+            if (mImageReader == null || mImageReader?.width != mWidth || mImageReader?.height != mHeight) {
+                mImageReader?.close() // Close the existing instance if not null
+                // Initialize the ImageReader for capturing the screen
+                mImageReader = ImageReader.newInstance(mWidth, mHeight, PixelFormat.RGBA_8888, 2).apply {
                     setOnImageAvailableListener(ImageAvailableListener(), null)
                 }
+            }
 
             // Create a virtual display for the media projection after a delay
-            serviceScope.launch {
-                delay(250)
-                createVirtualDisplay(mediaProjection)
-            }
+            createOrUpdateVirtualDisplay(mediaProjection)
+
         } ?: run {
             Log.e(TAG, "Failed to start media projection")
             stopSelf()
@@ -191,9 +184,13 @@ class SaveScreenshotService : Service() {
     /**
      * Creates a virtual display for the media projection.
      */
-    private fun createVirtualDisplay(mediaProjection: MediaProjection) {
+    private fun createOrUpdateVirtualDisplay(mediaProjection: MediaProjection) {
+        // Release the previous virtual display if it exists
+        mVirtualDisplay?.release()
+
+        // Create a new virtual display
         mVirtualDisplay = mediaProjection.createVirtualDisplay(
-            SCREEN_CAP_NAME,
+            "ScreenCapture",
             mWidth,
             mHeight,
             mDensity,
@@ -204,6 +201,11 @@ class SaveScreenshotService : Service() {
         )
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        releaseResources()
+    }
+
     /**
      * Releases resources and stops the media projection.
      */
@@ -211,19 +213,13 @@ class SaveScreenshotService : Service() {
         mVirtualDisplay?.release()
         mImageReader?.close()
         mMediaProjection?.stop()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        releaseResources()
-        serviceScope.cancel()
+        mImageReader = null
     }
 
     companion object {
         private const val TAG = "ScreenCaptureService"
         private const val RESULT_CODE = "RESULT_CODE"
         private const val DATA = "DATA"
-        private const val SCREEN_CAP_NAME = "screen_cap"
         const val ACTION_SERVICE_STARTED =
             "com.espressodev.gptmap.core.screen_capture.SERVICE_STARTED"
         const val ACTION_SERVICE_STOPPED =

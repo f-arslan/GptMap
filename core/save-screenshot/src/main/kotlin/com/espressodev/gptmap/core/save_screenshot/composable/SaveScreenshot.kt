@@ -3,11 +3,9 @@ package com.espressodev.gptmap.core.save_screenshot.composable
 import android.app.Activity
 import android.content.Context
 import android.media.projection.MediaProjectionManager
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -19,6 +17,7 @@ import com.espressodev.gptmap.core.save_screenshot.SaveScreenshotService
 @Composable
 fun SaveScreenshot(
     onClick: () -> Unit,
+    onCancelClick: () -> Unit,
     modifier: Modifier = Modifier,
     isButtonVisible: Boolean = true,
 ) {
@@ -39,6 +38,8 @@ fun SaveScreenshot(
                         )
                     }
                 )
+            } else {
+                onCancelClick()
             }
         }
 

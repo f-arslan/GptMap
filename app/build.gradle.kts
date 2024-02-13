@@ -13,7 +13,7 @@ android {
     defaultConfig {
         applicationId = "com.espressodev.gptmap"
         versionCode = 1
-        versionName = "0.0.1"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = libs.androidx.test.runner.toString()
         vectorDrawables {
@@ -37,7 +37,6 @@ android {
 
     buildTypes {
         release {
-            isDebuggable = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

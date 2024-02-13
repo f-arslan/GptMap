@@ -26,7 +26,6 @@ class SaveImageToFirebaseStorageUseCase @Inject constructor(
     }
 
     private suspend fun saveImageUrlToRealm(imageUrl: String, location: Location) {
-        Log.d("SaveImageToFirebaseStorageUseCase", "saveImageUrlToRealm: $location")
         val realmLocation = location.toRealmFavourite().apply {
             placeholderImageUrl = imageUrl
         }

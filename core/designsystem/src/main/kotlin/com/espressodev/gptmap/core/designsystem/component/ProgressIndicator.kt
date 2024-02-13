@@ -37,27 +37,26 @@ fun GmProgressIndicator(modifier: Modifier = Modifier) {
 fun LottieAnimationPlaceholder(
     @RawRes rawRes: Int,
     modifier: Modifier = Modifier,
-    visible: Boolean = true,
     backgroundColor: Color = MaterialTheme.colorScheme.background
 ) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(rawRes))
     val progress by animateLottieCompositionAsState(
         composition,
-        iterations = LottieConstants.IterateForever
+        iterations = LottieConstants.IterateForever,
+        reverseOnRepeat = true
     )
-    if (visible)
-        Box(
-            modifier = modifier
-                .fillMaxSize()
-                .background(backgroundColor),
-            contentAlignment = Alignment.Center
-        ) {
-            LottieAnimation(
-                composition = composition,
-                progress = { progress },
-                modifier = Modifier.fillMaxSize(0.50f)
-            )
-        }
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(backgroundColor),
+        contentAlignment = Alignment.Center
+    ) {
+        LottieAnimation(
+            composition = composition,
+            progress = { progress },
+            modifier = Modifier.fillMaxSize(0.50f)
+        )
+    }
 }
 
 @Preview

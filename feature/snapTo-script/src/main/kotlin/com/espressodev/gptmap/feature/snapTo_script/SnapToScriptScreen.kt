@@ -86,10 +86,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
@@ -718,23 +716,15 @@ fun TextFieldSection(
         derivedStateOf { value.isBlank() }
     }
 
-    val (textFieldValue) = remember(value) {
-        mutableStateOf(
-            TextFieldValue(
-                text = value,
-                selection = TextRange(value.length)
-            )
-        )
-    }
-
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
+
     val keyboardState by rememberKeyboardAsState()
 
     var triggerSendLambda by remember { mutableStateOf(value = false) }
 
-    LaunchedEffect(key1 = keyboardState.isVisible) {
+    LaunchedEffect(key1 = triggerSendLambda) {
         if (triggerSendLambda and !keyboardState.isVisible) {
             onSendClick()
             triggerSendLambda = false
@@ -766,10 +756,8 @@ fun TextFieldSection(
         verticalAlignment = Alignment.CenterVertically
     ) {
         OutlinedTextField(
-            value = textFieldValue,
-            onValueChange = {
-                onValueChange(it.text)
-            },
+            value = value,
+            onValueChange = onValueChange,
             enabled = isTextFieldEnabled,
             singleLine = true,
             shape = RoundedCornerShape(24.dp),
@@ -815,8 +803,8 @@ fun TextFieldSection(
 
         FilledTonalIconButton(
             onClick = {
-                triggerSendLambda = true
                 keyboardController?.hide()
+                triggerSendLambda = true
             },
             modifier = Modifier.padding(start = 8.dp),
             enabled = !isTextFieldEmpty

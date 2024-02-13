@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.feature.snapTo_script
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.espressodev.gptmap.core.common.DataStoreService
@@ -114,6 +115,7 @@ class SnapToScriptViewModel @Inject constructor(
         val addMessageResult = addImageMessageUseCase(imageId = imageId, text = value)
 
         addMessageResult.getOrElse {
+            Log.e("SnapToScriptViewModel", "onSendClick: ", it)
             _snapToScriptUiState.update { it.copy(aiResponseStatus = AiResponseStatus.Idle) }
         }
         _snapToScriptUiState.update {
@@ -140,7 +142,7 @@ class SnapToScriptViewModel @Inject constructor(
                     _snapToScriptUiState.update { it.copy(value = totalValue) }
                 }
                 if (isFinished) {
-                    _snapToScriptUiState.update { it.copy(inputSelector = InputSelector.Keyboard) }
+                    _snapToScriptUiState.update { it.copy(inputSelector = InputSelector.None) }
                 }
                 _rmsFlow.emit(rms)
             }
@@ -156,12 +158,12 @@ class SnapToScriptViewModel @Inject constructor(
             val imageUrl = dataStoreService.getImageUrl()
             _snapToScriptUiState.update { it.copy(imageUrl = imageUrl) }
         }
-//        launch {
-//            val latestImageIdForChat = dataStoreService.getLatestImageIdForChat()
-//            if (latestImageIdForChat != imageId) {
-//                dataStoreService.setLatestImageIdForChat(imageId)
-//            }
-//        }
+        launch {
+            val latestImageIdForChat = dataStoreService.getLatestImageIdForChat()
+            if (latestImageIdForChat != imageId) {
+                dataStoreService.setLatestImageIdForChat(imageId)
+            }
+        }
     }
 
     private fun resetSnapToScriptUiState() {

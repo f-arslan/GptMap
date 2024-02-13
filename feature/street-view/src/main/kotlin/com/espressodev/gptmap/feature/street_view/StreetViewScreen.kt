@@ -50,6 +50,7 @@ fun StreetViewRoute(
 
     SaveScreenshot(
         onClick = viewModel::initializeScreenCaptureBroadcastReceiver,
+        onCancelClick = viewModel::reset,
         isButtonVisible = uiState.isScreenshotButtonVisible
     )
 

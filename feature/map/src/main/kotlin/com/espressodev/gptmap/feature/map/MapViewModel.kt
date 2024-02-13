@@ -66,17 +66,7 @@ class MapViewModel @Inject constructor(
     private val serviceStateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
-                SaveScreenshotService.ACTION_SERVICE_STARTED -> {
-                    _uiState.update {
-                        it.copy(
-                            isMapButtonsVisible = false,
-                            searchBarState = false,
-                            screenshotState = ScreenshotState.STARTED
-                        )
-                    }
-                }
-
-
+                SaveScreenshotService.ACTION_SERVICE_STARTED -> {}
                 SaveScreenshotService.ACTION_SERVICE_STOPPED -> {
                     if (uiState.value.screenshotState == ScreenshotState.STARTED) {
                         _uiState.update { it.copy(screenshotState = ScreenshotState.FINISHED) }
@@ -143,6 +133,7 @@ class MapViewModel @Inject constructor(
             MapUiEvent.OnUnsetMyCurrentLocationState -> _uiState.update {
                 it.copy(myCurrentLocationState = Pair(false, myCurrentLocationState.second))
             }
+            MapUiEvent.OnScreenshotProcessCancelled -> reset()
         }
     }
 
@@ -334,6 +325,7 @@ class MapViewModel @Inject constructor(
             it.copy(
                 isMapButtonsVisible = true,
                 searchBarState = true,
+                isMyLocationButtonVisible = true,
                 screenshotState = ScreenshotState.IDLE,
             )
         }
@@ -359,6 +351,8 @@ class MapViewModel @Inject constructor(
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     private fun initializeScreenCaptureBroadcastReceiver() = launchCatching {
+        updateUiBeforeProcess()
+
         val filter = IntentFilter().apply {
             addAction(SaveScreenshotService.ACTION_SERVICE_STARTED)
             addAction(SaveScreenshotService.ACTION_SERVICE_STOPPED)
@@ -374,6 +368,17 @@ class MapViewModel @Inject constructor(
         }
     }
 
+    private fun updateUiBeforeProcess() {
+        _uiState.update {
+            it.copy(
+                isMapButtonsVisible = false,
+                searchBarState = false,
+                isMyLocationButtonVisible = false,
+                screenshotState = ScreenshotState.STARTED
+            )
+        }
+    }
+
     private fun loadLocationFromFavourite(favouriteId: String) = launchCatching {
         val location = withContext(ioDispatcher) {
             realmSyncService.getFavourite(favouriteId)
@@ -384,6 +389,7 @@ class MapViewModel @Inject constructor(
                 location = location,
                 searchBarState = false,
                 bottomSheetState = MapBottomSheetState.SMALL_INFORMATION_CARD,
+                isMyLocationButtonVisible = false
             )
         }
     }

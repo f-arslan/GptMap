@@ -4,6 +4,7 @@ package com.espressodev.gptmap.feature.map
 
 import StreetView
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
@@ -39,6 +40,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -152,8 +154,8 @@ fun MapRoute(
 
     LaunchedEffect(uiState.screenshotState) {
         if (uiState.screenshotState == ScreenshotState.FINISHED) {
-            viewModel.reset()
             navigateToScreenshot()
+            viewModel.reset()
         }
     }
 
@@ -179,7 +181,6 @@ private fun MapScreen(
             onExploreWithAiClick = onExploreWithAiClickFromImage
         )
     }
-
     Box(modifier = modifier.fillMaxSize()) {
         AnimatedVisibility(
             visible = uiState.isMapButtonsVisible,
@@ -209,6 +210,7 @@ private fun MapScreen(
         }
         SaveScreenshot(
             onClick = { onEvent(MapUiEvent.OnScreenshotProcessStarted) },
+            onCancelClick = { onEvent(MapUiEvent.OnScreenshotProcessCancelled) },
             isButtonVisible = uiState.isMapButtonsVisible
         )
         LoadingDialog(uiState.componentLoadingState)
@@ -408,12 +410,13 @@ private fun BoxScope.MapCameraSection(uiState: MapUiState, onEvent: (MapUiEvent)
 @Composable
 private fun MapSection(cameraPositionState: CameraPositionState) {
     val context = LocalContext.current
-    val (isMapLoaded, setMapLoaded) = remember { mutableStateOf(value = false) }
-    LottieAnimationPlaceholder(
-        rawRes = AppRaw.transistor_earth,
-        visible = !isMapLoaded,
-        modifier = Modifier.zIndex(2f)
-    )
+    var isMapLoaded by remember { mutableStateOf(value = false) }
+    if (!isMapLoaded) {
+        LottieAnimationPlaceholder(
+            rawRes = AppRaw.transistor_earth,
+            modifier = Modifier.zIndex(2f)
+        )
+    }
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
@@ -424,7 +427,7 @@ private fun MapSection(cameraPositionState: CameraPositionState) {
                 /* resourceId = */ AppRaw.map_style
             ),
         ),
-        onMapLoaded = { setMapLoaded(true) },
+        onMapLoaded = { isMapLoaded = true },
     )
 }
 

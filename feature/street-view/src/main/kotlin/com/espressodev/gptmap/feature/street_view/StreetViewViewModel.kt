@@ -7,14 +7,17 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.save_screenshot.SaveScreenshotService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,18 +41,14 @@ class StreetViewViewModel @Inject constructor(
     private val serviceStateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
-                SaveScreenshotService.ACTION_SERVICE_STARTED -> {
-                    _uiState.update {
-                        it.copy(
-                            isScreenshotButtonVisible = false,
-                            screenshotState = ScreenshotState.STARTED
-                        )
-                    }
-                }
+                SaveScreenshotService.ACTION_SERVICE_STARTED -> {}
 
                 SaveScreenshotService.ACTION_SERVICE_STOPPED -> {
                     if (uiState.value.screenshotState == ScreenshotState.STARTED) {
-                        _uiState.update { it.copy(screenshotState = ScreenshotState.FINISHED) }
+                        viewModelScope.launch {
+                            delay(50L)
+                            _uiState.update { it.copy(screenshotState = ScreenshotState.FINISHED) }
+                        }
                         applicationContext.unregisterReceiver(this)
                     }
                 }
@@ -59,6 +58,12 @@ class StreetViewViewModel @Inject constructor(
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     fun initializeScreenCaptureBroadcastReceiver() = launchCatching {
+        _uiState.update {
+            it.copy(
+                isScreenshotButtonVisible = false,
+                screenshotState = ScreenshotState.STARTED
+            )
+        }
         val filter = IntentFilter().apply {
             addAction(SaveScreenshotService.ACTION_SERVICE_STARTED)
             addAction(SaveScreenshotService.ACTION_SERVICE_STOPPED)
