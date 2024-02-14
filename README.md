@@ -2,7 +2,7 @@
 <p align="center">Welcome to Gptmap, a startup project crafted using Kotlin and Jetpack Compose.</p>
  <p align="center" text-align="center">This project will guide you through creating a comprehensive Android application using a modern toolkit, highlighting the integration of AI technologies and illustrating the real-world applications of these advanced technologies, providing valuable insights and best practices.</p>
 
-![feature_3](https://github.com/f-arslan/GptMap/assets/66749900/f648ad24-ffef-46b6-ac39-c3d7584694ab)
+![Feature](public/images/feature.png)
 
 ## Download
 Go to the [Releases](https://github.com/f-arslan/GptMap/releases) to download the latest APK.
@@ -41,7 +41,7 @@ Go to the [Releases](https://github.com/f-arslan/GptMap/releases) to download th
 - **Core Android Features**:
     - Utilizes Services, Broadcast Receivers, and Intents for robust background processing and inter-component communication.
 - **Project Organization**:
-    - Implements a Multi Module Structure with a version catalogue, promoting modular development and easier dependency management.
+    - Implements a multi-module structure with a version catalogue, promoting modular development and easier dependency management.
 - **Networking**:
     - **[Retrofit](https://github.com/square/retrofit)**: Simplifies REST API communication, enhancing data exchange and integration.
 - **[Docker](https://www.docker.com/)**: Utilizes container technology for consistent development, testing, and deployment environments.
@@ -53,8 +53,48 @@ Go to the [Releases](https://github.com/f-arslan/GptMap/releases) to download th
     - **Detekt**: Monitors code quality and maintainability, enforcing best practices and coding standards.
 
 ### Architecture Overview
-![GptmapArchıtecture](https://github.com/f-arslan/GptMap/assets/66749900/22b127cc-a8e7-4937-89b1-86b4f05090e3)
+![GptmapArchıtecture](public/images/gptmapArc.jpg)
 
 <p>This project is designed following the principles of Clean Architecture, utilizing a multi-modular approach. It includes several layers, including the UI Layer, Domain Layer, Data Layer, and the backend, to ensure a solid separation of concerns and enhance maintainability.
 
 For the backend, Ktor for server-side logic, MongoDB for database management (Realm Sync and Auth for synchronization and authentication), Firebase for authentication, storage, and real-time database capabilities (Auth, Storage, Firestore), and GCP's Secret Manager for secure management of secrets and API keys.</p>
+## App Demos
+
+https://github.com/f-arslan/GptMap/assets/66749900/37f69fa5-bd37-41da-8688-15c74ce8adaf
+
+https://github.com/f-arslan/GptMap/assets/66749900/889fdcf8-8989-4d2d-8752-88cdbe6747cb
+
+https://github.com/f-arslan/GptMap/assets/66749900/4f6530b3-db64-41e1-8796-6aa8d0934d40
+
+https://github.com/f-arslan/GptMap/assets/66749900/a1b4fb84-edab-4af2-b191-d8638b8792b2
+
+https://github.com/f-arslan/GptMap/assets/66749900/69f6ba07-ecf0-47de-931c-f8a2e7ee3b14
+
+### Setup and Configuration Guide
+
+Getting started with this project involves several key steps to ensure everything is set up correctly. Follow this guide to configure your development environment and integrate all necessary services:
+1. **Android Studio Iguana**: This project is optimized for Android Studio Iguana. While it might work on lower versions, Gradle plugin 8.2.2 is required for the best experience. If you're using an older version, consider updating to avoid compatibility issues.
+    
+2. **Setting up `local.properties`**: This file contains essential environment variables. You won't need an OpenAI key as it will be deprecated. Fill in the necessary API keys and URLs except for the OpenAI key:  
+
+```properties
+sdk.dir=<path_to_your_android_sdk>
+MAPS_API_KEY=<your_google_maps_api_key>
+OPENAI_API_KEY= (will be deprecated, no need to fill this)
+PALM_API_KEY=<your_gemini_api_key>
+UNSPLASH_BASE_URL=<unsplash_api_base_url>
+```
+
+  Ensure you replace placeholder text with actual values relevant to your development environment.
+    
+3. **Remove Keystore Related Configurations**: For development purposes, remove or comment out any keystore configurations in your Gradle build files. This simplifies the build process for initial setup and testing.
+    
+4. **Setup Docker and GCP Secret Manager**: Docker is used for containerization, ensuring a consistent environment for development and deployment. GCP Secret Manager stores and manages access to your application's secrets. Skipping this step means you won't be able to use AI features on images, though you can still proceed with other functionalities. For Docker, install Docker and follow the setup instructions for your OS. For GCP Secret Manager, set up a GCP account, create a new project, and follow the instructions to store your secrets.
+    
+5. **Firebase Setup**: To integrate Firebase, create a new project in the Firebase console, register your app, and download the `google-services.json` file. Place this file in your app's `app` directory. This step is crucial for utilizing Firebase Auth, Firestore, and Storage.
+    
+6. **MongoDB Atlas Setup**: Sign up or log in to MongoDB Atlas, create a new cluster, and connect your application using the provided connection string. Ensure you've configured the network access and database user for your cluster.
+    
+7. **GCP Account Requirement**: A Google Cloud Platform (GCP) account is necessary for utilizing Google Maps API and GCP Secret Manager. If you don't already have an account, sign up at [GCP's website](https://cloud.google.com/) and set up billing to access these services.
+
+
