@@ -7,6 +7,12 @@
 ## Download
 Go to the [Releases](https://github.com/f-arslan/GptMap/releases) to download the latest APK.
 
+## Table of Contents
+- [Tech Stack & Open-source Libraries](#tech-stack--open-source-libraries)
+- [Architecture Overview](#architecture-overview)
+- [App Demos](#app-demos)
+- [Setup and Configuration Guide](#setup-and-configuration-guide)
+
 ## Tech Stack & Open-source Libraries
 
 - **[Kotlin](https://kotlinlang.org/)**: The primary language for application development, emphasizing safety, simplicity, and interoperability.
