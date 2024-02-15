@@ -67,15 +67,12 @@ For the backend, Ktor for server-side logic, MongoDB for database management (Re
 ## App Demos
 Check out the [resources](public/) for the full list.
 
+https://github.com/f-arslan/GptMap/assets/66749900/68769bcf-8dcc-4e9d-8bec-6d6f393dc7b6
+
 https://github.com/f-arslan/GptMap/assets/66749900/37f69fa5-bd37-41da-8688-15c74ce8adaf
 
 https://github.com/f-arslan/GptMap/assets/66749900/889fdcf8-8989-4d2d-8752-88cdbe6747cb
 
-https://github.com/f-arslan/GptMap/assets/66749900/4f6530b3-db64-41e1-8796-6aa8d0934d40
-
-https://github.com/f-arslan/GptMap/assets/66749900/a1b4fb84-edab-4af2-b191-d8638b8792b2
-
-https://github.com/f-arslan/GptMap/assets/66749900/69f6ba07-ecf0-47de-931c-f8a2e7ee3b14
 
 ### Setup and Configuration Guide
 
