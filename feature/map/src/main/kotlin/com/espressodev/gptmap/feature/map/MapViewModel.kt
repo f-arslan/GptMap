@@ -121,18 +121,14 @@ class MapViewModel @Inject constructor(
             MapUiEvent.OnDetailSheetBackClick ->
                 _uiState.update { it.copy(bottomSheetState = MapBottomSheetState.SMALL_INFORMATION_CARD) }
 
-            MapUiEvent.OnBackClick -> _uiState.update {
-                it.copy(
-                    bottomSheetState = MapBottomSheetState.BOTTOM_SHEET_HIDDEN,
-                    searchBarState = true
-                )
-            }
+            MapUiEvent.OnBackClick -> reset()
 
             MapUiEvent.OnScreenshotProcessStarted -> initializeScreenCaptureBroadcastReceiver()
             MapUiEvent.OnMyCurrentLocationClick -> getMyCurrentLocation()
             MapUiEvent.OnUnsetMyCurrentLocationState -> _uiState.update {
                 it.copy(myCurrentLocationState = Pair(false, myCurrentLocationState.second))
             }
+
             MapUiEvent.OnScreenshotProcessCancelled -> reset()
         }
     }
@@ -327,6 +323,7 @@ class MapViewModel @Inject constructor(
                 searchBarState = true,
                 isMyLocationButtonVisible = true,
                 screenshotState = ScreenshotState.IDLE,
+                bottomSheetState = MapBottomSheetState.BOTTOM_SHEET_HIDDEN
             )
         }
     }

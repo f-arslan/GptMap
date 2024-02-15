@@ -1,15 +1,13 @@
 package com.espressodev.gptmap.feature.login
 
-import android.util.Log
-import com.espressodev.gptmap.core.model.Exceptions.FirebaseEmailVerificationIsFalseException
 import com.espressodev.gptmap.core.common.GmViewModel
-import com.espressodev.gptmap.core.model.ext.isValidEmail
-import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
 import com.espressodev.gptmap.core.common.LogService
+import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
 import com.espressodev.gptmap.core.domain.SignInUpWithGoogleUseCase
 import com.espressodev.gptmap.core.domain.SignInWithEmailAndPasswordUseCase
-import com.espressodev.gptmap.core.model.Exceptions
+import com.espressodev.gptmap.core.model.Exceptions.FirebaseEmailVerificationIsFalseException
 import com.espressodev.gptmap.core.model.LoadingState
+import com.espressodev.gptmap.core.model.ext.isValidEmail
 import com.espressodev.gptmap.core.model.google.GoogleResponse
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.AuthCredential
@@ -28,8 +26,7 @@ class LoginViewModel @Inject constructor(
     val oneTapClient: SignInClient,
     logService: LogService
 ) : GmViewModel(logService) {
-    private val _uiState =
-        MutableStateFlow(LoginUiState(email = "tetow88667@giratex.com", password = "Gptmap123"))
+    private val _uiState = MutableStateFlow(LoginUiState())
     val uiState = _uiState.asStateFlow()
 
     private val email get() = uiState.value.email
