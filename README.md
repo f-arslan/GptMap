@@ -65,6 +65,7 @@ Go to the [Releases](https://github.com/f-arslan/GptMap/releases) to download th
 
 For the backend, Ktor for server-side logic, MongoDB for database management (Realm Sync and Auth for synchronization and authentication), Firebase for authentication, storage, and real-time database capabilities (Auth, Storage, Firestore), and GCP's Secret Manager for secure management of secrets and API keys.</p>
 ## App Demos
+Check out the [resources](public/) for the full list.
 
 https://github.com/f-arslan/GptMap/assets/66749900/37f69fa5-bd37-41da-8688-15c74ce8adaf
 
