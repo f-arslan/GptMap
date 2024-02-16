@@ -1,14 +1,13 @@
 package com.espressodev.gptmap.core.domain
 
 import android.content.Context
-import android.util.Log
 import com.espressodev.gptmap.api.gemini.GeminiService
 import com.espressodev.gptmap.core.ext.runCatchingWithContext
 import com.espressodev.gptmap.core.model.Constants.PHONE_IMAGE_DIR
 import com.espressodev.gptmap.core.model.Exceptions.FailedToReadBitmapFromExternalStorageException
 import com.espressodev.gptmap.core.model.ext.readBitmapFromExternalStorage
 import com.espressodev.gptmap.core.model.realm.RealmImageMessage
-import com.espressodev.gptmap.core.mongodb.RealmSyncService
+import com.espressodev.gptmap.core.mongodb.ImageMessageService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -18,7 +17,7 @@ class AddImageMessageUseCase @Inject constructor(
     @ApplicationContext private val context: Context,
     private val ioDispatcher: CoroutineDispatcher,
     private val geminiService: GeminiService,
-    private val realmSyncService: RealmSyncService,
+    private val imageMessageService: ImageMessageService,
 ) {
     suspend operator fun invoke(imageId: String, text: String) =
         runCatchingWithContext(ioDispatcher) {
@@ -27,11 +26,10 @@ class AddImageMessageUseCase @Inject constructor(
             }
 
             launch {
-                realmSyncService.addImageMessageToImageAnalysis(
+                imageMessageService.addImageMessageToImageAnalysis(
                     imageAnalysisId = imageId,
                     message = realmImageMessage
                 ).getOrThrow()
-
             }
 
             val bitmap =
@@ -54,11 +52,10 @@ class AddImageMessageUseCase @Inject constructor(
 
             val fullResponseText = stringBuilder.toString().trim()
 
-            realmSyncService.updateImageMessageInImageAnalysis(
+            imageMessageService.updateImageMessageInImageAnalysis(
                 imageAnalysisId = imageId,
                 messageId = realmImageMessage.id,
                 text = fullResponseText,
             ).getOrThrow()
         }
 }
-

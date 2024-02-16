@@ -24,11 +24,9 @@ fun String.isValidName(): Boolean {
         .matches()
 }
 
-fun String.isValidPassword(): Boolean {
-    return this.isNotBlank() &&
-            this.length >= MinPassPattern &&
-            Pattern.compile(PassPattern).matcher(this).matches()
-}
+fun String.isValidPassword(): Boolean = isNotBlank() &&
+    length >= MinPassPattern &&
+    Pattern.compile(PassPattern).matcher(this).matches()
 
 fun String.passwordMatches(repeated: String): Boolean {
     return this == repeated

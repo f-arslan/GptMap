@@ -33,6 +33,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 fun StreetViewRoute(
     popUp: () -> Unit,
     navigateToScreenshot: () -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: StreetViewViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -43,9 +44,14 @@ fun StreetViewRoute(
                 icon = IconType.Bitmap(AppDrawable.street_view),
                 onBackClick = popUp
             )
-        }
+        },
+        modifier = modifier
     ) {
-        StreetViewScreen(modifier = Modifier.padding(it), uiState.latitude, uiState.longitude)
+        StreetViewScreen(
+            latitude = uiState.latitude,
+            longitude = uiState.longitude,
+            modifier = Modifier.padding(it)
+        )
     }
 
     SaveScreenshot(
@@ -64,7 +70,7 @@ fun StreetViewRoute(
 
 @OptIn(MapsExperimentalFeature::class)
 @Composable
-fun StreetViewScreen(modifier: Modifier, latitude: Double, longitude: Double) {
+fun StreetViewScreen(latitude: Double, longitude: Double, modifier: Modifier = Modifier) {
     val (isStreetViewLoaded, setStreetViewLoaded) = remember { mutableStateOf(value = false) }
 
     LaunchedEffect(key1 = latitude) {
@@ -75,9 +81,16 @@ fun StreetViewScreen(modifier: Modifier, latitude: Double, longitude: Double) {
     Box(modifier = modifier.fillMaxSize()) {
         StreetView(
             modifier = Modifier.matchParentSize(),
-            streetViewPanoramaOptionsFactory = { StreetViewPanoramaOptions().position(LatLng(latitude, longitude)) }
+            streetViewPanoramaOptionsFactory = {
+                StreetViewPanoramaOptions().position(
+                    LatLng(
+                        latitude,
+                        longitude
+                    )
+                )
+            }
         )
-        AnimatedVisibility (!isStreetViewLoaded, modifier = Modifier.align(Alignment.Center)) {
+        AnimatedVisibility(!isStreetViewLoaded, modifier = Modifier.align(Alignment.Center)) {
             CircularProgressIndicator()
         }
     }

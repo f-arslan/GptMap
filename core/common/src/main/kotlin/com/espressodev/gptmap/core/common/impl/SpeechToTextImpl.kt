@@ -80,9 +80,8 @@ class SpeechToTextImpl @Inject constructor(
                     }
             }
 
-            override fun onEvent(eventType: Int, params: Bundle?) {}
+            override fun onEvent(eventType: Int, params: Bundle?) = Unit
         }
-
 
         speechRecognizer.setRecognitionListener(listener)
         speechRecognizer.startListening(recognizerIntent)

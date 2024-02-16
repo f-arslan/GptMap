@@ -11,7 +11,6 @@ fun NavController.navigateToVerifyAuth(navOptions: NavOptions? = null) {
     navigate(VerifyAuthRoute, navOptions)
 }
 
-
 fun NavGraphBuilder.verifyAuthScreen(popUp: () -> Unit, navigateToDelete: () -> Unit) {
     composable(VerifyAuthRoute) {
         VerifyAuthRoute(

@@ -56,21 +56,22 @@ fun LoginRoute(
     )
 }
 
-
 @Composable
 fun LoginScreen(
     uiState: LoginUiState,
     onEvent: (LoginEvent) -> Unit,
     onNotMemberClick: () -> Unit,
-    onForgotPasswordClick: () -> Unit
+    onForgotPasswordClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    AppWrapper {
+    AppWrapper(modifier) {
         LoginHeader()
         DefaultTextField(
             value = uiState.email,
             label = AppText.email,
             leadingIcon = GmIcons.EmailOutlined,
-            onValueChange = { onEvent(LoginEvent.OnEmailChanged(it)) })
+            onValueChange = { onEvent(LoginEvent.OnEmailChanged(it)) }
+        )
         Column {
             PasswordTextField(
                 value = uiState.password,
@@ -120,8 +121,8 @@ fun LoginScreen(
 }
 
 @Composable
-fun LoginHeader() {
-    HeaderWrapper {
+fun LoginHeader(modifier: Modifier = Modifier) {
+    HeaderWrapper(modifier = modifier) {
         Text(
             text = stringResource(AppText.login_header),
             style = MaterialTheme.typography.displaySmall
@@ -137,6 +138,6 @@ fun LoginHeader() {
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenPreview() {
+private fun LoginScreenPreview() {
     LoginScreen(LoginUiState("Fatih"), {}, {}, {})
 }

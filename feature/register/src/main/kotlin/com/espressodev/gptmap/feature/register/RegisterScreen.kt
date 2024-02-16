@@ -1,5 +1,7 @@
 package com.espressodev.gptmap.feature.register
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,12 +33,12 @@ import com.espressodev.gptmap.core.designsystem.Constants.PRIVACY_POLICY_LINK
 import com.espressodev.gptmap.core.designsystem.Constants.TERMS_CONDITIONS
 import com.espressodev.gptmap.core.designsystem.Constants.TERMS_CONDITIONS_LINK
 import com.espressodev.gptmap.core.designsystem.GmIcons
-import com.espressodev.gptmap.core.designsystem.component.GmAlertDialog
 import com.espressodev.gptmap.core.designsystem.component.AppWrapper
 import com.espressodev.gptmap.core.designsystem.component.DayHeader
 import com.espressodev.gptmap.core.designsystem.component.DefaultButton
 import com.espressodev.gptmap.core.designsystem.component.DefaultTextField
 import com.espressodev.gptmap.core.designsystem.component.ExtFloActionButton
+import com.espressodev.gptmap.core.designsystem.component.GmAlertDialog
 import com.espressodev.gptmap.core.designsystem.component.GmProgressIndicator
 import com.espressodev.gptmap.core.designsystem.component.HeaderWrapper
 import com.espressodev.gptmap.core.designsystem.component.HyperlinkText
@@ -52,7 +54,8 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 fun RegisterRoute(
     clearAndNavigateLogin: () -> Unit,
     clearAndNavigateMap: () -> Unit,
-    viewModel: RegisterScreenViewModel = hiltViewModel()
+    modifier: Modifier = Modifier,
+    viewModel: RegisterScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     when {
@@ -68,16 +71,16 @@ fun RegisterRoute(
                 onDismiss = {
                     viewModel.onEvent(
                         RegisterEvent.OnVerificationAlertStateChanged(
-                            LoadingState.Idle
-                        )
+                            LoadingState.Idle,
+                        ),
                     )
                 },
                 text = {
                     Text(
                         stringResource(AppText.email_confirmation_body),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     )
-                }
+                },
             )
         }
     }
@@ -85,7 +88,8 @@ fun RegisterRoute(
     RegisterScreen(
         uiState = uiState,
         onEvent = viewModel::onEvent,
-        onAlreadyHaveAccountClicked = clearAndNavigateLogin
+        onAlreadyHaveAccountClicked = clearAndNavigateLogin,
+        modifier = modifier,
     )
 
     OneTapLauncher(
@@ -93,7 +97,7 @@ fun RegisterRoute(
         oneTapSignInUpResponse = uiState.oneTapSignUpResponse,
         singInUpWithGoogleResponse = uiState.signUpWithGoogleResponse,
         signInWithGoogle = viewModel::signUpWithGoogle,
-        navigate = clearAndNavigateMap
+        navigate = clearAndNavigateMap,
     )
 }
 
@@ -102,68 +106,33 @@ fun RegisterRoute(
 fun RegisterScreen(
     uiState: RegisterUiState,
     onEvent: (RegisterEvent) -> Unit,
-    onAlreadyHaveAccountClicked: () -> Unit
+    onAlreadyHaveAccountClicked: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val (
         fullNameFocusRequester,
         emailFocusRequester,
         passwordFocusRequester,
-        confirmPasswordFocusRequester
+        confirmPasswordFocusRequester,
     ) = FocusRequester.createRefs()
     val keyboardController = LocalSoftwareKeyboardController.current
-    AppWrapper {
+    AppWrapper(modifier = modifier) {
         RegisterHeader()
-        DefaultTextField(
-            value = uiState.fullName,
-            label = AppText.full_name,
-            leadingIcon = GmIcons.FaceOutlined,
-            onValueChange = { onEvent(RegisterEvent.OnFullNameChanged(it)) },
-            modifier = Modifier.focusRequester(fullNameFocusRequester),
-            keyboardActions = KeyboardActions(onNext = { emailFocusRequester.requestFocus() })
-        )
-        DefaultTextField(
-            value = uiState.email,
-            label = AppText.email,
-            leadingIcon = GmIcons.EmailOutlined,
-            onValueChange = { onEvent(RegisterEvent.OnEmailChanged(it)) },
-            modifier = Modifier.focusRequester(emailFocusRequester),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions(onNext = { passwordFocusRequester.requestFocus() })
-        )
-        PasswordTextField(
-            value = uiState.password,
-            icon = GmIcons.LockOutlined,
-            label = AppText.password,
-            onValueChange = { onEvent(RegisterEvent.OnPasswordChanged(it)) },
-            modifier = Modifier.focusRequester(passwordFocusRequester),
-            keyboardActions = KeyboardActions(onNext = { confirmPasswordFocusRequester.requestFocus() })
-        )
-        PasswordTextField(
-            value = uiState.confirmPassword,
-            icon = GmIcons.LockOutlined,
-            label = AppText.repeat_password,
-            onValueChange = { onEvent(RegisterEvent.OnConfirmPasswordChanged(it)) },
-            modifier = Modifier.focusRequester(confirmPasswordFocusRequester),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    keyboardController?.hide()
-                    onEvent(RegisterEvent.OnRegisterClicked)
-                }
-            ),
+        TextFieldSection(
+            uiState = uiState,
+            onEvent = onEvent,
+            fullNameFocusRequester = fullNameFocusRequester,
+            emailFocusRequester = emailFocusRequester,
+            passwordFocusRequester = passwordFocusRequester,
+            confirmPasswordFocusRequester = confirmPasswordFocusRequester,
         )
         HyperlinkText(
-            fullText = PRIVACY_POLICY_DESC, persistentMapOf(
+            fullText = PRIVACY_POLICY_DESC,
+            hyperLinks = persistentMapOf(
                 PRIVACY_POLICY.lowercase() to PRIVACY_POLICY_LINK,
-                TERMS_CONDITIONS.lowercase() to TERMS_CONDITIONS_LINK
+                TERMS_CONDITIONS.lowercase() to TERMS_CONDITIONS_LINK,
             ),
-            textStyle = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center)
+            textStyle = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center),
         )
         DefaultButton(
             text = AppText.register,
@@ -171,31 +140,31 @@ fun RegisterScreen(
                 keyboardController?.hide()
                 onEvent(RegisterEvent.OnRegisterClicked)
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
         DayHeader(
             dayString = stringResource(AppText.or),
             style = MaterialTheme.typography.titleMedium,
-            height = 24.dp
+            height = 24.dp,
         )
         ExtFloActionButton(
             icon = AppDrawable.google,
             label = AppText.continue_google,
-            onClick = { onEvent(RegisterEvent.OnGoogleClicked) }
+            onClick = { onEvent(RegisterEvent.OnGoogleClicked) },
         )
         Spacer(Modifier.weight(1f))
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 16.dp),
         ) {
             Text(
                 text = stringResource(id = AppText.already_have_account),
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium,
             )
             TextButton(onClick = onAlreadyHaveAccountClicked) {
                 Text(
                     text = stringResource(id = AppText.login),
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
                 )
             }
         }
@@ -203,26 +172,94 @@ fun RegisterScreen(
 }
 
 @Composable
-fun RegisterHeader() {
-    HeaderWrapper {
+private fun TextFieldSection(
+    uiState: RegisterUiState,
+    onEvent: (RegisterEvent) -> Unit,
+    fullNameFocusRequester: FocusRequester,
+    emailFocusRequester: FocusRequester,
+    passwordFocusRequester: FocusRequester,
+    confirmPasswordFocusRequester: FocusRequester,
+    modifier: Modifier = Modifier,
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        DefaultTextField(
+            value = uiState.fullName,
+            label = AppText.full_name,
+            leadingIcon = GmIcons.FaceOutlined,
+            onValueChange = { onEvent(RegisterEvent.OnFullNameChanged(it)) },
+            modifier = Modifier.focusRequester(fullNameFocusRequester),
+            keyboardActions = KeyboardActions(onNext = { emailFocusRequester.requestFocus() }),
+        )
+        DefaultTextField(
+            value = uiState.email,
+            label = AppText.email,
+            leadingIcon = GmIcons.EmailOutlined,
+            onValueChange = { onEvent(RegisterEvent.OnEmailChanged(it)) },
+            modifier = Modifier.focusRequester(emailFocusRequester),
+            keyboardOptions =
+            KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next,
+            ),
+            keyboardActions = KeyboardActions(onNext = { passwordFocusRequester.requestFocus() }),
+        )
+        PasswordTextField(
+            value = uiState.password,
+            icon = GmIcons.LockOutlined,
+            label = AppText.password,
+            onValueChange = { onEvent(RegisterEvent.OnPasswordChanged(it)) },
+            modifier = Modifier.focusRequester(passwordFocusRequester),
+            keyboardActions = KeyboardActions(onNext = { confirmPasswordFocusRequester.requestFocus() }),
+        )
+        PasswordTextField(
+            value = uiState.confirmPassword,
+            icon = GmIcons.LockOutlined,
+            label = AppText.repeat_password,
+            onValueChange = { onEvent(RegisterEvent.OnConfirmPasswordChanged(it)) },
+            modifier = Modifier.focusRequester(confirmPasswordFocusRequester),
+            keyboardOptions =
+            KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done,
+            ),
+            keyboardActions =
+            KeyboardActions(
+                onDone = {
+                    keyboardController?.hide()
+                    onEvent(RegisterEvent.OnRegisterClicked)
+                },
+            ),
+        )
+    }
+}
+
+@Composable
+fun RegisterHeader(modifier: Modifier = Modifier) {
+    HeaderWrapper(modifier = modifier) {
         Text(
             text = stringResource(AppText.register_header),
-            style = MaterialTheme.typography.displaySmall
+            style = MaterialTheme.typography.displaySmall,
         )
     }
 }
 
 @Composable
 @Preview(showBackground = true)
-fun RegisterPreview() {
-    RegisterScreen(uiState = RegisterUiState(
-        fullName = "Beatriz Wells",
-        email = "whitney.brewer@example.com",
-        password = "sale",
-        confirmPassword = "mandamus",
-        verificationAlertState = LoadingState.Loading,
-        loadingState = LoadingState.Loading,
-        oneTapSignUpResponse = GoogleResponse.Success(null),
-        signUpWithGoogleResponse = GoogleResponse.Success(true)
-    ), onEvent = {}, onAlreadyHaveAccountClicked = {})
+private fun RegisterPreview() {
+    RegisterScreen(
+        uiState =
+        RegisterUiState(
+            fullName = "Beatriz Wells",
+            email = "whitney.brewer@example.com",
+            password = "sale",
+            confirmPassword = "mandamus",
+            verificationAlertState = LoadingState.Loading,
+            loadingState = LoadingState.Loading,
+            oneTapSignUpResponse = GoogleResponse.Success(null),
+            signUpWithGoogleResponse = GoogleResponse.Success(true),
+        ),
+        onEvent = {},
+        onAlreadyHaveAccountClicked = {},
+    )
 }

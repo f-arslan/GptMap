@@ -1,19 +1,19 @@
 package com.espressodev.gptmap.api.gemini.module
 
+import com.espressodev.gptmap.api.gemini.BuildConfig.PALM_API_KEY
 import com.espressodev.gptmap.api.gemini.GeminiService
 import com.espressodev.gptmap.api.gemini.impl.GeminiServiceImpl
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.BlockThreshold
 import com.google.ai.client.generativeai.type.HarmCategory
 import com.google.ai.client.generativeai.type.SafetySetting
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import com.google.ai.client.generativeai.type.generationConfig
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
-import com.espressodev.gptmap.api.gemini.BuildConfig.PALM_API_KEY
-import com.google.ai.client.generativeai.type.generationConfig
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Named
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -59,7 +59,6 @@ object GeminiModule {
             generativeModelForText = generativeModelForText,
             generativeModelForImage = generativeModelForImage
         )
-
 
     private const val TEXT_MODEL = "text_model"
     private const val IMAGE_MODEL = "image_model"

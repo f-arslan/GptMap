@@ -20,5 +20,11 @@ jobs:
       - name: Grant execute permission
         run: chmod +x gradlew
 
+      - name: Setup local.properties
+        run: |
+          if [ ! -f "./local.properties" ]; then
+          echo "sdk.dir=${{ secrets.ANDROID_SDK_PATH }}" > local.properties
+          fi
+
       - name: Build and run detekt
         run: ./gradlew detekt

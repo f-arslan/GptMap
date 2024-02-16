@@ -20,9 +20,9 @@ sealed class ScreenshotUiEvent {
     data class OnBitmapChanged(val bitmap: Bitmap?) : ScreenshotUiEvent()
     data class OnCallbackChanged(val callback: (() -> Unit)?) : ScreenshotUiEvent()
     data class OnImageResultChanged(val imageResult: ImageResult) : ScreenshotUiEvent()
-    data class OnTitleChanged(val value: String): ScreenshotUiEvent()
-    data object OnCaptureClicked: ScreenshotUiEvent()
-    data object OnSaveClicked: ScreenshotUiEvent()
+    data class OnTitleChanged(val value: String) : ScreenshotUiEvent()
+    data object OnCaptureClicked : ScreenshotUiEvent()
+    data object OnSaveClicked : ScreenshotUiEvent()
 }
 
 sealed class ImageResult {

@@ -7,7 +7,7 @@ import androidx.work.DelegatingWorkerFactory
 import com.espressodev.gptmap.core.data.StorageService
 import com.espressodev.gptmap.core.domain.DeleteFilesFromInternalUseCase
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
-import com.espressodev.gptmap.core.mongodb.RealmSyncService
+import com.espressodev.gptmap.core.mongodb.UserManagementService
 import com.espressodev.gptmap.core.worker.DeleteImagesFromStorageAndPhoneWorker
 import com.espressodev.gptmap.core.worker.DeleteUserFromRealmWorker
 import dagger.hilt.android.HiltAndroidApp
@@ -30,7 +30,7 @@ class GmHiltApp : Application(), Configuration.Provider {
 class GptmapWorkersFactory @Inject constructor(
     storageService: StorageService,
     deleteFilesFromInternalUseCase: DeleteFilesFromInternalUseCase,
-    realmSyncService: RealmSyncService,
+    userManagementService: UserManagementService,
     realmAccountService: RealmAccountService,
 ) : DelegatingWorkerFactory() {
     init {
@@ -42,7 +42,7 @@ class GptmapWorkersFactory @Inject constructor(
         )
         addFactory(
             DeleteUserFromRealmWorker.Factory(
-                realmSyncService = realmSyncService,
+                userManagementService = userManagementService,
                 realmAccountService = realmAccountService
             )
         )

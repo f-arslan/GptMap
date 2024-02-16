@@ -10,7 +10,7 @@ import com.espressodev.gptmap.core.model.Exceptions.RealmFailedToLoadFavouritesE
 import com.espressodev.gptmap.core.model.Favourite
 import com.espressodev.gptmap.core.model.FavouriteUiState
 import com.espressodev.gptmap.core.model.Response
-import com.espressodev.gptmap.core.mongodb.RealmSyncService
+import com.espressodev.gptmap.core.mongodb.FavouriteService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,13 +27,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FavouriteViewModel @Inject constructor(
-    private val realmSyncService: RealmSyncService,
+    private val favouriteService: FavouriteService,
     private val storageService: StorageService,
     logService: LogService,
     private val ioDispatcher: CoroutineDispatcher
 ) : GmViewModel(logService) {
     val favourites: StateFlow<Response<List<Favourite>>> =
-        realmSyncService
+        favouriteService
             .getFavourites()
             .map<List<Favourite>, Response<List<Favourite>>> { favouritesList ->
                 Response.Success(favouritesList)
@@ -79,7 +79,7 @@ class FavouriteViewModel @Inject constructor(
     private fun onDeleteDialogConfirmClick() = launchCatching {
         val favId = favouriteId
         withContext(ioDispatcher) {
-            realmSyncService.deleteFavourite(favId)
+            favouriteService.deleteFavourite(favId)
                 .onSuccess {
                     reset()
                     storageService.deleteImage(favId, IMAGE_REFERENCE)
@@ -89,7 +89,7 @@ class FavouriteViewModel @Inject constructor(
 
     private fun onEditDialogConfirmClick(text: String) = launchCatching {
         withContext(ioDispatcher) {
-            realmSyncService.updateFavouriteText(favouriteId, text)
+            favouriteService.updateFavouriteText(favouriteId, text)
         }
         reset()
     }

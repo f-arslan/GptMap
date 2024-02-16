@@ -1,14 +1,15 @@
 package com.espressodev.gptmap.api.palm
 
+import com.espressodev.gptmap.api.palm.BuildConfig.PALM_API_KEY
 import com.espressodev.gptmap.core.model.palm.PalmText
 import com.espressodev.gptmap.core.model.palm.PalmTextPrompt
 import com.espressodev.gptmap.core.model.palm.PalmTextResponse
 import io.ktor.client.HttpClient
-import io.ktor.client.request.post
 import io.ktor.client.call.body
 import io.ktor.client.request.headers
+import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import com.espressodev.gptmap.api.palm.BuildConfig.PALM_API_KEY
+
 class PalmApi(private val client: HttpClient) {
     suspend fun generateText(prompt: String): PalmTextResponse {
         val palmTextPrompt = PalmTextPrompt(prompt = PalmText(prompt))

@@ -79,7 +79,7 @@ fun GmNavHost(
             popUp = navController::safePopBackStack,
             navigateToSnapToScript = navController::navigateToSnapToScript,
         )
-        snapToScriptScreen(popUp = navController::safePopBackStack)
+        snapToScriptScreen()
         profileScreen(
             popUp = navController::safePopBackStack,
             navigateToLogin = navController::navigateToLogin,

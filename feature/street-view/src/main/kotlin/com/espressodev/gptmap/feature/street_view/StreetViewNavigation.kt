@@ -6,7 +6,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 
-
 const val LATITUDE_ID = "latitudeId"
 const val LONGITUDE_ID = "longitudeId"
 const val StreetViewRoute = "streetViewRoute"

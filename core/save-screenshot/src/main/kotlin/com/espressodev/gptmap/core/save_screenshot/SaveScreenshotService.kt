@@ -174,7 +174,6 @@ class SaveScreenshotService : Service() {
 
             // Create a virtual display for the media projection after a delay
             createOrUpdateVirtualDisplay(mediaProjection)
-
         } ?: run {
             Log.e(TAG, "Failed to start media projection")
             stopSelf()

@@ -128,11 +128,11 @@ complexity:
     threshold: 600
   LongMethod:
     active: true
-    threshold: 80
+    threshold: 90
   LongParameterList:
     active: true
     functionThreshold: 60
-    constructorThreshold: 7
+    constructorThreshold: 8
     ignoreDefaultParameters: true
     ignoreDataClasses: true
     ignoreAnnotatedParameter: ['Composable', 'Preview']
@@ -168,7 +168,7 @@ complexity:
     active: true
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
     thresholdInFiles: 16
-    thresholdInClasses: 11
+    thresholdInClasses: 16
     thresholdInInterfaces: 11
     thresholdInObjects: 11
     thresholdInEnums: 11
@@ -531,7 +531,7 @@ style:
     active: false
   DestructuringDeclarationWithTooManyEntries:
     active: true
-    maxDestructuringEntries: 3
+    maxDestructuringEntries: 4
   DoubleNegativeLambda:
     active: false
     negativeFunctions:

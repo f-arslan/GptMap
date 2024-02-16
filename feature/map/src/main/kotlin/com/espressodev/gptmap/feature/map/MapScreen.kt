@@ -4,7 +4,6 @@ package com.espressodev.gptmap.feature.map
 
 import StreetView
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
@@ -39,7 +38,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -83,6 +81,7 @@ import com.espressodev.gptmap.feature.map.ComponentLoadingState.MAP
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.BOTTOM_SHEET_HIDDEN
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.DETAIL_CARD
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.SMALL_INFORMATION_CARD
+import com.espressodev.gptmap.feature.screenshot.ScreenshotState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -305,10 +304,8 @@ private fun ImageGallery(
             Box(
                 Modifier
                     .graphicsLayer {
-                        val pageOffset = (
-                                (pagerState.currentPage - page) + pagerState
-                                    .currentPageOffsetFraction
-                                ).absoluteValue
+                        val pageOffset =
+                            ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction).absoluteValue
 
                         alpha = lerp(
                             start = 0.5f,
@@ -423,8 +420,8 @@ private fun MapSection(cameraPositionState: CameraPositionState) {
         uiSettings = MapUiSettings(zoomControlsEnabled = false, compassEnabled = false),
         properties = MapProperties(
             mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
-                /* clientContext = */ context,
-                /* resourceId = */ AppRaw.map_style
+                context,
+                AppRaw.map_style
             ),
         ),
         onMapLoaded = { isMapLoaded = true },
@@ -569,37 +566,41 @@ fun BoxScope.SmallInformationCard(
 
 @Preview(showBackground = true)
 @Composable
-fun MapPreview() {
+private fun MapPreview() {
     GptmapTheme(darkTheme = true) {
         Box(modifier = Modifier.fillMaxSize()) {
-            MapCameraSection(uiState = MapUiState(
-                searchValue = "",
-                location = Location(
-                    id = "", content = Content(
-                        coordinates = Coordinates(
-                            latitude = 0.0,
-                            longitude = 0.0
+            MapCameraSection(
+                uiState = MapUiState(
+                    searchValue = "",
+                    location = Location(
+                        id = "",
+                        content = Content(
+                            coordinates = Coordinates(
+                                latitude = 0.0,
+                                longitude = 0.0
+                            ),
+                            city = "",
+                            district = null,
+                            country = "",
+                            poeticDescription = "",
+                            normalDescription = ""
                         ),
-                        city = "",
-                        district = null,
-                        country = "",
-                        poeticDescription = "",
-                        normalDescription = ""
-                    ), locationImages = listOf(), addToFavouriteButtonState = false
+                        locationImages = listOf(),
+                        addToFavouriteButtonState = false
+                    ),
+                    userFirstChar = 'A',
+                    componentLoadingState = ComponentLoadingState.MY_LOCATION,
+                    bottomSheetState = SMALL_INFORMATION_CARD,
+                    searchButtonEnabledState = false,
+                    searchTextFieldEnabledState = false,
+                    searchBarState = false,
+                    isFavouriteButtonPlaying = false,
+                    isMapButtonsVisible = true,
+                    myCurrentLocationState = Pair(false, Pair(0.0, 0.0)),
+                    screenshotState = ScreenshotState.IDLE,
+                    imageGalleryState = Pair(0, false),
+                    isMyLocationButtonVisible = false
                 ),
-                userFirstChar = 'A',
-                componentLoadingState = ComponentLoadingState.MY_LOCATION,
-                bottomSheetState = SMALL_INFORMATION_CARD,
-                searchButtonEnabledState = false,
-                searchTextFieldEnabledState = false,
-                searchBarState = false,
-                isFavouriteButtonPlaying = false,
-                isMapButtonsVisible = true,
-                myCurrentLocationState = Pair(false, Pair(0.0, 0.0)),
-                screenshotState = ScreenshotState.IDLE,
-                imageGalleryState = Pair(0, false),
-                isMyLocationButtonVisible = false
-            ),
                 onEvent = {}
             )
         }

@@ -4,8 +4,8 @@ import android.graphics.Bitmap
 import com.espressodev.gptmap.api.gemini.GeminiService
 import com.espressodev.gptmap.core.model.Exceptions.ResponseTextNotFoundException
 import com.espressodev.gptmap.core.model.Location
-import com.espressodev.gptmap.core.model.ext.toLocation
 import com.espressodev.gptmap.core.model.PromptUtil.locationPreText
+import com.espressodev.gptmap.core.model.ext.toLocation
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
 import kotlinx.coroutines.Dispatchers

@@ -10,14 +10,14 @@ import com.espressodev.gptmap.core.model.ImageType
 import com.espressodev.gptmap.core.model.ext.compressImage
 import com.espressodev.gptmap.core.model.ext.resizeImage
 import com.espressodev.gptmap.core.model.realm.RealmImageAnalysis
-import com.espressodev.gptmap.core.mongodb.RealmSyncService
+import com.espressodev.gptmap.core.mongodb.ImageAnalysisService
 import kotlinx.coroutines.CoroutineDispatcher
 import java.util.UUID
 import javax.inject.Inject
 
 class SaveImageAnalysisToStorageUseCase @Inject constructor(
     private val storageService: StorageService,
-    private val realmSyncService: RealmSyncService,
+    private val imageAnalysisService: ImageAnalysisService,
     private val ioDispatcher: CoroutineDispatcher
 ) {
     suspend operator fun invoke(
@@ -40,7 +40,6 @@ class SaveImageAnalysisToStorageUseCase @Inject constructor(
             imageId
         }
 
-
     private suspend fun saveImageAnalysisToRealm(
         imageId: String,
         imageUrl: String,
@@ -53,6 +52,6 @@ class SaveImageAnalysisToStorageUseCase @Inject constructor(
             this.title = title
             this.imageType = imageType.name
         }
-        realmSyncService.saveImageAnalysis(realmImageAnalysis).getOrThrow()
+        imageAnalysisService.saveImageAnalysis(realmImageAnalysis).getOrThrow()
     }
 }

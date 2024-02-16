@@ -1,6 +1,7 @@
 package com.espressodev.gptmap.feature.map
 
 import com.espressodev.gptmap.core.model.Location
+import com.espressodev.gptmap.feature.screenshot.ScreenshotState
 import com.google.android.gms.maps.model.LatLng
 
 enum class MapBottomSheetState {
@@ -9,10 +10,6 @@ enum class MapBottomSheetState {
 
 enum class ComponentLoadingState {
     MY_LOCATION, MAP, NOTHING
-}
-
-enum class ScreenshotState {
-    IDLE, STARTED, FINISHED
 }
 
 data class MapUiState(

@@ -12,7 +12,7 @@ import com.espressodev.gptmap.core.model.ImageAnalysis
 import com.espressodev.gptmap.core.model.ImageSummary
 import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.model.ScreenshotGalleryUiState
-import com.espressodev.gptmap.core.mongodb.RealmSyncService
+import com.espressodev.gptmap.core.mongodb.ImageAnalysisService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,13 +27,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ScreenshotGalleryViewModel @Inject constructor(
-    private val realmSyncService: RealmSyncService,
+    private val imageAnalysisService: ImageAnalysisService,
     private val saveImageToInternalStorageUseCase: SaveImageToInternalStorageUseCase,
     logService: LogService,
     private val ioDispatcher: CoroutineDispatcher,
     private val deleteImageAnalysesUseCase: DeleteImageAnalysesUseCase,
 ) : GmViewModel(logService) {
-    val imageAnalyses = realmSyncService
+    val imageAnalyses = imageAnalysisService
         .getImageAnalyses()
         .map<List<ImageAnalysis>, Response<List<ImageSummary>>> {
             Response.Success(
@@ -48,7 +48,6 @@ class ScreenshotGalleryViewModel @Inject constructor(
             SharingStarted.WhileSubscribed(5000L),
             Response.Loading
         )
-
 
     private val _uiState =
         MutableStateFlow(ScreenshotGalleryUiState(selectedItem = ImageSummary()))
@@ -117,7 +116,6 @@ class ScreenshotGalleryViewModel @Inject constructor(
         }
     }
 
-
     private fun onDeleteDialogConfirmClick() = launchCatching {
         deleteImageAnalysesUseCase(selectedItemsIds).getOrThrow()
         reset()
@@ -125,7 +123,7 @@ class ScreenshotGalleryViewModel @Inject constructor(
 
     private fun onEditDialogConfirmClick(text: String) = launchCatching {
         withContext(ioDispatcher) {
-            realmSyncService.updateImageAnalysisText(imageSummaryId, text).getOrThrow()
+            imageAnalysisService.updateImageAnalysisText(imageSummaryId, text).getOrThrow()
         }
         reset()
     }

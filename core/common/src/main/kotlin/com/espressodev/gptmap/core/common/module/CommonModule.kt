@@ -28,4 +28,3 @@ interface CommonModule {
     @Binds
     fun provideDataStoreService(impl: DataStoreServiceImpl): DataStoreService
 }
-

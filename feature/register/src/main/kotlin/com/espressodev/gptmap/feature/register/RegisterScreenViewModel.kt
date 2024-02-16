@@ -41,7 +41,6 @@ class RegisterScreenViewModel @Inject constructor(
     private val fullName
         get() = uiState.value.fullName
 
-
     fun onEvent(event: RegisterEvent) {
         when (event) {
             is RegisterEvent.OnFullNameChanged ->
@@ -61,7 +60,6 @@ class RegisterScreenViewModel @Inject constructor(
             RegisterEvent.OnRegisterClicked -> onRegisterClick()
         }
     }
-
 
     fun handleVerificationAndNavigate(clearAndNavigateLogin: () -> Unit) = launchCatching {
         onEvent(RegisterEvent.OnVerificationAlertStateChanged(LoadingState.Idle))

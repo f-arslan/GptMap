@@ -7,17 +7,17 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
-import com.espressodev.gptmap.core.mongodb.RealmSyncService
+import com.espressodev.gptmap.core.mongodb.UserManagementService
 
 @HiltWorker
 class DeleteUserFromRealmWorker(
-    private val realmSyncService: RealmSyncService,
+    private val userManagementService: UserManagementService,
     private val realmAccountService: RealmAccountService,
     context: Context,
     workerParameters: WorkerParameters
 ) : CoroutineWorker(context, workerParameters) {
     override suspend fun doWork(): Result = try {
-        realmSyncService.deleteUser().getOrThrow()
+        userManagementService.deleteUser().getOrThrow()
         realmAccountService.revokeAccess()
         Result.success()
     } catch (e: Exception) {
@@ -26,7 +26,7 @@ class DeleteUserFromRealmWorker(
     }
 
     class Factory(
-        private val realmSyncService: RealmSyncService,
+        private val userManagementService: UserManagementService,
         private val realmAccountService: RealmAccountService
     ) : WorkerFactory() {
         override fun createWorker(
@@ -35,7 +35,7 @@ class DeleteUserFromRealmWorker(
             workerParameters: WorkerParameters
         ) = if (workerClassName == DeleteUserFromRealmWorker::class.java.name) {
             DeleteUserFromRealmWorker(
-                realmSyncService,
+                userManagementService,
                 realmAccountService,
                 appContext,
                 workerParameters

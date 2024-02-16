@@ -15,7 +15,7 @@ fun NavController.navigateToSnapToScript(imageId: String, navOptions: NavOptions
     navigate("$SnapToScriptRoute/$imageId", navOptions)
 }
 
-fun NavGraphBuilder.snapToScriptScreen(popUp: () -> Unit) {
+fun NavGraphBuilder.snapToScriptScreen() {
     composable(
         route = SnapToScriptRouteWithArg,
         arguments = listOf(navArgument(IMAGE_ID) { type = NavType.StringType })

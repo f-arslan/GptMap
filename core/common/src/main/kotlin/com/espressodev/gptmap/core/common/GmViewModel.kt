@@ -12,9 +12,9 @@ open class GmViewModel(private val logService: LogService) : ViewModel() {
         viewModelScope.launch(
             CoroutineExceptionHandler { _, throwable ->
                 // It's only for debug purposes
-//                if (snackbar) {
-//                    SnackbarManager.showMessage(throwable.toSnackbarMessage())
-//                }
+                if (snackbar) {
+                    // SnackbarManager.showMessage(throwable.toSnackbarMessage())
+                }
                 logService.logNonFatalCrash(throwable)
                 Log.e("GmViewModel", "launchCatching: ", throwable)
             },

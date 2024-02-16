@@ -1,16 +1,16 @@
 package com.espressodev.gptmap.api.chatgpt.module
 
+import com.espressodev.gptmap.api.chatgpt.BuildConfig.OPENAI_API_KEY
 import com.espressodev.gptmap.api.chatgpt.ChatgptApi
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import dagger.Provides
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
-import com.espressodev.gptmap.api.chatgpt.BuildConfig.OPENAI_API_KEY
 
 @Module
 @InstallIn(SingletonComponent::class)

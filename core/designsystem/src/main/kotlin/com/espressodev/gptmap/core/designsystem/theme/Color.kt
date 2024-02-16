@@ -1,10 +1,6 @@
 package com.espressodev.gptmap.core.designsystem.theme
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import javax.annotation.concurrent.Immutable
 
 val md_theme_light_primary = Color(0xFF006B56)
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)

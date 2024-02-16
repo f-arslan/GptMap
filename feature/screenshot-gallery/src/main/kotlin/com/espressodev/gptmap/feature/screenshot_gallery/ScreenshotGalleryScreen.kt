@@ -29,9 +29,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -83,6 +81,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 fun ScreenshotGalleryRoute(
     popUp: () -> Unit,
     navigateToSnapToScript: (String) -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: ScreenshotGalleryViewModel = hiltViewModel()
 ) {
     val imageAnalysesResponse by viewModel.imageAnalyses.collectAsStateWithLifecycle()
@@ -107,7 +106,7 @@ fun ScreenshotGalleryRoute(
                 onCancelClick = { onEvent(EditableItemUiEvent.OnCancelClick) }
             )
         },
-        modifier = Modifier.padding(bottom = BOTTOM_BAR_PADDING)
+        modifier = modifier.padding(bottom = BOTTOM_BAR_PADDING)
     ) {
         when (val result = imageAnalysesResponse) {
             is Response.Failure -> {
@@ -176,8 +175,8 @@ fun ScreenshotGalleryScreen(
     onLongClick: (ImageSummary) -> Unit,
     selectedItemsIds: PersistentSet<String>,
     navigate: (imageId: String, imageUrl: String) -> Unit,
-    modifier: Modifier = Modifier,
     isUiInEditMode: Boolean,
+    modifier: Modifier = Modifier
 ) {
     val (currentPage, setCurrentPage) = rememberSaveable { mutableIntStateOf(0) }
     val (dialogState, setDialogState) = rememberSaveable { mutableStateOf(value = false) }
@@ -395,7 +394,7 @@ fun DotsIndicator(
 
 @Composable
 @Preview(showBackground = true)
-fun ImageCardPreview() {
+private fun ImageCardPreview() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         ImageCard(
             imageSummary = ImageSummary(

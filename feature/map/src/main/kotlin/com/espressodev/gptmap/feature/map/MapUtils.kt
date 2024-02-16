@@ -1,16 +1,16 @@
 package com.espressodev.gptmap.feature.map
 
-import kotlinx.coroutines.withContext
-import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
+import com.espressodev.gptmap.feature.map.BuildConfig.MAPS_API_KEY
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.CameraPositionState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.BufferedReader
+import java.io.IOException
 import java.io.InputStreamReader
-import com.espressodev.gptmap.feature.map.BuildConfig.MAPS_API_KEY
-import com.google.maps.android.compose.CameraPositionState
+import java.net.HttpURLConnection
+import java.net.URL
 
 object MapUtils {
     /**
@@ -53,7 +53,7 @@ object MapUtils {
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
-                throw IOException("Network error: ${e.message}")
+                Status.UNKNOWN_ERROR
             }
         }
     }
@@ -79,7 +79,6 @@ enum class Status {
 }
 
 enum class Source(var value: String) {
-    DEFAULT("default"),
     OUTDOOR("outdoor")
 }
 

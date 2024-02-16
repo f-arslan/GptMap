@@ -36,14 +36,15 @@ import com.espressodev.gptmap.core.designsystem.TextType
 import com.espressodev.gptmap.core.designsystem.component.GmAlertDialog
 import com.espressodev.gptmap.core.designsystem.component.GmProgressIndicator
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
-import com.espressodev.gptmap.core.designsystem.R.string as AppText
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
+import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeleteProfileRoute(
     navigateToLogin: () -> Unit,
     popUp: () -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: DeleteProfileViewModel = hiltViewModel(),
 ) {
     val isDialogOpened by viewModel.isDialogOpened.collectAsStateWithLifecycle()
@@ -55,7 +56,8 @@ fun DeleteProfileRoute(
                 icon = IconType.Vector(GmIcons.DeleteOutlined),
                 onBackClick = popUp
             )
-        }
+        },
+        modifier = modifier
     ) {
         DeleteProfileScreen(
             modifier = Modifier.padding(it),
@@ -167,9 +169,8 @@ private fun DeleteAccountButton(onDeleteClick: () -> Unit) {
     }
 }
 
-
 @Composable
 @Preview(showBackground = true, device = "id:pixel")
-fun DeleteProfilePreview() {
+private fun DeleteProfilePreview() {
     DeleteProfileScreen(modifier = Modifier, onDeleteClick = {})
 }

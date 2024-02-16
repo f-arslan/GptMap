@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.feature.map
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideOutVertically
@@ -20,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,15 +27,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
-import com.espressodev.gptmap.core.designsystem.R.string as AppText
 import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
 import com.espressodev.gptmap.core.designsystem.component.SquareButton
 import com.espressodev.gptmap.core.designsystem.ext.clipPolygon
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
+import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @Composable
 internal fun BoxScope.DetailSheet(
@@ -115,7 +112,8 @@ fun LocationImages(
         items(2) { index ->
             Surface(onClick = { onClick(index) }) {
                 ShimmerImage(
-                    images[index].imageUrl, modifier = Modifier
+                    images[index].imageUrl,
+                    modifier = Modifier
                         .size(160.dp, 100.dp)
                         .clip(RoundedCornerShape(16.dp))
                 )

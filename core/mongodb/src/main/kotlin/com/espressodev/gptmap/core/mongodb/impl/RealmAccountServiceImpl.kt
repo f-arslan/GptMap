@@ -12,11 +12,9 @@ class RealmAccountServiceImpl : RealmAccountService {
             .also { if (!it.loggedIn) throw RealmUserNotLoggedInException() }
         RealmModule.initRealm(user)
     }
-
     override suspend fun logOut() {
         app.currentUser?.logOut()
     }
-
     override suspend fun revokeAccess(): Result<Unit> = runCatching {
         app.currentUser?.delete()
     }

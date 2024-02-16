@@ -8,7 +8,6 @@ import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.designsystem.Constants.GENERIC_ERROR_MSG
 import com.espressodev.gptmap.core.model.Exceptions.FirestoreUserNotExistsException
 import com.espressodev.gptmap.core.model.Response
-import com.espressodev.gptmap.core.model.User
 import com.espressodev.gptmap.core.model.ext.isValidPassword
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -18,7 +17,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
-
 
 @HiltViewModel
 class VerifyAuthViewModel @Inject constructor(
@@ -39,10 +37,10 @@ class VerifyAuthViewModel @Inject constructor(
     }
 
     private fun initializeUser() = launchCatching {
-        try {
+        runCatching {
             val user = firestoreService.getUser()
             _uiState.update { it.copy(user = Response.Success(user)) }
-        } catch (e: Exception) {
+        }.onFailure {
             _uiState.update { it.copy(user = Response.Failure(FirestoreUserNotExistsException())) }
         }
     }
@@ -50,7 +48,6 @@ class VerifyAuthViewModel @Inject constructor(
     fun onPasswordChanged(password: String) {
         _uiState.update { it.copy(password = password) }
     }
-
 
     fun onDone(navigate: () -> Unit) = launchCatching {
         if (!uiState.value.password.isValidPassword()) {

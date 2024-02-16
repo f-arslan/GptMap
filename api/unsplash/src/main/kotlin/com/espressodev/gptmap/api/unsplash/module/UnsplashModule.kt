@@ -1,6 +1,7 @@
 package com.espressodev.gptmap.api.unsplash.module
 
 import android.util.Log
+import com.espressodev.gptmap.api.unsplash.BuildConfig.UNSPLASH_BASE_URL
 import com.espressodev.gptmap.api.unsplash.UnsplashApi
 import com.espressodev.gptmap.api.unsplash.UnsplashService
 import com.espressodev.gptmap.api.unsplash.impl.UnsplashServiceImpl
@@ -10,12 +11,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import com.espressodev.gptmap.api.unsplash.BuildConfig.UNSPLASH_BASE_URL
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.tasks.await
 
 @Module
 @InstallIn(ViewModelComponent::class)

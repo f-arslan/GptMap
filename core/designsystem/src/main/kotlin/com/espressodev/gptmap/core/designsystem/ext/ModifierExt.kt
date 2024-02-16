@@ -5,19 +5,8 @@ import android.graphics.RuntimeShader
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.withInfiniteAnimationFrameMillis
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
@@ -30,15 +19,8 @@ import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.layout
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.espressodev.gptmap.core.designsystem.theme.md_theme_dark_primary
 import com.espressodev.gptmap.core.designsystem.theme.md_theme_dark_primaryContainer
@@ -70,12 +52,11 @@ fun Modifier.clipPolygon(colour: Color): Modifier = drawBehind {
     }
 }
 
-
 @SuppressLint("ModifierNodeInspectableProperties")
 private data class GradientBackgroundElement(val color: Color) : ModifierNodeElement<GradientBackgroundNode>() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun create() = GradientBackgroundNode(color)
-    override fun update(node: GradientBackgroundNode) {}
+    override fun update(node: GradientBackgroundNode) = Unit
 }
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -84,9 +65,7 @@ private class GradientBackgroundNode(color: Color) : DrawModifierNode, Modifier.
     private val shaderBrush = ShaderBrush(shader)
     private val time = mutableFloatStateOf(0f)
 
-    init {
-        setBrush(color)
-    }
+    init { setBrush(color) }
 
     private fun setBrush(newColor: Color) {
         shader.setColorUniform(
@@ -134,8 +113,7 @@ val darkThemeGradient = Brush.linearGradient(
     )
 )
 
-@Composable
-fun Modifier.gradientBackground(isDarkTheme: Boolean = isSystemInDarkTheme()): Modifier {
+fun Modifier.gradientBackground(isDarkTheme: Boolean): Modifier {
     val gradientBrush = if (isDarkTheme) darkThemeGradient else lightThemeGradient
     val color = if (isDarkTheme) md_theme_dark_primaryContainer else md_theme_light_primaryContainer
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

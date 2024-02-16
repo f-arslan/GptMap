@@ -48,7 +48,6 @@ class AccountServiceImpl @Inject constructor(
         password: String,
     ): AuthResult = auth.signInWithEmailAndPassword(email, password).await()
 
-
     override suspend fun firebaseSignInWithEmailAndPassword(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password).await()
     }

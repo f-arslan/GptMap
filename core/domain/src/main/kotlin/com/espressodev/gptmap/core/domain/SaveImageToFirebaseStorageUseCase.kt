@@ -1,17 +1,16 @@
 package com.espressodev.gptmap.core.domain
 
-import android.util.Log
 import com.espressodev.gptmap.core.data.StorageService
 import com.espressodev.gptmap.core.data.StorageService.Companion.IMAGE_REFERENCE
 import com.espressodev.gptmap.core.ext.runCatchingWithContext
 import com.espressodev.gptmap.core.model.Location
-import com.espressodev.gptmap.core.mongodb.RealmSyncService
+import com.espressodev.gptmap.core.mongodb.FavouriteService
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 
 class SaveImageToFirebaseStorageUseCase @Inject constructor(
     private val storageService: StorageService,
-    private val realmSyncService: RealmSyncService,
+    private val favouriteService: FavouriteService,
     private val ioDispatcher: CoroutineDispatcher,
     private val downloadAndCompressImageUseCase: DownloadAndCompressImageUseCase
 ) {
@@ -29,6 +28,6 @@ class SaveImageToFirebaseStorageUseCase @Inject constructor(
         val realmLocation = location.toRealmFavourite().apply {
             placeholderImageUrl = imageUrl
         }
-        realmSyncService.saveFavourite(realmLocation).getOrThrow()
+        favouriteService.saveFavourite(realmLocation).getOrThrow()
     }
 }

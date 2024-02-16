@@ -47,6 +47,7 @@ fun ProfileRoute(
     navigateToLogin: () -> Unit,
     navigateToInfo: () -> Unit,
     navigateToDelete: () -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val user by viewModel.user.collectAsStateWithLifecycle()
@@ -58,6 +59,7 @@ fun ProfileRoute(
                 onBackClick = popUp
             )
         },
+        modifier = modifier
     ) {
         when (val result = user) {
             is Response.Failure -> LottieAnimationPlaceholder(AppRaw.confused_man_404)
@@ -98,10 +100,15 @@ fun ProfileScreen(
 }
 
 @Composable
-fun ProfileItem(icon: ImageVector, @StringRes textId: Int, onClick: () -> Unit) {
+fun ProfileItem(
+    icon: ImageVector,
+    @StringRes textId: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(16.dp))
             .clickable(onClick = onClick)
             .padding(8.dp)
@@ -125,7 +132,7 @@ fun ProfileItem(icon: ImageVector, @StringRes textId: Int, onClick: () -> Unit) 
 
 @Preview(showBackground = true)
 @Composable
-fun ProfileScreenPreview() {
+private fun ProfileScreenPreview() {
     ProfileScreen(
         user = User(fullName = "Fatih Arslan"),
         onInfoClick = {},

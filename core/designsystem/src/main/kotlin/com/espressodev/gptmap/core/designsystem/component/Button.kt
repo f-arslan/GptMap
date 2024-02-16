@@ -25,9 +25,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -48,7 +50,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -77,8 +78,9 @@ fun ExtFloActionButton(
 }
 
 @Composable
-fun ExploreWithAiButton(onClick: () -> Unit) {
+fun ExploreWithAiButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     OutlinedButton(
+        modifier = modifier,
         onClick = onClick,
         shape = RoundedCornerShape(16.dp),
     ) {
@@ -159,7 +161,6 @@ fun GmDraggableButton(
     val marginPx = with(localDensity) { 8.dp.toPx() }
     val scope = rememberCoroutineScope()
 
-    // Calculate initial offsets based on the provided alignment
     val (initialXOffsetPx, initialYOffsetPx) = when (initialAlignment) {
         Alignment.CenterStart -> Pair(marginPx, (screenHeight - buttonSizePx) / 2)
         Alignment.CenterEnd -> Pair(
@@ -174,14 +175,13 @@ fun GmDraggableButton(
     }
 
     val bottomMarginPx = with(localDensity) { 160.dp.toPx() }
-
     val offset = remember(localDensity) {
         Animatable(
-            Offset(
+            initialValue = Offset(
                 x = initialXOffsetPx.coerceIn(0f, screenWidth - buttonSizePx),
                 y = initialYOffsetPx.coerceIn(0f, screenHeight - buttonSizePx - bottomMarginPx)
             ),
-            Offset.VectorConverter
+            typeConverter = Offset.VectorConverter
         )
     }
 
@@ -299,8 +299,18 @@ fun SquareButton(
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun ButtonPreview() {
-    ExploreWithAiButton { }
+fun PinButton(onClick: () -> Unit, icon: ImageVector, modifier: Modifier = Modifier) {
+    FilledTonalIconButton(
+        onClick = onClick,
+        modifier = modifier,
+        colors = IconButtonDefaults.filledTonalIconButtonColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f)
+        )
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = stringResource(id = AppText.pin)
+        )
+    }
 }

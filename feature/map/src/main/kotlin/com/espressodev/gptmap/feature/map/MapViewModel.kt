@@ -1,30 +1,17 @@
 package com.espressodev.gptmap.feature.map
 
-import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.os.Build
 import androidx.lifecycle.SavedStateHandle
-import com.espressodev.gptmap.api.gemini.GeminiService
-import com.espressodev.gptmap.api.unsplash.UnsplashService
-import com.espressodev.gptmap.core.common.DataStoreService
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
-import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.designsystem.Constants.GENERIC_ERROR_MSG
-import com.espressodev.gptmap.core.domain.AddDatabaseIfUserIsNewUseCase
-import com.espressodev.gptmap.core.domain.GetCurrentLocationUseCase
-import com.espressodev.gptmap.core.domain.ImageToAnalysisUseCase
-import com.espressodev.gptmap.core.domain.SaveImageToFirebaseStorageUseCase
 import com.espressodev.gptmap.core.model.Exceptions
-import com.espressodev.gptmap.core.mongodb.RealmSyncService
-import com.espressodev.gptmap.core.save_screenshot.SaveScreenshotService
+import com.espressodev.gptmap.feature.screenshot.ScreenshotServiceHandler
+import com.espressodev.gptmap.feature.screenshot.ScreenshotState.FINISHED
+import com.espressodev.gptmap.feature.screenshot.ScreenshotState.IDLE
+import com.espressodev.gptmap.feature.screenshot.ScreenshotState.STARTED
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,19 +24,13 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
-    private val geminiService: GeminiService,
-    private val unsplashService: UnsplashService,
-    private val saveImageToFirebaseStorageUseCase: SaveImageToFirebaseStorageUseCase,
-    private val addDatabaseIfUserIsNewUseCase: AddDatabaseIfUserIsNewUseCase,
-    private val realmSyncService: RealmSyncService,
-    private val firestoreService: FirestoreService,
-    private val dataStoreService: DataStoreService,
-    private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
-    private val imageToAnalysisUseCase: ImageToAnalysisUseCase,
-    @ApplicationContext private val applicationContext: Context,
+    private val apiService: ApiService,
+    private val useCaseBundle: UseCaseBundle,
+    private val dataService: DataService,
     private val ioDispatcher: CoroutineDispatcher,
     savedStateHandle: SavedStateHandle,
     logService: LogService,
+    private val screenshotServiceHandler: ScreenshotServiceHandler,
 ) : GmViewModel(logService) {
     private val _uiState = MutableStateFlow(MapUiState())
     val uiState = _uiState.asStateFlow()
@@ -63,20 +44,6 @@ class MapViewModel @Inject constructor(
     private val favouriteId
         get() = uiState.value.location.favouriteId
 
-    private val serviceStateReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            when (intent.action) {
-                SaveScreenshotService.ACTION_SERVICE_STARTED -> {}
-                SaveScreenshotService.ACTION_SERVICE_STOPPED -> {
-                    if (uiState.value.screenshotState == ScreenshotState.STARTED) {
-                        _uiState.update { it.copy(screenshotState = ScreenshotState.FINISHED) }
-                        applicationContext.unregisterReceiver(this)
-                    }
-                }
-            }
-        }
-    }
-
     init {
         launchCatching {
             launch {
@@ -85,7 +52,23 @@ class MapViewModel @Inject constructor(
             launch {
                 savedStateHandle.observeFavouriteIdFromBackStack()
             }
-            addDatabaseIfUserIsNewUseCase()
+            launch {
+                collectScreenshotState()
+            }
+            useCaseBundle.addDatabaseIfUserIsNewUseCase()
+        }
+    }
+
+    private suspend fun collectScreenshotState() {
+        screenshotServiceHandler.screenshotStateFlow.collect { state ->
+            when (state) {
+                IDLE -> Unit
+                STARTED -> Unit
+                FINISHED -> {
+                    _uiState.update { it.copy(screenshotState = FINISHED) }
+                    screenshotServiceHandler.unregisterServiceStateReceiver()
+                }
+            }
         }
     }
 
@@ -123,7 +106,7 @@ class MapViewModel @Inject constructor(
 
             MapUiEvent.OnBackClick -> reset()
 
-            MapUiEvent.OnScreenshotProcessStarted -> initializeScreenCaptureBroadcastReceiver()
+            MapUiEvent.OnScreenshotProcessStarted -> updateUiBeforeProcess()
             MapUiEvent.OnMyCurrentLocationClick -> getMyCurrentLocation()
             MapUiEvent.OnUnsetMyCurrentLocationState -> _uiState.update {
                 it.copy(myCurrentLocationState = Pair(false, myCurrentLocationState.second))
@@ -134,7 +117,7 @@ class MapViewModel @Inject constructor(
     }
 
     fun onChatAiClick(navigate: (String) -> Unit, navigateToGallery: () -> Unit) = launchCatching {
-        val imageId = dataStoreService.getLatestImageIdForChat()
+        val imageId = dataService.dataStoreService.getLatestImageIdForChat()
         if (imageId.isBlank()) {
             navigateToGallery()
         } else {
@@ -152,25 +135,26 @@ class MapViewModel @Inject constructor(
         }
 
         val analysisId = locationImages[index].analysisId
-        val imageId = dataStoreService.getLatestImageIdForChat()
+        val imageId = dataService.dataStoreService.getLatestImageIdForChat()
         if (analysisId != "") {
             resetAfterExamineWithAiClick()
             delay(50L)
             if (imageId != analysisId) {
-                dataStoreService.setLatestImageIdForChat(analysisId)
+                dataService.dataStoreService.setLatestImageIdForChat(analysisId)
                 navigateToGallery()
             } else {
                 navigate(imageId)
             }
         } else {
             val imageAnalysisId =
-                imageToAnalysisUseCase(imageUrl = locationImages[index].imageUrl).getOrThrow()
+                useCaseBundle.imageToAnalysisUseCase(imageUrl = locationImages[index].imageUrl)
+                    .getOrThrow()
             resetAfterExamineWithAiClick()
             delay(50L)
             navigateToGallery()
 
             if (favouriteId.isNotEmpty()) {
-                realmSyncService.updateImageAnalysisId(
+                dataService.favouriteService.updateImageAnalysisId(
                     favouriteId = favouriteId,
                     messageId = locationImages[index].id,
                     imageAnalysisId = imageAnalysisId
@@ -190,6 +174,15 @@ class MapViewModel @Inject constructor(
     }
 
     private fun getMyCurrentLocation() = launchCatching {
+        fun finishLoadingMyLocation() {
+            _uiState.update {
+                it.copy(
+                    isMyLocationButtonVisible = true,
+                    componentLoadingState = ComponentLoadingState.NOTHING
+                )
+            }
+        }
+
         if (myCurrentLocationState.second.first != 0.0) {
             _uiState.update {
                 it.copy(
@@ -209,7 +202,7 @@ class MapViewModel @Inject constructor(
             )
         }
 
-        getCurrentLocationUseCase().collect { locationResult ->
+        useCaseBundle.getCurrentLocationUseCase().collect { locationResult ->
             locationResult
                 .onSuccess { location ->
                     _uiState.update { it.copy(myCurrentLocationState = Pair(true, location)) }
@@ -235,15 +228,6 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    private fun finishLoadingMyLocation() {
-        _uiState.update {
-            it.copy(
-                isMyLocationButtonVisible = true,
-                componentLoadingState = ComponentLoadingState.NOTHING
-            )
-        }
-    }
-
     private fun onSearchClick() = launchCatching {
         _uiState.update {
             it.copy(
@@ -253,7 +237,7 @@ class MapViewModel @Inject constructor(
             )
         }
 
-        geminiService.getLocationInfo(uiState.value.searchValue)
+        apiService.geminiService.getLocationInfo(uiState.value.searchValue)
             .onSuccess { location ->
                 _uiState.update {
                     it.copy(
@@ -268,7 +252,7 @@ class MapViewModel @Inject constructor(
                 }
 
                 location.content.city.also { city ->
-                    unsplashService.getTwoPhotos(city)
+                    apiService.unsplashService.getTwoPhotos(city)
                         .onSuccess { locationImages ->
                             _uiState.update { it.copy(location = location.copy(locationImages = locationImages)) }
                         }
@@ -293,7 +277,7 @@ class MapViewModel @Inject constructor(
                     isFavouriteButtonPlaying = true
                 )
             }
-            saveImageToFirebaseStorageUseCase(location)
+            useCaseBundle.saveImageToFirebaseStorageUseCase(location)
                 .onFailure {
                     _uiState.update { state ->
                         state.copy(
@@ -306,13 +290,14 @@ class MapViewModel @Inject constructor(
     }
 
     private fun getUserFirstChar() = launchCatching {
-        val fullName = dataStoreService.getUserFullName().takeIf { it.isNotEmpty() }
-            ?: firestoreService.getUser().fullName.also { fullName ->
-                launch {
-                    dataStoreService.setUserFullName(fullName)
+        val fullName = dataService.run {
+            dataStoreService.getUserFullName().takeIf { it.isNotEmpty() }
+                ?: firestoreService.getUser().fullName.also { fullName ->
+                    launch {
+                        dataStoreService.setUserFullName(fullName)
+                    }
                 }
-            }
-
+        }
         _uiState.update { it.copy(userFirstChar = fullName.first()) }
     }
 
@@ -322,7 +307,7 @@ class MapViewModel @Inject constructor(
                 isMapButtonsVisible = true,
                 searchBarState = true,
                 isMyLocationButtonVisible = true,
-                screenshotState = ScreenshotState.IDLE,
+                screenshotState = IDLE,
                 bottomSheetState = MapBottomSheetState.BOTTOM_SHEET_HIDDEN
             )
         }
@@ -346,39 +331,20 @@ class MapViewModel @Inject constructor(
             }
         }
 
-    @SuppressLint("UnspecifiedRegisterReceiverFlag")
-    private fun initializeScreenCaptureBroadcastReceiver() = launchCatching {
-        updateUiBeforeProcess()
-
-        val filter = IntentFilter().apply {
-            addAction(SaveScreenshotService.ACTION_SERVICE_STARTED)
-            addAction(SaveScreenshotService.ACTION_SERVICE_STOPPED)
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            applicationContext.registerReceiver(
-                serviceStateReceiver,
-                filter,
-                Context.RECEIVER_NOT_EXPORTED
-            )
-        } else {
-            applicationContext.registerReceiver(serviceStateReceiver, filter)
-        }
-    }
-
     private fun updateUiBeforeProcess() {
         _uiState.update {
             it.copy(
                 isMapButtonsVisible = false,
                 searchBarState = false,
                 isMyLocationButtonVisible = false,
-                screenshotState = ScreenshotState.STARTED
+                screenshotState = STARTED
             )
         }
     }
 
     private fun loadLocationFromFavourite(favouriteId: String) = launchCatching {
         val location = withContext(ioDispatcher) {
-            realmSyncService.getFavourite(favouriteId)
+            dataService.favouriteService.getFavourite(favouriteId)
         }.toLocation()
 
         _uiState.update {
@@ -393,7 +359,7 @@ class MapViewModel @Inject constructor(
 
     override fun onCleared() {
         launchCatching {
-            applicationContext.unregisterReceiver(serviceStateReceiver)
+            screenshotServiceHandler.unregisterServiceStateReceiver()
         }
         super.onCleared()
     }

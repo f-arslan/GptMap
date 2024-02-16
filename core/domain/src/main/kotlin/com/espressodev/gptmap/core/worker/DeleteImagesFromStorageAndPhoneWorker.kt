@@ -10,7 +10,6 @@ import com.espressodev.gptmap.core.data.StorageService
 import com.espressodev.gptmap.core.domain.DeleteFilesFromInternalUseCase
 import com.espressodev.gptmap.core.model.Constants
 
-
 @HiltWorker
 class DeleteImagesFromStorageAndPhoneWorker(
     context: Context,

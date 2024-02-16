@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.feature.favourite
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
@@ -23,7 +22,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
@@ -59,6 +57,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 fun FavouriteRoute(
     popUp: () -> Unit,
     navigateToMap: (String) -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: FavouriteViewModel = hiltViewModel(),
 ) {
     val favourites by viewModel.favourites.collectAsStateWithLifecycle()
@@ -78,7 +77,7 @@ fun FavouriteRoute(
                 onCancelClick = { onEvent(EditableItemUiEvent.OnCancelClick) }
             )
         },
-        modifier = Modifier.padding(bottom = BOTTOM_BAR_PADDING)
+        modifier = modifier.padding(bottom = BOTTOM_BAR_PADDING)
     ) {
         when (val result = favourites) {
             is Response.Success -> {
@@ -104,7 +103,6 @@ fun FavouriteRoute(
 
             Response.Loading -> {}
         }
-
     }
 
     BackHandler {

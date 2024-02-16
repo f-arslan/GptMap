@@ -61,7 +61,6 @@ class ScreenshotViewModel @Inject constructor(
                     }
             }
         }
-
     }
 
     private fun onCaptureClick() = launchCatching {

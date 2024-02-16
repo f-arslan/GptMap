@@ -2,8 +2,8 @@ package com.espressodev.gptmap.core.data.impl
 
 import com.espressodev.gptmap.core.data.AccountService
 import com.espressodev.gptmap.core.data.FirestoreService
-import com.espressodev.gptmap.core.model.Exceptions.FirestoreUserNotExistsException
 import com.espressodev.gptmap.core.model.Exceptions.FirebaseUserIsNullException
+import com.espressodev.gptmap.core.model.Exceptions.FirestoreUserNotExistsException
 import com.espressodev.gptmap.core.model.User
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.dataObjects

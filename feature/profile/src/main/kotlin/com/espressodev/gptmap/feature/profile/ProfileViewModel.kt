@@ -47,7 +47,7 @@ class ProfileViewModel @Inject constructor(
         .map<User, Response<User>> {
             Response.Success(it)
         }
-        .catch {throwable ->
+        .catch { throwable: Throwable ->
             logService.logNonFatalCrash(throwable)
             emit(Response.Failure(FirestoreUserNotExistsException()))
         }

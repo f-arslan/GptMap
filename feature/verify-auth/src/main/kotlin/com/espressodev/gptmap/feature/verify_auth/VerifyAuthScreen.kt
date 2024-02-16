@@ -48,6 +48,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 fun VerifyAuthRoute(
     popUp: () -> Unit,
     navigateToDelete: () -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: VerifyAuthViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -58,7 +59,8 @@ fun VerifyAuthRoute(
                 icon = IconType.Vector(GmIcons.PasswordFilled),
                 onBackClick = popUp
             )
-        }
+        },
+        modifier = modifier
     ) {
         VerifyAuthScreen(
             modifier = Modifier.padding(it),
@@ -70,13 +72,12 @@ fun VerifyAuthRoute(
     if (uiState.isLoading) GmProgressIndicator()
 }
 
-
 @Composable
 fun VerifyAuthScreen(
-    modifier: Modifier,
     uiState: VerifyAuthUiState,
     onValueChange: (String) -> Unit,
-    onDone: () -> Unit
+    onDone: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
     val isKeyboardOpened by rememberKeyboardAsState()
@@ -138,9 +139,14 @@ fun VerifyAuthScreen(
 
 @Composable
 @Preview(showBackground = true, device = "id:pixel")
-fun VerifyAuthPreview() {
-    VerifyAuthScreen(modifier = Modifier, uiState = VerifyAuthUiState(
-        password = "",
-        isLoading = false
-    ), onValueChange = {}, onDone = {})
+private fun VerifyAuthPreview() {
+    VerifyAuthScreen(
+        modifier = Modifier,
+        uiState = VerifyAuthUiState(
+            password = "",
+            isLoading = false
+        ),
+        onValueChange = {},
+        onDone = {}
+    )
 }

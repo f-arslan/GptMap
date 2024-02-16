@@ -7,7 +7,7 @@ import com.espressodev.gptmap.core.model.EditableItemUiEvent
 import com.espressodev.gptmap.core.model.Favourite
 import com.espressodev.gptmap.core.model.FavouriteUiState
 import com.espressodev.gptmap.core.model.Response
-import com.espressodev.gptmap.core.mongodb.RealmSyncService
+import com.espressodev.gptmap.core.mongodb.FavouriteService
 import io.mockk.Called
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -31,10 +31,10 @@ import org.junit.jupiter.api.Test
 class FavouriteViewModelTest : BaseTest() {
     @Test
     fun `emits Success when getFavourites is successful`() = runTest {
-        val realmSyncService: RealmSyncService = mockk()
-        coEvery { realmSyncService.getFavourites() } returns flow { emit(listOf(Favourite())) }
+        val favouriteService: FavouriteService = mockk()
+        coEvery { favouriteService.getFavourites() } returns flow { emit(listOf(Favourite())) }
         val logService: LogService = mockk(relaxed = true)
-        val viewModel = createViewModel(realmSyncService, logService)
+        val viewModel = createViewModel(favouriteService, logService)
 
         val result = viewModel.favourites.first()
 
@@ -44,14 +44,14 @@ class FavouriteViewModelTest : BaseTest() {
 
     @Test
     fun `when deleteFavourite fails, should not reset UI state`() = runTest {
-        val realmSyncService: RealmSyncService = mockk(relaxed = true)
+        val favouriteService: FavouriteService = mockk(relaxed = true)
         val storageService: StorageService = mockk()
         val exception = RuntimeException("Deletion failed")
-        coEvery { realmSyncService.deleteFavourite(any()) } returns Result.failure(exception)
+        coEvery { favouriteService.deleteFavourite(any()) } returns Result.failure(exception)
         coEvery { storageService.deleteImage(any(), any()) } returns Result.success(Unit)
 
         val viewModel = createViewModel(
-            realmSyncService = realmSyncService,
+            favouriteService = favouriteService,
             storageService = storageService,
         )
 
@@ -68,16 +68,16 @@ class FavouriteViewModelTest : BaseTest() {
 
     @Test
     fun `when getFavourites emits multiple values, should emit Success for each value`() = runTest {
-        val realmSyncService: RealmSyncService = mockk()
+        val favouriteService: FavouriteService = mockk()
         val favouritesFlow = flow {
             emit(listOf(Favourite(favouriteId = "id1")))
             emit(listOf(Favourite(favouriteId = "id2"), Favourite(favouriteId = "id3")))
         }
-        coEvery { realmSyncService.getFavourites() } returns favouritesFlow.also(::println)
+        coEvery { favouriteService.getFavourites() } returns favouritesFlow.also(::println)
 
         val viewModel =
             createViewModel(
-                realmSyncService = realmSyncService,
+                favouriteService = favouriteService,
                 ioDispatcher = testScheduler
             )
 
@@ -100,11 +100,11 @@ class FavouriteViewModelTest : BaseTest() {
 
     @Test
     fun `favourites emits Success with correct data`() = runTest {
-        val realmSyncService: RealmSyncService = mockk()
-        coEvery { realmSyncService.getFavourites() } returns flow {
+        val favouriteService: FavouriteService = mockk()
+        coEvery { favouriteService.getFavourites() } returns flow {
             emit(listOf(Favourite(favouriteId = TEST_ID)))
         }
-        val viewModel = createViewModel(realmSyncService)
+        val viewModel = createViewModel(favouriteService)
         viewModel.favourites.first().also { result ->
             assert(result is Response.Success)
         }
@@ -112,18 +112,17 @@ class FavouriteViewModelTest : BaseTest() {
 
     @Test
     fun `favourites emits Failure when getFavourites fails`() = runTest {
-        val realmSyncService: RealmSyncService = mockk()
-        coEvery { realmSyncService.getFavourites() } returns flow {
+        val favouriteService: FavouriteService = mockk()
+        coEvery { favouriteService.getFavourites() } returns flow {
             emit(listOf(Favourite(favouriteId = TEST_ID)))
-            throw Exception()
+            throw IllegalArgumentException()
         }
 
         val viewModel =
             createViewModel(
-                realmSyncService = realmSyncService,
+                favouriteService = favouriteService,
                 ioDispatcher = testScheduler
             )
-
 
         val emissions = mutableListOf<Response<List<Favourite>>>()
         backgroundScope.launch { viewModel.favourites.take(2).toList(emissions) }
@@ -133,11 +132,11 @@ class FavouriteViewModelTest : BaseTest() {
 
     @Test
     fun `onDeleteDialogConfirmClick deletes favourite and resets UI state`() = runTest {
-        val realmSyncService: RealmSyncService = mockk(relaxed = true)
+        val favouriteService: FavouriteService = mockk(relaxed = true)
         val storageService: StorageService = mockk()
 
         // Assume deletion is successful
-        coEvery { realmSyncService.deleteFavourite(any()) } returns Result.success(Unit)
+        coEvery { favouriteService.deleteFavourite(any()) } returns Result.success(Unit)
 
         val imageIdSlot = slot<String>()
         val imageRefSlot = slot<String>()
@@ -148,12 +147,10 @@ class FavouriteViewModelTest : BaseTest() {
             )
         } returns Result.success(Unit)
 
-
         val viewModel = createViewModel(
-            realmSyncService = realmSyncService,
+            favouriteService = favouriteService,
             storageService = storageService,
         )
-
 
         // Assume that the UI state has a selected item
         val selectedItem = Favourite(favouriteId = TEST_ID)
@@ -168,7 +165,7 @@ class FavouriteViewModelTest : BaseTest() {
         viewModel.onEvent(EditableItemUiEvent.OnDeleteDialogConfirm)
 
         // Confirm that the delete functions were called
-        coVerify { realmSyncService.deleteFavourite(TEST_ID) }
+        coVerify { favouriteService.deleteFavourite(TEST_ID) }
         coVerify { storageService.deleteImage(TEST_ID, IMAGE_REFERENCE) }
 
         // Check the captured arguments
@@ -180,15 +177,15 @@ class FavouriteViewModelTest : BaseTest() {
 
     @Test
     fun `onEditDialogConfirmClick updates favourite text and resets UI state`() = runTest {
-        val realmSyncService: RealmSyncService = mockk(relaxed = true)
+        val favouriteService: FavouriteService = mockk(relaxed = true)
         coEvery {
-            realmSyncService.updateFavouriteText(
+            favouriteService.updateFavouriteText(
                 any(),
                 any()
             )
         } returns Result.success(Unit)
 
-        val viewModel = createViewModel(realmSyncService = realmSyncService)
+        val viewModel = createViewModel(favouriteService = favouriteService)
 
         val selectedItem = Favourite(favouriteId = TEST_ID)
         viewModel.onEvent(EditableItemUiEvent.OnLongClickToItem(selectedItem))
@@ -196,7 +193,7 @@ class FavouriteViewModelTest : BaseTest() {
 
         viewModel.onEvent(EditableItemUiEvent.OnEditDialogConfirm(newText))
         // Confirm that the update function was called
-        coVerify { realmSyncService.updateFavouriteText(TEST_ID, newText) }
+        coVerify { favouriteService.updateFavouriteText(TEST_ID, newText) }
 
         // Confirm that the UI state was reset
         assert(viewModel.uiState.value == FavouriteUiState(selectedItem = Favourite()))
@@ -216,13 +213,13 @@ class FavouriteViewModelTest : BaseTest() {
     }
 
     private fun createViewModel(
-        realmSyncService: RealmSyncService = mockk(relaxed = true),
+        favouriteService: FavouriteService = mockk(relaxed = true),
         logService: LogService = mockk(relaxed = true),
         storageService: StorageService = mockk(relaxed = true),
         ioDispatcher: TestCoroutineScheduler = testDispatcher
     ): FavouriteViewModel {
         return FavouriteViewModel(
-            realmSyncService = realmSyncService,
+            favouriteService = favouriteService,
             storageService = storageService,
             logService = logService,
             ioDispatcher = UnconfinedTestDispatcher(ioDispatcher)

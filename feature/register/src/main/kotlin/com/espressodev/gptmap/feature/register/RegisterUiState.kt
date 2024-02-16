@@ -13,7 +13,7 @@ data class RegisterUiState(
     val verificationAlertState: LoadingState = LoadingState.Idle,
     val loadingState: LoadingState = LoadingState.Idle,
     val oneTapSignUpResponse: OneTapSignInUpResponse = GoogleResponse.Success(null),
-    val signUpWithGoogleResponse: SignInUpWithGoogleResponse = GoogleResponse.Success(false)
+    val signUpWithGoogleResponse: SignInUpWithGoogleResponse = GoogleResponse.Success(data = false)
 )
 
 sealed class RegisterEvent {
@@ -21,8 +21,8 @@ sealed class RegisterEvent {
     data class OnEmailChanged(val email: String) : RegisterEvent()
     data class OnPasswordChanged(val password: String) : RegisterEvent()
     data class OnConfirmPasswordChanged(val confirmPassword: String) : RegisterEvent()
-    data class OnLoadingStateChanged(val state: LoadingState): RegisterEvent()
-    data class OnVerificationAlertStateChanged(val state: LoadingState): RegisterEvent()
+    data class OnLoadingStateChanged(val state: LoadingState) : RegisterEvent()
+    data class OnVerificationAlertStateChanged(val state: LoadingState) : RegisterEvent()
     data object OnGoogleClicked : RegisterEvent()
     data object OnRegisterClicked : RegisterEvent()
 }

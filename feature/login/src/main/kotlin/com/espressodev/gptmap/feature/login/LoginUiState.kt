@@ -5,7 +5,6 @@ import com.espressodev.gptmap.core.google.SignInUpWithGoogleResponse
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.google.GoogleResponse
 
-
 data class LoginUiState(
     val email: String = "",
     val password: String = "",
@@ -17,8 +16,7 @@ data class LoginUiState(
 sealed class LoginEvent {
     data class OnEmailChanged(val email: String) : LoginEvent()
     data class OnPasswordChanged(val password: String) : LoginEvent()
-    data class OnLoadingStateChanged (val state: LoadingState): LoginEvent()
+    data class OnLoadingStateChanged(val state: LoadingState) : LoginEvent()
     data object OnGoogleClicked : LoginEvent()
     data object OnLoginClicked : LoginEvent()
-
 }

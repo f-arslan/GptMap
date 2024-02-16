@@ -20,7 +20,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.espressodev.gptmap.core.designsystem.Constants.GITHUB_DESC
 import com.espressodev.gptmap.core.designsystem.Constants.GITHUB_LINK
@@ -41,7 +40,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InfoRoute(popUp: () -> Unit) {
+fun InfoRoute(popUp: () -> Unit, modifier: Modifier = Modifier) {
     Scaffold(
         topBar = {
             GmTopAppBar(
@@ -49,7 +48,8 @@ fun InfoRoute(popUp: () -> Unit) {
                 icon = IconType.Vector(GmIcons.InfoOutlined),
                 onBackClick = popUp
             )
-        }
+        },
+        modifier = modifier
     ) {
         Column(
             modifier = Modifier
@@ -104,10 +104,4 @@ fun InfoRoute(popUp: () -> Unit) {
             )
         }
     }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun InfoPreview() {
-    InfoRoute {}
 }

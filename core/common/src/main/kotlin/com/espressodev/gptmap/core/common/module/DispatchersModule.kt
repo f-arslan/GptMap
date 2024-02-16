@@ -1,13 +1,13 @@
 package com.espressodev.gptmap.core.common.module
 
+import com.espressodev.gptmap.core.common.module.GmDispatchers.Default
+import com.espressodev.gptmap.core.common.module.GmDispatchers.IO
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import com.espressodev.gptmap.core.common.module.GmDispatchers.Default
-import com.espressodev.gptmap.core.common.module.GmDispatchers.IO
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -20,5 +20,3 @@ object DispatchersModule {
     @Dispatcher(Default)
     fun providesDefaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
 }
-
-

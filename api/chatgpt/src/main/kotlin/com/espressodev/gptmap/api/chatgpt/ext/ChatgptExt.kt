@@ -1,8 +1,7 @@
 package com.espressodev.gptmap.api.chatgpt.ext
 
-import com.espressodev.gptmap.core.model.chatgpt.ChatgptRequest
 import com.espressodev.gptmap.core.model.PromptUtil.locationPreText
-
+import com.espressodev.gptmap.core.model.chatgpt.ChatgptRequest
 
 internal fun ChatgptRequest.mergeMessageWithPreText(): ChatgptRequest {
     val currentContent = messages.first().content

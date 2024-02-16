@@ -86,79 +86,81 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 @Composable
 fun ScreenshotRoute(
     popUp: () -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: ScreenshotViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val onCaptureClickEvent by rememberUpdatedState(
-        newValue = { viewModel.onEvent(ScreenshotUiEvent.OnCaptureClicked) }
+        newValue = { viewModel.onEvent(ScreenshotUiEvent.OnCaptureClicked) },
     )
     val onSaveClickEvent by rememberUpdatedState(
-        newValue = { viewModel.onEvent(ScreenshotUiEvent.OnSaveClicked, popUp) }
+        newValue = { viewModel.onEvent(ScreenshotUiEvent.OnSaveClicked, popUp) },
     )
     Scaffold(
         topBar = {
             GmTopAppBar(
                 text = TextType.Res(AppText.edit_screenshot),
                 icon = IconType.Vector(GmIcons.ScreenshotFilled),
-                onBackClick = popUp
+                onBackClick = popUp,
             )
         },
         bottomBar = {
             BottomAppBar(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
             ) {
                 Row(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.Center,
                 ) {
                     when (uiState.screenState) {
-                        Initial -> InitialBottomBar(
-                            onClick = {
-                                onCaptureClickEvent()
+                        Initial ->
+                            Button(onClick = onCaptureClickEvent) {
+                                Text(text = stringResource(id = R.string.capture))
                             }
-                        )
 
-                        AfterSelectingTheField -> AfterBottomBar(
-                            onCancelClick = popUp,
-                            onSaveClick = {
-                                onSaveClickEvent()
-                            }
-                        )
+                        AfterSelectingTheField ->
+                            AfterBottomBar(
+                                onCancelClick = popUp,
+                                onSaveClick = {
+                                    onSaveClickEvent()
+                                },
+                            )
                     }
                 }
             }
         },
-        modifier = Modifier.statusBarsPadding()
+        modifier = modifier.statusBarsPadding(),
     ) {
         ScreenshotScreen(
             uiState = uiState,
             onEvent = viewModel::onEvent,
-            modifier = Modifier.padding(it)
+            modifier = Modifier.padding(it),
         )
     }
 
-    if (uiState.isSaveStateStarted)
+    if (uiState.isSaveStateStarted) {
         GmProgressIndicator()
-}
-
-@Composable
-private fun InitialBottomBar(onClick: () -> Unit) {
-    Button(onClick = onClick) {
-        Text(text = stringResource(id = R.string.capture))
     }
 }
 
 @Composable
-private fun AfterBottomBar(onCancelClick: () -> Unit, onSaveClick: () -> Unit) {
-    OutlinedButton(onClick = onCancelClick) {
-        Icon(imageVector = GmIcons.CancelOutlined, stringResource(id = R.string.cancel))
-    }
-    Spacer(modifier = Modifier.width(16.dp))
-    Button(onClick = onSaveClick) {
-        Icon(imageVector = GmIcons.DoneDefault, stringResource(id = R.string.done))
+private fun AfterBottomBar(
+    onCancelClick: () -> Unit,
+    onSaveClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(modifier = modifier) {
+        OutlinedButton(onClick = onCancelClick) {
+            Icon(imageVector = GmIcons.CancelOutlined, stringResource(id = R.string.cancel))
+        }
+        Spacer(Modifier.width(16.dp))
+        Button(onClick = onSaveClick) {
+            Icon(imageVector = GmIcons.DoneDefault, stringResource(id = R.string.done))
+        }
     }
 }
 
@@ -182,7 +184,7 @@ private fun ScreenshotScreen(
                 title = uiState.title,
                 imageResult = uiState.imageResult,
                 onValueChange = { onEvent(ScreenshotUiEvent.OnTitleChanged(it)) },
-                modifier = modifier
+                modifier = modifier,
             )
         }
     }
@@ -198,22 +200,23 @@ private fun EditScreenshot(
     if (imageResult is ImageResult.Success) {
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = modifier
+            modifier =
+            modifier
                 .fillMaxSize()
                 .statusBarsPadding()
-                .padding(16.dp)
+                .padding(16.dp),
         ) {
             DefaultTextField(
                 value = title,
                 label = AppText.title,
                 leadingIcon = GmIcons.TitleDefault,
-                onValueChange = onValueChange
+                onValueChange = onValueChange,
             )
             Image(
                 bitmap = imageResult.data.asImageBitmap(),
                 contentDescription = stringResource(id = R.string.selected_image),
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }
@@ -230,55 +233,64 @@ private fun ScreenshotGallery(
     val squareSizePx = with(localDensity) { size.toPx() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val localConfiguration = LocalConfiguration.current
     val imagePath =
-        context.getExternalFilesDir(null)?.absolutePath?.let { "${it}/screenshots/screenshot.png" }
-
-    val screenSize =
-        with(localDensity) { LocalConfiguration.current.screenWidthDp.dp.toPx() to LocalConfiguration.current.screenHeightDp.dp.toPx() }
-    val initialOffset = Offset(
-        x = (screenSize.first - squareSizePx) / 2,
-        y = (screenSize.second - squareSizePx * 3 / 2) / 2
-    )
+        context.getExternalFilesDir(null)?.absolutePath
+            ?.let { "$it/screenshots/screenshot.png" }
+    val screenSize = with(localDensity) {
+        localConfiguration.screenWidthDp.dp.toPx() to localConfiguration.screenHeightDp.dp.toPx()
+    }
+    val initialOffset =
+        Offset(
+            x = (screenSize.first - squareSizePx) / 2,
+            y = (screenSize.second - squareSizePx * 3 / 2) / 2,
+        )
     val offset = remember { Animatable(initialOffset, Offset.VectorConverter) }
 
     Box(
-        modifier = modifier
+        modifier =
+        modifier
             .fillMaxSize()
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
                     change.consume()
                     scope.launch {
                         val parentSize = this@pointerInput.size
-                        val newX = (offset.value.x + dragAmount.x)
-                            .coerceIn(0f, parentSize.width - squareSizePx)
-                        val newY = (offset.value.y + dragAmount.y)
-                            .coerceIn(0f, parentSize.height - squareSizePx)
+                        val newX =
+                            (offset.value.x + dragAmount.x)
+                                .coerceIn(0f, parentSize.width - squareSizePx)
+                        val newY =
+                            (offset.value.y + dragAmount.y)
+                                .coerceIn(0f, parentSize.height - squareSizePx)
                         offset.snapTo(Offset(newX, newY))
                     }
                 }
-            }
+            },
     ) {
         AsyncImage(
-            model = ImageRequest.Builder(context)
+            model =
+            ImageRequest.Builder(context)
                 .data(imagePath)
                 .build(),
             contentDescription = stringResource(id = R.string.selected_image),
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
         Canvas(
-            modifier = Modifier
-                .matchParentSize()
+            modifier =
+            Modifier
+                .matchParentSize(),
         ) {
             drawIntoCanvas {
-                val transparentSquare = Path().apply {
-                    addRect(
-                        Rect(
-                            offset = Offset(offset.value.x, offset.value.y),
-                            size = Size(squareSizePx, squareSizePx)
+                val transparentSquare =
+                    Path().apply {
+                        addRect(
+                            Rect(
+                                offset = Offset(offset.value.x, offset.value.y),
+                                size = Size(squareSizePx, squareSizePx),
+                            ),
                         )
-                    )
-                }
+                    }
                 clipPath(transparentSquare, clipOp = ClipOp.Difference) {
                     drawRect(SolidColor(Color(0x80000000)))
                 }
@@ -287,11 +299,12 @@ private fun ScreenshotGallery(
         ScreenshotBox(
             onEvent = onEvent,
             screenState = screenState,
-            modifier = Modifier
+            modifier =
+            Modifier
                 .offset {
                     IntOffset(
                         offset.value.x.roundToInt(),
-                        offset.value.y.roundToInt()
+                        offset.value.y.roundToInt(),
                     )
                 }
                 .size(size),
@@ -310,20 +323,23 @@ private fun ScreenshotBox(
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(screenState) {
-        onEvent(ScreenshotUiEvent.OnCallbackChanged {
-            composableBounds?.let { bounds ->
-                if (bounds.width == 0f || bounds.height == 0f) return@let
-                scope.launch {
-                    val imageResult = withContext(Dispatchers.IO) {
-                        view.screenshot(bounds)
-                    }
-                    onEvent(ScreenshotUiEvent.OnImageResultChanged(imageResult))
-                    if (imageResult is ImageResult.Success) {
-                        onEvent(ScreenshotUiEvent.OnBitmapChanged(imageResult.data))
+        onEvent(
+            ScreenshotUiEvent.OnCallbackChanged {
+                composableBounds?.let { bounds ->
+                    if (bounds.width == 0f || bounds.height == 0f) return@let
+                    scope.launch {
+                        val imageResult =
+                            withContext(Dispatchers.IO) {
+                                view.screenshot(bounds)
+                            }
+                        onEvent(ScreenshotUiEvent.OnImageResultChanged(imageResult))
+                        if (imageResult is ImageResult.Success) {
+                            onEvent(ScreenshotUiEvent.OnBitmapChanged(imageResult.data))
+                        }
                     }
                 }
-            }
-        })
+            },
+        )
     }
 
     DisposableEffect(Unit) {
@@ -334,11 +350,12 @@ private fun ScreenshotBox(
     }
 
     Box(
-        modifier = modifier
+        modifier =
+        modifier
             .onGloballyPositioned {
                 composableBounds = it.boundsInWindow()
             }
-            .screenshotPreviewOverlay()
+            .screenshotPreviewOverlay(),
     )
 }
 
@@ -357,36 +374,38 @@ fun Modifier.screenshotPreviewOverlay(
         val twoThirdWidth = (size.width + strokeWidthPx) / 3 * 2
         val twoThirdHeight = (size.height + strokeWidthPx) / 3 * 2
 
-        val path = Path().apply {
-            // Top-left
-            moveTo(thirdWidth, -cornerOffset)
-            lineTo(-cornerOffset, -cornerOffset)
-            lineTo(-cornerOffset, thirdHeight)
+        val path =
+            Path().apply {
+                // Top-left
+                moveTo(thirdWidth, -cornerOffset)
+                lineTo(-cornerOffset, -cornerOffset)
+                lineTo(-cornerOffset, thirdHeight)
 
-            // Bottom-left
-            moveTo(-cornerOffset, twoThirdHeight)
-            lineTo(-cornerOffset, size.height + cornerOffset)
-            lineTo(thirdWidth, size.height + cornerOffset)
+                // Bottom-left
+                moveTo(-cornerOffset, twoThirdHeight)
+                lineTo(-cornerOffset, size.height + cornerOffset)
+                lineTo(thirdWidth, size.height + cornerOffset)
 
-            // Top-right
-            moveTo(twoThirdWidth, -cornerOffset)
-            lineTo(size.width + cornerOffset, -cornerOffset)
-            lineTo(size.width + cornerOffset, thirdHeight)
+                // Top-right
+                moveTo(twoThirdWidth, -cornerOffset)
+                lineTo(size.width + cornerOffset, -cornerOffset)
+                lineTo(size.width + cornerOffset, thirdHeight)
 
-            // Bottom-right
-            moveTo(size.width + cornerOffset, twoThirdHeight)
-            lineTo(size.width + cornerOffset, size.height + cornerOffset)
-            lineTo(twoThirdWidth, size.height + cornerOffset)
-        }
+                // Bottom-right
+                moveTo(size.width + cornerOffset, twoThirdHeight)
+                lineTo(size.width + cornerOffset, size.height + cornerOffset)
+                lineTo(twoThirdWidth, size.height + cornerOffset)
+            }
 
         drawPath(
             path = path,
             color = borderColor,
-            style = Stroke(
+            style =
+            Stroke(
                 width = strokeWidthPx,
-            )
+            ),
         )
-    }
+    },
 )
 
 @Preview(showBackground = true)
@@ -396,12 +415,12 @@ private fun ScreenshotPreview() {
         Box(
             Modifier
                 .size(200.dp)
-                .screenshotPreviewOverlay(borderColor = Color.Red)
+                .screenshotPreviewOverlay(borderColor = Color.Red),
         )
         Box(
             Modifier
                 .size(200.dp)
-                .background(Color.Blue)
+                .background(Color.Blue),
         )
     }
 }
