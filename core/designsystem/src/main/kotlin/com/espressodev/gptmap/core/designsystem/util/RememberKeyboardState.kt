@@ -12,10 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-
-data class KeyboardState(val isVisible: Boolean = false, val keypadHeight: Dp = 0.dp)
+import com.espressodev.gptmap.core.designsystem.KeyboardState
 
 @Composable
 fun rememberKeyboardAsState(): State<KeyboardState> {
@@ -48,3 +45,5 @@ fun rememberKeyboardAsState(): State<KeyboardState> {
 
     return keyboardState
 }
+
+

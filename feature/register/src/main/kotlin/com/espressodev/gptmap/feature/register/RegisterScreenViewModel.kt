@@ -1,15 +1,15 @@
 package com.espressodev.gptmap.feature.register
 
 import com.espressodev.gptmap.core.common.GmViewModel
+import com.espressodev.gptmap.core.common.LogService
+import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
+import com.espressodev.gptmap.core.domain.SignInUpWithGoogleUseCase
+import com.espressodev.gptmap.core.domain.SignUpWithEmailAndPasswordUseCase
+import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.ext.isValidEmail
 import com.espressodev.gptmap.core.model.ext.isValidName
 import com.espressodev.gptmap.core.model.ext.isValidPassword
 import com.espressodev.gptmap.core.model.ext.passwordMatches
-import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
-import com.espressodev.gptmap.core.common.LogService
-import com.espressodev.gptmap.core.domain.SignInUpWithGoogleUseCase
-import com.espressodev.gptmap.core.domain.SignUpWithEmailAndPasswordUseCase
-import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.google.GoogleResponse
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.AuthCredential
@@ -44,16 +44,18 @@ class RegisterScreenViewModel @Inject constructor(
 
     fun onEvent(event: RegisterEvent) {
         when (event) {
-            is RegisterEvent.OnFullNameChanged -> _uiState.update { it.copy(fullName = event.fullName) }
-            is RegisterEvent.OnEmailChanged -> _uiState.update { it.copy(email = event.email) }
-            is RegisterEvent.OnPasswordChanged -> _uiState.update { it.copy(password = event.password) }
-            is RegisterEvent.OnConfirmPasswordChanged -> _uiState.update { it.copy(confirmPassword = event.confirmPassword) }
-            is RegisterEvent.OnLoadingStateChanged -> _uiState.update { it.copy(loadingState = event.state) }
-            is RegisterEvent.OnVerificationAlertStateChanged -> _uiState.update {
-                it.copy(
-                    verificationAlertState = event.state
-                )
-            }
+            is RegisterEvent.OnFullNameChanged ->
+                _uiState.update { it.copy(fullName = event.fullName) }
+            is RegisterEvent.OnEmailChanged ->
+                _uiState.update { it.copy(email = event.email) }
+            is RegisterEvent.OnPasswordChanged ->
+                _uiState.update { it.copy(password = event.password) }
+            is RegisterEvent.OnConfirmPasswordChanged ->
+                _uiState.update { it.copy(confirmPassword = event.confirmPassword) }
+            is RegisterEvent.OnLoadingStateChanged ->
+                _uiState.update { it.copy(loadingState = event.state) }
+            is RegisterEvent.OnVerificationAlertStateChanged ->
+                _uiState.update { it.copy(verificationAlertState = event.state) }
 
             RegisterEvent.OnGoogleClicked -> oneTapSignUp()
             RegisterEvent.OnRegisterClicked -> onRegisterClick()
@@ -66,7 +68,6 @@ class RegisterScreenViewModel @Inject constructor(
         delay(200L)
         clearAndNavigateLogin()
     }
-
 
     private fun onRegisterClick() = launchCatching {
         if (!formValidation()) return@launchCatching
