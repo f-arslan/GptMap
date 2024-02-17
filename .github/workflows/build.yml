@@ -33,7 +33,7 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
 
       - name: Set gradlew executable
         run: chmod +x ./gradlew
@@ -99,7 +99,7 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
 
       - name: Set gradlew executable
         run: chmod +x ./gradlew
@@ -111,6 +111,9 @@ jobs:
           echo "PALM_API_KEY=${{ secrets.PALM_API_KEY }}" >> local.properties
           echo "WEB_CLIENT_ID=${{ secrets.WEB_CLIENT_ID }}" >> local.properties
           echo "UNSPLASH_BASE_URL=${{ secrets.UNSPLASH_BASE_URL }}" >> local.properties
+
+      - name: Package Debug APK
+        run: ./gradlew packageDebug
 
       - name: Build projects before running emulator
         run: bash .github/scripts/packageDebugAndroidTestScript.sh
