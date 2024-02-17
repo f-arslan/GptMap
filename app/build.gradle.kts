@@ -1,6 +1,3 @@
-import java.io.FileInputStream
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.gptmap.android.application)
     alias(libs.plugins.gptmap.android.application.compose)
@@ -21,19 +18,6 @@ android {
         }
 
     }
-
-//    val keystorePropertiesFile = rootProject.file("keystore.properties")
-//    val keystoreProperties = Properties()
-//    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-//
-//    signingConfigs {
-//        create("config") {
-//            keyAlias = keystoreProperties["keyAlias"] as String
-//            keyPassword = keystoreProperties["keyPassword"] as String
-//            storeFile = file(keystoreProperties["storeFile"] as String)
-//            storePassword = keystoreProperties["storePassword"] as String
-//        }
-//    }
 
     buildTypes {
         release {
