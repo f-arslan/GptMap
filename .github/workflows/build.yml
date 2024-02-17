@@ -113,7 +113,7 @@ jobs:
           echo "UNSPLASH_BASE_URL=${{ secrets.UNSPLASH_BASE_URL }}" >> local.properties
 
       - name: Build projects before running emulator
-        run: ./gradlew packageDebug packageDebugAndroidTest
+        run: bash .github/scripts/packageDebugAndroidTestScript.sh
 
       - name: Run instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
@@ -122,8 +122,8 @@ jobs:
           arch: x86_64
           disable-animations: true
           disk-size: 6000M
-          heap-size: 600M
-          script: ./gradlew connectedDebugAndroidTest --daemon
+          heap-size: 1000M
+          script: bash .github/scripts/connectedDebugAndroidTestScript.sh
 
       - name: Upload test reports
         if: always()
