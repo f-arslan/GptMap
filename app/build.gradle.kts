@@ -12,10 +12,11 @@ android {
         versionCode = 1
         versionName = "1.0.0"
 
-        testInstrumentationRunner = libs.androidx.test.runner.toString()
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
     }
 
