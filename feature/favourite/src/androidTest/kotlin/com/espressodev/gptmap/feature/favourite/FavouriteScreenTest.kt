@@ -59,6 +59,7 @@ class FavouriteScreenTest {
 
     private fun generateRandomFavourites(number: Int): List<Favourite> = (0 until number).map {
         Favourite(
+            id = it.toString(),
             favouriteId = it.toString(),
             title = "Title $it",
             placeholderImageUrl = "https://picsum.photos/200/300?random=$it"
