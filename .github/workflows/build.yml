@@ -25,6 +25,9 @@ jobs:
       - name: Copy CI gradle.properties
         run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
 
+      - name: Decode google-services.json
+        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > ./app/google-services.json
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
