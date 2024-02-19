@@ -1,8 +1,8 @@
 package com.espressodev.gptmap.api.gemini.module
 
 import com.espressodev.gptmap.api.gemini.BuildConfig.PALM_API_KEY
-import com.espressodev.gptmap.api.gemini.GeminiService
-import com.espressodev.gptmap.api.gemini.impl.GeminiServiceImpl
+import com.espressodev.gptmap.api.gemini.GeminiDataSource
+import com.espressodev.gptmap.api.gemini.impl.GeminiDataSourceImpl
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.BlockThreshold
 import com.google.ai.client.generativeai.type.HarmCategory
@@ -54,8 +54,8 @@ object GeminiModule {
     fun bindGeminiService(
         @Named(TEXT_MODEL) generativeModelForText: GenerativeModel,
         @Named(IMAGE_MODEL) generativeModelForImage: GenerativeModel
-    ): GeminiService =
-        GeminiServiceImpl(
+    ): GeminiDataSource =
+        GeminiDataSourceImpl(
             generativeModelForText = generativeModelForText,
             generativeModelForImage = generativeModelForImage
         )

@@ -14,6 +14,7 @@ android {
 
 dependencies {
     implementation(projects.core.mongodb)
+    implementation(projects.core.firebase)
 
     implementation(libs.coil.compose)
     implementation(libs.lottie.compose)

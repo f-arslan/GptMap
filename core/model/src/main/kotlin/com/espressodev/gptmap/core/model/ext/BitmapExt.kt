@@ -6,7 +6,9 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import com.espressodev.gptmap.core.model.Constants
 import com.espressodev.gptmap.core.model.Constants.COMPRESS_RATE_BEFORE_STORAGE
+import com.espressodev.gptmap.core.model.Constants.DOWNLOAD_IMAGE_HEIGHT
 import com.espressodev.gptmap.core.model.Constants.DOWNLOAD_IMAGE_TIMEOUT
+import com.espressodev.gptmap.core.model.Constants.DOWNLOAD_IMAGE_WIDTH
 import com.espressodev.gptmap.core.model.Exceptions
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -36,6 +38,11 @@ fun String.downloadImage(): Bitmap {
         BitmapFactory.decodeStream(inputStream)
     }
 }
+
+fun String.downloadResizeAndCompress(
+    width: Int = DOWNLOAD_IMAGE_WIDTH,
+    height: Int = DOWNLOAD_IMAGE_HEIGHT
+): ByteArray = downloadImage().resizeImage(width, height).compressImage()
 
 fun ByteArray.toBitmap(): Bitmap = BitmapFactory.decodeByteArray(this, 0, size)
 

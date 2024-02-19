@@ -1,7 +1,7 @@
 package com.espressodev.gptmap.api.unsplash.impl
 
 import com.espressodev.gptmap.api.unsplash.UnsplashApi
-import com.espressodev.gptmap.api.unsplash.UnsplashService
+import com.espressodev.gptmap.api.unsplash.UnsplashDataSource
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -12,7 +12,7 @@ import java.util.UUID
  * how is this allowed?
  */
 
-class UnsplashServiceImpl(private val unsplashApi: UnsplashApi) : UnsplashService {
+class UnsplashDataSourceImpl(private val unsplashApi: UnsplashApi) : UnsplashDataSource {
     override suspend fun getTwoPhotos(query: String): Result<List<LocationImage>> =
         withContext(Dispatchers.IO) {
             val response = unsplashApi.getTwoPhotos(query)

@@ -7,7 +7,7 @@ import com.espressodev.gptmap.core.model.EditableItemUiEvent
 import com.espressodev.gptmap.core.model.Favourite
 import com.espressodev.gptmap.core.model.FavouriteUiState
 import com.espressodev.gptmap.core.model.Response
-import com.espressodev.gptmap.core.mongodb.FavouriteService
+import com.espressodev.gptmap.core.mongodb.FavouriteDataSource
 import io.mockk.Called
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -31,10 +31,10 @@ import org.junit.jupiter.api.Test
 class FavouriteViewModelTest : BaseTest() {
     @Test
     fun `emits Success when getFavourites is successful`() = runTest {
-        val favouriteService: FavouriteService = mockk()
-        coEvery { favouriteService.getFavourites() } returns flow { emit(listOf(Favourite())) }
+        val favouriteDataSource: FavouriteDataSource = mockk()
+        coEvery { favouriteDataSource.getFavourites() } returns flow { emit(listOf(Favourite())) }
         val logService: LogService = mockk(relaxed = true)
-        val viewModel = createViewModel(favouriteService, logService)
+        val viewModel = createViewModel(favouriteDataSource, logService)
 
         val result = viewModel.favourites.first()
 
@@ -44,14 +44,14 @@ class FavouriteViewModelTest : BaseTest() {
 
     @Test
     fun `when deleteFavourite fails, should not reset UI state`() = runTest {
-        val favouriteService: FavouriteService = mockk(relaxed = true)
+        val favouriteDataSource: FavouriteDataSource = mockk(relaxed = true)
         val storageService: StorageService = mockk()
         val exception = RuntimeException("Deletion failed")
-        coEvery { favouriteService.deleteFavourite(any()) } returns Result.failure(exception)
+        coEvery { favouriteDataSource.deleteFavourite(any()) } returns Result.failure(exception)
         coEvery { storageService.deleteImage(any(), any()) } returns Result.success(Unit)
 
         val viewModel = createViewModel(
-            favouriteService = favouriteService,
+            favouriteDataSource = favouriteDataSource,
             storageService = storageService,
         )
 
@@ -68,16 +68,16 @@ class FavouriteViewModelTest : BaseTest() {
 
     @Test
     fun `when getFavourites emits multiple values, should emit Success for each value`() = runTest {
-        val favouriteService: FavouriteService = mockk()
+        val favouriteDataSource: FavouriteDataSource = mockk()
         val favouritesFlow = flow {
             emit(listOf(Favourite(favouriteId = "id1")))
             emit(listOf(Favourite(favouriteId = "id2"), Favourite(favouriteId = "id3")))
         }
-        coEvery { favouriteService.getFavourites() } returns favouritesFlow.also(::println)
+        coEvery { favouriteDataSource.getFavourites() } returns favouritesFlow.also(::println)
 
         val viewModel =
             createViewModel(
-                favouriteService = favouriteService,
+                favouriteDataSource = favouriteDataSource,
                 ioDispatcher = testScheduler
             )
 
@@ -100,11 +100,11 @@ class FavouriteViewModelTest : BaseTest() {
 
     @Test
     fun `favourites emits Success with correct data`() = runTest {
-        val favouriteService: FavouriteService = mockk()
-        coEvery { favouriteService.getFavourites() } returns flow {
+        val favouriteDataSource: FavouriteDataSource = mockk()
+        coEvery { favouriteDataSource.getFavourites() } returns flow {
             emit(listOf(Favourite(favouriteId = TEST_ID)))
         }
-        val viewModel = createViewModel(favouriteService)
+        val viewModel = createViewModel(favouriteDataSource)
         viewModel.favourites.first().also { result ->
             assert(result is Response.Success)
         }
@@ -112,15 +112,15 @@ class FavouriteViewModelTest : BaseTest() {
 
     @Test
     fun `favourites emits Failure when getFavourites fails`() = runTest {
-        val favouriteService: FavouriteService = mockk()
-        coEvery { favouriteService.getFavourites() } returns flow {
+        val favouriteDataSource: FavouriteDataSource = mockk()
+        coEvery { favouriteDataSource.getFavourites() } returns flow {
             emit(listOf(Favourite(favouriteId = TEST_ID)))
             throw IllegalArgumentException()
         }
 
         val viewModel =
             createViewModel(
-                favouriteService = favouriteService,
+                favouriteDataSource = favouriteDataSource,
                 ioDispatcher = testScheduler
             )
 
@@ -132,11 +132,11 @@ class FavouriteViewModelTest : BaseTest() {
 
     @Test
     fun `onDeleteDialogConfirmClick deletes favourite and resets UI state`() = runTest {
-        val favouriteService: FavouriteService = mockk(relaxed = true)
+        val favouriteDataSource: FavouriteDataSource = mockk(relaxed = true)
         val storageService: StorageService = mockk()
 
         // Assume deletion is successful
-        coEvery { favouriteService.deleteFavourite(any()) } returns Result.success(Unit)
+        coEvery { favouriteDataSource.deleteFavourite(any()) } returns Result.success(Unit)
 
         val imageIdSlot = slot<String>()
         val imageRefSlot = slot<String>()
@@ -148,7 +148,7 @@ class FavouriteViewModelTest : BaseTest() {
         } returns Result.success(Unit)
 
         val viewModel = createViewModel(
-            favouriteService = favouriteService,
+            favouriteDataSource = favouriteDataSource,
             storageService = storageService,
         )
 
@@ -165,7 +165,7 @@ class FavouriteViewModelTest : BaseTest() {
         viewModel.onEvent(EditableItemUiEvent.OnDeleteDialogConfirm)
 
         // Confirm that the delete functions were called
-        coVerify { favouriteService.deleteFavourite(TEST_ID) }
+        coVerify { favouriteDataSource.deleteFavourite(TEST_ID) }
         coVerify { storageService.deleteImage(TEST_ID, IMAGE_REFERENCE) }
 
         // Check the captured arguments
@@ -177,15 +177,15 @@ class FavouriteViewModelTest : BaseTest() {
 
     @Test
     fun `onEditDialogConfirmClick updates favourite text and resets UI state`() = runTest {
-        val favouriteService: FavouriteService = mockk(relaxed = true)
+        val favouriteDataSource: FavouriteDataSource = mockk(relaxed = true)
         coEvery {
-            favouriteService.updateFavouriteText(
+            favouriteDataSource.updateFavouriteText(
                 any(),
                 any()
             )
         } returns Result.success(Unit)
 
-        val viewModel = createViewModel(favouriteService = favouriteService)
+        val viewModel = createViewModel(favouriteDataSource = favouriteDataSource)
 
         val selectedItem = Favourite(favouriteId = TEST_ID)
         viewModel.onEvent(EditableItemUiEvent.OnLongClickToItem(selectedItem))
@@ -193,7 +193,7 @@ class FavouriteViewModelTest : BaseTest() {
 
         viewModel.onEvent(EditableItemUiEvent.OnEditDialogConfirm(newText))
         // Confirm that the update function was called
-        coVerify { favouriteService.updateFavouriteText(TEST_ID, newText) }
+        coVerify { favouriteDataSource.updateFavouriteText(TEST_ID, newText) }
 
         // Confirm that the UI state was reset
         assert(viewModel.uiState.value == FavouriteUiState(selectedItem = Favourite()))
@@ -213,14 +213,14 @@ class FavouriteViewModelTest : BaseTest() {
     }
 
     private fun createViewModel(
-        favouriteService: FavouriteService = mockk(relaxed = true),
+        favouriteDataSource: FavouriteDataSource = mockk(relaxed = true),
         logService: LogService = mockk(relaxed = true),
         storageService: StorageService = mockk(relaxed = true),
         ioDispatcher: TestCoroutineScheduler = testDispatcher
     ): FavouriteViewModel {
         return FavouriteViewModel(
-            favouriteService = favouriteService,
-            storageService = storageService,
+            favouriteDataSource = favouriteDataSource,
+            storageDataStore = storageService,
             logService = logService,
             ioDispatcher = UnconfinedTestDispatcher(ioDispatcher)
         )

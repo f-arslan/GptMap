@@ -6,3 +6,7 @@ plugins {
 android {
     namespace = "com.espressodev.gptmap.feature.forgot_password"
 }
+
+dependencies {
+    implementation(projects.core.firebase)
+}

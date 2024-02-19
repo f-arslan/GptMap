@@ -50,6 +50,7 @@ dependencies {
 
     implementation(projects.core.designsystem)
     implementation(projects.core.common)
+    implementation(projects.core.firebase)
     implementation(projects.core.data)
     implementation(projects.core.domain)
     implementation(projects.core.mongodb)

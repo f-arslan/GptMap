@@ -5,14 +5,14 @@ import com.espressodev.gptmap.core.model.realm.RealmImageAnalysis
 import com.espressodev.gptmap.core.model.realm.RealmImageMessage
 import com.espressodev.gptmap.core.model.realm.toImageAnalysis
 import com.espressodev.gptmap.core.model.sortByDate
-import com.espressodev.gptmap.core.mongodb.ImageMessageService
-import com.espressodev.gptmap.core.mongodb.RealmServiceBase
-import com.espressodev.gptmap.core.mongodb.module.RealmModule.realm
+import com.espressodev.gptmap.core.mongodb.ImageMessageDataSource
+import com.espressodev.gptmap.core.mongodb.RealmDataSourceBase
+import com.espressodev.gptmap.core.mongodb.module.RealmManager.realm
 import io.realm.kotlin.ext.query
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class ImageMessageServiceImpl : ImageMessageService, RealmServiceBase() {
+class ImageMessageDataSourceImpl : ImageMessageDataSource, RealmDataSourceBase() {
     override suspend fun addImageMessageToImageAnalysis(
         imageAnalysisId: String,
         message: RealmImageMessage

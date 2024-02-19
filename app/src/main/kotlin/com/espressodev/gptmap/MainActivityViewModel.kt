@@ -1,8 +1,9 @@
 package com.espressodev.gptmap
 
+import androidx.annotation.MainThread
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.espressodev.gptmap.core.data.AccountService
+import com.espressodev.gptmap.core.firebase.AccountService
 import com.espressodev.gptmap.core.mongodb.RealmAccountService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,13 +21,18 @@ enum class AccountState {
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    accountService: AccountService,
-    realmAccountService: RealmAccountService,
+    private val accountService: AccountService,
+    private val realmAccountService: RealmAccountService,
 ) : ViewModel() {
     private val _accountState = MutableStateFlow(AccountState.Loading)
     val accountState = _accountState.asStateFlow()
 
-    init {
+    private var initializeCalled = false
+    @MainThread
+    fun initialize() {
+        if (initializeCalled) return
+        initializeCalled = true
+
         viewModelScope.launch {
             runCatching {
                 if (accountService.isEmailVerified) {

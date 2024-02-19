@@ -25,6 +25,11 @@ sealed class ScreenshotUiEvent {
     data object OnSaveClicked : ScreenshotUiEvent()
 }
 
+sealed class NavigationState {
+    data object None : NavigationState()
+    data object PopUp : NavigationState()
+}
+
 sealed class ImageResult {
     data object Initial : ImageResult()
     data class Success(val data: Bitmap) : ImageResult()

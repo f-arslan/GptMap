@@ -12,8 +12,10 @@ android {
 dependencies {
     implementation(projects.core.saveScreenshot)
 
-    implementation(projects.api.unsplash)
-    implementation(projects.api.gemini)
+    implementation(projects.core.unsplash)
+    implementation(projects.core.gemini)
+    implementation(projects.core.firebase)
+    implementation(projects.core.datastore)
 
     implementation(projects.feature.screenshot)
 

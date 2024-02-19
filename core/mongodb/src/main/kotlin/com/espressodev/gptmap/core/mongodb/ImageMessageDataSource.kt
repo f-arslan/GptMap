@@ -4,7 +4,7 @@ import com.espressodev.gptmap.core.model.ImageMessage
 import com.espressodev.gptmap.core.model.realm.RealmImageMessage
 import kotlinx.coroutines.flow.Flow
 
-interface ImageMessageService {
+interface ImageMessageDataSource {
     fun getImageAnalysisMessages(imageAnalysisId: String): Flow<List<ImageMessage>>
     suspend fun addImageMessageToImageAnalysis(
         imageAnalysisId: String,

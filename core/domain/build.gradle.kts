@@ -8,11 +8,11 @@ android {
 }
 
 dependencies {
-    implementation(projects.api.gemini)
+    implementation(projects.core.gemini)
 
     implementation(projects.core.mongodb)
     implementation(projects.core.model)
-    implementation(projects.core.data)
+    implementation(projects.core.firebase)
     implementation(projects.core.google)
     implementation(projects.core.common)
 

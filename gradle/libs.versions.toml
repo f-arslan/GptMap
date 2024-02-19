@@ -5,6 +5,7 @@ androidxActivity = "1.8.2"
 androidxComposeBom = "2024.02.00"
 androidxComposeCompiler = "1.5.9"  # Compose VC
 androidxCoreSplashscreen = "1.0.1"
+androidxDataStore = "1.0.0"
 androidxHiltNavigationCompose = "1.1.0"
 androidxLifecycle = "2.7.0"
 androidxNavigation = "2.7.7"
@@ -70,7 +71,7 @@ androidx-activity-compose = { group = "androidx.activity", name = "activity-comp
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout" }
 androidx-compose-material-iconsExtended = { group = "androidx.compose.material", name = "material-icons-extended" }
-androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" , version.ref = "material3" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
@@ -83,6 +84,7 @@ androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-te
 androidx-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test" }  # Android Compose VC
 androidx-compose-ui-testManifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }  # Android Compose VC
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }  # Android Compose VC
+androidx-dataStore-core = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDataStore" }
 # End of it
 
 # Firebase
@@ -152,11 +154,11 @@ androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscree
 # End of it
 
 # Ktor
-ktor-client-core = {  group = "io.ktor", name = "ktor-client-core", version.ref = "ktorVersion" }
-ktor-client-android = {  group = "io.ktor", name = "ktor-client-android", version.ref = "ktorVersion" }
-ktor-serialization-kotlinx-json = {  group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktorVersion" }
-ktor-client-logging = {  group = "io.ktor", name = "ktor-client-logging", version.ref = "ktorVersion" }
-ktor-client-content-negotiation = {  group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktorVersion" }
+ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktorVersion" }
+ktor-client-android = { group = "io.ktor", name = "ktor-client-android", version.ref = "ktorVersion" }
+ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktorVersion" }
+ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktorVersion" }
+ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktorVersion" }
 # End of it
 
 # Retrofit

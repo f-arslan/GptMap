@@ -1,17 +1,18 @@
 package com.espressodev.gptmap.feature.snapTo_script
 
+import androidx.annotation.MainThread
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.espressodev.gptmap.core.common.DataStoreService
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.common.SpeechToText
-import com.espressodev.gptmap.core.domain.AddImageMessageUseCase
+import com.espressodev.gptmap.core.data.repository.ImageMessageRepository
+import com.espressodev.gptmap.core.datastore.DataStoreService
 import com.espressodev.gptmap.core.model.AiResponseStatus
 import com.espressodev.gptmap.core.model.ImageMessage
 import com.espressodev.gptmap.core.model.ImageType
 import com.espressodev.gptmap.core.model.ext.toImageType
-import com.espressodev.gptmap.core.mongodb.ImageMessageService
+import com.espressodev.gptmap.core.mongodb.ImageMessageDataSource
 import com.espressodev.gptmap.feature.screenshot_gallery.InputSelector
 import com.espressodev.gptmap.feature.screenshot_gallery.SnapToScriptUiEvent
 import com.espressodev.gptmap.feature.screenshot_gallery.SnapToScriptUiState
@@ -32,16 +33,16 @@ import javax.inject.Inject
 @HiltViewModel
 class SnapToScriptViewModel @Inject constructor(
     private val speechToText: SpeechToText,
-    private val addImageMessageUseCase: AddImageMessageUseCase,
+    private val imageMessageRepository: ImageMessageRepository,
     private val dataStoreService: DataStoreService,
-    imageMessageService: ImageMessageService,
+    imageMessageDataSource: ImageMessageDataSource,
     ioDispatcher: CoroutineDispatcher,
     savedStateHandle: SavedStateHandle,
     logService: LogService
 ) : GmViewModel(logService) {
     private val imageId: String = checkNotNull(savedStateHandle[IMAGE_ID])
 
-    val messages: StateFlow<List<ImageMessage>> = imageMessageService
+    val messages: StateFlow<List<ImageMessage>> = imageMessageDataSource
         .getImageAnalysisMessages(imageId)
         .flowOn(ioDispatcher)
         .stateIn(
@@ -50,7 +51,7 @@ class SnapToScriptViewModel @Inject constructor(
             initialValue = listOf()
         )
 
-    val imageType: ImageType = imageMessageService.getImageType(imageId).toImageType()
+    val imageType: ImageType = imageMessageDataSource.getImageType(imageId).toImageType()
 
     private val _snapToScriptUiState = MutableStateFlow(SnapToScriptUiState())
     val snapToScriptUiState = _snapToScriptUiState.asStateFlow()
@@ -64,7 +65,12 @@ class SnapToScriptViewModel @Inject constructor(
     private val isPinned
         get() = snapToScriptUiState.value.isPinned
 
-    init {
+    private var initializeCalled = false
+
+    @MainThread
+    fun initialize() {
+        if (initializeCalled) return
+        initializeCalled = true
         getNameImageAndCacheIdWithDataStore()
     }
 
@@ -109,7 +115,8 @@ class SnapToScriptViewModel @Inject constructor(
             )
         }
 
-        val addMessageResult = addImageMessageUseCase(imageId = imageId, text = value)
+        val addMessageResult =
+            imageMessageRepository.addImageMessage(imageId = imageId, text = value)
 
         addMessageResult.getOrElse {
             _snapToScriptUiState.update { it.copy(aiResponseStatus = AiResponseStatus.Idle) }

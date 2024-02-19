@@ -3,8 +3,8 @@ package com.espressodev.gptmap.feature.delete_profile
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
+import com.espressodev.gptmap.core.data.repository.UserRepository
 import com.espressodev.gptmap.core.designsystem.Constants.GENERIC_ERROR_MSG
-import com.espressodev.gptmap.core.domain.DeleteUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DeleteProfileViewModel @Inject constructor(
     logService: LogService,
-    private val deleteUserUseCase: DeleteUserUseCase
+    private val userRepository: UserRepository,
 ) : GmViewModel(logService) {
 
     private val _isDialogOpened = MutableStateFlow(value = false)
@@ -35,7 +35,7 @@ class DeleteProfileViewModel @Inject constructor(
     fun onConfirmDialog(navigate: () -> Unit, popUp: () -> Unit) =
         launchCatching {
             _isLoading.update { true }
-            deleteUserUseCase()
+            userRepository.deleteUser()
                 .onSuccess {
                     _isLoading.update { false }
                     delay(25L)

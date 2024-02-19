@@ -23,12 +23,8 @@ class ScreenshotServiceHandler(private val applicationContext: Context) {
         }
     }
 
-    init {
-        registerServiceStateReceiver()
-    }
-
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
-    private fun registerServiceStateReceiver() {
+    fun registerServiceStateReceiver() {
         val filter = IntentFilter().apply {
             addAction(SaveScreenshotService.ACTION_SERVICE_STARTED)
             addAction(SaveScreenshotService.ACTION_SERVICE_STOPPED)

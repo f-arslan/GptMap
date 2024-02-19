@@ -1,11 +1,11 @@
 package com.espressodev.gptmap.core.mongodb
 
 import android.util.Log
-import com.espressodev.gptmap.core.mongodb.module.RealmModule.realm
-import com.espressodev.gptmap.core.mongodb.module.RealmModule.realmUser
+import com.espressodev.gptmap.core.mongodb.module.RealmManager.realm
+import com.espressodev.gptmap.core.mongodb.module.RealmManager.realmUser
 import io.realm.kotlin.MutableRealm
 
-abstract class RealmServiceBase {
+abstract class RealmDataSourceBase {
     protected val realmUserId: String
         get() = realmUser.id
 
@@ -15,7 +15,7 @@ abstract class RealmServiceBase {
                 block()
             }
         }.onFailure {
-            Log.e("RealmServiceBase", "Operation failed: $it")
+            Log.e("RealmDataSourceBase", "Operation failed: $it")
             Result.failure<Throwable>(it)
         }
 }

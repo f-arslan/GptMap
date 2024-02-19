@@ -3,8 +3,8 @@ package com.espressodev.gptmap.feature.screenshot_gallery
 import androidx.lifecycle.viewModelScope
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
-import com.espressodev.gptmap.core.domain.DeleteImageAnalysesUseCase
-import com.espressodev.gptmap.core.domain.SaveImageToInternalStorageUseCase
+import com.espressodev.gptmap.core.data.repository.FileRepository
+import com.espressodev.gptmap.core.data.repository.ImageAnalysisRepository
 import com.espressodev.gptmap.core.model.Constants.IMAGE_PHONE_CASH_SIZE
 import com.espressodev.gptmap.core.model.EditableItemUiEvent
 import com.espressodev.gptmap.core.model.Exceptions
@@ -12,7 +12,7 @@ import com.espressodev.gptmap.core.model.ImageAnalysis
 import com.espressodev.gptmap.core.model.ImageSummary
 import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.model.ScreenshotGalleryUiState
-import com.espressodev.gptmap.core.mongodb.ImageAnalysisService
+import com.espressodev.gptmap.core.mongodb.ImageAnalysisDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,13 +27,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ScreenshotGalleryViewModel @Inject constructor(
-    private val imageAnalysisService: ImageAnalysisService,
-    private val saveImageToInternalStorageUseCase: SaveImageToInternalStorageUseCase,
+    private val imageAnalysisDataSource: ImageAnalysisDataSource,
+    private val fileRepository: FileRepository,
     logService: LogService,
     private val ioDispatcher: CoroutineDispatcher,
-    private val deleteImageAnalysesUseCase: DeleteImageAnalysesUseCase,
+    private val imageAnalysisRepository: ImageAnalysisRepository,
 ) : GmViewModel(logService) {
-    val imageAnalyses = imageAnalysisService
+    val imageAnalyses = imageAnalysisDataSource
         .getImageAnalyses()
         .map<List<ImageAnalysis>, Response<List<ImageSummary>>> {
             Response.Success(
@@ -79,7 +79,7 @@ class ScreenshotGalleryViewModel @Inject constructor(
 
     fun navigateToSnapToScript(imageId: String, imageUrl: String, navigate: (String) -> Unit) =
         launchCatching {
-            saveImageToInternalStorageUseCase(
+            fileRepository.saveImageToInternal(
                 imageUrl = imageUrl,
                 fileId = imageId,
                 size = IMAGE_PHONE_CASH_SIZE
@@ -117,13 +117,13 @@ class ScreenshotGalleryViewModel @Inject constructor(
     }
 
     private fun onDeleteDialogConfirmClick() = launchCatching {
-        deleteImageAnalysesUseCase(selectedItemsIds).getOrThrow()
+        imageAnalysisRepository.deleteImageAnalyses(selectedItemsIds).getOrThrow()
         reset()
     }
 
     private fun onEditDialogConfirmClick(text: String) = launchCatching {
         withContext(ioDispatcher) {
-            imageAnalysisService.updateImageAnalysisText(imageSummaryId, text).getOrThrow()
+            imageAnalysisDataSource.updateImageAnalysisText(imageSummaryId, text).getOrThrow()
         }
         reset()
     }

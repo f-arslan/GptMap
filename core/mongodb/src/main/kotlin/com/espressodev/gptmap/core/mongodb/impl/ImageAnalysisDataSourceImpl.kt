@@ -4,16 +4,16 @@ import com.espressodev.gptmap.core.model.ImageAnalysis
 import com.espressodev.gptmap.core.model.realm.RealmImageAnalysis
 import com.espressodev.gptmap.core.model.realm.toImageAnalysis
 import com.espressodev.gptmap.core.model.sortByDate
-import com.espressodev.gptmap.core.mongodb.ImageAnalysisService
-import com.espressodev.gptmap.core.mongodb.RealmServiceBase
-import com.espressodev.gptmap.core.mongodb.module.RealmModule.realm
+import com.espressodev.gptmap.core.mongodb.ImageAnalysisDataSource
+import com.espressodev.gptmap.core.mongodb.RealmDataSourceBase
+import com.espressodev.gptmap.core.mongodb.module.RealmManager.realm
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.RealmResults
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class ImageAnalysisServiceImpl : ImageAnalysisService, RealmServiceBase() {
+class ImageAnalysisDataSourceImpl : ImageAnalysisDataSource, RealmDataSourceBase() {
     override suspend fun saveImageAnalysis(realmImageAnalysis: RealmImageAnalysis): Result<Unit> =
         performRealmTransaction {
             copyToRealm(

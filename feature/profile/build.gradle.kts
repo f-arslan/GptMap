@@ -8,5 +8,6 @@ android {
 }
 
 dependencies {
-
+    implementation(projects.core.firebase)
+    implementation(projects.core.datastore)
 }

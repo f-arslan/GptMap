@@ -3,8 +3,8 @@ package com.espressodev.gptmap.api.unsplash.module
 import android.util.Log
 import com.espressodev.gptmap.api.unsplash.BuildConfig.UNSPLASH_BASE_URL
 import com.espressodev.gptmap.api.unsplash.UnsplashApi
-import com.espressodev.gptmap.api.unsplash.UnsplashService
-import com.espressodev.gptmap.api.unsplash.impl.UnsplashServiceImpl
+import com.espressodev.gptmap.api.unsplash.UnsplashDataSource
+import com.espressodev.gptmap.api.unsplash.impl.UnsplashDataSourceImpl
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
 import dagger.Provides
@@ -62,6 +62,6 @@ object UnsplashModule {
 
     @Provides
     @ViewModelScoped
-    fun provideUnsplashService(unsplashApi: UnsplashApi): UnsplashService =
-        UnsplashServiceImpl(unsplashApi)
+    fun provideUnsplashDataSource(unsplashApi: UnsplashApi): UnsplashDataSource =
+        UnsplashDataSourceImpl(unsplashApi)
 }

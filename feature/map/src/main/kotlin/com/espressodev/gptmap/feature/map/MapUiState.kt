@@ -12,6 +12,8 @@ enum class ComponentLoadingState {
     MY_LOCATION, MAP, NOTHING
 }
 
+val istanbul = Pair(41.0082, 28.9784)
+
 data class MapUiState(
     val searchValue: String = "",
     val location: Location = Location(),
@@ -30,10 +32,10 @@ data class MapUiState(
     val isLoading: Boolean = false,
 ) {
     val coordinatesLatLng: LatLng
-        get() = location.content.coordinates.let { LatLng(it.latitude, it.longitude) }
+        get() = location.content.coordinates.run { LatLng(latitude, longitude) }
 
     val myCoordinatesLatLng: LatLng
-        get() = myCurrentLocationState.second.let { LatLng(it.first, it.second) }
+        get() = myCurrentLocationState.second.run { LatLng(first, second) }
 }
 
 sealed class MapUiEvent {
@@ -45,9 +47,22 @@ sealed class MapUiEvent {
     data object OnDetailSheetBackClick : MapUiEvent()
     data object OnBackClick : MapUiEvent()
     data object OnExploreWithAiClick : MapUiEvent()
+    data object OnChatAiClick : MapUiEvent()
+    data object OnProfileClick : MapUiEvent()
+    data class OnExploreWithAiClickFromImage(val index: Int) : MapUiEvent()
     data object OnScreenshotProcessStarted : MapUiEvent()
     data object OnScreenshotProcessCancelled : MapUiEvent()
     data class OnStreetViewClick(val latLng: Pair<Double, Double>) : MapUiEvent()
     data object OnMyCurrentLocationClick : MapUiEvent()
+
     data object OnUnsetMyCurrentLocationState : MapUiEvent()
+}
+
+sealed interface NavigationState {
+    data object None : NavigationState
+    data class NavigateToStreetView(val latLng: Pair<Float, Float>) : NavigationState
+    data object NavigateToScreenshot : NavigationState
+    data object NavigateToProfile : NavigationState
+    data class NavigateToSnapToScript(val imageId: String) : NavigationState
+    data object NavigateToGallery : NavigationState
 }

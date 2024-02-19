@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.feature.screenshot
 
+import android.util.Log
 import android.view.View
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.VectorConverter
@@ -94,8 +95,19 @@ fun ScreenshotRoute(
         newValue = { viewModel.onEvent(ScreenshotUiEvent.OnCaptureClicked) },
     )
     val onSaveClickEvent by rememberUpdatedState(
-        newValue = { viewModel.onEvent(ScreenshotUiEvent.OnSaveClicked, popUp) },
+        newValue = { viewModel.onEvent(ScreenshotUiEvent.OnSaveClicked) },
     )
+
+    val navigationState by viewModel.navigationState.collectAsStateWithLifecycle()
+    LaunchedEffect(key1 = navigationState) {
+        when (navigationState) {
+            is NavigationState.PopUp -> popUp()
+            else -> Unit
+        }
+    }
+
+    Log.d("ScreenshotRoute", "uiState: $uiState")
+
     Scaffold(
         topBar = {
             GmTopAppBar(
@@ -170,6 +182,9 @@ private fun ScreenshotScreen(
     onEvent: (ScreenshotUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    LaunchedEffect(key1 = onEvent) {
+        Log.d("ScreenshotScreen", "onEvent: $onEvent")
+    }
     when (uiState.screenState) {
         Initial -> {
             ScreenshotGallery(

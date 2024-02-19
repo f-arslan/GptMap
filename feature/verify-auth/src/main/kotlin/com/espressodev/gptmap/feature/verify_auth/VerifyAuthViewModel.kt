@@ -1,11 +1,12 @@
 package com.espressodev.gptmap.feature.verify_auth
 
+import androidx.annotation.MainThread
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
-import com.espressodev.gptmap.core.data.AccountService
-import com.espressodev.gptmap.core.data.FirestoreService
 import com.espressodev.gptmap.core.designsystem.Constants.GENERIC_ERROR_MSG
+import com.espressodev.gptmap.core.firebase.AccountService
+import com.espressodev.gptmap.core.firebase.FirestoreDataStore
 import com.espressodev.gptmap.core.model.Exceptions.FirestoreUserNotExistsException
 import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.model.ext.isValidPassword
@@ -21,7 +22,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 @HiltViewModel
 class VerifyAuthViewModel @Inject constructor(
     private val accountService: AccountService,
-    private val firestoreService: FirestoreService,
+    private val firestoreDataStore: FirestoreDataStore,
     private val ioDispatcher: CoroutineDispatcher,
     logService: LogService,
 ) : GmViewModel(logService) {
@@ -32,13 +33,13 @@ class VerifyAuthViewModel @Inject constructor(
     private val password
         get() = uiState.value.password
 
-    init {
-        initializeUser()
-    }
-
-    private fun initializeUser() = launchCatching {
+    private var initializeCalled = false
+    @MainThread
+    fun initializeUser() = launchCatching {
+        if (initializeCalled) return@launchCatching
+        initializeCalled = true
         runCatching {
-            val user = firestoreService.getUser()
+            val user = firestoreDataStore.getUser()
             _uiState.update { it.copy(user = Response.Success(user)) }
         }.onFailure {
             _uiState.update { it.copy(user = Response.Failure(FirestoreUserNotExistsException())) }

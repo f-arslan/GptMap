@@ -36,3 +36,5 @@ google-services.json
 *.hprof
 .env
 .secrets
+scrap_files.py
+kotlin_files_content.txt

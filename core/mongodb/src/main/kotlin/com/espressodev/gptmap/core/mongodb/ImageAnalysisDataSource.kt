@@ -4,7 +4,7 @@ import com.espressodev.gptmap.core.model.ImageAnalysis
 import com.espressodev.gptmap.core.model.realm.RealmImageAnalysis
 import kotlinx.coroutines.flow.Flow
 
-interface ImageAnalysisService {
+interface ImageAnalysisDataSource {
     suspend fun saveImageAnalysis(realmImageAnalysis: RealmImageAnalysis): Result<Unit>
     fun getImageAnalyses(): Flow<List<ImageAnalysis>>
     fun getImageAnalysis(id: String): Result<ImageAnalysis>

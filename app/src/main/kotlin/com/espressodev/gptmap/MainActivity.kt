@@ -32,6 +32,7 @@ class MainActivity : ComponentActivity() {
         val splashScreen = installSplashScreen()
 
         super.onCreate(savedInstanceState)
+        viewModel.initialize()
 
         var isEmailVerified by mutableStateOf(AccountState.Loading)
 

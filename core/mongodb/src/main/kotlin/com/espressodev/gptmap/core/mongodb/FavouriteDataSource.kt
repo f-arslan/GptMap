@@ -4,7 +4,7 @@ import com.espressodev.gptmap.core.model.Favourite
 import com.espressodev.gptmap.core.model.realm.RealmFavourite
 import kotlinx.coroutines.flow.Flow
 
-interface FavouriteService {
+interface FavouriteDataSource {
     suspend fun saveFavourite(realmFavourite: RealmFavourite): Result<Unit>
     fun getFavourites(): Flow<List<Favourite>>
     fun getFavourite(id: String): Favourite

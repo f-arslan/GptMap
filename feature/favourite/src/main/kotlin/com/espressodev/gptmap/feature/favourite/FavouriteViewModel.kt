@@ -3,14 +3,14 @@ package com.espressodev.gptmap.feature.favourite
 import androidx.lifecycle.viewModelScope
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
-import com.espressodev.gptmap.core.data.StorageService
-import com.espressodev.gptmap.core.data.StorageService.Companion.IMAGE_REFERENCE
+import com.espressodev.gptmap.core.firebase.StorageDataStore
+import com.espressodev.gptmap.core.firebase.StorageDataStore.Companion.IMAGE_REFERENCE
 import com.espressodev.gptmap.core.model.EditableItemUiEvent
 import com.espressodev.gptmap.core.model.Exceptions.RealmFailedToLoadFavouritesException
 import com.espressodev.gptmap.core.model.Favourite
 import com.espressodev.gptmap.core.model.FavouriteUiState
 import com.espressodev.gptmap.core.model.Response
-import com.espressodev.gptmap.core.mongodb.FavouriteService
+import com.espressodev.gptmap.core.mongodb.FavouriteDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,13 +27,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FavouriteViewModel @Inject constructor(
-    private val favouriteService: FavouriteService,
-    private val storageService: StorageService,
+    private val favouriteDataSource: FavouriteDataSource,
+    private val storageDataStore: StorageDataStore,
     logService: LogService,
     private val ioDispatcher: CoroutineDispatcher
 ) : GmViewModel(logService) {
     val favourites: StateFlow<Response<List<Favourite>>> =
-        favouriteService
+        favouriteDataSource
             .getFavourites()
             .map<List<Favourite>, Response<List<Favourite>>> { favouritesList ->
                 Response.Success(favouritesList)
@@ -79,17 +79,17 @@ class FavouriteViewModel @Inject constructor(
     private fun onDeleteDialogConfirmClick() = launchCatching {
         val favId = favouriteId
         withContext(ioDispatcher) {
-            favouriteService.deleteFavourite(favId)
+            favouriteDataSource.deleteFavourite(favId)
                 .onSuccess {
                     reset()
-                    storageService.deleteImage(favId, IMAGE_REFERENCE)
+                    storageDataStore.deleteImage(favId, IMAGE_REFERENCE)
                 }
         }
     }
 
     private fun onEditDialogConfirmClick(text: String) = launchCatching {
         withContext(ioDispatcher) {
-            favouriteService.updateFavouriteText(favouriteId, text)
+            favouriteDataSource.updateFavouriteText(favouriteId, text)
         }
         reset()
     }

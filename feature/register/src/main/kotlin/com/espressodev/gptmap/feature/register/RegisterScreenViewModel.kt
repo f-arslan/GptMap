@@ -3,8 +3,7 @@ package com.espressodev.gptmap.feature.register
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
-import com.espressodev.gptmap.core.domain.SignInUpWithGoogleUseCase
-import com.espressodev.gptmap.core.domain.SignUpWithEmailAndPasswordUseCase
+import com.espressodev.gptmap.core.data.repository.AuthenticationRepository
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.ext.isValidEmail
 import com.espressodev.gptmap.core.model.ext.isValidName
@@ -23,8 +22,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @HiltViewModel
 class RegisterScreenViewModel @Inject constructor(
-    private val signUpWithEmailAndPasswordUseCase: SignUpWithEmailAndPasswordUseCase,
-    private val signInUpWithGoogleUseCase: SignInUpWithGoogleUseCase,
+    private val authenticationRepository: AuthenticationRepository,
     val oneTapClient: SignInClient,
     logService: LogService
 ) : GmViewModel(logService) {
@@ -71,7 +69,7 @@ class RegisterScreenViewModel @Inject constructor(
         if (!formValidation()) return@launchCatching
         onEvent(RegisterEvent.OnLoadingStateChanged(LoadingState.Loading))
 
-        signUpWithEmailAndPasswordUseCase(email.trim(), password, fullName)
+        authenticationRepository.signUpWithEmailAndPassword(email.trim(), password, fullName)
             .onSuccess {
                 onEvent(RegisterEvent.OnLoadingStateChanged(LoadingState.Idle))
                 onEvent(RegisterEvent.OnVerificationAlertStateChanged(LoadingState.Loading))
@@ -86,7 +84,7 @@ class RegisterScreenViewModel @Inject constructor(
     private fun oneTapSignUp() = launchCatching {
         _uiState.update { it.copy(oneTapSignUpResponse = GoogleResponse.Loading) }
 
-        val oneTapSignUpResponse = signInUpWithGoogleUseCase.oneTapSignUpWithGoogle()
+        val oneTapSignUpResponse = authenticationRepository.oneTapSignUpWithGoogle()
 
         _uiState.update { it.copy(oneTapSignUpResponse = oneTapSignUpResponse) }
     }
@@ -95,7 +93,7 @@ class RegisterScreenViewModel @Inject constructor(
         _uiState.update { it.copy(signUpWithGoogleResponse = GoogleResponse.Loading) }
 
         val signInUpWithGoogleResponse =
-            signInUpWithGoogleUseCase.firebaseSignInUpWithGoogle(googleCredential)
+            authenticationRepository.firebaseSignInUpWithGoogle(googleCredential)
 
         _uiState.update { it.copy(signUpWithGoogleResponse = signInUpWithGoogleResponse) }
     }

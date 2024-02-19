@@ -1,13 +1,13 @@
 package com.espressodev.gptmap.core.mongodb.impl
 
 import com.espressodev.gptmap.core.model.realm.RealmUser
-import com.espressodev.gptmap.core.mongodb.RealmServiceBase
-import com.espressodev.gptmap.core.mongodb.UserManagementService
-import com.espressodev.gptmap.core.mongodb.module.RealmModule.realm
+import com.espressodev.gptmap.core.mongodb.RealmDataSourceBase
+import com.espressodev.gptmap.core.mongodb.UserManagementDataSource
+import com.espressodev.gptmap.core.mongodb.module.RealmManager.realm
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
 
-class UserManagementServiceImpl : UserManagementService, RealmServiceBase() {
+class UserManagementDataSourceImpl : UserManagementDataSource, RealmDataSourceBase() {
     override suspend fun saveUser(realmUser: RealmUser): Result<Unit> = performRealmTransaction {
         copyToRealm(
             realmUser.apply {

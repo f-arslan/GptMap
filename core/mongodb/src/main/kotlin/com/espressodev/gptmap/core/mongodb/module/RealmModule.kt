@@ -18,7 +18,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RealmDataModule {
+object RealmModule {
     @Singleton
     @Provides
     fun bindRealmAccountService(): RealmAccountService =
@@ -44,4 +44,3 @@ object RealmDataModule {
     fun provideUserManagementDataSource(): UserManagementDataSource =
         UserManagementDataSourceImpl()
 }
-

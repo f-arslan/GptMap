@@ -3,8 +3,7 @@ package com.espressodev.gptmap.feature.login
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
-import com.espressodev.gptmap.core.domain.SignInUpWithGoogleUseCase
-import com.espressodev.gptmap.core.domain.SignInWithEmailAndPasswordUseCase
+import com.espressodev.gptmap.core.data.repository.AuthenticationRepository
 import com.espressodev.gptmap.core.model.Exceptions.FirebaseEmailVerificationIsFalseException
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.ext.isValidEmail
@@ -21,8 +20,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val signInUpWithGoogleUseCase: SignInUpWithGoogleUseCase,
-    private val signInWithEmailAndPasswordUseCase: SignInWithEmailAndPasswordUseCase,
+    private val authenticationRepository: AuthenticationRepository,
     val oneTapClient: SignInClient,
     logService: LogService
 ) : GmViewModel(logService) {
@@ -46,7 +44,7 @@ class LoginViewModel @Inject constructor(
         if (!formValidation()) return@launchCatching
         onEvent(LoginEvent.OnLoadingStateChanged(LoadingState.Loading))
 
-        signInWithEmailAndPasswordUseCase(email, password)
+        authenticationRepository.signInWithEmailAndPassword(email, password)
             .onSuccess {
                 onEvent(LoginEvent.OnLoadingStateChanged(LoadingState.Idle))
                 delay(25L)
@@ -73,7 +71,7 @@ class LoginViewModel @Inject constructor(
     private fun oneTapSignIn() = launchCatching {
         _uiState.update { it.copy(oneTapSignInResponse = GoogleResponse.Loading) }
 
-        val oneTapSignInResponse = signInUpWithGoogleUseCase.oneTapSignInWithGoogle()
+        val oneTapSignInResponse = authenticationRepository.oneTapSignInWithGoogle()
 
         _uiState.update { it.copy(oneTapSignInResponse = oneTapSignInResponse) }
     }
@@ -82,7 +80,7 @@ class LoginViewModel @Inject constructor(
         _uiState.update { it.copy(signInWithGoogleResponse = GoogleResponse.Loading) }
 
         val signInWithGoogleResponse =
-            signInUpWithGoogleUseCase.firebaseSignInUpWithGoogle(googleCredential)
+            authenticationRepository.firebaseSignInUpWithGoogle(googleCredential)
 
         _uiState.update { it.copy(signInWithGoogleResponse = signInWithGoogleResponse) }
     }

@@ -107,6 +107,7 @@ fun SnapToScriptRoute(
     modifier: Modifier = Modifier,
     viewModel: SnapToScriptViewModel = hiltViewModel()
 ) {
+    LaunchedEffect(Unit) { viewModel.initialize() }
     val uiState by viewModel.snapToScriptUiState.collectAsStateWithLifecycle()
     val messages by viewModel.messages.collectAsStateWithLifecycle()
     val onEvent by rememberUpdatedState(newValue = viewModel::onEvent)
@@ -146,9 +147,7 @@ fun SnapToScriptScreen(
             setKeyboardHeight(keyboardState.keypadHeight)
         }
     }
-    Box(
-        modifier = modifier.fillMaxSize()
-    ) {
+    Box(modifier = modifier.fillMaxSize()) {
         Messages(
             messages = messages,
             userFirstChar = uiState.userFirstChar,
@@ -263,7 +262,7 @@ fun Messages(
         val jumpToBottomEnabled by remember {
             derivedStateOf {
                 scrollState.firstVisibleItemIndex > 1 ||
-                    scrollState.firstVisibleItemScrollOffset > jumpThreshold
+                        scrollState.firstVisibleItemScrollOffset > jumpThreshold
             }
         }
 

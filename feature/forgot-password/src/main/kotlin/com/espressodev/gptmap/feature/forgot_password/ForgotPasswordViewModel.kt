@@ -3,7 +3,7 @@ package com.espressodev.gptmap.feature.forgot_password
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
-import com.espressodev.gptmap.core.data.AccountService
+import com.espressodev.gptmap.core.firebase.AccountService
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.model.ext.isValidEmail

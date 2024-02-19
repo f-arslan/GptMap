@@ -8,7 +8,8 @@ android {
 }
 
 dependencies {
-    implementation(projects.api.gemini)
+    implementation(projects.core.gemini)
+    implementation(projects.core.datastore)
 
     implementation(projects.feature.screenshotGallery)
 

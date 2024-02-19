@@ -2,7 +2,7 @@ package com.espressodev.gptmap.api.unsplash
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.espressodev.gptmap.api.unsplash.BuildConfig.UNSPLASH_BASE_URL
-import com.espressodev.gptmap.api.unsplash.impl.UnsplashServiceImpl
+import com.espressodev.gptmap.api.unsplash.impl.UnsplashDataSourceImpl
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import org.junit.Before
@@ -12,9 +12,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 @RunWith(AndroidJUnit4::class)
-class UnsplashServiceImplTest {
+class UnsplashDataSourceImplTest {
 
-    private lateinit var unsplashService: UnsplashService
+    private lateinit var unsplashDataSource: UnsplashDataSource
     private val token = "DEFINE_TEMP_TOKEN"
     @Before
     fun setUp() {
@@ -35,7 +35,7 @@ class UnsplashServiceImplTest {
                 .build()
 
             val unsplashApi = retrofit.create(UnsplashApi::class.java)
-            unsplashService = UnsplashServiceImpl(unsplashApi)
+            unsplashDataSource = UnsplashDataSourceImpl(unsplashApi)
         }
     }
 
@@ -43,7 +43,7 @@ class UnsplashServiceImplTest {
     fun getTwoPhotosReturnsSuccessResult() = runBlocking {
         val query = "nature"
 
-        val result = unsplashService.getTwoPhotos(query)
+        val result = unsplashDataSource.getTwoPhotos(query)
 
         assert(result.isSuccess)
         val photos = result.getOrNull()

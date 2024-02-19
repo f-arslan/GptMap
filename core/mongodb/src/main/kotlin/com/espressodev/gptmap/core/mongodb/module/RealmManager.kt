@@ -25,7 +25,7 @@ private const val APP_ID = "gptmapapplication-giuno"
 private const val BASE_URL = "https://realm.mongodb.com"
 private const val TAG = "RealmModule"
 
-object RealmModule {
+object RealmManager {
     val app = App.create(
         AppConfiguration.Builder(APP_ID)
             .baseUrl(BASE_URL)

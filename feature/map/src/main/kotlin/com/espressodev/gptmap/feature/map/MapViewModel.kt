@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.feature.map
 
+import androidx.annotation.MainThread
 import androidx.lifecycle.SavedStateHandle
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
@@ -25,15 +26,18 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 @HiltViewModel
 class MapViewModel @Inject constructor(
     private val apiService: ApiService,
-    private val useCaseBundle: UseCaseBundle,
+    private val repositoryBundle: RepositoryBundle,
     private val dataService: DataService,
     private val ioDispatcher: CoroutineDispatcher,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     logService: LogService,
     private val screenshotServiceHandler: ScreenshotServiceHandler,
 ) : GmViewModel(logService) {
     private val _uiState = MutableStateFlow(MapUiState())
     val uiState = _uiState.asStateFlow()
+
+    private val _navigationState = MutableStateFlow<NavigationState>(NavigationState.None)
+    val navigationState = _navigationState.asStateFlow()
 
     private val myCurrentLocationState
         get() = uiState.value.myCurrentLocationState
@@ -44,19 +48,16 @@ class MapViewModel @Inject constructor(
     private val favouriteId
         get() = uiState.value.location.favouriteId
 
-    init {
-        launchCatching {
-            launch {
-                getUserFirstChar()
-            }
-            launch {
-                savedStateHandle.observeFavouriteIdFromBackStack()
-            }
-            launch {
-                collectScreenshotState()
-            }
-            useCaseBundle.addDatabaseIfUserIsNewUseCase()
-        }
+    private var initializeCalled = false
+
+    @MainThread
+    suspend fun initialize() = launchCatching {
+        if (initializeCalled) return@launchCatching
+        initializeCalled = true
+        launch { getUserFirstChar() }
+        launch { observeFavouriteIdFromBackStack() }
+        launch { collectScreenshotState() }
+        launch { repositoryBundle.userRepository.addIfNewUser() }
     }
 
     private suspend fun collectScreenshotState() {
@@ -72,8 +73,8 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    private suspend fun SavedStateHandle.observeFavouriteIdFromBackStack() {
-        getStateFlow(FavouriteId, "default")
+    private suspend fun observeFavouriteIdFromBackStack() {
+        savedStateHandle.getStateFlow(FavouriteId, "default")
             .collect {
                 if (it != "default") {
                     loadLocationFromFavourite(it)
@@ -81,7 +82,11 @@ class MapViewModel @Inject constructor(
             }
     }
 
-    fun onEvent(event: MapUiEvent, navigate: (Pair<Float, Float>) -> Unit = {}) {
+    fun resetNavigation() {
+        _navigationState.update { NavigationState.None }
+    }
+
+    fun onEvent(event: MapUiEvent) {
         when (event) {
             is MapUiEvent.OnSearchValueChanged -> _uiState.update { it.copy(searchValue = event.text) }
             is MapUiEvent.OnSearchClick -> onSearchClick()
@@ -95,7 +100,7 @@ class MapViewModel @Inject constructor(
 
             MapUiEvent.OnFavouriteClick -> onFavouriteClick()
             is MapUiEvent.OnStreetViewClick -> {
-                onStreetViewClick(event.latLng, navigate)
+                onStreetViewClick(event.latLng)
             }
 
             MapUiEvent.OnExploreWithAiClick ->
@@ -113,23 +118,22 @@ class MapViewModel @Inject constructor(
             }
 
             MapUiEvent.OnScreenshotProcessCancelled -> reset()
+            MapUiEvent.OnChatAiClick -> onChatAiClick()
+            is MapUiEvent.OnExploreWithAiClickFromImage -> onExploreWithAiClick(event.index)
+            MapUiEvent.OnProfileClick -> _navigationState.update { NavigationState.NavigateToProfile }
         }
     }
 
-    fun onChatAiClick(navigate: (String) -> Unit, navigateToGallery: () -> Unit) = launchCatching {
+    private fun onChatAiClick() = launchCatching {
         val imageId = dataService.dataStoreService.getLatestImageIdForChat()
         if (imageId.isBlank()) {
-            navigateToGallery()
+            _navigationState.update { NavigationState.NavigateToGallery }
         } else {
-            navigate(imageId)
+            _navigationState.update { NavigationState.NavigateToSnapToScript(imageId) }
         }
     }
 
-    fun onExploreWithAiClick(
-        index: Int,
-        navigate: (String) -> Unit,
-        navigateToGallery: () -> Unit
-    ) = launchCatching {
+    private fun onExploreWithAiClick(index: Int) = launchCatching {
         _uiState.update {
             it.copy(isLoading = true, imageGalleryState = Pair(0, false))
         }
@@ -141,20 +145,21 @@ class MapViewModel @Inject constructor(
             delay(50L)
             if (imageId != analysisId) {
                 dataService.dataStoreService.setLatestImageIdForChat(analysisId)
-                navigateToGallery()
+                _navigationState.update { NavigationState.NavigateToGallery }
             } else {
-                navigate(imageId)
+                _navigationState.update { NavigationState.NavigateToSnapToScript(analysisId) }
             }
         } else {
             val imageAnalysisId =
-                useCaseBundle.imageToAnalysisUseCase(imageUrl = locationImages[index].imageUrl)
+                repositoryBundle.imageAnalysisRepository
+                    .turnImageToImageAnalysis(imageUrl = locationImages[index].imageUrl)
                     .getOrThrow()
             resetAfterExamineWithAiClick()
             delay(50L)
-            navigateToGallery()
+            _navigationState.update { NavigationState.NavigateToGallery }
 
             if (favouriteId.isNotEmpty()) {
-                dataService.favouriteService.updateImageAnalysisId(
+                dataService.favouriteDataSource.updateImageAnalysisId(
                     favouriteId = favouriteId,
                     messageId = locationImages[index].id,
                     imageAnalysisId = imageAnalysisId
@@ -202,7 +207,7 @@ class MapViewModel @Inject constructor(
             )
         }
 
-        useCaseBundle.getCurrentLocationUseCase().collect { locationResult ->
+        repositoryBundle.getCurrentLocationUseCase().collect { locationResult ->
             locationResult
                 .onSuccess { location ->
                     _uiState.update { it.copy(myCurrentLocationState = Pair(true, location)) }
@@ -237,7 +242,7 @@ class MapViewModel @Inject constructor(
             )
         }
 
-        apiService.geminiService.getLocationInfo(uiState.value.searchValue)
+        apiService.geminiDataSource.getLocationInfo(uiState.value.searchValue)
             .onSuccess { location ->
                 _uiState.update {
                     it.copy(
@@ -252,7 +257,7 @@ class MapViewModel @Inject constructor(
                 }
 
                 location.content.city.also { city ->
-                    apiService.unsplashService.getTwoPhotos(city)
+                    apiService.unsplashDataSource.getTwoPhotos(city)
                         .onSuccess { locationImages ->
                             _uiState.update { it.copy(location = location.copy(locationImages = locationImages)) }
                         }
@@ -277,7 +282,7 @@ class MapViewModel @Inject constructor(
                     isFavouriteButtonPlaying = true
                 )
             }
-            useCaseBundle.saveImageToFirebaseStorageUseCase(location)
+            repositoryBundle.favouriteRepository.saveImageForLocation(location)
                 .onFailure {
                     _uiState.update { state ->
                         state.copy(
@@ -292,7 +297,7 @@ class MapViewModel @Inject constructor(
     private fun getUserFirstChar() = launchCatching {
         val fullName = dataService.run {
             dataStoreService.getUserFullName().takeIf { it.isNotEmpty() }
-                ?: firestoreService.getUser().fullName.also { fullName ->
+                ?: firestoreDataStore.getUser().fullName.also { fullName ->
                     launch {
                         dataStoreService.setUserFullName(fullName)
                     }
@@ -313,10 +318,7 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    private fun onStreetViewClick(
-        latLng: Pair<Double, Double>,
-        navigateToStreetView: (Pair<Float, Float>) -> Unit
-    ) =
+    private fun onStreetViewClick(latLng: Pair<Double, Double>) =
         launchCatching {
             val isStreetAvailable = withContext(ioDispatcher) {
                 MapUtils.fetchStreetViewData(LatLng(latLng.first, latLng.second))
@@ -324,7 +326,11 @@ class MapViewModel @Inject constructor(
             when (isStreetAvailable) {
                 Status.OK -> {
                     delay(25L)
-                    navigateToStreetView(Pair(latLng.first.toFloat(), latLng.second.toFloat()))
+                    _navigationState.update {
+                        NavigationState.NavigateToStreetView(
+                            Pair(latLng.first.toFloat(), latLng.second.toFloat())
+                        )
+                    }
                 }
 
                 else -> SnackbarManager.showMessage(AppText.street_view_not_available)
@@ -340,11 +346,12 @@ class MapViewModel @Inject constructor(
                 screenshotState = STARTED
             )
         }
+        screenshotServiceHandler.registerServiceStateReceiver()
     }
 
     private fun loadLocationFromFavourite(favouriteId: String) = launchCatching {
         val location = withContext(ioDispatcher) {
-            dataService.favouriteService.getFavourite(favouriteId)
+            dataService.favouriteDataSource.getFavourite(favouriteId)
         }.toLocation()
 
         _uiState.update {

@@ -3,15 +3,15 @@ package com.espressodev.gptmap.core.mongodb.impl
 import com.espressodev.gptmap.core.model.Favourite
 import com.espressodev.gptmap.core.model.realm.RealmFavourite
 import com.espressodev.gptmap.core.model.realm.toFavourite
-import com.espressodev.gptmap.core.mongodb.FavouriteService
-import com.espressodev.gptmap.core.mongodb.RealmServiceBase
-import com.espressodev.gptmap.core.mongodb.module.RealmModule.realm
+import com.espressodev.gptmap.core.mongodb.FavouriteDataSource
+import com.espressodev.gptmap.core.mongodb.RealmDataSourceBase
+import com.espressodev.gptmap.core.mongodb.module.RealmManager.realm
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class FavouriteServiceImpl : FavouriteService, RealmServiceBase() {
+class FavouriteDataSourceImpl : FavouriteDataSource, RealmDataSourceBase() {
 
     override suspend fun saveFavourite(realmFavourite: RealmFavourite): Result<Unit> =
         performRealmTransaction {

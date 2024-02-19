@@ -51,6 +51,7 @@ fun VerifyAuthRoute(
     modifier: Modifier = Modifier,
     viewModel: VerifyAuthViewModel = hiltViewModel(),
 ) {
+    LaunchedEffect(key1 = Unit) { viewModel.initializeUser() }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
         topBar = {

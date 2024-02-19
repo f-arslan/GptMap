@@ -49,7 +49,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.window.Dialog
@@ -71,10 +70,7 @@ import com.espressodev.gptmap.core.designsystem.component.LottieAnimationPlaceho
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
 import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
 import com.espressodev.gptmap.core.designsystem.component.SquareButton
-import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import com.espressodev.gptmap.core.model.Location
-import com.espressodev.gptmap.core.model.chatgpt.Content
-import com.espressodev.gptmap.core.model.chatgpt.Coordinates
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
 import com.espressodev.gptmap.core.save_screenshot.composable.SaveScreenshot
 import com.espressodev.gptmap.feature.map.ComponentLoadingState.MAP
@@ -108,7 +104,34 @@ fun MapRoute(
     modifier: Modifier = Modifier,
     viewModel: MapViewModel = hiltViewModel(),
 ) {
+    LaunchedEffect(key1 = Unit) {
+        viewModel.initialize()
+    }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val navigationState by viewModel.navigationState.collectAsStateWithLifecycle()
+    LaunchedEffect(key1 = navigationState) {
+        fun performNavigation(action: () -> Unit) {
+            action()
+            viewModel.resetNavigation()
+        }
+
+        with(navigationState) {
+            when (this) {
+                NavigationState.NavigateToGallery -> performNavigation(navigateToGallery)
+                NavigationState.NavigateToProfile -> performNavigation(navigateToProfile)
+                NavigationState.NavigateToScreenshot -> performNavigation(navigateToScreenshot)
+                is NavigationState.NavigateToSnapToScript -> performNavigation {
+                    navigateToSnapToScript(this.imageId)
+                }
+
+                is NavigationState.NavigateToStreetView -> performNavigation {
+                    navigateToStreetView(this.latLng)
+                }
+
+                NavigationState.None -> Unit
+            }
+        }
+    }
 
     /**
      * Uses [rememberUpdatedState] for `onEvent` to prevent unnecessary recompositions by maintaining
@@ -116,39 +139,14 @@ fun MapRoute(
      * allowing `onEvent` to adapt dynamically to state changes without causing full screen
      * recompositions, thus optimizing UI responsiveness and performance.
      */
-
     val onEvent by rememberUpdatedState(
-        newValue = { event: MapUiEvent, navigate: (Pair<Float, Float>) -> Unit ->
-            viewModel.onEvent(
-                event = event,
-                navigate = navigate
-            )
-        }
-    )
-    val onNavigateToSnapToScript by rememberUpdatedState(
-        newValue = {
-            viewModel.onChatAiClick(navigateToSnapToScript, navigateToGallery)
-        }
-    )
-
-    val onExploreWithAiClickImage by rememberUpdatedState(
-        newValue = { index: Int ->
-            viewModel.onExploreWithAiClick(index, navigateToSnapToScript, navigateToGallery)
+        newValue = { event: MapUiEvent ->
+            viewModel.onEvent(event)
         }
     )
 
     Scaffold(modifier = modifier.padding(bottom = BOTTOM_BAR_PADDING)) {
-        MapScreen(
-            uiState = uiState,
-            onEvent = { event -> onEvent(event, navigateToStreetView) },
-            onAvatarClick = navigateToProfile,
-            navigateToSnapToScript = {
-                onNavigateToSnapToScript()
-            },
-            onExploreWithAiClickFromImage = { index ->
-                onExploreWithAiClickImage(index)
-            }
-        )
+        uiState.MapScreen(onEvent = { event -> onEvent(event) })
     }
 
     LaunchedEffect(uiState.screenshotState) {
@@ -164,25 +162,21 @@ fun MapRoute(
 }
 
 @Composable
-private fun MapScreen(
-    uiState: MapUiState,
+private fun MapUiState.MapScreen(
     onEvent: (MapUiEvent) -> Unit,
-    onAvatarClick: () -> Unit,
-    navigateToSnapToScript: () -> Unit,
-    onExploreWithAiClickFromImage: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (uiState.imageGalleryState.second) {
+    if (imageGalleryState.second) {
         ImageGallery(
-            initialPage = uiState.imageGalleryState.first,
-            images = uiState.location.locationImages,
+            initialPage = imageGalleryState.first,
+            images = location.locationImages,
             onDismiss = { onEvent(MapUiEvent.OnImageDismiss) },
-            onExploreWithAiClick = onExploreWithAiClickFromImage
+            onExploreWithAiClick = { onEvent(MapUiEvent.OnExploreWithAiClickFromImage(it)) }
         )
     }
     Box(modifier = modifier.fillMaxSize()) {
         AnimatedVisibility(
-            visible = uiState.isMapButtonsVisible,
+            visible = isMapButtonsVisible,
             modifier = Modifier
                 .zIndex(1f)
                 .offset(y = 72.dp)
@@ -191,17 +185,17 @@ private fun MapScreen(
                 icon = IconType.Bitmap(AppDrawable.ai_icon),
                 containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
                 initialAlignment = Alignment.CenterEnd,
-                onClick = navigateToSnapToScript
+                onClick = { onEvent(MapUiEvent.OnChatAiClick) }
             )
         }
 
-        if (uiState.searchBarState) {
+        if (searchBarState) {
             MapSearchBar(
-                value = uiState.searchValue,
-                userFirstChar = uiState.userFirstChar,
+                value = searchValue,
+                userFirstChar = userFirstChar,
                 onValueChange = { onEvent(MapUiEvent.OnSearchValueChanged(it)) },
                 onSearchClick = { onEvent(MapUiEvent.OnSearchClick) },
-                onAvatarClick = onAvatarClick,
+                onProfileClick = { onEvent(MapUiEvent.OnProfileClick) },
                 modifier = Modifier
                     .zIndex(1f)
                     .align(Alignment.TopCenter)
@@ -210,17 +204,17 @@ private fun MapScreen(
         SaveScreenshot(
             onClick = { onEvent(MapUiEvent.OnScreenshotProcessStarted) },
             onCancelClick = { onEvent(MapUiEvent.OnScreenshotProcessCancelled) },
-            isButtonVisible = uiState.isMapButtonsVisible
+            isButtonVisible = isMapButtonsVisible
         )
-        LoadingDialog(uiState.componentLoadingState)
-        MapCameraSection(uiState = uiState, onEvent = onEvent)
+        LoadingDialog(componentLoadingState)
+        MapCameraSection(onEvent = onEvent)
         DisplayBottomSheet(
-            bottomSheetState = uiState.bottomSheetState,
-            location = uiState.location,
+            bottomSheetState = bottomSheetState,
+            location = location,
             onEvent = onEvent,
             modifier = Modifier.zIndex(2f)
         )
-        if (uiState.isMyLocationButtonVisible)
+        if (isMyLocationButtonVisible)
             MyCurrentLocationButton(
                 onClick = { onEvent(MapUiEvent.OnMyCurrentLocationClick) },
                 modifier = Modifier.zIndex(1f)
@@ -236,12 +230,16 @@ private fun BoxScope.DisplayBottomSheet(
     modifier: Modifier = Modifier
 ) {
     when (bottomSheetState) {
-        SMALL_INFORMATION_CARD -> SmallInformationCard(
-            content = location.content,
-            onExploreWithAiClick = { onEvent(MapUiEvent.OnExploreWithAiClick) },
-            onBackClick = { onEvent(MapUiEvent.OnBackClick) },
-            modifier = modifier
-        )
+        SMALL_INFORMATION_CARD -> location.content.run {
+            SmallInformationCard(
+                city = city,
+                country = country,
+                poeticDesc = toPoeticDescWithDecor(),
+                onExploreWithAiClick = { onEvent(MapUiEvent.OnExploreWithAiClick) },
+                onBackClick = { onEvent(MapUiEvent.OnBackClick) },
+                modifier = modifier
+            )
+        }
 
         DETAIL_CARD -> DetailSheet(location = location, onEvent = onEvent, modifier = modifier)
 
@@ -342,7 +340,7 @@ private fun MapSearchBar(
     userFirstChar: Char,
     onValueChange: (String) -> Unit,
     onSearchClick: () -> Unit,
-    onAvatarClick: () -> Unit,
+    onProfileClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     MapTextField(
@@ -351,7 +349,7 @@ private fun MapSearchBar(
         userFirstChar = userFirstChar,
         onValueChange = onValueChange,
         onSearchClick = onSearchClick,
-        onAvatarClick = onAvatarClick,
+        onAvatarClick = onProfileClick,
         modifier = modifier
             .fillMaxWidth()
             .statusBarsPadding()
@@ -360,33 +358,36 @@ private fun MapSearchBar(
     )
 }
 
+context(BoxScope)
 @Composable
-private fun BoxScope.MapCameraSection(uiState: MapUiState, onEvent: (MapUiEvent) -> Unit) {
+private fun MapUiState.MapCameraSection(onEvent: (MapUiEvent) -> Unit) {
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(uiState.coordinatesLatLng, 14f)
+        position = CameraPosition.fromLatLngZoom(coordinatesLatLng, 14f)
     }
-    LaunchedEffect(uiState.coordinatesLatLng) {
+    LaunchedEffect(coordinatesLatLng) {
         cameraPositionState.animate(
             CameraUpdateFactory.newLatLngZoom(
-                uiState.coordinatesLatLng,
+                coordinatesLatLng,
                 12f
             )
         )
     }
-    LaunchedEffect(uiState.myCurrentLocationState) {
-        if (uiState.myCurrentLocationState.first) {
+
+    LaunchedEffect(myCurrentLocationState) {
+        if (myCurrentLocationState.first) {
             cameraPositionState.animate(
                 CameraUpdateFactory.newLatLngZoom(
-                    uiState.myCoordinatesLatLng,
+                    myCoordinatesLatLng,
                     12f
                 )
             )
+            // Try to find better way to handle this
             onEvent(MapUiEvent.OnUnsetMyCurrentLocationState)
         }
     }
 
     AnimatedVisibility(
-        visible = uiState.isMapButtonsVisible,
+        visible = isMapButtonsVisible,
         modifier = Modifier.zIndex(1f)
     ) {
         GmDraggableButton(
@@ -397,10 +398,9 @@ private fun BoxScope.MapCameraSection(uiState: MapUiState, onEvent: (MapUiEvent)
     }
 
     LocationPin(
-        isPinVisible = uiState.isMapButtonsVisible,
+        isPinVisible = isMapButtonsVisible,
         isCameraMoving = cameraPositionState.isMoving
     )
-
     MapSection(cameraPositionState)
 }
 
@@ -516,7 +516,9 @@ private fun BoxScope.LocationPin(
 
 @Composable
 fun BoxScope.SmallInformationCard(
-    content: Content,
+    city: String,
+    country: String,
+    poeticDesc: String,
     onExploreWithAiClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -546,13 +548,13 @@ fun BoxScope.SmallInformationCard(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = "${content.city}, ${content.country}",
+                    text = "$city, $country",
                     style = MaterialTheme.typography.headlineSmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = content.toPoeticDescWithDecor(),
+                    text = poeticDesc,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.titleMedium,
@@ -560,49 +562,6 @@ fun BoxScope.SmallInformationCard(
                 )
                 ExploreWithAiButton(onClick = onExploreWithAiClick)
             }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun MapPreview() {
-    GptmapTheme(darkTheme = true) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            MapCameraSection(
-                uiState = MapUiState(
-                    searchValue = "",
-                    location = Location(
-                        id = "",
-                        content = Content(
-                            coordinates = Coordinates(
-                                latitude = 0.0,
-                                longitude = 0.0
-                            ),
-                            city = "",
-                            district = null,
-                            country = "",
-                            poeticDescription = "",
-                            normalDescription = ""
-                        ),
-                        locationImages = listOf(),
-                        addToFavouriteButtonState = false
-                    ),
-                    userFirstChar = 'A',
-                    componentLoadingState = ComponentLoadingState.MY_LOCATION,
-                    bottomSheetState = SMALL_INFORMATION_CARD,
-                    searchButtonEnabledState = false,
-                    searchTextFieldEnabledState = false,
-                    searchBarState = false,
-                    isFavouriteButtonPlaying = false,
-                    isMapButtonsVisible = true,
-                    myCurrentLocationState = Pair(false, Pair(0.0, 0.0)),
-                    screenshotState = ScreenshotState.IDLE,
-                    imageGalleryState = Pair(0, false),
-                    isMyLocationButtonVisible = false
-                ),
-                onEvent = {}
-            )
         }
     }
 }
