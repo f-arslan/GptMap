@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option java_package = "com.espressodev.gptmap.core.datastore";
+option java_multiple_files = true;
+
+message UserPreferences {
+  string full_name = 1;
+  string latest_image_url_for_chat = 2;
+  string latest_image_id_for_chat = 3;
+
+  enum DarkThemeConfigPhoto {
+    DARK_THEME_CONFIG_UNSPECIFIED = 0;
+    DARK_THEME_CONFIG_FOLLOW_SYSTEM = 1;
+    DARK_THEME_CONFIG_LIGHT = 2;
+    DARK_THEME_CONFIG_DARK = 3;
+  }
+
+  DarkThemeConfigPhoto dark_theme_config = 4;
+}
