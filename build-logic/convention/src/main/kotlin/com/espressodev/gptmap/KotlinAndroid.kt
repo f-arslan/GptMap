@@ -42,8 +42,6 @@ internal fun Project.configureKotlinAndroid(
     dependencies {
         add("coreLibraryDesugaring", libs.findLibrary("android-desugarJdkLibs").get())
         implementation(libs.findLibrary("androidx-test-ext").get())
-        androidTestImplementation(libs.findLibrary("androidx-junit").get())
-        androidTestImplementation(libs.findLibrary("androidx-test-runner").get())
     }
 }
 

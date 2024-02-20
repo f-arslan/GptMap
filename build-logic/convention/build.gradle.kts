@@ -70,5 +70,9 @@ gradlePlugin {
             id = "gptmap.viewmodel.testing"
             implementationClass = "ViewmodelTestingConventionPlugin"
         }
+        register("androidTest") {
+            id = "gptmap.android.test"
+            implementationClass = "AndroidTestConventionPlugin"
+        }
     }
 }
