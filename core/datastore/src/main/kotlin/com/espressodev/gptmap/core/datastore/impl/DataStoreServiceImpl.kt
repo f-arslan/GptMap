@@ -1,58 +1,66 @@
 package com.espressodev.gptmap.core.datastore.impl
 
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import com.espressodev.gptmap.core.datastore.DataStoreService
-import kotlinx.coroutines.flow.first
+import com.espressodev.gptmap.core.datastore.UserData
+import com.espressodev.gptmap.core.datastore.UserPreferences
+import com.espressodev.gptmap.core.datastore.copy
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class DataStoreServiceImpl @Inject constructor(
-    private val userDataStorePreferences: DataStore<Preferences>
+    private val userPreferences: DataStore<UserPreferences>
 ) : DataStoreService {
+
+    override val userData: Flow<UserData> = userPreferences.data.map {
+        UserData(
+            fullName = it.fullName,
+            latestImageIdForChat = it.latestImageIdForChat,
+            latestImageUrlForChat = it.latestImageUrlForChat
+        )
+    }
+
     override suspend fun setUserFullName(fullName: String) {
-        userDataStorePreferences.edit { preferences ->
-            preferences[USER_FULL_NAME] = fullName
+        userPreferences.updateData {
+            it.copy {
+                this.fullName = fullName
+            }
         }
     }
 
-    override suspend fun getUserFullName(): String {
-        val preferences = userDataStorePreferences.data.first()
-        return preferences[USER_FULL_NAME] ?: ""
-    }
+    override suspend fun getUserFullName(): Flow<String> =
+        userPreferences.data.map { it.fullName }
 
-    override suspend fun setImageUrl(imageUrl: String) {
-        userDataStorePreferences.edit { preferences ->
-            preferences[IMAGE_URL] = imageUrl
+    override suspend fun setLatestImageUrl(imageUrl: String) {
+        userPreferences.updateData {
+            it.copy {
+                latestImageUrlForChat = imageUrl
+            }
         }
     }
 
-    override suspend fun getImageUrl(): String {
-        val preferences = userDataStorePreferences.data.first()
-        return preferences[IMAGE_URL] ?: ""
-    }
+    override suspend fun getImageUrl(): Flow<String> =
+        userPreferences.data.map { it.latestImageUrlForChat }
 
     override suspend fun setLatestImageIdForChat(imageId: String) {
-        userDataStorePreferences.edit { preferences ->
-            preferences[LATEST_IMAGE_ID_FOR_CHAT] = imageId
+        userPreferences.updateData {
+            it.copy {
+                latestImageIdForChat = imageId
+            }
         }
     }
 
-    override suspend fun getLatestImageIdForChat(): String {
-        val preferences = userDataStorePreferences.data.first()
-        return preferences[LATEST_IMAGE_ID_FOR_CHAT] ?: ""
-    }
+    override suspend fun getLatestImageIdForChat(): Flow<String> =
+        userPreferences.data.map { it.latestImageIdForChat }
 
     override suspend fun clear() {
-        userDataStorePreferences.edit { preferences ->
-            preferences.clear()
+        userPreferences.updateData {
+            it.copy {
+                fullName = ""
+                latestImageUrlForChat = ""
+                latestImageIdForChat = ""
+            }
         }
-    }
-
-    private companion object {
-        val USER_FULL_NAME = stringPreferencesKey("user_full_name")
-        val IMAGE_URL = stringPreferencesKey("image_url")
-        val LATEST_IMAGE_ID_FOR_CHAT = stringPreferencesKey("latest_image_id_for_chat")
     }
 }

@@ -4,9 +4,16 @@ plugins {
 }
 
 android {
+    defaultConfig {
+        consumerProguardFiles("consumer-proguard-rules.pro")
+    }
     namespace = "com.espressodev.gptmap.core.datastore"
 }
 
 dependencies {
-    implementation(libs.androidx.dataStore.core)
+    implementation(projects.core.model)
+
+    api(libs.androidx.dataStore.core)
+    api(projects.core.datastoreProto)
 }
+
