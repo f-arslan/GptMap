@@ -7,9 +7,9 @@ import androidx.work.DelegatingWorkerFactory
 import com.espressodev.gptmap.core.data.repository.FileRepository
 import com.espressodev.gptmap.core.data.worker.DeleteImagesFromStorageAndPhoneWorker
 import com.espressodev.gptmap.core.data.worker.DeleteUserFromRealmWorker
-import com.espressodev.gptmap.core.firebase.StorageDataStore
-import com.espressodev.gptmap.core.mongodb.RealmAccountService
-import com.espressodev.gptmap.core.mongodb.UserManagementDataSource
+import com.espressodev.gptmap.core.firebase.StorageRepository
+import com.espressodev.gptmap.core.mongodb.RealmAccountRepository
+import com.espressodev.gptmap.core.mongodb.UserManagementRealmRepository
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
@@ -28,22 +28,22 @@ class GmHiltApp : Application(), Configuration.Provider {
 
 
 class GptmapWorkersFactory @Inject constructor(
-    storageDataStore: StorageDataStore,
+    storageRepository: StorageRepository,
     fileRepository: FileRepository,
-    userManagementDataSource: UserManagementDataSource,
-    realmAccountService: RealmAccountService,
+    userManagementRealmRepository: UserManagementRealmRepository,
+    realmAccountRepository: RealmAccountRepository,
 ) : DelegatingWorkerFactory() {
     init {
         addFactory(
             DeleteImagesFromStorageAndPhoneWorker.Factory(
-                storageDataStore = storageDataStore,
+                storageRepository = storageRepository,
                 fileRepository = fileRepository
             )
         )
         addFactory(
             DeleteUserFromRealmWorker.Factory(
-                userManagementDataSource = userManagementDataSource,
-                realmAccountService = realmAccountService
+                userManagementRealmRepository = userManagementRealmRepository,
+                realmAccountRepository = realmAccountRepository
             )
         )
     }

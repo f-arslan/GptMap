@@ -1,9 +1,14 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.gptmap.android.application)
     alias(libs.plugins.gptmap.android.application.compose)
     alias(libs.plugins.gptmap.android.hilt)
     alias(libs.plugins.gptmap.android.application.firebase)
     alias(libs.plugins.secrets)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.baselineprofile)
 }
 
 android {
@@ -20,13 +25,29 @@ android {
 
     }
 
+    val keystorePropertiesFile = rootProject.file("keystore.properties")
+    val keystoreProperties = Properties()
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+
+    signingConfigs {
+        create("config") {
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile = file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["storePassword"] as String
+        }
+    }
+
+
     buildTypes {
         release {
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // signingConfig = signingConfigs.getByName("config")
+            signingConfig = signingConfigs.getByName("config")
         }
     }
 
@@ -61,4 +82,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.work.ktx)
     implementation(libs.hilt.ext.work)
+    implementation(libs.androidx.profileinstaller)
+    "baselineProfile"(project(":benchmarks"))
 }
