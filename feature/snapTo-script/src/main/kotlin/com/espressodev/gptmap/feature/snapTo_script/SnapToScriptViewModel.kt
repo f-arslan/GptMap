@@ -7,12 +7,15 @@ import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.common.SpeechToText
 import com.espressodev.gptmap.core.data.repository.ImageMessageRepository
+import com.espressodev.gptmap.core.data.repository.UserRepository
 import com.espressodev.gptmap.core.datastore.DataStoreService
 import com.espressodev.gptmap.core.model.AiResponseStatus
 import com.espressodev.gptmap.core.model.ImageMessage
 import com.espressodev.gptmap.core.model.ImageType
+import com.espressodev.gptmap.core.model.di.Dispatcher
+import com.espressodev.gptmap.core.model.di.GmDispatchers.IO
 import com.espressodev.gptmap.core.model.ext.toImageType
-import com.espressodev.gptmap.core.mongodb.ImageMessageDataSource
+import com.espressodev.gptmap.core.mongodb.ImageMessageRealmRepository
 import com.espressodev.gptmap.feature.screenshot_gallery.InputSelector
 import com.espressodev.gptmap.feature.screenshot_gallery.SnapToScriptUiEvent
 import com.espressodev.gptmap.feature.screenshot_gallery.SnapToScriptUiState
@@ -24,6 +27,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -34,15 +38,16 @@ import javax.inject.Inject
 class SnapToScriptViewModel @Inject constructor(
     private val speechToText: SpeechToText,
     private val imageMessageRepository: ImageMessageRepository,
+    private val userRepository: UserRepository,
     private val dataStoreService: DataStoreService,
-    imageMessageDataSource: ImageMessageDataSource,
-    ioDispatcher: CoroutineDispatcher,
+    imageMessageRealmRepository: ImageMessageRealmRepository,
+    @Dispatcher(IO) ioDispatcher: CoroutineDispatcher,
     savedStateHandle: SavedStateHandle,
     logService: LogService
 ) : GmViewModel(logService) {
     private val imageId: String = checkNotNull(savedStateHandle[IMAGE_ID])
 
-    val messages: StateFlow<List<ImageMessage>> = imageMessageDataSource
+    val messages: StateFlow<List<ImageMessage>> = imageMessageRealmRepository
         .getImageAnalysisMessages(imageId)
         .flowOn(ioDispatcher)
         .stateIn(
@@ -51,7 +56,7 @@ class SnapToScriptViewModel @Inject constructor(
             initialValue = listOf()
         )
 
-    val imageType: ImageType = imageMessageDataSource.getImageType(imageId).toImageType()
+    val imageType: ImageType = imageMessageRealmRepository.getImageType(imageId).toImageType()
 
     private val _snapToScriptUiState = MutableStateFlow(SnapToScriptUiState())
     val snapToScriptUiState = _snapToScriptUiState.asStateFlow()
@@ -154,15 +159,15 @@ class SnapToScriptViewModel @Inject constructor(
 
     private fun getNameImageAndCacheIdWithDataStore() = launchCatching {
         launch {
-            val fullName = dataStoreService.getUserFullName()
-            _snapToScriptUiState.update { it.copy(userFirstChar = fullName.first()) }
+            val firstChar = userRepository.getUserFirstChar().getOrThrow()
+            _snapToScriptUiState.update { it.copy(userFirstChar = firstChar) }
         }
         launch {
-            val imageUrl = dataStoreService.getImageUrl()
+            val imageUrl = dataStoreService.getImageUrl().first()
             _snapToScriptUiState.update { it.copy(imageUrl = imageUrl) }
         }
         launch {
-            val latestImageIdForChat = dataStoreService.getLatestImageIdForChat()
+            val latestImageIdForChat = dataStoreService.getLatestImageIdForChat().first()
             if (latestImageIdForChat != imageId) {
                 dataStoreService.setLatestImageIdForChat(imageId)
             }

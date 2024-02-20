@@ -5,7 +5,6 @@ plugins {
 
 android {
     namespace = "com.espressodev.gptmap.core.firebase"
-
 }
 
 dependencies {

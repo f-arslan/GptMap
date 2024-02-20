@@ -6,9 +6,9 @@ import com.espressodev.gptmap.core.data.repository.ImageAnalysisRepository
 import com.espressodev.gptmap.core.data.repository.UserRepository
 import com.espressodev.gptmap.core.datastore.DataStoreService
 import com.espressodev.gptmap.core.domain.GetCurrentLocationUseCase
-import com.espressodev.gptmap.core.firebase.FirestoreDataStore
-import com.espressodev.gptmap.core.gemini.GeminiDataSource
-import com.espressodev.gptmap.core.mongodb.FavouriteDataSource
+import com.espressodev.gptmap.core.firebase.FirestoreRepository
+import com.espressodev.gptmap.core.gemini.GeminiRepository
+import com.espressodev.gptmap.core.mongodb.FavouriteRealmRepository
 import com.espressodev.gptmap.core.unsplash.UnsplashDataSource
 import com.espressodev.gptmap.feature.screenshot.ScreenshotServiceHandler
 import dagger.Module
@@ -25,9 +25,9 @@ object ViewModelModule {
     @ViewModelScoped
     @Provides
     fun provideApiService(
-        geminiDataSource: GeminiDataSource,
+        geminiRepository: GeminiRepository,
         unsplashDataSource: UnsplashDataSource
-    ): ApiService = ApiService(geminiDataSource, unsplashDataSource)
+    ): ApiService = ApiService(geminiRepository, unsplashDataSource)
 
     @ViewModelScoped
     @Provides
@@ -46,10 +46,10 @@ object ViewModelModule {
     @ViewModelScoped
     @Provides
     fun provideDataService(
-        favouriteDataSource: FavouriteDataSource,
-        firestoreDataStore: FirestoreDataStore,
+        favouriteRealmRepository: FavouriteRealmRepository,
+        firestoreRepository: FirestoreRepository,
         dataStoreService: DataStoreService
-    ): DataService = DataService(favouriteDataSource, firestoreDataStore, dataStoreService)
+    ): DataService = DataService(favouriteRealmRepository, firestoreRepository, dataStoreService)
 
     @ViewModelScoped
     @Provides
@@ -58,7 +58,7 @@ object ViewModelModule {
 }
 
 data class ApiService(
-    val geminiDataSource: GeminiDataSource,
+    val geminiRepository: GeminiRepository,
     val unsplashDataSource: UnsplashDataSource
 )
 
@@ -70,7 +70,7 @@ data class RepositoryBundle(
 )
 
 data class DataService(
-    val favouriteDataSource: FavouriteDataSource,
-    val firestoreDataStore: FirestoreDataStore,
+    val favouriteRealmRepository: FavouriteRealmRepository,
+    val firestoreRepository: FirestoreRepository,
     val dataStoreService: DataStoreService
 )

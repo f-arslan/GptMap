@@ -1,46 +1,36 @@
 package com.espressodev.gptmap.core.mongodb.module
 
-import com.espressodev.gptmap.core.mongodb.FavouriteDataSource
-import com.espressodev.gptmap.core.mongodb.ImageAnalysisDataSource
-import com.espressodev.gptmap.core.mongodb.ImageMessageDataSource
-import com.espressodev.gptmap.core.mongodb.RealmAccountService
-import com.espressodev.gptmap.core.mongodb.UserManagementDataSource
-import com.espressodev.gptmap.core.mongodb.impl.FavouriteDataSourceImpl
-import com.espressodev.gptmap.core.mongodb.impl.ImageAnalysisDataSourceImpl
-import com.espressodev.gptmap.core.mongodb.impl.ImageMessageDataSourceImpl
-import com.espressodev.gptmap.core.mongodb.impl.RealmAccountServiceImpl
-import com.espressodev.gptmap.core.mongodb.impl.UserManagementDataSourceImpl
+import com.espressodev.gptmap.core.mongodb.FavouriteRealmRepository
+import com.espressodev.gptmap.core.mongodb.ImageAnalysisRealmRepository
+import com.espressodev.gptmap.core.mongodb.ImageMessageRealmRepository
+import com.espressodev.gptmap.core.mongodb.RealmAccountRepository
+import com.espressodev.gptmap.core.mongodb.UserManagementRealmRepository
+import com.espressodev.gptmap.core.mongodb.impl.FavouriteRealmDataSource
+import com.espressodev.gptmap.core.mongodb.impl.ImageAnalysisRealmDataSource
+import com.espressodev.gptmap.core.mongodb.impl.ImageMessageRealmDataSource
+import com.espressodev.gptmap.core.mongodb.impl.RealmAccountService
+import com.espressodev.gptmap.core.mongodb.impl.UserManagementRealmDataSource
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RealmModule {
-    @Singleton
-    @Provides
-    fun bindRealmAccountService(): RealmAccountService =
-        RealmAccountServiceImpl()
+interface RealmModule {
+    @Binds
+    fun bindRealmAccountService(impl: RealmAccountService): RealmAccountRepository
 
-    @Singleton
-    @Provides
-    fun provideFavouritesDataSource(): FavouriteDataSource =
-        FavouriteDataSourceImpl()
+    @Binds
+    fun provideFavouritesDataSource(impl: FavouriteRealmDataSource): FavouriteRealmRepository
 
-    @Singleton
-    @Provides
-    fun provideImageAnalysisDataSource(): ImageAnalysisDataSource =
-        ImageAnalysisDataSourceImpl()
+    @Binds
+    fun provideImageAnalysisDataSource(impl: ImageAnalysisRealmDataSource): ImageAnalysisRealmRepository
 
-    @Singleton
-    @Provides
-    fun provideImageMessageDataSource(): ImageMessageDataSource =
-        ImageMessageDataSourceImpl()
+    @Binds
+    fun provideImageMessageDataSource(impl: ImageMessageRealmDataSource): ImageMessageRealmRepository
 
-    @Singleton
-    @Provides
-    fun provideUserManagementDataSource(): UserManagementDataSource =
-        UserManagementDataSourceImpl()
+    @Binds
+    fun provideUserManagementDataSource(impl: UserManagementRealmDataSource): UserManagementRealmRepository
 }
+

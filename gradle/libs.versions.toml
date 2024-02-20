@@ -1,4 +1,5 @@
 [versions]
+accompanist = "0.34.0"
 androidDesugarJdkLibs = "2.0.4"
 androidGradlePlugin = "8.2.2"
 androidxActivity = "1.8.2"
@@ -6,64 +7,74 @@ androidxComposeBom = "2024.02.00"
 androidxComposeCompiler = "1.5.9"  # Compose VC
 androidxCoreSplashscreen = "1.0.1"
 androidxDataStore = "1.0.0"
+androidxEspresso = "3.5.1"
 androidxHiltNavigationCompose = "1.1.0"
 androidxLifecycle = "2.7.0"
 androidxNavigation = "2.7.7"
 androidxTestExt = "1.1.5"
+androidxTestRules = "1.5.0"
+androidxTestCore = "1.5.0"
 androidxTestRunner = "1.5.2"
+androidxUiAutomator = "2.2.0"
 androidxWork = "2.9.0"
+appcompat = "1.6.1"
+baseJunit = "4.13.2"
+coilCompose = "2.5.0"
+coreKtxVersion = "1.12.0"
+coreTesting = "2.2.0"
+detekt = "1.23.3"
+detektCompose = "0.3.8"
+espressoCore = "3.5.1"
+firebase-analytics = "21.5.1"
+firebase-auth = "22.3.1"
+firebase-crashlytics = "18.6.2"
+firebase-firestore = "24.10.2"
+firebase-messaging = "23.4.1"
 firebaseBom = "32.7.2"
 firebaseCrashlyticsPlugin = "2.9.9"
-firebase-crashlytics = "18.6.2"
-firebase-auth = "22.3.1"
-firebase-firestore = "24.10.2"
-firebase-analytics = "21.5.1"
-firebase-messaging = "23.4.1"
+firebaseStorage = "20.3.0"
+fixture = "1.2.0"
+generativeai = "0.2.0"
 gmsPlugin = "4.4.1"
+googleGson = "2.10.1"
+googleServices = "4.4.1"
+googleOssPlugin = "0.10.6"
 hilt = "2.50"
 hiltExt = "1.1.0"
+junit = "1.1.5"
+junit5Plugin = "1.10.0.0"
+junitJupiter = "5.10.1"
 kotlin = "1.9.22"
+kotlinxDatetime = "0.5.0"
+kotlinxCollectionsImmutable = "0.3.6"
 kotlinxCoroutines = "1.7.3"
 kotlinxSerializationJson = "1.6.0"
 ksp = "1.9.22-1.0.17"
-retrofit = "2.9.0"
+ktorVersion = "2.3.2"
+lottieCompose = "6.2.0"
+logback = "1.2.11"
+mapsCompose = "4.1.1"
+material3 = "1.2.0-beta02"  # Bom version has Circular Progress Ind. problem
+materialVersion = "1.11.0"
+mockito = "4.8.0"
+mockk = "1.13.9"
+okhttp3Logging = "4.12.0"
 playServicesAuth = "21.0.0"
 playServicesLocation = "21.1.0"
 playServicesMaps = "18.2.0"
-secrets = "2.0.1"
-mapsCompose = "4.1.1"
-junit = "1.1.5"
+protobuf = "3.25.2"
+protobufPlugin = "0.9.4"
 realm = "1.13.0"
-googleServices = "4.4.1"
-okhttp3Logging = "4.12.0"
-googleGson = "2.10.1"
-ktorVersion = "2.3.2"
-kotlinxDatetime = "0.5.0"
-coilCompose = "2.5.0"
+retrofit = "2.9.0"
 robolectric = "4.11.1"
-generativeai = "0.2.0"
-lottieCompose = "6.2.0"
-firebaseStorage = "20.3.0"
-coreKtxVersion = "1.12.0"
-baseJunit = "4.13.2"
-detekt = "1.23.3"
-detektCompose = "0.3.8"
-kotlinxCollectionsImmutable = "0.3.6"
-junitJupiter = "5.10.1"
-mockk = "1.13.9"
-androidxTestRules = "1.5.0"
-mockito = "4.8.0"
-coreTesting = "2.2.0"
-turbine = "1.0.0"
-espressoCore = "3.5.1"
-appcompat = "1.6.1"
-materialVersion = "1.11.0"
-junit5Plugin = "1.10.0.0"
-logback = "1.2.11"
-material3 = "1.2.0-beta02"  # Bom version has Circular Progress Ind. problem
-fixture = "1.2.0"
-accompanist = "0.34.0"
 roborazzi = "1.6.0"
+secrets = "2.0.1"
+turbine = "1.0.0"
+uiautomator = "2.2.0"
+benchmarkMacroJunit4 = "1.2.3"
+kotlin2 = "1.9.0"
+baselineprofile = "1.2.2"
+profileinstaller = "1.3.1"
 [libraries]
 
 # Compose
@@ -125,6 +136,9 @@ roborazzi = { group = "io.github.takahirom.roborazzi", name = "roborazzi", versi
 accompanist-testharness = { group = "com.google.accompanist", name = "accompanist-testharness", version.ref = "accompanist" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 robolectric-shadows = { group = "org.robolectric", name = "shadows-framework", version.ref = "robolectric" }
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
+androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxEspresso" }
+androidx-test-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "androidxUiAutomator" }
 # End of it
 
 # Hilt
@@ -176,6 +190,9 @@ detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-form
 detekt-compose = { group = "io.nlopez.compose.rules", name = "detekt", version.ref = "detektCompose" }
 kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
+protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
+protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }  # Used in datastore-proto build
+google-oss-licenses-plugin = { group = "com.google.android.gms", name = "oss-licenses-plugin", version.ref = "googleOssPlugin" }
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -187,6 +204,9 @@ junit = { group = "junit", name = "junit", version.ref = "baseJunit" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
+androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
+androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmarkMacroJunit4" }
+androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller" }
 # End of it
 
 [plugins]
@@ -202,6 +222,7 @@ secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugi
 realm-kotlin = { id = "io.realm.kotlin", version.ref = "realm" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 android-junit5 = { id = "de.mannodermaus.android-junit5", version.ref = "junit5Plugin" }
+protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
 
 # Plugins defined by this project
 gptmap-android-application = { id = "gptmap.android.application", version = "unspecified" }
@@ -215,5 +236,8 @@ gptmap-jvm-library = { id = "gptmap.jvm.library", version = "unspecified" }
 gptmap-ktor = { id = "gptmap.ktor", version = "unspecified" }
 gptmap-android-detekt = { id = "gptmap.android.detekt", version = "unspecified" }
 gptmap-viewmodel-testing = { id = "gptmap.viewmodel.testing", version = "unspecified" }
+gptmap-android-test = { id = "gptmap.android.test", version = "unspecified" }
+androidTest = { id = "com.android.test", version.ref = "androidGradlePlugin" }
+jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin2" }
+baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
 # End of it
-

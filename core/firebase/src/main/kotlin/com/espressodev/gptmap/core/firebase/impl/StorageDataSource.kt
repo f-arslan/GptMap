@@ -1,12 +1,12 @@
 package com.espressodev.gptmap.core.firebase.impl
 
-import com.espressodev.gptmap.core.firebase.StorageDataStore
+import com.espressodev.gptmap.core.firebase.StorageRepository
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class StorageDataStoreImpl @Inject constructor(private val storage: FirebaseStorage) :
-    StorageDataStore {
+class StorageDataSource @Inject constructor(private val storage: FirebaseStorage) :
+    StorageRepository {
     override suspend fun uploadImage(
         image: ByteArray,
         imageId: String,

@@ -1,11 +1,11 @@
 package com.espressodev.gptmap.core.firebase.module
 
 import com.espressodev.gptmap.core.firebase.AccountService
-import com.espressodev.gptmap.core.firebase.FirestoreDataStore
-import com.espressodev.gptmap.core.firebase.StorageDataStore
+import com.espressodev.gptmap.core.firebase.FirestoreRepository
+import com.espressodev.gptmap.core.firebase.StorageRepository
 import com.espressodev.gptmap.core.firebase.impl.AccountServiceImpl
-import com.espressodev.gptmap.core.firebase.impl.FirestoreDataStoreImpl
-import com.espressodev.gptmap.core.firebase.impl.StorageDataStoreImpl
+import com.espressodev.gptmap.core.firebase.impl.FirestoreDataSource
+import com.espressodev.gptmap.core.firebase.impl.StorageDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -18,8 +18,8 @@ interface FirebaseServiceModule {
     fun provideAccountService(impl: AccountServiceImpl): AccountService
 
     @Binds
-    fun provideFirestoreService(impl: FirestoreDataStoreImpl): FirestoreDataStore
+    fun provideFirestoreService(impl: FirestoreDataSource): FirestoreRepository
 
     @Binds
-    fun provideStorageService(impl: StorageDataStoreImpl): StorageDataStore
+    fun provideStorageService(impl: StorageDataSource): StorageRepository
 }

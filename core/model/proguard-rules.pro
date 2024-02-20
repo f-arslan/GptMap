@@ -1,0 +1,2 @@
+-keep class com.espressodev.gptmap.core.model.firebase.** { *; }
+-keepclassmembers class com.espressodev.gptmap.core.model.firebase.** { *; }

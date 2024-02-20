@@ -1,20 +1,20 @@
 package com.espressodev.gptmap.core.firebase.impl
 
 import com.espressodev.gptmap.core.firebase.AccountService
-import com.espressodev.gptmap.core.firebase.FirestoreDataStore
+import com.espressodev.gptmap.core.firebase.FirestoreRepository
 import com.espressodev.gptmap.core.model.Exceptions.FirebaseUserIsNullException
 import com.espressodev.gptmap.core.model.Exceptions.FirestoreUserNotExistsException
-import com.espressodev.gptmap.core.model.User
+import com.espressodev.gptmap.core.model.firebase.User
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.dataObjects
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class FirestoreDataStoreImpl @Inject constructor(
+class FirestoreDataSource @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val accountService: AccountService,
-) : FirestoreDataStore {
+) : FirestoreRepository {
 
     override suspend fun saveUser(user: User) {
         userColRef.document(user.userId).set(user).await()

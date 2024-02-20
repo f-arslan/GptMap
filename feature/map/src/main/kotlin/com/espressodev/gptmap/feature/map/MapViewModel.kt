@@ -7,6 +7,8 @@ import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
 import com.espressodev.gptmap.core.designsystem.Constants.GENERIC_ERROR_MSG
 import com.espressodev.gptmap.core.model.Exceptions
+import com.espressodev.gptmap.core.model.di.Dispatcher
+import com.espressodev.gptmap.core.model.di.GmDispatchers.IO
 import com.espressodev.gptmap.feature.screenshot.ScreenshotServiceHandler
 import com.espressodev.gptmap.feature.screenshot.ScreenshotState.FINISHED
 import com.espressodev.gptmap.feature.screenshot.ScreenshotState.IDLE
@@ -28,7 +30,7 @@ class MapViewModel @Inject constructor(
     private val apiService: ApiService,
     private val repositoryBundle: RepositoryBundle,
     private val dataService: DataService,
-    private val ioDispatcher: CoroutineDispatcher,
+    @Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
     private val savedStateHandle: SavedStateHandle,
     logService: LogService,
     private val screenshotServiceHandler: ScreenshotServiceHandler,
@@ -54,11 +56,12 @@ class MapViewModel @Inject constructor(
     suspend fun initialize() = launchCatching {
         if (initializeCalled) return@launchCatching
         initializeCalled = true
-        launch { getUserFirstChar() }
+        launch { getFirstLetterOfUser() }
         launch { observeFavouriteIdFromBackStack() }
         launch { collectScreenshotState() }
         launch { repositoryBundle.userRepository.addIfNewUser() }
     }
+
 
     private suspend fun collectScreenshotState() {
         screenshotServiceHandler.screenshotStateFlow.collect { state ->
@@ -125,11 +128,11 @@ class MapViewModel @Inject constructor(
     }
 
     private fun onChatAiClick() = launchCatching {
-        val imageId = dataService.dataStoreService.getLatestImageIdForChat()
-        if (imageId.isBlank()) {
+        val latestImageId = repositoryBundle.userRepository.getLatestImageId().getOrThrow()
+        if (latestImageId.isBlank()) {
             _navigationState.update { NavigationState.NavigateToGallery }
         } else {
-            _navigationState.update { NavigationState.NavigateToSnapToScript(imageId) }
+            _navigationState.update { NavigationState.NavigateToSnapToScript(latestImageId) }
         }
     }
 
@@ -139,11 +142,11 @@ class MapViewModel @Inject constructor(
         }
 
         val analysisId = locationImages[index].analysisId
-        val imageId = dataService.dataStoreService.getLatestImageIdForChat()
+        val latestImageId = repositoryBundle.userRepository.getLatestImageId().getOrThrow()
         if (analysisId != "") {
             resetAfterExamineWithAiClick()
             delay(50L)
-            if (imageId != analysisId) {
+            if (latestImageId != analysisId) {
                 dataService.dataStoreService.setLatestImageIdForChat(analysisId)
                 _navigationState.update { NavigationState.NavigateToGallery }
             } else {
@@ -159,7 +162,7 @@ class MapViewModel @Inject constructor(
             _navigationState.update { NavigationState.NavigateToGallery }
 
             if (favouriteId.isNotEmpty()) {
-                dataService.favouriteDataSource.updateImageAnalysisId(
+                dataService.favouriteRealmRepository.updateImageAnalysisId(
                     favouriteId = favouriteId,
                     messageId = locationImages[index].id,
                     imageAnalysisId = imageAnalysisId
@@ -242,7 +245,7 @@ class MapViewModel @Inject constructor(
             )
         }
 
-        apiService.geminiDataSource.getLocationInfo(uiState.value.searchValue)
+        apiService.geminiRepository.getLocationInfo(uiState.value.searchValue)
             .onSuccess { location ->
                 _uiState.update {
                     it.copy(
@@ -294,18 +297,6 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    private fun getUserFirstChar() = launchCatching {
-        val fullName = dataService.run {
-            dataStoreService.getUserFullName().takeIf { it.isNotEmpty() }
-                ?: firestoreDataStore.getUser().fullName.also { fullName ->
-                    launch {
-                        dataStoreService.setUserFullName(fullName)
-                    }
-                }
-        }
-        _uiState.update { it.copy(userFirstChar = fullName.first()) }
-    }
-
     fun reset() {
         _uiState.update {
             it.copy(
@@ -351,7 +342,7 @@ class MapViewModel @Inject constructor(
 
     private fun loadLocationFromFavourite(favouriteId: String) = launchCatching {
         val location = withContext(ioDispatcher) {
-            dataService.favouriteDataSource.getFavourite(favouriteId)
+            dataService.favouriteRealmRepository.getFavourite(favouriteId)
         }.toLocation()
 
         _uiState.update {
@@ -362,6 +353,11 @@ class MapViewModel @Inject constructor(
                 isMyLocationButtonVisible = false
             )
         }
+    }
+
+    private fun getFirstLetterOfUser() = launchCatching {
+        val firstChar = repositoryBundle.userRepository.getUserFirstChar().getOrThrow()
+        _uiState.update { it.copy(userFirstChar = firstChar) }
     }
 
     override fun onCleared() {

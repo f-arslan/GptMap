@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.gptmap.android.library)
+    alias(libs.plugins.gptmap.android.hilt)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.gptmap.android.library.compose)
     alias(libs.plugins.realm.kotlin)
@@ -7,7 +8,14 @@ plugins {
 
 android {
     namespace = "com.espressodev.gptmap.core.model"
-
+    buildTypes {
+        release {
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
 }
 
 dependencies {

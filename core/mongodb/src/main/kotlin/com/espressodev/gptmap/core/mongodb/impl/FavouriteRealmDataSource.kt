@@ -1,20 +1,26 @@
 package com.espressodev.gptmap.core.mongodb.impl
 
 import com.espressodev.gptmap.core.model.Favourite
+import com.espressodev.gptmap.core.model.di.Dispatcher
+import com.espressodev.gptmap.core.model.di.GmDispatchers.IO
 import com.espressodev.gptmap.core.model.realm.RealmFavourite
 import com.espressodev.gptmap.core.model.realm.toFavourite
-import com.espressodev.gptmap.core.mongodb.FavouriteDataSource
+import com.espressodev.gptmap.core.mongodb.FavouriteRealmRepository
 import com.espressodev.gptmap.core.mongodb.RealmDataSourceBase
 import com.espressodev.gptmap.core.mongodb.module.RealmManager.realm
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class FavouriteDataSourceImpl : FavouriteDataSource, RealmDataSourceBase() {
+class FavouriteRealmDataSource @Inject constructor(@Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher) :
+    FavouriteRealmRepository, RealmDataSourceBase() {
 
     override suspend fun saveFavourite(realmFavourite: RealmFavourite): Result<Unit> =
-        performRealmTransaction {
+        performRealmTransaction(ioDispatcher) {
             copyToRealm(
                 realmFavourite.apply {
                     userId = realmUserId
@@ -28,14 +34,15 @@ class FavouriteDataSourceImpl : FavouriteDataSource, RealmDataSourceBase() {
             it.list.map { realmFavourite -> realmFavourite.toFavourite() }
         }
 
-    override fun getFavourite(id: String): Favourite =
+    override suspend fun getFavourite(id: String): Favourite = withContext(ioDispatcher) {
         realm.query<RealmFavourite>("userId == $0 AND favouriteId == $1", realmUserId, id)
             .find()
             .first()
             .toFavourite()
+    }
 
     override suspend fun deleteFavourite(favouriteId: String): Result<Unit> =
-        performRealmTransaction {
+        performRealmTransaction(ioDispatcher) {
             val favouriteToDelete: RealmFavourite = query<RealmFavourite>(
                 "userId == $0 AND favouriteId == $1",
                 realmUserId,
@@ -47,7 +54,7 @@ class FavouriteDataSourceImpl : FavouriteDataSource, RealmDataSourceBase() {
         }
 
     override suspend fun updateFavouriteText(favouriteId: String, text: String): Result<Unit> =
-        performRealmTransaction {
+        performRealmTransaction(ioDispatcher) {
             val favouriteToUpdate: RealmFavourite = query<RealmFavourite>(
                 "userId == $0 AND favouriteId == $1",
                 realmUserId,
@@ -64,7 +71,7 @@ class FavouriteDataSourceImpl : FavouriteDataSource, RealmDataSourceBase() {
         favouriteId: String,
         messageId: String,
         imageAnalysisId: String
-    ): Result<Unit> = performRealmTransaction {
+    ): Result<Unit> = performRealmTransaction(ioDispatcher) {
         val favouriteToUpdate: RealmFavourite = query<RealmFavourite>(
             "userId == $0 AND favouriteId == $1",
             realmUserId,
@@ -77,4 +84,19 @@ class FavouriteDataSourceImpl : FavouriteDataSource, RealmDataSourceBase() {
                 imageAnalysisId
         }
     }
+
+    override suspend fun resetImageAnalysisId(imageAnalysisId: String): Result<Unit> =
+        performRealmTransaction(ioDispatcher) {
+            val favouriteToUpdate: RealmFavourite = query<RealmFavourite>(
+                "userId == $0 AND locationImages.analysisId == $1",
+                realmUserId,
+                imageAnalysisId
+            )
+                .find()
+                .first()
+            findLatest(favouriteToUpdate)?.let { realmFavourite ->
+                realmFavourite.locationImages?.find { it.analysisId == imageAnalysisId }?.analysisId =
+                    ""
+            }
+        }
 }

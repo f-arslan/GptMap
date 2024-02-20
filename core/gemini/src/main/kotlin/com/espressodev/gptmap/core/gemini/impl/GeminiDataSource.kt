@@ -1,7 +1,7 @@
 package com.espressodev.gptmap.core.gemini.impl
 
 import android.graphics.Bitmap
-import com.espressodev.gptmap.core.gemini.GeminiDataSource
+import com.espressodev.gptmap.core.gemini.GeminiRepository
 import com.espressodev.gptmap.core.model.Exceptions.ResponseTextNotFoundException
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.PromptUtil.locationPreText
@@ -14,10 +14,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
 
-class GeminiDataSourceImpl(
+class GeminiDataSource(
     private val generativeModelForText: GenerativeModel,
     private val generativeModelForImage: GenerativeModel
-) : GeminiDataSource {
+) : GeminiRepository {
     override suspend fun getLocationInfo(textContent: String): Result<Location> =
         withContext(Dispatchers.IO) {
             runCatching {

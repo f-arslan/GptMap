@@ -5,11 +5,13 @@ import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.datastore.DataStoreService
 import com.espressodev.gptmap.core.firebase.AccountService
-import com.espressodev.gptmap.core.firebase.FirestoreDataStore
+import com.espressodev.gptmap.core.firebase.FirestoreRepository
 import com.espressodev.gptmap.core.model.Exceptions.FirestoreUserNotExistsException
 import com.espressodev.gptmap.core.model.Response
-import com.espressodev.gptmap.core.model.User
-import com.espressodev.gptmap.core.mongodb.RealmAccountService
+import com.espressodev.gptmap.core.model.firebase.User
+import com.espressodev.gptmap.core.model.di.Dispatcher
+import com.espressodev.gptmap.core.model.di.GmDispatchers.IO
+import com.espressodev.gptmap.core.mongodb.RealmAccountRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
@@ -27,13 +29,13 @@ import kotlin.coroutines.cancellation.CancellationException
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val accountService: AccountService,
-    private val realmAccountService: RealmAccountService,
+    private val realmAccountRepository: RealmAccountRepository,
     private val dataStoreService: DataStoreService,
-    firestoreDataStore: FirestoreDataStore,
+    firestoreRepository: FirestoreRepository,
     logService: LogService,
-    ioDispatcher: CoroutineDispatcher,
+    @Dispatcher(IO) ioDispatcher: CoroutineDispatcher,
 ) : GmViewModel(logService) {
-    val user: StateFlow<Response<User>> = firestoreDataStore
+    val user: StateFlow<Response<User>> = firestoreRepository
         .getUserFlow()
         .retryWhen { cause, attempt ->
             if (cause is CancellationException && attempt < MAX_RETRY_ATTEMPTS) {
@@ -61,7 +63,7 @@ class ProfileViewModel @Inject constructor(
     fun onLogoutClick(navigate: () -> Unit) = launchCatching {
         dataStoreService.clear()
         accountService.signOut()
-        realmAccountService.logOut()
+        realmAccountRepository.logOut()
         navigate()
     }
 

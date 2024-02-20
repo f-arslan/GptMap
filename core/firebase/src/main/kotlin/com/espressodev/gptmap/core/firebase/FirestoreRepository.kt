@@ -1,9 +1,9 @@
 package com.espressodev.gptmap.core.firebase
 
-import com.espressodev.gptmap.core.model.User
+import com.espressodev.gptmap.core.model.firebase.User
 import kotlinx.coroutines.flow.Flow
 
-interface FirestoreDataStore {
+interface FirestoreRepository {
     suspend fun saveUser(user: User)
     suspend fun isUserInDatabase(email: String): Result<Boolean>
     suspend fun getUser(): User

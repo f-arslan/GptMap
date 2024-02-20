@@ -38,7 +38,7 @@ import com.espressodev.gptmap.core.designsystem.component.GmProgressIndicator
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
 import com.espressodev.gptmap.core.designsystem.component.PasswordTextField
 import com.espressodev.gptmap.core.designsystem.util.rememberKeyboardAsState
-import com.espressodev.gptmap.core.model.Provider
+import com.espressodev.gptmap.core.model.firebase.Provider
 import com.espressodev.gptmap.core.model.Response
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText

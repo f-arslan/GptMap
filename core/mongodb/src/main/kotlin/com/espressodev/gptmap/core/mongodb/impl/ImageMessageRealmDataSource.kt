@@ -1,22 +1,27 @@
 package com.espressodev.gptmap.core.mongodb.impl
 
 import com.espressodev.gptmap.core.model.ImageMessage
+import com.espressodev.gptmap.core.model.di.Dispatcher
+import com.espressodev.gptmap.core.model.di.GmDispatchers.IO
 import com.espressodev.gptmap.core.model.realm.RealmImageAnalysis
 import com.espressodev.gptmap.core.model.realm.RealmImageMessage
 import com.espressodev.gptmap.core.model.realm.toImageAnalysis
 import com.espressodev.gptmap.core.model.sortByDate
-import com.espressodev.gptmap.core.mongodb.ImageMessageDataSource
+import com.espressodev.gptmap.core.mongodb.ImageMessageRealmRepository
 import com.espressodev.gptmap.core.mongodb.RealmDataSourceBase
 import com.espressodev.gptmap.core.mongodb.module.RealmManager.realm
 import io.realm.kotlin.ext.query
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class ImageMessageDataSourceImpl : ImageMessageDataSource, RealmDataSourceBase() {
+class ImageMessageRealmDataSource @Inject constructor(@Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher) :
+    ImageMessageRealmRepository, RealmDataSourceBase() {
     override suspend fun addImageMessageToImageAnalysis(
         imageAnalysisId: String,
         message: RealmImageMessage
-    ): Result<Unit> = performRealmTransaction {
+    ): Result<Unit> = performRealmTransaction(ioDispatcher) {
         val imageAnalysisToUpdate: RealmImageAnalysis = query<RealmImageAnalysis>(
             "userId == $0 AND imageId == $1",
             realmUserId,
@@ -33,7 +38,7 @@ class ImageMessageDataSourceImpl : ImageMessageDataSource, RealmDataSourceBase()
         imageAnalysisId: String,
         messageId: String,
         text: String,
-    ): Result<Unit> = performRealmTransaction {
+    ): Result<Unit> = performRealmTransaction(ioDispatcher) {
         val imageAnalysis: RealmImageAnalysis = query<RealmImageAnalysis>(
             "userId == $0 AND imageId == $1",
             realmUserId,

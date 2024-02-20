@@ -1,6 +1,6 @@
 package com.espressodev.gptmap.core.model.realm
 
-import com.espressodev.gptmap.core.model.Provider
+import com.espressodev.gptmap.core.model.firebase.Provider
 import io.realm.kotlin.types.RealmInstant
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PersistedName
