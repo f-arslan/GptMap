@@ -6,19 +6,19 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
-import com.espressodev.gptmap.core.mongodb.RealmAccountService
-import com.espressodev.gptmap.core.mongodb.UserManagementDataSource
+import com.espressodev.gptmap.core.mongodb.RealmAccountRepository
+import com.espressodev.gptmap.core.mongodb.UserManagementRealmRepository
 
 @HiltWorker
 class DeleteUserFromRealmWorker(
-    private val userManagementDataSource: UserManagementDataSource,
-    private val realmAccountService: RealmAccountService,
+    private val userManagementRealmRepository: UserManagementRealmRepository,
+    private val realmAccountRepository: RealmAccountRepository,
     context: Context,
     workerParameters: WorkerParameters
 ) : CoroutineWorker(context, workerParameters) {
     override suspend fun doWork(): Result = try {
-        userManagementDataSource.deleteUser().getOrThrow()
-        realmAccountService.revokeAccess()
+        userManagementRealmRepository.deleteUser().getOrThrow()
+        realmAccountRepository.revokeAccess()
         Result.success()
     } catch (e: Exception) {
         Log.e("DeleteUserFromRealmWorker", "doWork: failure $e")
@@ -26,8 +26,8 @@ class DeleteUserFromRealmWorker(
     }
 
     class Factory(
-        private val userManagementDataSource: UserManagementDataSource,
-        private val realmAccountService: RealmAccountService
+        private val userManagementRealmRepository: UserManagementRealmRepository,
+        private val realmAccountRepository: RealmAccountRepository
     ) : WorkerFactory() {
         override fun createWorker(
             appContext: Context,
@@ -35,8 +35,8 @@ class DeleteUserFromRealmWorker(
             workerParameters: WorkerParameters
         ) = if (workerClassName == DeleteUserFromRealmWorker::class.java.name) {
             DeleteUserFromRealmWorker(
-                userManagementDataSource,
-                realmAccountService,
+                userManagementRealmRepository,
+                realmAccountRepository,
                 appContext,
                 workerParameters
             )

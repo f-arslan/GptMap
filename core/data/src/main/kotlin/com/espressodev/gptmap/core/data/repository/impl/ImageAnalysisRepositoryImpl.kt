@@ -5,13 +5,13 @@ import android.graphics.Bitmap
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.espressodev.gptmap.core.data.di.Dispatcher
-import com.espressodev.gptmap.core.data.di.GmDispatchers.IO
+import com.espressodev.gptmap.core.model.di.Dispatcher
+import com.espressodev.gptmap.core.model.di.GmDispatchers.IO
 import com.espressodev.gptmap.core.data.repository.ImageAnalysisRepository
 import com.espressodev.gptmap.core.data.util.runCatchingWithContext
 import com.espressodev.gptmap.core.data.worker.DeleteImagesFromStorageAndPhoneWorker
 import com.espressodev.gptmap.core.datastore.DataStoreService
-import com.espressodev.gptmap.core.firebase.StorageDataStore
+import com.espressodev.gptmap.core.firebase.StorageRepository
 import com.espressodev.gptmap.core.model.Constants
 import com.espressodev.gptmap.core.model.ImageType
 import com.espressodev.gptmap.core.model.ext.compressImage
@@ -20,9 +20,11 @@ import com.espressodev.gptmap.core.model.ext.resizeImage
 import com.espressodev.gptmap.core.model.ext.saveToInternalStorageIfNotExist
 import com.espressodev.gptmap.core.model.ext.toBitmap
 import com.espressodev.gptmap.core.model.realm.RealmImageAnalysis
-import com.espressodev.gptmap.core.mongodb.ImageAnalysisDataSource
+import com.espressodev.gptmap.core.mongodb.FavouriteRealmRepository
+import com.espressodev.gptmap.core.mongodb.ImageAnalysisRealmRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
@@ -30,16 +32,17 @@ import javax.inject.Inject
 class ImageAnalysisRepositoryImpl @Inject constructor(
     @Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
     @ApplicationContext private val context: Context,
-    private val imageAnalysisDataSource: ImageAnalysisDataSource,
+    private val imageAnalysisRealmRepository: ImageAnalysisRealmRepository,
     private val dataStoreService: DataStoreService,
-    private val storageDataStore: StorageDataStore
+    private val favouriteRealmRepository: FavouriteRealmRepository,
+    private val storageRepository: StorageRepository
 ) : ImageAnalysisRepository {
     override suspend fun deleteImageAnalyses(imageIds: Set<String>): Result<Unit> =
         runCatchingWithContext(ioDispatcher) {
-            dataStoreService.setLatestImageIdForChat("")
+            updateDataStoreIfNecessary(imageIds)
 
             val deleteFromRealmJob = launch {
-                imageAnalysisDataSource.deleteImageAnalyses(imageIds).getOrThrow()
+                imageAnalysisRealmRepository.deleteImageAnalyses(imageIds).getOrThrow()
             }
             deleteFromRealmJob.join()
 
@@ -50,6 +53,22 @@ class ImageAnalysisRepositoryImpl @Inject constructor(
                 .build()
             WorkManager.getInstance(context).enqueue(workRequest)
             Unit
+        }
+
+    private suspend fun updateDataStoreIfNecessary(imageIds: Set<String>) =
+        runCatchingWithContext(ioDispatcher) {
+            val latestImageIdForChat = dataStoreService.getLatestImageIdForChat().first()
+            if (latestImageIdForChat in imageIds) {
+                launch {
+                    dataStoreService.setLatestImageIdForChat("")
+                }
+                launch {
+                    dataStoreService.setLatestImageUrl("")
+                }
+                launch {
+                    favouriteRealmRepository.resetImageAnalysisId(latestImageIdForChat)
+                }
+            }
         }
 
     override suspend fun turnImageToImageAnalysis(imageUrl: String): Result<String> =
@@ -72,7 +91,7 @@ class ImageAnalysisRepositoryImpl @Inject constructor(
                 dataStoreService.setLatestImageIdForChat(imageAnalysisId)
             }
             launch {
-                dataStoreService.setImageUrl(imageUrl)
+                dataStoreService.setLatestImageUrl(imageUrl)
             }
             launch {
                 bitmap.saveToInternalStorageIfNotExist(context, imageAnalysisId)
@@ -90,10 +109,10 @@ class ImageAnalysisRepositoryImpl @Inject constructor(
         val byteArray =
             bitmap.resizeImage(imageWidth, imageHeight).compressImage()
         val imageId = UUID.randomUUID().toString()
-        val imageUrl = storageDataStore.uploadImage(
+        val imageUrl = storageRepository.uploadImage(
             byteArray,
             imageId,
-            StorageDataStore.ANALYSIS_IMAGE_REFERENCE
+            StorageRepository.ANALYSIS_IMAGE_REFERENCE
         ).getOrThrow()
         saveImageAnalysisToRealm(imageId, imageUrl, title, imageType)
         imageId
@@ -111,6 +130,6 @@ class ImageAnalysisRepositoryImpl @Inject constructor(
             this.title = title
             this.imageType = imageType.name
         }
-        imageAnalysisDataSource.saveImageAnalysis(realmImageAnalysis).getOrThrow()
+        imageAnalysisRealmRepository.saveImageAnalysis(realmImageAnalysis).getOrThrow()
     }
 }

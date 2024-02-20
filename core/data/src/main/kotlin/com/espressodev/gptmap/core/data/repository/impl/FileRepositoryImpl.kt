@@ -2,8 +2,8 @@ package com.espressodev.gptmap.core.data.repository.impl
 
 import android.content.Context
 import android.util.Log
-import com.espressodev.gptmap.core.data.di.Dispatcher
-import com.espressodev.gptmap.core.data.di.GmDispatchers.IO
+import com.espressodev.gptmap.core.model.di.Dispatcher
+import com.espressodev.gptmap.core.model.di.GmDispatchers.IO
 import com.espressodev.gptmap.core.data.repository.FileRepository
 import com.espressodev.gptmap.core.data.util.runCatchingWithContext
 import com.espressodev.gptmap.core.datastore.DataStoreService
@@ -51,7 +51,7 @@ class FileRepositoryImpl @Inject constructor(
                 .saveToInternalStorageIfNotExist(context, fileId)
         }
         launch {
-            dataStoreService.setImageUrl(imageUrl)
+            dataStoreService.setLatestImageUrl(imageUrl)
         }
         Unit
     }

@@ -1,19 +1,19 @@
 package com.espressodev.gptmap.core.data.repository.impl
 
-import com.espressodev.gptmap.core.data.di.Dispatcher
-import com.espressodev.gptmap.core.data.di.GmDispatchers.IO
+import com.espressodev.gptmap.core.model.di.Dispatcher
+import com.espressodev.gptmap.core.model.di.GmDispatchers.IO
 import com.espressodev.gptmap.core.data.repository.AuthenticationRepository
 import com.espressodev.gptmap.core.data.util.runCatchingWithContext
 import com.espressodev.gptmap.core.firebase.AccountService
-import com.espressodev.gptmap.core.firebase.FirestoreDataStore
+import com.espressodev.gptmap.core.firebase.FirestoreRepository
 import com.espressodev.gptmap.core.google.GoogleAuthService
 import com.espressodev.gptmap.core.google.OneTapSignInUpResponse
 import com.espressodev.gptmap.core.google.SignInUpWithGoogleResponse
 import com.espressodev.gptmap.core.model.Exceptions
-import com.espressodev.gptmap.core.model.Provider
-import com.espressodev.gptmap.core.model.User
+import com.espressodev.gptmap.core.model.firebase.Provider
+import com.espressodev.gptmap.core.model.firebase.User
 import com.espressodev.gptmap.core.model.google.GoogleResponse
-import com.espressodev.gptmap.core.mongodb.RealmAccountService
+import com.espressodev.gptmap.core.mongodb.RealmAccountRepository
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
@@ -24,8 +24,8 @@ import javax.inject.Inject
 
 class AuthenticationRepositoryImpl @Inject constructor(
     private val accountService: AccountService,
-    private val firestoreDataStore: FirestoreDataStore,
-    private val realmAccountService: RealmAccountService,
+    private val firestoreRepository: FirestoreRepository,
+    private val realmAccountRepository: RealmAccountRepository,
     private val googleAuthService: GoogleAuthService,
     @Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher
 ) : AuthenticationRepository {
@@ -38,7 +38,6 @@ class AuthenticationRepositoryImpl @Inject constructor(
         withContext(ioDispatcher) {
             googleAuthService.oneTapSignInWithGoogle()
         }
-
     override suspend fun firebaseSignInUpWithGoogle(googleCredential: AuthCredential): SignInUpWithGoogleResponse =
         withContext(ioDispatcher) {
             try {
@@ -93,13 +92,13 @@ class AuthenticationRepositoryImpl @Inject constructor(
         authResult.additionalUserInfo?.isNewUser?.let {
             val id = authResult.user?.uid ?: throw Exceptions.FirebaseUserIdIsNullException()
             val user = User(userId = id, fullName = fullName, email = email)
-            firestoreDataStore.saveUser(user)
+            firestoreRepository.saveUser(user)
         } ?: throw Exceptions.FirebaseUserIdIsNullException()
     }
 
     private suspend fun loginToRealm(authResult: AuthResult) {
         authResult.user?.getIdToken(true)?.await()?.token?.let {
-            realmAccountService.loginWithEmail(it).getOrThrow()
+            realmAccountRepository.loginWithEmail(it).getOrThrow()
         } ?: throw Exceptions.FirebaseUserIdIsNullException()
     }
 
@@ -126,7 +125,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
                     provider = Provider.GOOGLE.name,
                     profilePictureUrl = photoUrl.toString(),
                 )
-            firestoreDataStore.saveUser(user)
+            firestoreRepository.saveUser(user)
         }
         return Result.success(value = true)
     }

@@ -1,16 +1,16 @@
 package com.espressodev.gptmap.core.data.repository.impl
 
 import android.content.Context
-import com.espressodev.gptmap.core.data.di.Dispatcher
-import com.espressodev.gptmap.core.data.di.GmDispatchers.IO
+import com.espressodev.gptmap.core.model.di.Dispatcher
+import com.espressodev.gptmap.core.model.di.GmDispatchers.IO
 import com.espressodev.gptmap.core.data.repository.ImageMessageRepository
 import com.espressodev.gptmap.core.data.util.runCatchingWithContext
-import com.espressodev.gptmap.core.gemini.GeminiDataSource
+import com.espressodev.gptmap.core.gemini.GeminiRepository
 import com.espressodev.gptmap.core.model.Constants
 import com.espressodev.gptmap.core.model.Exceptions
 import com.espressodev.gptmap.core.model.ext.readBitmapFromExternalStorage
 import com.espressodev.gptmap.core.model.realm.RealmImageMessage
-import com.espressodev.gptmap.core.mongodb.ImageMessageDataSource
+import com.espressodev.gptmap.core.mongodb.ImageMessageRealmRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -19,8 +19,8 @@ import javax.inject.Inject
 class ImageMessageRepositoryImpl @Inject constructor(
     @Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
     @ApplicationContext private val context: Context,
-    private val geminiDataSource: GeminiDataSource,
-    private val imageMessageDataSource: ImageMessageDataSource
+    private val geminiRepository: GeminiRepository,
+    private val imageMessageRealmRepository: ImageMessageRealmRepository
 ) : ImageMessageRepository {
     override suspend fun addImageMessage(imageId: String, text: String): Result<Unit> =
         runCatchingWithContext(ioDispatcher) {
@@ -29,7 +29,7 @@ class ImageMessageRepositoryImpl @Inject constructor(
             }
 
             launch {
-                imageMessageDataSource.addImageMessageToImageAnalysis(
+                imageMessageRealmRepository.addImageMessageToImageAnalysis(
                     imageAnalysisId = imageId,
                     message = realmImageMessage
                 ).getOrThrow()
@@ -45,7 +45,7 @@ class ImageMessageRepositoryImpl @Inject constructor(
             val stringBuilder = StringBuilder()
 
             runCatching {
-                geminiDataSource.getImageDescription(bitmap = bitmap, text = text).getOrThrow()
+                geminiRepository.getImageDescription(bitmap = bitmap, text = text).getOrThrow()
                     .collect { chunk ->
                         stringBuilder.append(chunk)
                     }
@@ -55,7 +55,7 @@ class ImageMessageRepositoryImpl @Inject constructor(
 
             val fullResponseText = stringBuilder.toString().trim()
 
-            imageMessageDataSource.updateImageMessageInImageAnalysis(
+            imageMessageRealmRepository.updateImageMessageInImageAnalysis(
                 imageAnalysisId = imageId,
                 messageId = realmImageMessage.id,
                 text = fullResponseText,

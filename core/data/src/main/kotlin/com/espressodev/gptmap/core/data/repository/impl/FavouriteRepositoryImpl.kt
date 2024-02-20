@@ -1,19 +1,19 @@
 package com.espressodev.gptmap.core.data.repository.impl
 
-import com.espressodev.gptmap.core.data.di.Dispatcher
-import com.espressodev.gptmap.core.data.di.GmDispatchers.IO
+import com.espressodev.gptmap.core.model.di.Dispatcher
+import com.espressodev.gptmap.core.model.di.GmDispatchers.IO
 import com.espressodev.gptmap.core.data.repository.FavouriteRepository
 import com.espressodev.gptmap.core.data.util.runCatchingWithContext
-import com.espressodev.gptmap.core.firebase.StorageDataStore
+import com.espressodev.gptmap.core.firebase.StorageRepository
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.ext.downloadResizeAndCompress
-import com.espressodev.gptmap.core.mongodb.FavouriteDataSource
+import com.espressodev.gptmap.core.mongodb.FavouriteRealmRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 
 class FavouriteRepositoryImpl @Inject constructor(
-    private val storageDataStore: StorageDataStore,
-    private val favouriteDataSource: FavouriteDataSource,
+    private val storageRepository: StorageRepository,
+    private val favouriteRealmRepository: FavouriteRealmRepository,
     @Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher
 ) : FavouriteRepository {
     override suspend fun saveImageForLocation(location: Location) =
@@ -23,10 +23,10 @@ class FavouriteRepositoryImpl @Inject constructor(
                 location.locationImages[0].imageUrl.downloadResizeAndCompress()
 
             val imageUrl =
-                storageDataStore.uploadImage(
+                storageRepository.uploadImage(
                     imageData,
                     location.id,
-                    StorageDataStore.IMAGE_REFERENCE
+                    StorageRepository.IMAGE_REFERENCE
                 ).getOrThrow()
 
             saveImageUrlToRealm(imageUrl, location)
@@ -36,6 +36,6 @@ class FavouriteRepositoryImpl @Inject constructor(
         val realmLocation = location.toRealmFavourite().apply {
             placeholderImageUrl = imageUrl
         }
-        favouriteDataSource.saveFavourite(realmLocation).getOrThrow()
+        favouriteRealmRepository.saveFavourite(realmLocation).getOrThrow()
     }
 }

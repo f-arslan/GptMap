@@ -7,15 +7,15 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import com.espressodev.gptmap.core.data.repository.FileRepository
-import com.espressodev.gptmap.core.firebase.StorageDataStore
-import com.espressodev.gptmap.core.firebase.StorageDataStore.Companion.ANALYSIS_IMAGE_REFERENCE
+import com.espressodev.gptmap.core.firebase.StorageRepository
+import com.espressodev.gptmap.core.firebase.StorageRepository.Companion.ANALYSIS_IMAGE_REFERENCE
 import com.espressodev.gptmap.core.model.Constants
 
 @HiltWorker
 class DeleteImagesFromStorageAndPhoneWorker(
     context: Context,
     workerParameters: WorkerParameters,
-    private val storageDataStore: StorageDataStore,
+    private val storageRepository: StorageRepository,
     private val fileRepository: FileRepository,
 ) : CoroutineWorker(context, workerParameters) {
     override suspend fun doWork(): Result = try {
@@ -23,7 +23,7 @@ class DeleteImagesFromStorageAndPhoneWorker(
             ?: throw IllegalArgumentException("No imageIds provided")
 
         imageIds.forEach { id ->
-            storageDataStore.deleteImage(id, ANALYSIS_IMAGE_REFERENCE).getOrThrow()
+            storageRepository.deleteImage(id, ANALYSIS_IMAGE_REFERENCE).getOrThrow()
         }
 
         fileRepository.deleteFilesFromInternal(
@@ -38,7 +38,7 @@ class DeleteImagesFromStorageAndPhoneWorker(
     }
 
     class Factory(
-        private val storageDataStore: StorageDataStore,
+        private val storageRepository: StorageRepository,
         private val fileRepository: FileRepository,
     ) : WorkerFactory() {
         override fun createWorker(
@@ -49,7 +49,7 @@ class DeleteImagesFromStorageAndPhoneWorker(
             DeleteImagesFromStorageAndPhoneWorker(
                 appContext,
                 workerParameters,
-                storageDataStore,
+                storageRepository,
                 fileRepository
             )
         } else {
