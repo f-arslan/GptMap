@@ -22,7 +22,6 @@ android {
         }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
     }
 
     val keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -40,7 +39,12 @@ android {
 
 
     buildTypes {
-        release {
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("config")
+        }
+
+
+        getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(

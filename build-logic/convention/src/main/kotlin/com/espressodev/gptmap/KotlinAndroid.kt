@@ -1,7 +1,6 @@
 package com.espressodev.gptmap
 
 import com.android.build.api.dsl.CommonExtension
-import com.espressodev.gptmap.ext.androidTestImplementation
 import com.espressodev.gptmap.ext.implementation
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
@@ -13,7 +12,7 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 internal fun Project.configureKotlinAndroid(
-    commonExtension: CommonExtension<*, *, *, *, *>,
+    commonExtension: CommonExtension<*, *, *, *, *, *>,
 ) {
     commonExtension.apply {
         compileSdk = 34
@@ -80,4 +79,3 @@ private fun Project.configureKotlin() {
         }
     }
 }
-

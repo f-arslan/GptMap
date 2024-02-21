@@ -1,15 +1,16 @@
-package com.espressodev.benchmarks.baselineprofile
+package com.espressodev.benchmarks
 
 import androidx.benchmark.macro.BaselineProfileMode
 import androidx.benchmark.macro.CompilationMode
 import androidx.benchmark.macro.StartupMode
 import androidx.benchmark.macro.StartupTimingMetric
 import androidx.benchmark.macro.junit4.MacrobenchmarkRule
-import androidx.test.rule.GrantPermissionRule
-import com.espressodev.benchmarks.allowWriteToExternal
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
 
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
 /**
  * This test class benchmarks the speed of app startup.
@@ -31,6 +32,8 @@ import org.junit.Test
  * For more information, see the [Macrobenchmark documentation](https://d.android.com/macrobenchmark#create-macrobenchmark)
  * and the [instrumentation arguments documentation](https://d.android.com/topic/performance/benchmarking/macrobenchmark-instrumentation-args).
  **/
+@RunWith(AndroidJUnit4::class)
+@LargeTest
 class StartupBenchmarks {
 
     @get:Rule
@@ -51,10 +54,9 @@ class StartupBenchmarks {
             metrics = listOf(StartupTimingMetric()),
             compilationMode = compilationMode,
             startupMode = StartupMode.COLD,
-            iterations = 10,
+            iterations = 3,
             setupBlock = {
                 pressHome()
-                allowWriteToExternal()
             },
             measureBlock = {
                 startActivityAndWait()

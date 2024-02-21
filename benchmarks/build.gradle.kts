@@ -1,20 +1,36 @@
 import com.android.build.api.dsl.ManagedVirtualDevice
 
 plugins {
+    alias(libs.plugins.android.test)
+    alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.baselineprofile)
-    alias(libs.plugins.gptmap.android.test)
 }
 
 android {
     namespace = "com.espressodev.benchmarks"
+    compileSdk = 34
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 
     defaultConfig {
         minSdk = 28
+        targetSdk = 34
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     targetProjectPath = ":app"
 
+    // This code creates the gradle managed device used to generate baseline profiles.
+    // To use GMD please invoke generation through the command line:
+    // ./gradlew :app:generateBaselineProfile
     testOptions.managedDevices.devices {
         create<ManagedVirtualDevice>("pixel6Api34") {
             device = "Pixel 6"
@@ -32,8 +48,8 @@ baselineProfile {
 }
 
 dependencies {
-    implementation(libs.androidx.test.ext)
-    implementation(libs.androidx.espresso.core)
-    implementation(libs.androidx.uiautomator)
-    implementation(libs.androidx.benchmark.macro.junit4)
+    implementation(libs.androidx.junit)
+    implementation(libs.androidx.test.espresso.core)
+    implementation(libs.androidx.test.uiautomator)
+    implementation(libs.androidx.benchmark.macro)
 }

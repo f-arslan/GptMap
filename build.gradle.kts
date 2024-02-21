@@ -4,7 +4,6 @@ buildscript {
     }
     dependencies {
         classpath(libs.google.services)
-        classpath(libs.firebase.crashlytics.gradlePlugin)
         classpath(libs.google.oss.licenses.plugin) {
             exclude(group = "com.google.protobuf")
         }
@@ -33,6 +32,7 @@ subprojects {
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.android.test) apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.firebase.crashlytics) apply false
@@ -41,7 +41,6 @@ plugins {
     alias(libs.plugins.secrets) apply false
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.gms) apply false
-    alias(libs.plugins.androidTest) apply false
-    alias(libs.plugins.jetbrainsKotlinAndroid) apply false
     alias(libs.plugins.baselineprofile) apply false
+    alias(libs.plugins.jetbrains.kotlin.android) apply false
 }

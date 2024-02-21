@@ -1,9 +1,12 @@
-package com.espressodev.benchmarks.baselineprofile
+package com.espressodev.benchmarks
 
 import androidx.benchmark.macro.junit4.BaselineProfileRule
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
 
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
 /**
  * This test class generates a basic startup baseline profile for the target package.
@@ -28,6 +31,8 @@ import org.junit.Test
  *
  * The minimum required version of androidx.benchmark to generate a baseline profile is 1.2.0.
  **/
+@RunWith(AndroidJUnit4::class)
+@LargeTest
 class BaselineProfileGenerator {
 
     @get:Rule
@@ -38,6 +43,7 @@ class BaselineProfileGenerator {
         // This example works only with the variant with application id `com.espressodev.gptmap`."
         rule.collect(
             packageName = "com.espressodev.gptmap",
+            maxIterations = 3,
 
             // See: https://d.android.com/topic/performance/baselineprofiles/dex-layout-optimizations
             includeInStartupProfile = true
