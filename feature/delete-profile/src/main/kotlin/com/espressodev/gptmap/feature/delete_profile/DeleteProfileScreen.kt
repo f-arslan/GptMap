@@ -36,7 +36,6 @@ import com.espressodev.gptmap.core.designsystem.TextType
 import com.espressodev.gptmap.core.designsystem.component.GmAlertDialog
 import com.espressodev.gptmap.core.designsystem.component.GmProgressIndicator
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
-import java.util.PriorityQueue
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
@@ -65,11 +64,7 @@ fun DeleteProfileRoute(
             onDeleteClick = viewModel::onDeleteClick
         )
     }
-
-
-    val queue =
-        PriorityQueue<Map<Int, Int>> { a, b -> a.keys.first().compareTo(b.keys.first()) }
-
+    
     if (isDialogOpened) {
         GmAlertDialog(
             title = AppText.delete_confirm,
