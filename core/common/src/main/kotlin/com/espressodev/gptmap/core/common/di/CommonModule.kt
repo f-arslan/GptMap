@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.core.common.module
+package com.espressodev.gptmap.core.common.di
 
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.common.NetworkMonitor

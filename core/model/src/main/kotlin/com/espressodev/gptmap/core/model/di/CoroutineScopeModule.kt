@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.core.model.di
 
+import com.espressodev.gptmap.core.model.di.GmDispatchers.Default
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -9,7 +10,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import javax.inject.Qualifier
 import javax.inject.Singleton
-import com.espressodev.gptmap.core.model.di.GmDispatchers.Default
 
 @Retention(AnnotationRetention.RUNTIME)
 @Qualifier

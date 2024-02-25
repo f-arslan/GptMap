@@ -41,7 +41,6 @@ object DataStoreModule {
         }
 }
 
-
 @Module
 @InstallIn(SingletonComponent::class)
 interface DataStoreBinder {

@@ -1,7 +1,5 @@
 package com.espressodev.gptmap.core.data.repository.impl
 
-import com.espressodev.gptmap.core.model.di.Dispatcher
-import com.espressodev.gptmap.core.model.di.GmDispatchers.IO
 import com.espressodev.gptmap.core.data.repository.AuthenticationRepository
 import com.espressodev.gptmap.core.data.util.runCatchingWithContext
 import com.espressodev.gptmap.core.firebase.AccountService
@@ -10,6 +8,8 @@ import com.espressodev.gptmap.core.google.GoogleAuthService
 import com.espressodev.gptmap.core.google.OneTapSignInUpResponse
 import com.espressodev.gptmap.core.google.SignInUpWithGoogleResponse
 import com.espressodev.gptmap.core.model.Exceptions
+import com.espressodev.gptmap.core.model.di.Dispatcher
+import com.espressodev.gptmap.core.model.di.GmDispatchers.IO
 import com.espressodev.gptmap.core.model.firebase.Provider
 import com.espressodev.gptmap.core.model.firebase.User
 import com.espressodev.gptmap.core.model.google.GoogleResponse

@@ -79,7 +79,6 @@ class UserRepositoryImpl @Inject constructor(
         Log.e(TAG, "Failed to fetch and set full name", throwable)
     }
 
-
     private companion object {
         private const val TAG = "UserRepositoryImpl"
     }

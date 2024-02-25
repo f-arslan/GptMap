@@ -33,4 +33,3 @@ interface RealmModule {
     @Binds
     fun provideUserManagementDataSource(impl: UserManagementRealmDataSource): UserManagementRealmRepository
 }
-

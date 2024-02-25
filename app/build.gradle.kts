@@ -52,10 +52,16 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("config")
+            // baselineProfile.automaticGenerationDuringBuild = true
         }
     }
 
     namespace = "com.espressodev.gptmap"
+}
+
+baselineProfile {
+    dexLayoutOptimization = true
+    baselineProfileRulesRewrite = true
 }
 
 dependencies {

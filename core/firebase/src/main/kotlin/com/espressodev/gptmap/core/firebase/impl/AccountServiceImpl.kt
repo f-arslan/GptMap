@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.core.firebase.impl
 
-
 import com.espressodev.gptmap.core.firebase.AccountService
 import com.espressodev.gptmap.core.firebase.ReloadUserResponse
 import com.espressodev.gptmap.core.firebase.SendEmailVerificationResponse

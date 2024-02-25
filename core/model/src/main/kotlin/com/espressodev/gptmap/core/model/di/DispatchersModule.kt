@@ -1,13 +1,13 @@
 package com.espressodev.gptmap.core.model.di
 
+import com.espressodev.gptmap.core.model.di.GmDispatchers.Default
+import com.espressodev.gptmap.core.model.di.GmDispatchers.IO
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import com.espressodev.gptmap.core.model.di.GmDispatchers.IO
-import com.espressodev.gptmap.core.model.di.GmDispatchers.Default
 
 @Module
 @InstallIn(SingletonComponent::class)

@@ -5,7 +5,6 @@ import androidx.compose.runtime.Stable
 import com.espressodev.gptmap.core.model.realm.RealmUser
 import com.google.firebase.firestore.DocumentId
 
-
 @Stable
 data class User @Keep constructor(
     @DocumentId val userId: String = "",

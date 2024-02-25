@@ -5,8 +5,6 @@ import android.graphics.Bitmap
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.espressodev.gptmap.core.model.di.Dispatcher
-import com.espressodev.gptmap.core.model.di.GmDispatchers.IO
 import com.espressodev.gptmap.core.data.repository.ImageAnalysisRepository
 import com.espressodev.gptmap.core.data.util.runCatchingWithContext
 import com.espressodev.gptmap.core.data.worker.DeleteImagesFromStorageAndPhoneWorker
@@ -14,6 +12,8 @@ import com.espressodev.gptmap.core.datastore.DataStoreService
 import com.espressodev.gptmap.core.firebase.StorageRepository
 import com.espressodev.gptmap.core.model.Constants
 import com.espressodev.gptmap.core.model.ImageType
+import com.espressodev.gptmap.core.model.di.Dispatcher
+import com.espressodev.gptmap.core.model.di.GmDispatchers.IO
 import com.espressodev.gptmap.core.model.ext.compressImage
 import com.espressodev.gptmap.core.model.ext.downloadResizeAndCompress
 import com.espressodev.gptmap.core.model.ext.resizeImage
