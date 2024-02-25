@@ -36,6 +36,7 @@ class VerifyAuthViewModel @Inject constructor(
         get() = uiState.value.password
 
     private var initializeCalled = false
+
     @MainThread
     fun initializeUser() = launchCatching {
         if (initializeCalled) return@launchCatching

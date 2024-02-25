@@ -19,4 +19,13 @@ sealed class LoginEvent {
     data class OnLoadingStateChanged(val state: LoadingState) : LoginEvent()
     data object OnGoogleClicked : LoginEvent()
     data object OnLoginClicked : LoginEvent()
+    data object OnForgotPasswordClicked : LoginEvent()
+    data object OnNotMemberClicked : LoginEvent()
+}
+
+sealed class LoginNavigationState {
+    data object None : LoginNavigationState()
+    data object NavigateToMap : LoginNavigationState()
+    data object NavigateToRegister : LoginNavigationState()
+    data object NavigateToForgotPassword : LoginNavigationState()
 }

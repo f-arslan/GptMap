@@ -54,7 +54,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FavouriteRoute(
+internal fun FavouriteRoute(
     popUp: () -> Unit,
     navigateToMap: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -134,7 +134,7 @@ fun FavouriteRoute(
 internal const val LazyColumnTestTag = "lazy_column_test_tag"
 
 @Composable
-fun FavouriteScreen(
+private fun FavouriteScreen(
     favourites: List<Favourite>,
     selectedId: String,
     onCardClick: (String) -> Unit,
@@ -169,7 +169,7 @@ fun FavouriteScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FavouriteCard(
+private fun FavouriteCard(
     favourite: Favourite,
     isSelected: Boolean,
     onClick: () -> Unit,
@@ -225,7 +225,7 @@ fun FavouriteCard(
 }
 
 @Composable
-fun InfoRow(
+private fun InfoRow(
     icon: ImageVector,
     text: String,
     modifier: Modifier = Modifier,

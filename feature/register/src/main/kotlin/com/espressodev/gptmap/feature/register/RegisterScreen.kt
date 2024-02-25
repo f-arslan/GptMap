@@ -51,7 +51,7 @@ import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @Composable
-fun RegisterRoute(
+internal fun RegisterRoute(
     clearAndNavigateLogin: () -> Unit,
     clearAndNavigateMap: () -> Unit,
     modifier: Modifier = Modifier,
@@ -103,7 +103,7 @@ fun RegisterRoute(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun RegisterScreen(
+private fun RegisterScreen(
     uiState: RegisterUiState,
     onEvent: (RegisterEvent) -> Unit,
     onAlreadyHaveAccountClicked: () -> Unit,
@@ -235,7 +235,7 @@ private fun TextFieldSection(
 }
 
 @Composable
-fun RegisterHeader(modifier: Modifier = Modifier) {
+private fun RegisterHeader(modifier: Modifier = Modifier) {
     HeaderWrapper(modifier = modifier) {
         Text(
             text = stringResource(AppText.register_header),

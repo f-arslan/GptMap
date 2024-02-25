@@ -40,7 +40,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InfoRoute(popUp: () -> Unit, modifier: Modifier = Modifier) {
+internal fun InfoRoute(popUp: () -> Unit, modifier: Modifier = Modifier) {
     Scaffold(
         topBar = {
             GmTopAppBar(

@@ -103,7 +103,7 @@ import kotlin.time.Duration.Companion.seconds
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @Composable
-fun SnapToScriptRoute(
+internal fun SnapToScriptRoute(
     modifier: Modifier = Modifier,
     viewModel: SnapToScriptViewModel = hiltViewModel()
 ) {
@@ -131,7 +131,7 @@ fun SnapToScriptRoute(
 }
 
 @Composable
-fun SnapToScriptScreen(
+private fun SnapToScriptScreen(
     uiState: SnapToScriptUiState,
     imageType: ImageType,
     rmsFlow: SharedFlow<Int>,
@@ -178,7 +178,7 @@ fun SnapToScriptScreen(
 }
 
 @Composable
-fun Messages(
+private fun Messages(
     messages: List<ImageMessage>,
     userFirstChar: Char,
     imageUrl: String,
@@ -262,7 +262,7 @@ fun Messages(
         val jumpToBottomEnabled by remember {
             derivedStateOf {
                 scrollState.firstVisibleItemIndex > 1 ||
-                        scrollState.firstVisibleItemScrollOffset > jumpThreshold
+                    scrollState.firstVisibleItemScrollOffset > jumpThreshold
             }
         }
 
@@ -305,7 +305,7 @@ private fun LazyListScope.messageList(
 }
 
 @Composable
-fun JumpToBottom(
+private fun JumpToBottom(
     enabled: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -332,7 +332,7 @@ fun JumpToBottom(
 }
 
 @Composable
-fun UserMessageSection(message: String, firstChar: Char, modifier: Modifier = Modifier) {
+private fun UserMessageSection(message: String, firstChar: Char, modifier: Modifier = Modifier) {
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Box(
             modifier = Modifier
@@ -357,7 +357,7 @@ fun UserMessageSection(message: String, firstChar: Char, modifier: Modifier = Mo
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BotMessageSection(
+private fun BotMessageSection(
     message: String,
     isLastItem: Boolean,
     aiResponseStatus: AiResponseStatus,
@@ -413,7 +413,7 @@ fun BotMessageSection(
 }
 
 @Composable
-fun TypeWriterRepeat(
+private fun TypeWriterRepeat(
     baseText: String,
     modifier: Modifier = Modifier,
     delayForwardInMillis: Long = 50L,
@@ -463,7 +463,7 @@ fun TypeWriterRepeat(
 }
 
 @Composable
-fun TypeWriter(
+private fun TypeWriter(
     message: String,
     onTypingEnd: () -> Unit,
     modifier: Modifier = Modifier,
@@ -493,7 +493,7 @@ fun TypeWriter(
 }
 
 @Composable
-fun ChatTextSection(
+private fun ChatTextSection(
     value: String,
     isTextFieldEnabled: Boolean,
     rmsFlow: SharedFlow<Int>,
@@ -530,7 +530,7 @@ fun ChatTextSection(
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun TextFieldSection(
+private fun TextFieldSection(
     value: String,
     isTextFieldEnabled: Boolean,
     onValueChange: (String) -> Unit,
@@ -653,7 +653,7 @@ private fun SendButton(
 }
 
 @Composable
-fun PulsingBox(size: Dp, color: Color, modifier: Modifier = Modifier) {
+private fun PulsingBox(size: Dp, color: Color, modifier: Modifier = Modifier) {
     val infiniteTransition = rememberInfiniteTransition(label = "Infinite Pulsing transition")
     val animation = infiniteTransition.animateFloat(
         initialValue = 0.7f,
@@ -678,7 +678,7 @@ fun PulsingBox(size: Dp, color: Color, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun PulsingBoxWithAudio(
+private fun PulsingBoxWithAudio(
     size: Dp,
     color: Color,
     rmsScale: Float,

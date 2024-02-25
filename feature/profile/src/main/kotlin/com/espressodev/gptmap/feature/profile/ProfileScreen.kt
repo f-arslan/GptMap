@@ -42,7 +42,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileRoute(
+internal fun ProfileRoute(
     popUp: () -> Unit,
     navigateToLogin: () -> Unit,
     navigateToInfo: () -> Unit,
@@ -76,7 +76,7 @@ fun ProfileRoute(
 }
 
 @Composable
-fun ProfileScreen(
+private fun ProfileScreen(
     user: User,
     onInfoClick: () -> Unit,
     onLogOutClick: () -> Unit,
@@ -100,7 +100,7 @@ fun ProfileScreen(
 }
 
 @Composable
-fun ProfileItem(
+private fun ProfileItem(
     icon: ImageVector,
     @StringRes textId: Int,
     onClick: () -> Unit,

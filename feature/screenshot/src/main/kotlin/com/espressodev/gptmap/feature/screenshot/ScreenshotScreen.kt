@@ -85,7 +85,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScreenshotRoute(
+internal fun ScreenshotRoute(
     popUp: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ScreenshotViewModel = hiltViewModel(),
@@ -374,7 +374,7 @@ private fun ScreenshotBox(
     )
 }
 
-fun Modifier.screenshotPreviewOverlay(
+private fun Modifier.screenshotPreviewOverlay(
     borderWidth: Dp = 3.dp,
     borderColor: Color = Color.White,
 ) = this.then(

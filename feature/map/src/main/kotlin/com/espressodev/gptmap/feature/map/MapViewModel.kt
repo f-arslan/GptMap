@@ -51,7 +51,6 @@ class MapViewModel @Inject constructor(
         get() = uiState.value.location.favouriteId
 
     private var initializeCalled = false
-
     @MainThread
     suspend fun initialize() = launchCatching {
         if (initializeCalled) return@launchCatching
@@ -61,7 +60,6 @@ class MapViewModel @Inject constructor(
         launch { collectScreenshotState() }
         launch { repositoryBundle.userRepository.addIfNewUser() }
     }
-
 
     private suspend fun collectScreenshotState() {
         screenshotServiceHandler.screenshotStateFlow.collect { state ->

@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.feature.login
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,7 +10,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -33,19 +36,36 @@ import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @Composable
-fun LoginRoute(
+internal fun LoginRoute(
     navigateToMap: () -> Unit,
     navigateToRegister: () -> Unit,
     navigateToForgotPassword: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val onEvent by rememberUpdatedState(
+        newValue = { event: LoginEvent -> viewModel.onEvent(event) }
+    )
+
+    val navigationState by viewModel.navigationState.collectAsStateWithLifecycle()
+    LaunchedEffect(key1 = navigationState) {
+        fun performNavigation(action: () -> Unit) {
+            action()
+            viewModel.resetNavigation()
+        }
+        when (navigationState) {
+            is LoginNavigationState.NavigateToMap -> performNavigation(navigateToMap)
+            is LoginNavigationState.NavigateToRegister -> performNavigation(navigateToRegister)
+            is LoginNavigationState.NavigateToForgotPassword ->
+                performNavigation(navigateToForgotPassword)
+            LoginNavigationState.None -> Unit
+        }
+    }
+
     if (uiState.loadingState is LoadingState.Loading) GmProgressIndicator()
     LoginScreen(
         uiState = uiState,
-        onEvent = { event -> viewModel.onEvent(event, navigateToMap) },
-        onNotMemberClick = navigateToRegister,
-        onForgotPasswordClick = navigateToForgotPassword
+        onEvent = { event -> onEvent(event) },
     )
     OneTapLauncher(
         oneTapClient = viewModel.oneTapClient,
@@ -57,13 +77,15 @@ fun LoginRoute(
 }
 
 @Composable
-fun LoginScreen(
+private fun LoginScreen(
     uiState: LoginUiState,
     onEvent: (LoginEvent) -> Unit,
-    onNotMemberClick: () -> Unit,
-    onForgotPasswordClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    LaunchedEffect(key1 = onEvent) {
+        Log.d("LoginScreen", "LoginScreen: onEvent")
+    }
+
     AppWrapper(modifier) {
         LoginHeader()
         DefaultTextField(
@@ -80,7 +102,7 @@ fun LoginScreen(
                 onValueChange = { onEvent(LoginEvent.OnPasswordChanged(it)) }
             )
             TextButton(
-                onClick = onForgotPasswordClick,
+                onClick = { onEvent(LoginEvent.OnForgotPasswordClicked) },
                 modifier = Modifier.align(Alignment.End)
             ) {
                 Text(stringResource(AppText.forgot_password))
@@ -110,7 +132,7 @@ fun LoginScreen(
                 text = stringResource(id = AppText.not_a_member),
                 style = MaterialTheme.typography.titleMedium
             )
-            TextButton(onClick = onNotMemberClick) {
+            TextButton(onClick = { onEvent(LoginEvent.OnNotMemberClicked) }) {
                 Text(
                     text = stringResource(id = AppText.register_now),
                     style = MaterialTheme.typography.titleMedium
@@ -121,7 +143,7 @@ fun LoginScreen(
 }
 
 @Composable
-fun LoginHeader(modifier: Modifier = Modifier) {
+private fun LoginHeader(modifier: Modifier = Modifier) {
     HeaderWrapper(modifier = modifier) {
         Text(
             text = stringResource(AppText.login_header),
@@ -139,5 +161,5 @@ fun LoginHeader(modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 private fun LoginScreenPreview() {
-    LoginScreen(LoginUiState("Fatih"), {}, {}, {})
+    LoginScreen(LoginUiState("Fatih"), {})
 }

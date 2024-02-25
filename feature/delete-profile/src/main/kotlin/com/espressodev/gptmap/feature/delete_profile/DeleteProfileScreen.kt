@@ -41,7 +41,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DeleteProfileRoute(
+internal fun DeleteProfileRoute(
     navigateToLogin: () -> Unit,
     popUp: () -> Unit,
     modifier: Modifier = Modifier,
@@ -64,7 +64,7 @@ fun DeleteProfileRoute(
             onDeleteClick = viewModel::onDeleteClick
         )
     }
-    
+
     if (isDialogOpened) {
         GmAlertDialog(
             title = AppText.delete_confirm,

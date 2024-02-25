@@ -5,6 +5,7 @@ package com.espressodev.gptmap.feature.map
 import StreetView
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.ReportDrawnWhen
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -40,11 +41,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -93,9 +98,10 @@ import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.raw as AppRaw
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
+@OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MapRoute(
+internal fun MapRoute(
     navigateToStreetView: (Pair<Float, Float>) -> Unit,
     navigateToScreenshot: () -> Unit,
     navigateToProfile: () -> Unit,
@@ -144,9 +150,17 @@ fun MapRoute(
             viewModel.onEvent(event)
         }
     )
+    val googleMapTestTag = "map:MapScreen"
 
-    Scaffold(modifier = modifier.padding(bottom = BOTTOM_BAR_PADDING)) {
-        uiState.MapScreen(onEvent = { event -> onEvent(event) })
+    Scaffold(
+        modifier = modifier
+            .padding(bottom = BOTTOM_BAR_PADDING)
+            .semantics { testTagsAsResourceId = true }
+    ) {
+        uiState.MapScreen(
+            onEvent = { event -> onEvent(event) },
+            modifier = Modifier.testTag(googleMapTestTag)
+        )
     }
 
     LaunchedEffect(uiState.screenshotState) {
@@ -243,12 +257,12 @@ private fun BoxScope.DisplayBottomSheet(
 
         DETAIL_CARD -> DetailSheet(location = location, onEvent = onEvent, modifier = modifier)
 
-        BOTTOM_SHEET_HIDDEN -> {}
+        BOTTOM_SHEET_HIDDEN -> Unit
     }
 }
 
 @Composable
-fun BoxScope.MyCurrentLocationButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun BoxScope.MyCurrentLocationButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     val locationPermissionState = rememberMultiplePermissionsState(
         permissions = listOf(
             android.Manifest.permission.ACCESS_FINE_LOCATION,
@@ -414,6 +428,9 @@ private fun MapSection(cameraPositionState: CameraPositionState) {
             modifier = Modifier.zIndex(2f)
         )
     }
+
+    ReportDrawnWhen { isMapLoaded }
+
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
@@ -469,7 +486,7 @@ private fun BoxScope.LoadingDialog(
 }
 
 @Composable
-fun DefaultLoadingAnimation(modifier: Modifier = Modifier) {
+private fun DefaultLoadingAnimation(modifier: Modifier = Modifier) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(AppRaw.map_loading_anim))
     val progress by animateLottieCompositionAsState(composition)
 
@@ -515,7 +532,7 @@ private fun BoxScope.LocationPin(
 }
 
 @Composable
-fun BoxScope.SmallInformationCard(
+private fun BoxScope.SmallInformationCard(
     city: String,
     country: String,
     poeticDesc: String,

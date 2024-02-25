@@ -8,9 +8,9 @@ import com.espressodev.gptmap.core.firebase.AccountService
 import com.espressodev.gptmap.core.firebase.FirestoreRepository
 import com.espressodev.gptmap.core.model.Exceptions.FirestoreUserNotExistsException
 import com.espressodev.gptmap.core.model.Response
-import com.espressodev.gptmap.core.model.firebase.User
 import com.espressodev.gptmap.core.model.di.Dispatcher
 import com.espressodev.gptmap.core.model.di.GmDispatchers.IO
+import com.espressodev.gptmap.core.model.firebase.User
 import com.espressodev.gptmap.core.mongodb.RealmAccountRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
-
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val accountService: AccountService,

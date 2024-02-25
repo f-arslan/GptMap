@@ -78,7 +78,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScreenshotGalleryRoute(
+internal fun ScreenshotGalleryRoute(
     popUp: () -> Unit,
     navigateToSnapToScript: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -170,7 +170,7 @@ fun ScreenshotGalleryRoute(
 }
 
 @Composable
-fun ScreenshotGalleryScreen(
+private fun ScreenshotGalleryScreen(
     images: List<ImageSummary>,
     onLongClick: (ImageSummary) -> Unit,
     selectedItemsIds: PersistentSet<String>,
@@ -222,7 +222,7 @@ fun ScreenshotGalleryScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ImageCard(
+private fun ImageCard(
     imageSummary: ImageSummary,
     modifier: Modifier = Modifier,
     isSelected: Boolean = false,
@@ -334,7 +334,7 @@ private fun GalleryView(
 }
 
 @Composable
-fun DotsIndicator(
+private fun DotsIndicator(
     totalDots: Int,
     selectedIndex: Int,
     modifier: Modifier = Modifier,

@@ -38,14 +38,14 @@ import com.espressodev.gptmap.core.designsystem.component.GmProgressIndicator
 import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
 import com.espressodev.gptmap.core.designsystem.component.PasswordTextField
 import com.espressodev.gptmap.core.designsystem.util.rememberKeyboardAsState
-import com.espressodev.gptmap.core.model.firebase.Provider
 import com.espressodev.gptmap.core.model.Response
+import com.espressodev.gptmap.core.model.firebase.Provider
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VerifyAuthRoute(
+internal fun VerifyAuthRoute(
     popUp: () -> Unit,
     navigateToDelete: () -> Unit,
     modifier: Modifier = Modifier,
@@ -74,7 +74,7 @@ fun VerifyAuthRoute(
 }
 
 @Composable
-fun VerifyAuthScreen(
+private fun VerifyAuthScreen(
     uiState: VerifyAuthUiState,
     onValueChange: (String) -> Unit,
     onDone: () -> Unit,
@@ -107,11 +107,11 @@ fun VerifyAuthScreen(
         )
         Spacer(modifier = Modifier.height(16.dp))
         when (val result = uiState.user) {
-            is Response.Failure -> {}
-            Response.Loading -> {}
+            is Response.Failure -> Unit
+            Response.Loading -> Unit
             is Response.Success -> {
                 when (result.data.provider) {
-                    Provider.GOOGLE.name -> {}
+                    Provider.GOOGLE.name -> Unit
                     Provider.DEFAULT.name -> {
                         PasswordTextField(
                             value = uiState.password,

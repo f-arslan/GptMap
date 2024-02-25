@@ -102,7 +102,7 @@ internal fun BoxScope.DetailSheet(
 }
 
 @Composable
-fun LocationImages(
+private fun LocationImages(
     images: List<LocationImage>,
     onClick: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -125,7 +125,7 @@ fun LocationImages(
 }
 
 @Composable
-fun BoxScope.UnsplashBanner(name: String, modifier: Modifier = Modifier) {
+internal fun BoxScope.UnsplashBanner(name: String, modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier
             .align(Alignment.BottomEnd)

@@ -37,7 +37,7 @@ import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @Composable
-fun ForgotPasswordRoute(
+internal fun ForgotPasswordRoute(
     clearAndNavigateLogin: () -> Unit,
     viewModel: ForgotPasswordViewModel = hiltViewModel()
 ) {
@@ -54,7 +54,7 @@ fun ForgotPasswordRoute(
 }
 
 @Composable
-fun ForgotPasswordScreen(
+private fun ForgotPasswordScreen(
     email: String,
     onEmailChange: (String) -> Unit,
     onResetPasswordClick: () -> Unit,

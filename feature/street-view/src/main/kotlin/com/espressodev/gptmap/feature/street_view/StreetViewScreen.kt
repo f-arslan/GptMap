@@ -30,7 +30,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StreetViewRoute(
+internal fun StreetViewRoute(
     popUp: () -> Unit,
     navigateToScreenshot: () -> Unit,
     modifier: Modifier = Modifier,
@@ -70,7 +70,7 @@ fun StreetViewRoute(
 
 @OptIn(MapsExperimentalFeature::class)
 @Composable
-fun StreetViewScreen(latitude: Double, longitude: Double, modifier: Modifier = Modifier) {
+private fun StreetViewScreen(latitude: Double, longitude: Double, modifier: Modifier = Modifier) {
     val (isStreetViewLoaded, setStreetViewLoaded) = remember { mutableStateOf(value = false) }
 
     LaunchedEffect(key1 = latitude) {
