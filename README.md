@@ -15,10 +15,11 @@ Go to the [Releases](https://github.com/f-arslan/GptMap/releases) to download th
 - [App Demos](#app-demos)
 - [Setup and Configuration Guide](#setup-and-configuration-guide)
 
-<img src="/public/gifs/chatFlowGif.gif" width="320" align="right">
 
 
 ## Tech Stack & Open-source Libraries
+
+<img src="/public/gifs/chatFlowGif.gif" width="320" align="right">
 
 - **[Kotlin](https://kotlinlang.org/)**: The primary language for application development, emphasizing safety, simplicity, and interoperability.
 - **[Jetpack Compose](https://developer.android.com/jetpack/compose)**: Used for modern UI development, leveraging custom composables and animations for a dynamic and responsive design.
