@@ -31,9 +31,11 @@ Go to the [Releases](https://github.com/f-arslan/GptMap/releases) to download th
 - **[Ktor](https://ktor.io/)**: Enables server and client-side HTTP communications, seamlessly integrating with various third-party APIs for extended functionality.
 - **Database and Storage Solutions**:
    - **MongoDB Realm**: Provides a robust local database and synchronization solutions, enabling efficient offline data access and seamless cloud integration. It also implements **JWT Authentication** for secure user authentication and data access.
-   - **Firebase Firestore and Storage**: Facilitates real-time data synchronization and scalable cloud storage, ensuring smooth data operations and media management.
 
 <img src="/public/gifs/mainFlowGif.gif" width="320" align="right">
+
+   - **Firebase Firestore and Storage**: Facilitates real-time data synchronization and scalable cloud storage, ensuring smooth data operations and media management.
+
 
 - **Asynchronous Programming**:
    - **[Coroutines](https://github.com/Kotlin/kotlinx.coroutines)** and **[Flow](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/)**: Manage asynchronous tasks and streamline data stream processing, guaranteeing a smooth user experience.
