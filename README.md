@@ -16,8 +16,8 @@ Go to the [Releases](https://github.com/f-arslan/GptMap/releases) to download th
 - [Setup and Configuration Guide](#setup-and-configuration-guide)
 
 <div align="right">
-  <img src="/public/gifs/chatFlowGif.gif" width="320" style="margin-bottom: 10px;">
-  <img src="/public/gifs/mainFlowGif.gif" width="320">
+  <img src="/public/gifs/chatFlowGif.gif" width="320"><br>
+  <img src="/public/gifs/chatFlowGif.gif" width="320">
 </div>
 
 ## Tech Stack & Open-source Libraries
