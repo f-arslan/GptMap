@@ -33,6 +33,8 @@ Go to the [Releases](https://github.com/f-arslan/GptMap/releases) to download th
    - **MongoDB Realm**: Provides a robust local database and synchronization solutions, enabling efficient offline data access and seamless cloud integration. It also implements **JWT Authentication** for secure user authentication and data access.
    - **Firebase Firestore and Storage**: Facilitates real-time data synchronization and scalable cloud storage, ensuring smooth data operations and media management.
 
+<img src="/public/gifs/mainFlowGif.gif" width="320" align="right">
+
 - **Asynchronous Programming**:
    - **[Coroutines](https://github.com/Kotlin/kotlinx.coroutines)** and **[Flow](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/)**: Manage asynchronous tasks and streamline data stream processing, guaranteeing a smooth user experience.
 
@@ -51,7 +53,6 @@ Go to the [Releases](https://github.com/f-arslan/GptMap/releases) to download th
    - **Coil**: Efficiently loads and displays images, optimizing memory and network usage.
    - **Lottie**: Implements complex animations sourced from JSON files, enriching the UI with engaging visuals.
 
-<img src="/public/gifs/mainFlowGif.gif" width="320" align="right">
 - **Material Design 3**: Adopts the latest Material Design guidelines for a cohesive, dynamic user interface and enhanced user experience, leveraging the newest components, theming, and layout principles.
 - **[Kotlin Symbol Processing (KSP)](https://github.com/google/ksp)**: Streamlines code generation and processing, enhancing development efficiency.
 - **WorkManager**: Manages background tasks and asynchronous operations, ensuring reliable execution under various system conditions.
