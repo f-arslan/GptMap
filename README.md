@@ -15,6 +15,11 @@ Go to the [Releases](https://github.com/f-arslan/GptMap/releases) to download th
 - [App Demos](#app-demos)
 - [Setup and Configuration Guide](#setup-and-configuration-guide)
 
+<div align="right">
+  <img src="/public/gifs/chatFlowGif.gif" width="320" style="margin-bottom: 10px;">
+  <img src="/public/gifs/mainFlowGif.gif" width="320">
+</div>
+
 ## Tech Stack & Open-source Libraries
 
 - **[Kotlin](https://kotlinlang.org/)**: The primary language for application development, emphasizing safety, simplicity, and interoperability.
