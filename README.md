@@ -15,10 +15,10 @@ Go to the [Releases](https://github.com/f-arslan/GptMap/releases) to download th
 - [App Demos](#app-demos)
 - [Setup and Configuration Guide](#setup-and-configuration-guide)
 
-<div align="right">
-  <img src="/public/gifs/chatFlowGif.gif" width="320"><br>
-  <img src="/public/gifs/chatFlowGif.gif" width="320">
-</div>
+<img src="/public/gifs/chatFlowGif.gif" width="320" align="right">
+<br>
+<img src="/public/gifs/mainFlowGif.gif" width="320" align="right">
+
 
 ## Tech Stack & Open-source Libraries
 
