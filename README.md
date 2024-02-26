@@ -1,9 +1,3 @@
----
-runme:
-  id: 01HQGK9942PRCD1VKM5D2W2VJP
-  version: v3
----
-
 <h1 align="center">Gptmap🗺️🤖</h1>
 <p align="center">Welcome to Gptmap, a startup project crafted using Kotlin and Jetpack Compose.</p>
  <p align="center" text-align="center">This project will guide you through creating a comprehensive Android application using a modern toolkit, highlighting the integration of AI technologies and illustrating the real-world applications of these advanced technologies, providing valuable insights and best practices.</p>
