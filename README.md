@@ -16,8 +16,6 @@ Go to the [Releases](https://github.com/f-arslan/GptMap/releases) to download th
 - [Setup and Configuration Guide](#setup-and-configuration-guide)
 
 <img src="/public/gifs/chatFlowGif.gif" width="320" align="right">
-<br>
-<img src="/public/gifs/mainFlowGif.gif" width="320" align="right">
 
 
 ## Tech Stack & Open-source Libraries
@@ -53,6 +51,7 @@ Go to the [Releases](https://github.com/f-arslan/GptMap/releases) to download th
    - **Coil**: Efficiently loads and displays images, optimizing memory and network usage.
    - **Lottie**: Implements complex animations sourced from JSON files, enriching the UI with engaging visuals.
 
+<img src="/public/gifs/mainFlowGif.gif" width="320" align="right">
 - **Material Design 3**: Adopts the latest Material Design guidelines for a cohesive, dynamic user interface and enhanced user experience, leveraging the newest components, theming, and layout principles.
 - **[Kotlin Symbol Processing (KSP)](https://github.com/google/ksp)**: Streamlines code generation and processing, enhancing development efficiency.
 - **WorkManager**: Manages background tasks and asynchronous operations, ensuring reliable execution under various system conditions.
