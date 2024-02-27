@@ -12,10 +12,8 @@ Go to the [Releases](https://github.com/f-arslan/GptMap/releases) to download th
 
 - [Tech Stack & Open-source Libraries](#tech-stack--open-source-libraries)
 - [Architecture Overview](#architecture-overview)
-- [App Demos](#app-demos)
+- [App Demo](#app-demo)
 - [Setup and Configuration Guide](#setup-and-configuration-guide)
-
-
 
 ## Tech Stack & Open-source Libraries
 
@@ -27,11 +25,11 @@ Go to the [Releases](https://github.com/f-arslan/GptMap/releases) to download th
    - **ViewModel**: Centralizes UI-related data management, making it resilient to configuration changes.
    - **Lifecycle**: Observes component lifecycles to ensure appropriate UI actions are taken at each stage.
    - **SavedStateHandle**: Enhances state management by preserving UI data across system-initiated process terminations.
-   - **DataStore**: A modern data storage solution that utilizes Kotlin coroutines and Flow to store data asynchronously, securely, and consistently, serving as a replacement for SharedPreferences.
+   - **[Proto DataStore](https://developer.android.com/topic/libraries/architecture/datastore#proto-datastore)**: A modern, type-safe data storage solution that leverages Kotlin coroutines and Flow for storing structured data asynchronously, securely, and consistently. Proto DataStore uses protocol buffers to serialize data, enabling more complex data storage scenarios than traditional key-value stores.
 
 - **[Ktor](https://ktor.io/)**: Enables server and client-side HTTP communications, seamlessly integrating with various third-party APIs for extended functionality.
 - **Database and Storage Solutions**:
-   - **MongoDB Realm**: Provides a robust local database and synchronization solutions, enabling efficient offline data access and seamless cloud integration. It also implements **JWT Authentication** for secure user authentication and data access.
+   - **MongoDB Realm**: Provides a robust local database and synchronization solutions, enabling efficient offline data access and seamless cloud integration.
    - **Firebase Firestore and Storage**: Facilitates real-time data synchronization and scalable cloud storage, ensuring smooth data operations and media management.
 
 <img src="/public/gifs/mainFlowGif.gif" width="320" align="right">
@@ -69,15 +67,22 @@ Go to the [Releases](https://github.com/f-arslan/GptMap/releases) to download th
 - **Networking**:
    - **[Retrofit](https://github.com/square/retrofit)**: Simplifies REST API communication, enhancing data exchange and integration.
 
-- **[Docker](https://www.docker.com/)**: Utilizes container technology for consistent development, testing, and deployment environments.
-- **Secure Management**:
-   - **GCP Secret Manager**: Safeguards sensitive information, ensuring secure access and storage of secrets.
-
 - **Testing Suite**:
    - Employs **JUnit 4 & 5**, **[Mockk](https://mockk.io/)**, and **[turbine](https://github.com/cashapp/turbine)** for comprehensive testing across units and integration points.
 
 - **Code Quality Tools**:
-   - **Detekt**: Monitors code quality and maintainability, enforcing best practices and coding standards.
+   - **[Detekt](https://github.com/detekt/detekt)**: Monitors code quality and maintainability, enforcing best practices and coding standards.
+   - **[Ktlint](https://ktlint.github.io/)**: Enforces Kotlin coding standards and formatting guidelines to ensure consistent code style across the project.
+
+- **Performance Optimization**:
+  - **Baseline Profiles**: Enhances app startup and runtime performance by pre-compiling essential methods.
+  - **Macrobenchmark**: Optimizes critical user journeys, addressing performance bottlenecks for a smoother experience.
+
+- **Continuous Integration and Deployment** (CI/CD):
+   - **GitHub Actions**: Automates testing, building, and deployment, streamlining development cycles.
+   - **[Docker](https://www.docker.com/)**: Ensures consistent environments across development, testing, and deployment phases, integral to our CI/CD pipelines.
+
+- **[GCP Secret Manager](https://cloud.google.com/security/products/secret-manager)**: Protects sensitive configuration secrets.
 
 ### Architecture Overview
 
@@ -87,15 +92,11 @@ Go to the [Releases](https://github.com/f-arslan/GptMap/releases) to download th
 
 For the backend, Ktor for server-side logic, MongoDB for database management (Realm Sync and Auth for synchronization and authentication), Firebase for authentication, storage, and real-time database capabilities (Auth, Storage, Firestore), and GCP's Secret Manager for secure management of secrets and API keys.
 
-## App Demos
+## App Demo
 
 Check out the [resources](public/) for the full list.
 
 https://github.com/f-arslan/GptMap/assets/66749900/68769bcf-8dcc-4e9d-8bec-6d6f393dc7b6
-
-https://github.com/f-arslan/GptMap/assets/66749900/37f69fa5-bd37-41da-8688-15c74ce8adaf
-
-https://github.com/f-arslan/GptMap/assets/66749900/889fdcf8-8989-4d2d-8752-88cdbe6747cb
 
 ### Setup and Configuration Guide
 
@@ -110,7 +111,6 @@ MAPS_API_KEY=<your_google_maps_api_key>
 OPENAI_API_KEY= (will be deprecated, no need to fill this)
 PALM_API_KEY=<your_gemini_api_key>
 UNSPLASH_BASE_URL=<unsplash_api_base_url>
-
 ```
 
 Ensure you replace placeholder text with actual values relevant to your development environment.
@@ -120,5 +120,3 @@ Ensure you replace placeholder text with actual values relevant to your developm
 5. **Firebase Setup**: To integrate Firebase, create a new project in the Firebase console, register your app, and download the `google-services.json` file. Place this file in your app's `app` directory. This step is crucial for utilizing Firebase Auth, Firestore, and Storage.
 6. **MongoDB Atlas Setup**: Sign up or log in to MongoDB Atlas, create a new cluster, and connect your application using the provided connection string. Ensure you've configured the network access and database user for your cluster.
 7. **GCP Account Requirement**: A Google Cloud Platform (GCP) account is necessary for utilizing Google Maps API and GCP Secret Manager. If you don't already have an account, sign up at [GCP's website](https://cloud.google.com/) and set up billing to access these services.
-
-
