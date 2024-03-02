@@ -20,7 +20,7 @@ class SwipeGoogleMapBenchmark {
     fun swipeGoogleMapCompilationNone() = swipeGoogleMap(CompilationMode.None())
 
     @Test
-    fun swipeGoogleMapCompilationBaselineProfile() = swipeGoogleMap(CompilationMode.Partial())
+    fun swipeGoogleMapCompilationBaselineProfile() = swipeGoogleMap(CompilationMode.Partial(warmupIterations = 1))
 
     private fun swipeGoogleMap(compilationMode: CompilationMode) = benchmarkRule.measureRepeated(
         packageName = PACKAGE_NAME,
@@ -31,12 +31,13 @@ class SwipeGoogleMapBenchmark {
         setupBlock = {
             pressHome()
             startActivityAndWait()
-            // We use dot notation because it can skip auth phase
+            // We use question mark because it can skip auth phase
             device.findObject(By.text("Continue with Google"))?.click()
             device.waitForIdle()
         }
     ) {
         mapWaitForContent()
         mapFling()
+        search()
     }
 }

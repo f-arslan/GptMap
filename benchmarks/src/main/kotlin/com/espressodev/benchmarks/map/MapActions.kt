@@ -13,21 +13,32 @@ fun MacrobenchmarkScope.mapWaitForContent() {
 
 fun MacrobenchmarkScope.mapFling() {
     val mapScreen = device.findObject(By.res("map:MapScreen"))
-    repeat(20) {
-        device.flingElement(mapScreen, Direction.DOWN)
+
+    fun flingMap(direction: Direction, repetitions: Int, delay: Long) {
+        repeat(repetitions) {
+            device.flingElement(mapScreen, direction)
+        }
+        device.waitForIdle(delay)
     }
-    device.waitForIdle(4000)
-    repeat(20) {
-        device.flingElement(mapScreen, Direction.LEFT)
+
+    val directions = listOf(Direction.DOWN, Direction.LEFT, Direction.UP, Direction.RIGHT)
+    directions.forEach { direction ->
+        flingMap(direction, 5, 100)
     }
-    device.waitForIdle(4000)
-    repeat(20) {
-        device.flingElement(mapScreen, Direction.UP)
+}
+
+fun MacrobenchmarkScope.search() {
+    val searchBar = device.findObject(By.res("map:SearchBar"))
+    val searchBarSearchIcon = device.findObject(By.res("map:searchBarSearchIcon"))
+    if (searchBar.isClickable && searchBar.isFocusable) {
+        searchBar.click()
+        searchBar.text = ""
+        searchBar.text = "New York"
     }
-    device.waitForIdle(4000)
-    repeat(20) {
-        device.flingElement(mapScreen, Direction.RIGHT)
-    }
+
+    device.waitForIdle()
+    searchBarSearchIcon.click()
+    device.wait(Until.hasObject(By.text("Explore more with AI")), 10_000)
 }
 
 fun UiDevice.flingElement(element: UiObject2, direction: Direction) {

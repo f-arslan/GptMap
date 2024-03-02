@@ -1,16 +1,16 @@
 package com.espressodev.benchmarks.startup
 
-import androidx.benchmark.macro.BaselineProfileMode
 import androidx.benchmark.macro.CompilationMode
 import androidx.benchmark.macro.StartupMode
 import androidx.benchmark.macro.StartupTimingMetric
 import androidx.benchmark.macro.junit4.MacrobenchmarkRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.uiautomator.By
 import com.espressodev.benchmarks.PACKAGE_NAME
 import com.espressodev.benchmarks.map.mapFling
 import com.espressodev.benchmarks.map.mapWaitForContent
-
+import com.espressodev.benchmarks.map.search
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -47,16 +47,11 @@ class StartupBenchmark {
         benchmark(CompilationMode.None())
 
     @Test
-    fun startupWithPartialCompilationAndDisabledBaselineProfile() = benchmark(
-        CompilationMode.Partial(baselineProfileMode = BaselineProfileMode.Disable, warmupIterations = 1),
-    )
-
-    @Test
     fun startupFullyPrecompiled() = benchmark(CompilationMode.Full())
 
     @Test
     fun startupCompilationBaselineProfiles() =
-        benchmark(CompilationMode.Partial(BaselineProfileMode.Require))
+        benchmark(CompilationMode.Partial(warmupIterations = 1))
 
     private fun benchmark(compilationMode: CompilationMode) {
         rule.measureRepeated(
@@ -64,14 +59,17 @@ class StartupBenchmark {
             metrics = listOf(StartupTimingMetric()),
             compilationMode = compilationMode,
             startupMode = StartupMode.COLD,
-            iterations = 10,
+            iterations = 5,
             setupBlock = {
                 pressHome()
             },
             measureBlock = {
                 startActivityAndWait()
+                device.findObject(By.text("Continue with Google"))?.click()
+                device.waitForIdle()
                 mapWaitForContent()
                 mapFling()
+                search()
             }
         )
     }
