@@ -13,7 +13,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class UserManagementRealmDataSource @Inject constructor(@Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher) :
-    UserManagementRealmRepository, RealmDataSourceBase() {
+    UserManagementRealmRepository, RealmDataSourceBase {
     override suspend fun saveUser(realmUser: RealmUser): Result<Unit> =
         performRealmTransaction(ioDispatcher) {
             copyToRealm(

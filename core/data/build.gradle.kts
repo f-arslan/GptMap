@@ -14,7 +14,6 @@ dependencies {
     implementation(projects.core.datastore)
     implementation(projects.core.gemini)
     implementation(projects.core.google)
-    implementation(projects.core.model)
 
     implementation(libs.realm.library.sync)
     implementation(libs.hilt.ext.work)

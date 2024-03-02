@@ -26,14 +26,6 @@ internal fun Project.configureKotlinAndroid(
             targetCompatibility = JavaVersion.VERSION_1_8
             isCoreLibraryDesugaringEnabled = true
         }
-
-        packaging {
-            resources {
-                excludes += "/META-INF/{AL2.0,LGPL2.1}"
-                excludes += "META-INF/INDEX.LIST"
-                excludes += "META-INF/DEPENDENCIES"
-            }
-        }
     }
 
     configureKotlin()

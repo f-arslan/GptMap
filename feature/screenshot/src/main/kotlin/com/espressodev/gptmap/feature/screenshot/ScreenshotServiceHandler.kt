@@ -17,8 +17,10 @@ class ScreenshotServiceHandler(private val applicationContext: Context) {
     private val serviceStateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
-                SaveScreenshotService.ACTION_SERVICE_STARTED -> screenshotStateChannel.trySend(ScreenshotState.STARTED)
-                SaveScreenshotService.ACTION_SERVICE_STOPPED -> screenshotStateChannel.trySend(ScreenshotState.FINISHED)
+                SaveScreenshotService.ACTION_SERVICE_STARTED ->
+                    screenshotStateChannel.trySend(ScreenshotState.STARTED)
+                SaveScreenshotService.ACTION_SERVICE_STOPPED ->
+                    screenshotStateChannel.trySend(ScreenshotState.FINISHED)
             }
         }
     }

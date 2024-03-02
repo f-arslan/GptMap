@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class FavouriteRealmDataSource @Inject constructor(@Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher) :
-    FavouriteRealmRepository, RealmDataSourceBase() {
+    FavouriteRealmRepository, RealmDataSourceBase {
 
     override suspend fun saveFavourite(realmFavourite: RealmFavourite): Result<Unit> =
         performRealmTransaction(ioDispatcher) {

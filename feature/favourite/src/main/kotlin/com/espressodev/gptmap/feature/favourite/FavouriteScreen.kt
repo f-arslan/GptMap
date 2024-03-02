@@ -134,7 +134,7 @@ internal fun FavouriteRoute(
 internal const val LazyColumnTestTag = "lazy_column_test_tag"
 
 @Composable
-private fun FavouriteScreen(
+internal fun FavouriteScreen(
     favourites: List<Favourite>,
     selectedId: String,
     onCardClick: (String) -> Unit,

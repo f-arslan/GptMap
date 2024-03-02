@@ -23,7 +23,6 @@ Go to the [Releases](https://github.com/f-arslan/GptMap/releases) to download th
 - **[Jetpack Compose](https://developer.android.com/jetpack/compose)**: Used for modern UI development, leveraging custom composables and animations for a dynamic and responsive design.
 - **Jetpack Libraries**:
    - **ViewModel**: Centralizes UI-related data management, making it resilient to configuration changes.
-   - **Lifecycle**: Observes component lifecycles to ensure appropriate UI actions are taken at each stage.
    - **SavedStateHandle**: Enhances state management by preserving UI data across system-initiated process terminations.
    - **[Proto DataStore](https://developer.android.com/topic/libraries/architecture/datastore#proto-datastore)**: A modern, type-safe data storage solution that leverages Kotlin coroutines and Flow for storing structured data asynchronously, securely, and consistently. Proto DataStore uses protocol buffers to serialize data, enabling more complex data storage scenarios than traditional key-value stores.
 

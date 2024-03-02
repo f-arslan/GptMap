@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.gptmap.android.library.compose)
     alias(libs.plugins.gptmap.android.feature)
     alias(libs.plugins.android.junit5)
-    alias(libs.plugins.gptmap.viewmodel.testing)
 }
 
 android {
@@ -15,6 +14,7 @@ android {
 dependencies {
     implementation(projects.core.mongodb)
     implementation(projects.core.firebase)
+    testImplementation(projects.core.testing)
 
     implementation(libs.coil.compose)
     implementation(libs.lottie.compose)

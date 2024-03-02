@@ -7,11 +7,11 @@ import io.realm.kotlin.MutableRealm
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
-abstract class RealmDataSourceBase {
-    protected val realmUserId: String
+interface RealmDataSourceBase {
+    val realmUserId: String
         get() = realmUser.id
 
-    protected suspend fun <T> performRealmTransaction(
+    suspend fun <T> performRealmTransaction(
         dispatcher: CoroutineDispatcher,
         block: MutableRealm.() -> T
     ): Result<T> =

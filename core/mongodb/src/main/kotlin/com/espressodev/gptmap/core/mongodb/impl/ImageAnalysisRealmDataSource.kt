@@ -19,7 +19,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ImageAnalysisRealmDataSource @Inject constructor(@Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher) :
-    ImageAnalysisRealmRepository, RealmDataSourceBase() {
+    ImageAnalysisRealmRepository, RealmDataSourceBase {
     override suspend fun saveImageAnalysis(realmImageAnalysis: RealmImageAnalysis): Result<Unit> =
         performRealmTransaction(ioDispatcher) {
             copyToRealm(

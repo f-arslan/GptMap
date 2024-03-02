@@ -202,7 +202,7 @@ private fun MapUiState.MapScreen(
                 onClick = { onEvent(MapUiEvent.OnChatAiClick) }
             )
         }
-
+        val googleMapTestTag = "map:SearchBar"
         if (searchBarState) {
             MapSearchBar(
                 value = searchValue,
@@ -213,6 +213,7 @@ private fun MapUiState.MapScreen(
                 modifier = Modifier
                     .zIndex(1f)
                     .align(Alignment.TopCenter)
+                    .testTag(googleMapTestTag)
             )
         }
         SaveScreenshot(

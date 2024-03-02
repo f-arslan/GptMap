@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class ImageMessageRealmDataSource @Inject constructor(@Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher) :
-    ImageMessageRealmRepository, RealmDataSourceBase() {
+    ImageMessageRealmRepository, RealmDataSourceBase {
     override suspend fun addImageMessageToImageAnalysis(
         imageAnalysisId: String,
         message: RealmImageMessage
