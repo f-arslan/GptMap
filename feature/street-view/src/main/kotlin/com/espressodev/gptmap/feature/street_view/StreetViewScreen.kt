@@ -3,10 +3,7 @@ package com.espressodev.gptmap.feature.street_view
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -14,21 +11,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.espressodev.gptmap.core.designsystem.IconType
-import com.espressodev.gptmap.core.designsystem.TextType
-import com.espressodev.gptmap.core.designsystem.component.GmTopAppBar
+import com.espressodev.gptmap.core.designsystem.component.BackButton
+import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import com.espressodev.gptmap.core.save_screenshot.composable.SaveScreenshot
 import com.google.android.gms.maps.StreetViewPanoramaOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.streetview.StreetView
 import com.google.maps.android.ktx.MapsExperimentalFeature
 import kotlinx.coroutines.delay
-import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
-import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun StreetViewRoute(
     popUp: () -> Unit,
@@ -37,22 +31,14 @@ internal fun StreetViewRoute(
     viewModel: StreetViewViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    Scaffold(
-        topBar = {
-            GmTopAppBar(
-                text = TextType.Res(AppText.street_view),
-                icon = IconType.Bitmap(AppDrawable.street_view),
-                onBackClick = popUp
-            )
-        },
+
+
+    StreetViewScreen(
+        latitude = uiState.latitude,
+        longitude = uiState.longitude,
+        popUp = popUp,
         modifier = modifier
-    ) {
-        StreetViewScreen(
-            latitude = uiState.latitude,
-            longitude = uiState.longitude,
-            modifier = Modifier.padding(it)
-        )
-    }
+    )
 
     SaveScreenshot(
         onClick = viewModel::initializeScreenCaptureBroadcastReceiver,
@@ -70,11 +56,16 @@ internal fun StreetViewRoute(
 
 @OptIn(MapsExperimentalFeature::class)
 @Composable
-private fun StreetViewScreen(latitude: Double, longitude: Double, modifier: Modifier = Modifier) {
+private fun StreetViewScreen(
+    latitude: Double,
+    longitude: Double,
+    popUp: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val (isStreetViewLoaded, setStreetViewLoaded) = remember { mutableStateOf(value = false) }
 
     LaunchedEffect(key1 = latitude) {
-        delay(1000L)
+        delay(1250L)
         setStreetViewLoaded(true)
     }
 
@@ -93,5 +84,17 @@ private fun StreetViewScreen(latitude: Double, longitude: Double, modifier: Modi
         AnimatedVisibility(!isStreetViewLoaded, modifier = Modifier.align(Alignment.Center)) {
             CircularProgressIndicator()
         }
+
+        if (isStreetViewLoaded) {
+            BackButton { popUp() }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun StreetViewPreview() {
+    GptmapTheme {
+        StreetViewScreen(latitude = 10.0, longitude = 20.0, {})
     }
 }

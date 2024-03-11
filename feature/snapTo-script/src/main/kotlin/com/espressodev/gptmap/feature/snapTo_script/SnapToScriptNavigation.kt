@@ -3,9 +3,7 @@ package com.espressodev.gptmap.feature.snapTo_script
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 
 const val IMAGE_ID = "imageId"
 const val SnapToScriptRoute = "snapTo_script_route"
@@ -16,10 +14,7 @@ fun NavController.navigateToSnapToScript(imageId: String, navOptions: NavOptions
 }
 
 fun NavGraphBuilder.snapToScriptScreen() {
-    composable(
-        route = SnapToScriptRouteWithArg,
-        arguments = listOf(navArgument(IMAGE_ID) { type = NavType.StringType })
-    ) {
+    composable(route = SnapToScriptRouteWithArg) {
         SnapToScriptRoute()
     }
 }

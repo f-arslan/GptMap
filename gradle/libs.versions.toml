@@ -51,6 +51,7 @@ kotlinxDatetime = "0.5.0"
 kotlinxCollectionsImmutable = "0.3.6"
 kotlinxCoroutines = "1.7.3"
 kotlinxSerializationJson = "1.6.0"
+leakcanary = "3.0-alpha-1"
 ksp = "1.9.22-1.0.17"
 ktorVersion = "2.3.2"
 lottieCompose = "6.2.0"
@@ -195,6 +196,7 @@ accompanist-permissions = { group = "com.google.accompanist", name = "accompanis
 protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
 protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }  # Used in datastore-proto build
 google-oss-licenses-plugin = { group = "com.google.android.gms", name = "oss-licenses-plugin", version.ref = "googleOssPlugin" }
+leakcanary = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcanary" }
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }

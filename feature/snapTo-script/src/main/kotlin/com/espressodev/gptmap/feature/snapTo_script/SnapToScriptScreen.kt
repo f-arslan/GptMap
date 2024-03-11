@@ -262,7 +262,7 @@ private fun Messages(
         val jumpToBottomEnabled by remember {
             derivedStateOf {
                 scrollState.firstVisibleItemIndex > 1 ||
-                    scrollState.firstVisibleItemScrollOffset > jumpThreshold
+                        scrollState.firstVisibleItemScrollOffset > jumpThreshold
             }
         }
 
