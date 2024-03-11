@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -50,11 +51,14 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
+import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
@@ -312,5 +316,25 @@ fun PinButton(onClick: () -> Unit, icon: ImageVector, modifier: Modifier = Modif
             imageVector = icon,
             contentDescription = stringResource(id = AppText.pin)
         )
+    }
+}
+
+@Composable
+fun BackButton(onClick: () -> Unit) {
+    FilledTonalIconButton(
+        onClick = onClick,
+        modifier = Modifier
+            .zIndex(1f)
+            .statusBarsPadding()
+            .padding(8.dp)
+    ) {
+        Icon(imageVector = GmIcons.ArrowBackOutlined, contentDescription = null)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ButtonPreview() {
+    GptmapTheme {
     }
 }

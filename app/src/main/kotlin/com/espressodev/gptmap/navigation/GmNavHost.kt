@@ -26,7 +26,6 @@ import com.espressodev.gptmap.feature.register.navigateToRegister
 import com.espressodev.gptmap.feature.register.registerScreen
 import com.espressodev.gptmap.feature.screenshot.navigateToScreenshot
 import com.espressodev.gptmap.feature.screenshot.screenshotScreen
-import com.espressodev.gptmap.feature.screenshot_gallery.navigateToScreenshotGallery
 import com.espressodev.gptmap.feature.screenshot_gallery.screenshotGalleryScreen
 import com.espressodev.gptmap.feature.snapTo_script.navigateToSnapToScript
 import com.espressodev.gptmap.feature.snapTo_script.snapToScriptScreen

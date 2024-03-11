@@ -60,6 +60,11 @@
     <string name="pin">Pin</string>
     <string name="chat">Chat</string>
     <string name="copy">Copy</string>
+    <string name="monthly">Monthly</string>
+    <string name="annual">Annual</string>
+    <string name="billed_monthly">Billed Monthly</string>
+    <string name="billed_annually">Billed Annually</string>
+    <string name="selected_plan">Selected Plan</string>
 
     <!-- Map -->
     <string name="map_text_field_placeholder">Search here</string>
@@ -144,4 +149,10 @@
     <!-- SnapTo Script -->
     <string name="snapTo_script_title">Snap to Script</string>
     <string name="snapTo_script_placeholder">Got a question? Just ask!</string>
+
+    <!-- Sub -->
+    <string name="sub_header">Subscribe to Premium</string>
+    <string name="sub_body_1">Unlimited Search on Map with AI</string>
+    <string name="sub_body_2">Unlimited Chat with Images</string>
+    <string name="sub_body_3">Early access to new Features</string>
 </resources>

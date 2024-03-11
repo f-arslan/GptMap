@@ -53,13 +53,19 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("config")
-            // baselineProfile.automaticGenerationDuringBuild = true
         }
     }
 
     packaging {
         resources {
             excludes.add("/META-INF/{AL2.0,LGPL2.1}")
+        }
+    }
+
+    // for leakcanary
+    configurations {
+        debugImplementation {
+            exclude(group = "junit", module = "junit")
         }
     }
 
@@ -99,6 +105,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.work.ktx)
     implementation(libs.hilt.ext.work)
+    debugImplementation(libs.leakcanary)
     implementation(libs.androidx.profileinstaller)
-    "baselineProfile"(project(":benchmarks"))
+    baselineProfile(projects.benchmarks)
 }

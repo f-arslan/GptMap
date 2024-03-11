@@ -6,6 +6,7 @@ import androidx.compose.material.icons.automirrored.outlined.NavigateNext
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Camera
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.CopyAll
 import androidx.compose.material.icons.filled.Done
@@ -79,4 +80,5 @@ object GmIcons {
     val DoubleDownDefault = Icons.Default.KeyboardDoubleArrowDown
     val PushPinOutlined = Icons.Outlined.PushPin
     val CopyAllFilled = Icons.Default.CopyAll
+    val CheckCircleFilled = Icons.Filled.CheckCircle
 }

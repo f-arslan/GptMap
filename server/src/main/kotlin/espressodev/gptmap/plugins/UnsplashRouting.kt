@@ -8,7 +8,7 @@ import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 
 
-fun Application.configureRouting() {
+fun Application.configureUnsplashRouting() {
     val unsplashService by inject<UnsplashService>()
     routing {
         route("/photos") {
