@@ -244,7 +244,7 @@ class MapViewModel @Inject constructor(
         }
 
         apiService.geminiRepository.getLocationInfo(uiState.value.searchValue)
-            .onSuccess { location ->
+            .onSuccess { (location, _) ->
                 _uiState.update {
                     it.copy(
                         location = location,
