@@ -43,22 +43,23 @@ class ImageMessageRepositoryImpl @Inject constructor(
                     ?: throw Exceptions.FailedToReadBitmapFromExternalStorageException()
 
             val stringBuilder = StringBuilder()
-
+            var totalToken = 0
             runCatching {
                 geminiRepository.getImageDescription(bitmap = bitmap, text = text).getOrThrow()
-                    .collect { chunk ->
+                    .collect { (chunk, token) ->
                         stringBuilder.append(chunk)
+                        totalToken = token.also(::println)
                     }
             }.onFailure {
                 stringBuilder.append(it.message)
             }
 
             val fullResponseText = stringBuilder.toString().trim()
-
             imageMessageRealmRepository.updateImageMessageInImageAnalysis(
                 imageAnalysisId = imageId,
                 messageId = realmImageMessage.id,
                 text = fullResponseText,
+                token = totalToken
             ).getOrThrow()
         }
 }

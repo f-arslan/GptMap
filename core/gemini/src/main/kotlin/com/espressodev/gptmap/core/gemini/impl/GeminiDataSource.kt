@@ -18,22 +18,31 @@ class GeminiDataSource(
     private val generativeModelForText: GenerativeModel,
     private val generativeModelForImage: GenerativeModel
 ) : GeminiRepository {
-    override suspend fun getLocationInfo(textContent: String): Result<Location> =
+    override suspend fun getLocationInfo(textContent: String): Result<Pair<Location, Int>> =
         withContext(Dispatchers.IO) {
             runCatching {
-                generativeModelForText.generateContent(locationPreText + textContent).text?.toLocation()
+                val prompt = locationPreText + textContent
+                val tokenCount =
+                    generativeModelForText.countTokens(prompt).totalTokens
+                val location = generativeModelForText.generateContent(prompt).text?.toLocation()
                     ?: throw ResponseTextNotFoundException()
+                location to tokenCount
             }
         }
 
-    override fun getImageDescription(bitmap: Bitmap, text: String): Result<Flow<String>> =
+    override suspend fun getImageDescription(
+        bitmap: Bitmap,
+        text: String
+    ): Result<Flow<Pair<String, Int>>> =
         runCatching {
             val inputContent = content {
                 image(bitmap)
                 text(text)
             }
+            val tokenCount =
+                generativeModelForImage.countTokens(inputContent).totalTokens
             generativeModelForImage.generateContentStream(inputContent)
-                .map { it.text }
-                .mapNotNull { it }
+                .mapNotNull { it.text }
+                .map { it to tokenCount }
         }
 }

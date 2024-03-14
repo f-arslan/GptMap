@@ -31,5 +31,6 @@ data class ImageMessage(
     val id: String = "",
     val request: String = "",
     val response: String = "",
+    val token: Int = 0,
     val date: LocalDateTime = LocalDateTime.MIN
 )

@@ -14,7 +14,8 @@ interface ImageMessageRealmRepository {
     suspend fun updateImageMessageInImageAnalysis(
         imageAnalysisId: String,
         messageId: String,
-        text: String
+        text: String,
+        token: Int
     ): Result<Unit>
 
     fun getImageType(imageAnalysisId: String): String

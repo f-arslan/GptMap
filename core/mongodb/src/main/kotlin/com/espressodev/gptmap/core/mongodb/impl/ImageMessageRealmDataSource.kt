@@ -38,6 +38,7 @@ class ImageMessageRealmDataSource @Inject constructor(@Dispatcher(IO) private va
         imageAnalysisId: String,
         messageId: String,
         text: String,
+        token: Int,
     ): Result<Unit> = performRealmTransaction(ioDispatcher) {
         val imageAnalysis: RealmImageAnalysis = query<RealmImageAnalysis>(
             "userId == $0 AND imageId == $1",
@@ -48,7 +49,10 @@ class ImageMessageRealmDataSource @Inject constructor(@Dispatcher(IO) private va
             .first()
 
         findLatest(imageAnalysis)?.let { realmImageAnalysis ->
-            realmImageAnalysis.messages?.find { it.id == messageId }?.response = text
+            realmImageAnalysis.messages?.find { it.id == messageId }?.apply {
+                response = text
+                this.token = token
+            }
         }
     }
 

@@ -40,6 +40,7 @@ open class RealmImageMessage : EmbeddedRealmObject {
     var id: String = UUID.randomUUID().toString()
     var request: String = ""
     var response: String = ""
+    var token: Int = 0
     var date: RealmInstant = RealmInstant.from(System.currentTimeMillis(), 0)
 }
 
@@ -47,5 +48,6 @@ fun RealmImageMessage.toImageMessage() = ImageMessage(
     id = id,
     request = request,
     response = response,
+    token = token,
     date = date.toJavaInstant().toLocalDateTime()
 )
