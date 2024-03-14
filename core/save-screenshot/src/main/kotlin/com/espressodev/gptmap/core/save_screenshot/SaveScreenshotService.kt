@@ -146,16 +146,7 @@ class SaveScreenshotService : Service() {
         mMediaProjection?.let { mediaProjection ->
 
             // Register a callback to handle projection stop events
-            mediaProjection.registerCallback(
-                object : MediaProjection.Callback() {
-                    override fun onStop() {
-                        super.onStop()
-                        releaseResources()
-                        stopSelf()
-                    }
-                },
-                null
-            )
+            mediaProjection.registerCallback(mediaProjectionCallback, null)
 
             // Get display metrics for the virtual display
             val metrics = Resources.getSystem().displayMetrics
@@ -209,10 +200,21 @@ class SaveScreenshotService : Service() {
      * Releases resources and stops the media projection.
      */
     private fun releaseResources() {
+        mMediaProjection?.unregisterCallback(mediaProjectionCallback)
+
         mVirtualDisplay?.release()
         mImageReader?.close()
         mMediaProjection?.stop()
         mImageReader = null
+        mMediaProjection = null
+    }
+
+    private val mediaProjectionCallback = object : MediaProjection.Callback() {
+        override fun onStop() {
+            super.onStop()
+            releaseResources()
+            stopSelf()
+        }
     }
 
     companion object {
