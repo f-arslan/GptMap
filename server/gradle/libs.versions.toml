@@ -1,11 +1,13 @@
 [versions]
-ktor = "2.3.7"
-kotlin = "1.9.21"
+ktor = "2.3.9"
+kotlin = "1.9.22"
 logback = "1.4.12"
-koin = "3.5.1"
+koin = "3.5.3"
 googleSecretManager = "2.32.0"
 firebase = "9.2.0"
 grpc = "1.60.0"
+exposed_version = "0.41.1"
+postgresql = "42.5.1"
 
 [libraries]
 ktor-server-core-jvm = { group = "io.ktor", name = "ktor-server-core-jvm", version.ref = "ktor" }
@@ -20,7 +22,6 @@ koin-ktor = { group = "io.insert-koin", name = "koin-ktor", version.ref = "koin"
 ktor-serialization-gson = { group = "io.ktor", name = "ktor-serialization-gson", version.ref = "ktor" }
 
 ktor-client-okhttp = {  group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
-ktor-client-logging-jvm = {  group = "io.ktor", name = "ktor-client-logging-jvm", version.ref = "ktor" }
 
 grpc-netty-shaded = { group = "io.grpc", name = "grpc-netty-shaded", version.ref = "grpc" }
 grpc-protobuf = { group = "io.grpc", name = "grpc-protobuf", version.ref = "grpc" }
@@ -30,6 +31,14 @@ grpc-stub = { group = "io.grpc", name = "grpc-stub", version.ref = "grpc" }
 ktor-client-core = {  group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-client-logging = {  group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
 ktor-client-content-negotiation = {  group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+# End of it
+
+# Database
+exposed-core = { group = "org.jetbrains.exposed", name = "exposed-core", version.ref = "exposed_version" }
+exposed-dao = { group = "org.jetbrains.exposed", name = "exposed-dao", version.ref = "exposed_version" }
+exposed-jdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc", version.ref = "exposed_version" }
+exposed-java-time = { group = "org.jetbrains.exposed", name = "exposed-java-time", version.ref = "exposed_version" }
+postgresql = { group = "org.postgresql", name = "postgresql", version.ref = "postgresql" }
 # End of it
 
 google-cloud-secretmanager = { group = "com.google.cloud", name = "google-cloud-secretmanager", version.ref = "googleSecretManager" }
