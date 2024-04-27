@@ -17,9 +17,7 @@ interface RealmDataSourceBase {
     ): Result<T> =
         runCatching {
             withContext(dispatcher) {
-                realm.write {
-                    block()
-                }
+                realm.write(block)
             }
         }.onFailure {
             Log.e("RealmDataSourceBase", "Operation failed: $it")
