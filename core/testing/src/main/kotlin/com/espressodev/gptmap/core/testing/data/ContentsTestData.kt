@@ -1,7 +1,7 @@
 package com.espressodev.gptmap.core.testing.data
 
-import com.espressodev.gptmap.core.model.chatgpt.Content
-import com.espressodev.gptmap.core.model.chatgpt.Coordinates
+import com.espressodev.gptmap.core.model.Content
+import com.espressodev.gptmap.core.model.Coordinates
 
 
 val contentsTestData: List<Content> = listOf(

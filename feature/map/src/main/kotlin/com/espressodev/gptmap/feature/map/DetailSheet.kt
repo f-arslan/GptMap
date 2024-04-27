@@ -36,67 +36,65 @@ import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
+context (BoxScope)
 @Composable
-internal fun BoxScope.DetailSheet(
-    location: Location,
+internal fun Location.DetailSheet(
     onEvent: (MapUiEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     BackHandler { onEvent(MapUiEvent.OnDetailSheetBackClick) }
-    location.run {
-        Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .clipPolygon(MaterialTheme.colorScheme.surface)
-                .align(Alignment.BottomCenter)
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clipPolygon(MaterialTheme.colorScheme.surface)
+            .align(Alignment.BottomCenter)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 24.dp)
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 24.dp)
-            ) {
-                Text(
-                    text = content.city,
-                    style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Bold),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = content.toDistrictAndCountry().uppercase(),
-                    modifier = Modifier.offset(y = 4.dp * -1),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                    fontWeight = FontWeight.Medium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                DetailButton(
-                    addToFavouriteButtonState = addToFavouriteButtonState,
-                    onFavouriteClick = { onEvent(MapUiEvent.OnFavouriteClick) }
-                )
-                Text(
-                    text = content.toPoeticDescWithDecor(),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleLarge,
-                    maxLines = 5,
-                    overflow = TextOverflow.Ellipsis,
-                    lineHeight = 32.sp
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-                LocationImages(
-                    locationImages,
-                    onClick = { onEvent(MapUiEvent.OnImageClick(it)) }
-                )
-                Text(
-                    text = content.normalDescription,
-                    lineHeight = 24.sp,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyLarge,
-                    maxLines = 6,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
+            Text(
+                text = content.city,
+                style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Bold),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = content.toDistrictAndCountry().uppercase(),
+                modifier = Modifier.offset(y = 4.dp * -1),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            DetailButton(
+                addToFavouriteButtonState = isAddedToFavourite,
+                onFavouriteClick = { onEvent(MapUiEvent.OnFavouriteClick) }
+            )
+            Text(
+                text = content.toPoeticDescWithDecor(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 5,
+                overflow = TextOverflow.Ellipsis,
+                lineHeight = 32.sp
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            LocationImages(
+                locationImages,
+                onClick = { onEvent(MapUiEvent.OnImageClick(it)) }
+            )
+            Text(
+                text = content.normalDescription,
+                lineHeight = 24.sp,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyLarge,
+                maxLines = 6,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }

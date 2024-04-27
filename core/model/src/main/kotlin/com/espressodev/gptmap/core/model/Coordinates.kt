@@ -1,4 +1,4 @@
-package com.espressodev.gptmap.core.model.chatgpt
+package com.espressodev.gptmap.core.model
 
 import kotlinx.serialization.Serializable
 

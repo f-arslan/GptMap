@@ -7,9 +7,11 @@ import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.di.Dispatcher
 import com.espressodev.gptmap.core.model.di.GmDispatchers.IO
 import com.espressodev.gptmap.core.model.ext.downloadResizeAndCompress
+import com.espressodev.gptmap.core.model.toRealmFavourite
 import com.espressodev.gptmap.core.mongodb.FavouriteRealmRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
+
 class FavouriteRepositoryImpl @Inject constructor(
     private val storageRepository: StorageRepository,
     private val favouriteRealmRepository: FavouriteRealmRepository,

@@ -3,13 +3,17 @@ package com.espressodev.gptmap.core.model.ext
 import android.util.Patterns
 import com.espressodev.gptmap.core.model.ImageType
 import com.espressodev.gptmap.core.model.Location
-import com.espressodev.gptmap.core.model.chatgpt.Content
+import com.espressodev.gptmap.core.model.Content
+import com.espressodev.gptmap.core.model.locationDefault
 import kotlinx.serialization.json.Json
 import java.util.UUID
 import java.util.regex.Pattern
 
 fun String.toLocation(): Location =
-    Location(id = UUID.randomUUID().toString(), Json.decodeFromString<Content>(this))
+    locationDefault.copy(
+        id = UUID.randomUUID().toString(),
+        content = Json.decodeFromString<Content>(this)
+    )
 
 private const val MinPassPattern = 8
 private const val PassPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{4,}$"
@@ -25,8 +29,8 @@ fun String.isValidName(): Boolean {
 }
 
 fun String.isValidPassword(): Boolean = isNotBlank() &&
-    length >= MinPassPattern &&
-    Pattern.compile(PassPattern).matcher(this).matches()
+        length >= MinPassPattern &&
+        Pattern.compile(PassPattern).matcher(this).matches()
 
 fun String.passwordMatches(repeated: String): Boolean {
     return this == repeated

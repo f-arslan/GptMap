@@ -1,6 +1,7 @@
 package com.espressodev.gptmap.core.model.realm
 
 import com.espressodev.gptmap.core.model.Content
+import com.espressodev.gptmap.core.model.Coordinates
 import io.realm.kotlin.types.EmbeddedRealmObject
 
 open class RealmContent : EmbeddedRealmObject {
@@ -14,8 +15,7 @@ open class RealmContent : EmbeddedRealmObject {
 }
 
 fun RealmContent.toContent(): Content = Content(
-    latitude = this.latitude,
-    longitude = this.longitude,
+    coordinates = Coordinates(latitude, longitude),
     city = this.city,
     district = this.district,
     country = this.country,
