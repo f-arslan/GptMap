@@ -84,9 +84,12 @@ import com.espressodev.gptmap.feature.map.MapBottomSheetState.DETAIL_CARD
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.SMALL_INFORMATION_CARD
 import com.espressodev.gptmap.feature.screenshot.ScreenshotState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.MultiplePermissionsState
+import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
@@ -180,9 +183,9 @@ private fun MapUiState.MapScreen(
     onEvent: (MapUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (imageGalleryState.second) {
+    if (imageGalleryState.shouldShownGallery) {
         ImageGallery(
-            initialPage = imageGalleryState.first,
+            initialPage = imageGalleryState.currentIndex,
             images = location.locationImages,
             onDismiss = { onEvent(MapUiEvent.OnImageDismiss) },
             onExploreWithAiClick = { onEvent(MapUiEvent.OnExploreWithAiClickFromImage(it)) }
@@ -190,7 +193,7 @@ private fun MapUiState.MapScreen(
     }
     Box(modifier = modifier.fillMaxSize()) {
         AnimatedVisibility(
-            visible = isMapButtonsVisible,
+            visible = isComponentVisible,
             modifier = Modifier
                 .zIndex(1f)
                 .offset(y = 72.dp)
@@ -203,7 +206,7 @@ private fun MapUiState.MapScreen(
             )
         }
         val googleMapTestTag = "map:SearchBar"
-        if (searchBarState) {
+        if (isComponentVisible) {
             MapSearchBar(
                 value = searchValue,
                 userFirstChar = userFirstChar,
@@ -219,7 +222,7 @@ private fun MapUiState.MapScreen(
         SaveScreenshot(
             onClick = { onEvent(MapUiEvent.OnScreenshotProcessStarted) },
             onCancelClick = { onEvent(MapUiEvent.OnScreenshotProcessCancelled) },
-            isButtonVisible = isMapButtonsVisible
+            isButtonVisible = isComponentVisible
         )
         LoadingDialog(componentLoadingState)
         MapCameraSection(onEvent = onEvent)
@@ -229,11 +232,8 @@ private fun MapUiState.MapScreen(
             onEvent = onEvent,
             modifier = Modifier.zIndex(2f)
         )
-        if (isMyLocationButtonVisible)
-            MyCurrentLocationButton(
-                onClick = { onEvent(MapUiEvent.OnMyCurrentLocationClick) },
-                modifier = Modifier.zIndex(1f)
-            )
+
+
     }
 }
 
@@ -256,26 +256,32 @@ private fun BoxScope.DisplayBottomSheet(
             )
         }
 
-        DETAIL_CARD -> DetailSheet(location = location, onEvent = onEvent, modifier = modifier)
+        DETAIL_CARD -> location.DetailSheet(onEvent = onEvent, modifier = modifier)
 
         BOTTOM_SHEET_HIDDEN -> Unit
     }
 }
 
 @Composable
-private fun BoxScope.MyCurrentLocationButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun BoxScope.MyCurrentLocationButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val locationPermissionState = rememberMultiplePermissionsState(
         permissions = listOf(
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.ACCESS_COARSE_LOCATION
         )
-    )
+    ) {
+        val isOnePermissionGranted = it.values.any { permissionState -> permissionState }
+        if (isOnePermissionGranted) onClick()
+    }
 
     val (shouldShowDialog, setShouldShowDialog) = remember { mutableStateOf(value = false) }
 
     LaunchedEffect(shouldShowDialog) {
         if (shouldShowDialog) {
-            if (!locationPermissionState.allPermissionsGranted) {
+            if (!locationPermissionState.checkIsOnePermissionGranted()) {
                 locationPermissionState.launchMultiplePermissionRequest()
             } else {
                 onClick()
@@ -286,7 +292,7 @@ private fun BoxScope.MyCurrentLocationButton(onClick: () -> Unit, modifier: Modi
 
     FilledTonalIconButton(
         onClick = {
-            if (locationPermissionState.allPermissionsGranted) {
+            if (locationPermissionState.checkIsOnePermissionGranted()) {
                 onClick()
             } else {
                 setShouldShowDialog(true)
@@ -302,6 +308,9 @@ private fun BoxScope.MyCurrentLocationButton(onClick: () -> Unit, modifier: Modi
         )
     }
 }
+
+fun MultiplePermissionsState.checkIsOnePermissionGranted(): Boolean =
+    permissions.any { permissionState -> permissionState.status == PermissionStatus.Granted }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -379,6 +388,37 @@ private fun MapUiState.MapCameraSection(onEvent: (MapUiEvent) -> Unit) {
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(coordinatesLatLng, 14f)
     }
+
+    var animateCameraState by remember { mutableStateOf(false) }
+    var locationLatLng by remember { mutableStateOf(0.0 to 0.0) }
+
+    // TODO: Handle it if the value change from ui state
+    LaunchedEffect(key1 = animateCameraState) {
+        if (animateCameraState) {
+            cameraPositionState.animate(
+                CameraUpdateFactory.newLatLngZoom(
+                    LatLng(locationLatLng.first, locationLatLng.second),
+                    12f
+                )
+            )
+            animateCameraState = false
+        }
+    }
+
+    if (isMyLocationButtonVisible)
+        MyCurrentLocationButton(
+            onClick = {
+                if (myLocationState.isFetched) {
+                    locationLatLng = myLocationState.loc
+                    animateCameraState = true
+                } else {
+                    onEvent(MapUiEvent.OnMyCurrentLocationClick)
+                }
+            },
+            modifier = Modifier.zIndex(1f)
+        )
+
+    // TODO: Check is the animate became problem for map loading
     LaunchedEffect(coordinatesLatLng) {
         cameraPositionState.animate(
             CameraUpdateFactory.newLatLngZoom(
@@ -388,21 +428,8 @@ private fun MapUiState.MapCameraSection(onEvent: (MapUiEvent) -> Unit) {
         )
     }
 
-    LaunchedEffect(myCurrentLocationState) {
-        if (myCurrentLocationState.first) {
-            cameraPositionState.animate(
-                CameraUpdateFactory.newLatLngZoom(
-                    myCoordinatesLatLng,
-                    12f
-                )
-            )
-            // Try to find better way to handle this
-            onEvent(MapUiEvent.OnUnsetMyCurrentLocationState)
-        }
-    }
-
     AnimatedVisibility(
-        visible = isMapButtonsVisible,
+        visible = isComponentVisible,
         modifier = Modifier.zIndex(1f)
     ) {
         GmDraggableButton(
@@ -413,7 +440,7 @@ private fun MapUiState.MapCameraSection(onEvent: (MapUiEvent) -> Unit) {
     }
 
     LocationPin(
-        isPinVisible = isMapButtonsVisible,
+        isPinVisible = isComponentVisible,
         isCameraMoving = cameraPositionState.isMoving
     )
     MapSection(cameraPositionState)

@@ -6,7 +6,6 @@ import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
 import com.espressodev.gptmap.core.designsystem.Constants.GENERIC_ERROR_MSG
-import com.espressodev.gptmap.core.model.Exceptions
 import com.espressodev.gptmap.core.model.di.Dispatcher
 import com.espressodev.gptmap.core.model.di.GmDispatchers.IO
 import com.espressodev.gptmap.feature.screenshot.ScreenshotServiceHandler
@@ -16,6 +15,7 @@ import com.espressodev.gptmap.feature.screenshot.ScreenshotState.STARTED
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,8 +41,8 @@ class MapViewModel @Inject constructor(
     private val _navigationState = MutableStateFlow<NavigationState>(NavigationState.None)
     val navigationState = _navigationState.asStateFlow()
 
-    private val myCurrentLocationState
-        get() = uiState.value.myCurrentLocationState
+    private val myCoordinates
+        get() = uiState.value.myCoordinatesLatLng
 
     private val locationImages
         get() = uiState.value.location.locationImages
@@ -51,6 +51,7 @@ class MapViewModel @Inject constructor(
         get() = uiState.value.location.favouriteId
 
     private var initializeCalled = false
+
     @MainThread
     suspend fun initialize() = launchCatching {
         if (initializeCalled) return@launchCatching
@@ -92,11 +93,11 @@ class MapViewModel @Inject constructor(
             is MapUiEvent.OnSearchValueChanged -> _uiState.update { it.copy(searchValue = event.text) }
             is MapUiEvent.OnSearchClick -> onSearchClick()
             is MapUiEvent.OnImageDismiss -> {
-                _uiState.update { it.copy(imageGalleryState = Pair(0, false)) }
+                _uiState.update { it.copy(imageGalleryState = ImageGalleryState()) }
             }
 
             is MapUiEvent.OnImageClick -> _uiState.update {
-                it.copy(imageGalleryState = Pair(event.pos, true))
+                it.copy(imageGalleryState = ImageGalleryState(event.pos, true))
             }
 
             MapUiEvent.OnFavouriteClick -> onFavouriteClick()
@@ -114,10 +115,6 @@ class MapViewModel @Inject constructor(
 
             MapUiEvent.OnScreenshotProcessStarted -> updateUiBeforeProcess()
             MapUiEvent.OnMyCurrentLocationClick -> getMyCurrentLocation()
-            MapUiEvent.OnUnsetMyCurrentLocationState -> _uiState.update {
-                it.copy(myCurrentLocationState = Pair(false, myCurrentLocationState.second))
-            }
-
             MapUiEvent.OnScreenshotProcessCancelled -> reset()
             MapUiEvent.OnChatAiClick -> onChatAiClick()
             is MapUiEvent.OnExploreWithAiClickFromImage -> onExploreWithAiClick(event.index)
@@ -136,7 +133,7 @@ class MapViewModel @Inject constructor(
 
     private fun onExploreWithAiClick(index: Int) = launchCatching {
         _uiState.update {
-            it.copy(isLoading = true, imageGalleryState = Pair(0, false))
+            it.copy(isLoading = true, imageGalleryState = ImageGalleryState())
         }
 
         val analysisId = locationImages[index].analysisId
@@ -174,73 +171,57 @@ class MapViewModel @Inject constructor(
             it.copy(
                 bottomSheetState = MapBottomSheetState.BOTTOM_SHEET_HIDDEN,
                 isLoading = false,
-                searchBarState = true
             )
         }
     }
 
-    private fun getMyCurrentLocation() = launchCatching {
-        fun finishLoadingMyLocation() {
+    private var myLocationJob: Job? = null
+    private fun getMyCurrentLocation() {
+        myLocationJob?.cancel()
+
+        myLocationJob = launchCatching {
+            println(myCoordinates)
+            if (myCoordinates.latitude != 0.0) {
+                return@launchCatching
+            }
+
             _uiState.update {
                 it.copy(
-                    isMyLocationButtonVisible = true,
-                    componentLoadingState = ComponentLoadingState.NOTHING
+                    isComponentVisible = false,
+                    componentLoadingState = ComponentLoadingState.MY_LOCATION
                 )
             }
-        }
 
-        if (myCurrentLocationState.second.first != 0.0) {
-            _uiState.update {
-                it.copy(
-                    myCurrentLocationState = Pair(
-                        true,
-                        myCurrentLocationState.second
-                    )
-                )
-            }
-            return@launchCatching
-        }
-
-        _uiState.update {
-            it.copy(
-                isMyLocationButtonVisible = false,
-                componentLoadingState = ComponentLoadingState.MY_LOCATION
-            )
-        }
-
-        repositoryBundle.getCurrentLocationUseCase().collect { locationResult ->
-            locationResult
-                .onSuccess { location ->
-                    _uiState.update { it.copy(myCurrentLocationState = Pair(true, location)) }
-                    finishLoadingMyLocation()
-                }
-                .onFailure { throwable ->
-                    val message = throwable.message ?: GENERIC_ERROR_MSG
-                    when (throwable) {
-                        is Exceptions.GpsNotEnabledException -> {
-                            SnackbarManager.showMessage(message)
-                        }
-
-                        is Exceptions.LocationNullException -> {
-                            SnackbarManager.showMessage(message)
-                        }
-
-                        else -> {
-                            SnackbarManager.showMessage(message)
+            repositoryBundle.getCurrentLocationUseCase().collect { locationResult ->
+                locationResult
+                    .onSuccess { location ->
+                        _uiState.update {
+                            it.copy(
+                                myLocationState = MyLocationState(
+                                    true,
+                                    location
+                                )
+                            )
                         }
                     }
-                    finishLoadingMyLocation()
+                    .onFailure { throwable ->
+                        val message = throwable.message ?: GENERIC_ERROR_MSG
+                        SnackbarManager.showMessage(message)
+                    }
+
+                _uiState.update {
+                    it.copy(
+                        isComponentVisible = true,
+                        componentLoadingState = ComponentLoadingState.NOTHING
+                    )
                 }
+            }
         }
     }
 
     private fun onSearchClick() = launchCatching {
         _uiState.update {
-            it.copy(
-                componentLoadingState = ComponentLoadingState.MAP,
-                searchButtonEnabledState = false,
-                searchTextFieldEnabledState = false,
-            )
+            it.copy(componentLoadingState = ComponentLoadingState.MAP)
         }
 
         apiService.geminiRepository.getLocationInfo(uiState.value.searchValue)
@@ -249,10 +230,7 @@ class MapViewModel @Inject constructor(
                     it.copy(
                         location = location,
                         componentLoadingState = ComponentLoadingState.NOTHING,
-                        searchButtonEnabledState = true,
-                        searchTextFieldEnabledState = true,
                         bottomSheetState = MapBottomSheetState.SMALL_INFORMATION_CARD,
-                        searchBarState = false,
                         searchValue = ""
                     )
                 }
@@ -266,10 +244,7 @@ class MapViewModel @Inject constructor(
             }.onFailure {
                 _uiState.update {
                     it.copy(
-                        componentLoadingState = ComponentLoadingState.NOTHING,
-                        searchButtonEnabledState = true,
-                        searchTextFieldEnabledState = true,
-                        searchBarState = true
+                        componentLoadingState = ComponentLoadingState.NOTHING
                     )
                 }
             }
@@ -278,17 +253,12 @@ class MapViewModel @Inject constructor(
     private fun onFavouriteClick() = launchCatching {
         uiState.value.location.also { location ->
             _uiState.update { state ->
-                state.copy(
-                    location = state.location.copy(addToFavouriteButtonState = false),
-                    isFavouriteButtonPlaying = true
-                )
+                state.copy(location = state.location.copy(isAddedToFavourite = false))
             }
             repositoryBundle.favouriteRepository.saveImageForLocation(location)
                 .onFailure {
                     _uiState.update { state ->
-                        state.copy(
-                            location = state.location.copy(addToFavouriteButtonState = true),
-                        )
+                        state.copy(location = state.location.copy(isAddedToFavourite = true))
                     }
                     throw it
                 }
@@ -298,9 +268,7 @@ class MapViewModel @Inject constructor(
     fun reset() {
         _uiState.update {
             it.copy(
-                isMapButtonsVisible = true,
-                searchBarState = true,
-                isMyLocationButtonVisible = true,
+                isComponentVisible = true,
                 screenshotState = IDLE,
                 bottomSheetState = MapBottomSheetState.BOTTOM_SHEET_HIDDEN
             )
@@ -329,9 +297,7 @@ class MapViewModel @Inject constructor(
     private fun updateUiBeforeProcess() {
         _uiState.update {
             it.copy(
-                isMapButtonsVisible = false,
-                searchBarState = false,
-                isMyLocationButtonVisible = false,
+                isComponentVisible = false,
                 screenshotState = STARTED
             )
         }
@@ -346,9 +312,8 @@ class MapViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 location = location,
-                searchBarState = false,
                 bottomSheetState = MapBottomSheetState.SMALL_INFORMATION_CARD,
-                isMyLocationButtonVisible = false
+                isComponentVisible = false
             )
         }
     }

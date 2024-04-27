@@ -1,6 +1,7 @@
 package com.espressodev.gptmap.feature.map
 
 import com.espressodev.gptmap.core.model.Location
+import com.espressodev.gptmap.core.model.locationDefault
 import com.espressodev.gptmap.feature.screenshot.ScreenshotState
 import com.google.android.gms.maps.model.LatLng
 
@@ -12,30 +13,34 @@ enum class ComponentLoadingState {
     MY_LOCATION, MAP, NOTHING
 }
 
-val istanbul = Pair(41.0082, 28.9784)
+data class MyLocationState(
+    val isFetched: Boolean = false,
+    val loc: Pair<Double, Double> = 0.0 to 0.0
+)
+
+data class ImageGalleryState(
+    val currentIndex: Int = 0,
+    val shouldShownGallery: Boolean = false
+)
 
 data class MapUiState(
     val searchValue: String = "",
-    val location: Location = Location(),
+    val location: Location = locationDefault,
     val userFirstChar: Char = 'H',
     val componentLoadingState: ComponentLoadingState = ComponentLoadingState.NOTHING,
     val bottomSheetState: MapBottomSheetState = MapBottomSheetState.BOTTOM_SHEET_HIDDEN,
-    val searchButtonEnabledState: Boolean = true,
-    val searchTextFieldEnabledState: Boolean = true,
-    val searchBarState: Boolean = true,
-    val isFavouriteButtonPlaying: Boolean = false,
-    val isMapButtonsVisible: Boolean = true,
-    val myCurrentLocationState: Pair<Boolean, Pair<Double, Double>> = Pair(false, Pair(0.0, 0.0)),
+    val myLocationState: MyLocationState = MyLocationState(),
     val screenshotState: ScreenshotState = ScreenshotState.IDLE,
-    val imageGalleryState: Pair<Int, Boolean> = Pair(0, false),
-    val isMyLocationButtonVisible: Boolean = true,
+    val imageGalleryState: ImageGalleryState = ImageGalleryState(),
     val isLoading: Boolean = false,
+    val isComponentVisible: Boolean = true,
+    val isMyLocationButtonVisible: Boolean = true
 ) {
     val coordinatesLatLng: LatLng
         get() = location.content.coordinates.run { LatLng(latitude, longitude) }
 
     val myCoordinatesLatLng: LatLng
-        get() = myCurrentLocationState.second.run { LatLng(first, second) }
+        get() = myLocationState.loc.run { LatLng(first, second) }
 }
 
 sealed class MapUiEvent {
@@ -54,8 +59,6 @@ sealed class MapUiEvent {
     data object OnScreenshotProcessCancelled : MapUiEvent()
     data class OnStreetViewClick(val latLng: Pair<Double, Double>) : MapUiEvent()
     data object OnMyCurrentLocationClick : MapUiEvent()
-
-    data object OnUnsetMyCurrentLocationState : MapUiEvent()
 }
 
 sealed interface NavigationState {
