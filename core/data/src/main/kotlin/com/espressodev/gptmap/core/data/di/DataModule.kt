@@ -5,12 +5,14 @@ import com.espressodev.gptmap.core.data.repository.FavouriteRepository
 import com.espressodev.gptmap.core.data.repository.FileRepository
 import com.espressodev.gptmap.core.data.repository.ImageAnalysisRepository
 import com.espressodev.gptmap.core.data.repository.ImageMessageRepository
+import com.espressodev.gptmap.core.data.repository.MyLocationRepository
 import com.espressodev.gptmap.core.data.repository.UserRepository
 import com.espressodev.gptmap.core.data.repository.impl.AuthenticationRepositoryImpl
 import com.espressodev.gptmap.core.data.repository.impl.FavouriteRepositoryImpl
 import com.espressodev.gptmap.core.data.repository.impl.FileRepositoryImpl
 import com.espressodev.gptmap.core.data.repository.impl.ImageAnalysisRepositoryImpl
 import com.espressodev.gptmap.core.data.repository.impl.ImageMessageRepositoryImpl
+import com.espressodev.gptmap.core.data.repository.impl.MyLocationRepositoryImpl
 import com.espressodev.gptmap.core.data.repository.impl.UserRepositoryImpl
 import dagger.Binds
 import dagger.Module
@@ -38,4 +40,7 @@ interface DataModule {
 
     @Binds
     fun provideFavouriteRepo(impl: FavouriteRepositoryImpl): FavouriteRepository
+
+    @Binds
+    fun provideMyLocationRepo(impl: MyLocationRepositoryImpl): MyLocationRepository
 }

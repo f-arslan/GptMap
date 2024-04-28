@@ -8,23 +8,23 @@ import com.google.android.gms.location.LocationServices
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ViewModelScoped
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
-@InstallIn(ViewModelComponent::class)
+@InstallIn(SingletonComponent::class)
 object GoogleLocationModule {
 
     @Provides
-    @ViewModelScoped
+    @Singleton
     fun providesFusedLocationProviderClient(
         @ApplicationContext
         context: Context
     ) = LocationServices.getFusedLocationProviderClient(context)
 
     @Provides
-    @ViewModelScoped
+    @Singleton
     fun providesGoogleLocationService(
         fusedLocationProviderClient: FusedLocationProviderClient,
         @ApplicationContext context: Context

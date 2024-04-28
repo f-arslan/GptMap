@@ -79,6 +79,7 @@ import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
 import com.espressodev.gptmap.core.save_screenshot.composable.SaveScreenshot
 import com.espressodev.gptmap.feature.map.ComponentLoadingState.MAP
+import com.espressodev.gptmap.feature.map.ComponentLoadingState.MY_LOCATION
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.BOTTOM_SHEET_HIDDEN
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.DETAIL_CARD
 import com.espressodev.gptmap.feature.map.MapBottomSheetState.SMALL_INFORMATION_CARD
@@ -112,11 +113,13 @@ internal fun MapRoute(
     navigateToGallery: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MapViewModel = hiltViewModel(),
+    myLocationViewModel: MyLocationViewModel = hiltViewModel()
 ) {
     LaunchedEffect(key1 = Unit) {
         viewModel.initialize()
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val mapLocationState by myLocationViewModel.mapLocationState.collectAsStateWithLifecycle()
     val navigationState by viewModel.navigationState.collectAsStateWithLifecycle()
     LaunchedEffect(key1 = navigationState) {
         fun performNavigation(action: () -> Unit) {
@@ -153,6 +156,11 @@ internal fun MapRoute(
             viewModel.onEvent(event)
         }
     )
+    val onLocationEvent by rememberUpdatedState(
+        newValue = { event: MapLocationEvent ->
+            myLocationViewModel.onEvent(event)
+        }
+    )
     val googleMapTestTag = "map:MapScreen"
 
     Scaffold(
@@ -161,7 +169,9 @@ internal fun MapRoute(
             .semantics { testTagsAsResourceId = true }
     ) {
         uiState.MapScreen(
+            mapLocationState,
             onEvent = { event -> onEvent(event) },
+            onLocationEvent = { event -> onLocationEvent(event) },
             modifier = Modifier.testTag(googleMapTestTag)
         )
     }
@@ -180,7 +190,9 @@ internal fun MapRoute(
 
 @Composable
 private fun MapUiState.MapScreen(
+    mapMyLocationState: MapMyLocationState,
     onEvent: (MapUiEvent) -> Unit,
+    onLocationEvent: (MapLocationEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (imageGalleryState.shouldShownGallery) {
@@ -224,16 +236,21 @@ private fun MapUiState.MapScreen(
             onCancelClick = { onEvent(MapUiEvent.OnScreenshotProcessCancelled) },
             isButtonVisible = isComponentVisible
         )
-        LoadingDialog(componentLoadingState)
-        MapCameraSection(onEvent = onEvent)
+
+        val componentState = when (mapMyLocationState.componentLoadingState) {
+            MY_LOCATION -> mapMyLocationState.componentLoadingState
+            else -> componentLoadingState
+        }
+
+        LoadingDialog(loadingState = componentState)
+
+        MapCameraSection(mapMyLocationState, onEvent = onEvent, onLocationEvent = onLocationEvent)
         DisplayBottomSheet(
             bottomSheetState = bottomSheetState,
             location = location,
             onEvent = onEvent,
             modifier = Modifier.zIndex(2f)
         )
-
-
     }
 }
 
@@ -384,34 +401,41 @@ private fun MapSearchBar(
 
 context(BoxScope)
 @Composable
-private fun MapUiState.MapCameraSection(onEvent: (MapUiEvent) -> Unit) {
+private fun MapUiState.MapCameraSection(
+    mapMyLocationState: MapMyLocationState,
+    onEvent: (MapUiEvent) -> Unit,
+    onLocationEvent: (MapLocationEvent) -> Unit
+) {
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(coordinatesLatLng, 14f)
     }
     var animateCameraState by remember { mutableStateOf(true) }
 
-    LaunchedEffect(myLocationState, animateCameraState) {
-        val isLocationFetched = myLocationState.isFetched
-        val shouldAnimateCamera = animateCameraState || !myLocationState.isFirstTimeFetched
+    LaunchedEffect(mapMyLocationState.myCoordinatesLatLng, animateCameraState) {
+        val isLocationFetched = mapMyLocationState.isMyLocationFetched
+        val shouldAnimateCamera = animateCameraState || !mapMyLocationState.isFirstTimeFetched
 
         if (isLocationFetched && shouldAnimateCamera) {
-            cameraPositionState.navigateToLocation(myLocationState.loc.toLatLng())
-            if (!myLocationState.isFirstTimeFetched) onEvent(MapUiEvent.OnWhenNavigateToMyLocation)
+            cameraPositionState.navigateToLocation(mapMyLocationState.myLocationCoordinates.toLatLng())
+            if (!mapMyLocationState.isFirstTimeFetched) {
+                onLocationEvent(MapLocationEvent.OnWhenNavigateToMyLocation)
+            }
             animateCameraState = false
         }
     }
 
-    if (isMyLocationButtonVisible)
+    if (mapMyLocationState.isMyLocationButtonVisible) {
         MyCurrentLocationButton(
             onClick = {
-                if (myLocationState.isFetched) {
+                if (mapMyLocationState.isMyLocationFetched) {
                     animateCameraState = true
                 } else {
-                    onEvent(MapUiEvent.OnMyCurrentLocationClick)
+                    onLocationEvent(MapLocationEvent.OnMyCurrentLocationClick)
                 }
             },
             modifier = Modifier.zIndex(1f)
         )
+    }
 
     // TODO: Check is the animate became problem for map loading
     LaunchedEffect(coordinatesLatLng) {
@@ -489,7 +513,7 @@ private fun BoxScope.LoadingDialog(
     ) {
         val title = when (loadingState) {
             MAP -> AppText.discovering_your_dream_place
-            ComponentLoadingState.MY_LOCATION -> AppText.loading_your_location
+            MY_LOCATION -> AppText.loading_your_location
             ComponentLoadingState.NOTHING -> AppText.not_valid_name
         }
         Surface(

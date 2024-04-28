@@ -5,11 +5,10 @@ import com.espressodev.gptmap.core.data.repository.FavouriteRepository
 import com.espressodev.gptmap.core.data.repository.ImageAnalysisRepository
 import com.espressodev.gptmap.core.data.repository.UserRepository
 import com.espressodev.gptmap.core.datastore.DataStoreService
-import com.espressodev.gptmap.core.domain.GetCurrentLocationUseCase
 import com.espressodev.gptmap.core.firebase.FirestoreRepository
 import com.espressodev.gptmap.core.gemini.GeminiRepository
 import com.espressodev.gptmap.core.mongodb.FavouriteRealmRepository
-import com.espressodev.gptmap.core.unsplash.UnsplashDataSource
+import com.espressodev.gptmap.core.unsplash.UnsplashRepository
 import com.espressodev.gptmap.feature.screenshot.ScreenshotServiceHandler
 import dagger.Module
 import dagger.Provides
@@ -26,20 +25,18 @@ object ViewModelModule {
     @Provides
     fun provideApiService(
         geminiRepository: GeminiRepository,
-        unsplashDataSource: UnsplashDataSource
-    ): ApiService = ApiService(geminiRepository, unsplashDataSource)
+        unsplashRepository: UnsplashRepository
+    ): ApiService = ApiService(geminiRepository, unsplashRepository)
 
     @ViewModelScoped
     @Provides
-    fun provideUseCaseBundle(
+    fun provideRepositoryBundle(
         favouriteRepository: FavouriteRepository,
         userRepository: UserRepository,
-        getCurrentLocationUseCase: GetCurrentLocationUseCase,
         imageAnalysisRepository: ImageAnalysisRepository
     ): RepositoryBundle = RepositoryBundle(
         favouriteRepository,
         userRepository,
-        getCurrentLocationUseCase,
         imageAnalysisRepository
     )
 
@@ -59,13 +56,12 @@ object ViewModelModule {
 
 data class ApiService(
     val geminiRepository: GeminiRepository,
-    val unsplashDataSource: UnsplashDataSource
+    val unsplashRepository: UnsplashRepository
 )
 
 data class RepositoryBundle(
     val favouriteRepository: FavouriteRepository,
     val userRepository: UserRepository,
-    val getCurrentLocationUseCase: GetCurrentLocationUseCase,
     val imageAnalysisRepository: ImageAnalysisRepository
 )
 

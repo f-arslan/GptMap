@@ -5,7 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
-import com.espressodev.gptmap.core.designsystem.Constants.GENERIC_ERROR_MSG
 import com.espressodev.gptmap.core.model.di.Dispatcher
 import com.espressodev.gptmap.core.model.di.GmDispatchers.IO
 import com.espressodev.gptmap.feature.screenshot.ScreenshotServiceHandler
@@ -15,7 +14,6 @@ import com.espressodev.gptmap.feature.screenshot.ScreenshotState.STARTED
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,9 +38,6 @@ class MapViewModel @Inject constructor(
 
     private val _navigationState = MutableStateFlow<NavigationState>(NavigationState.None)
     val navigationState = _navigationState.asStateFlow()
-
-    private val myCoordinates
-        get() = uiState.value.myCoordinatesLatLng
 
     private val locationImages
         get() = uiState.value.location.locationImages
@@ -114,14 +109,10 @@ class MapViewModel @Inject constructor(
             MapUiEvent.OnBackClick -> reset()
 
             MapUiEvent.OnScreenshotProcessStarted -> updateUiBeforeProcess()
-            MapUiEvent.OnMyCurrentLocationClick -> getMyCurrentLocation()
             MapUiEvent.OnScreenshotProcessCancelled -> reset()
             MapUiEvent.OnChatAiClick -> onChatAiClick()
             is MapUiEvent.OnExploreWithAiClickFromImage -> onExploreWithAiClick(event.index)
             MapUiEvent.OnProfileClick -> _navigationState.update { NavigationState.NavigateToProfile }
-            MapUiEvent.OnWhenNavigateToMyLocation -> _uiState.update {
-                it.copy(myLocationState = it.myLocationState.copy(isFirstTimeFetched = true))
-            }
         }
     }
 
@@ -141,30 +132,38 @@ class MapViewModel @Inject constructor(
 
         val analysisId = locationImages[index].analysisId
         val latestImageId = repositoryBundle.userRepository.getLatestImageId().getOrThrow()
-        if (analysisId != "") {
-            resetAfterExamineWithAiClick()
-            delay(50L)
-            if (latestImageId != analysisId) {
-                dataService.dataStoreService.setLatestImageIdForChat(analysisId)
-                _navigationState.update { NavigationState.NavigateToGallery }
-            } else {
-                _navigationState.update { NavigationState.NavigateToSnapToScript(analysisId) }
-            }
-        } else {
-            val imageAnalysisId =
-                repositoryBundle.imageAnalysisRepository
-                    .turnImageToImageAnalysis(imageUrl = locationImages[index].imageUrl)
-                    .getOrThrow()
-            resetAfterExamineWithAiClick()
-            delay(50L)
-            _navigationState.update { NavigationState.NavigateToGallery }
+        when {
+            analysisId != "" -> {
+                resetAfterExamineWithAiClick()
+                delay(50L)
+                when {
+                    latestImageId != analysisId -> {
+                        dataService.dataStoreService.setLatestImageIdForChat(analysisId)
+                        _navigationState.update { NavigationState.NavigateToGallery }
+                    }
 
-            if (favouriteId.isNotEmpty()) {
-                dataService.favouriteRealmRepository.updateImageAnalysisId(
-                    favouriteId = favouriteId,
-                    messageId = locationImages[index].id,
-                    imageAnalysisId = imageAnalysisId
-                ).getOrThrow()
+                    else -> {
+                        _navigationState.update { NavigationState.NavigateToSnapToScript(analysisId) }
+                    }
+                }
+            }
+
+            else -> {
+                val imageAnalysisId =
+                    repositoryBundle.imageAnalysisRepository
+                        .turnImageToImageAnalysis(imageUrl = locationImages[index].imageUrl)
+                        .getOrThrow()
+                resetAfterExamineWithAiClick()
+                delay(50L)
+                _navigationState.update { NavigationState.NavigateToGallery }
+
+                if (favouriteId.isNotEmpty()) {
+                    dataService.favouriteRealmRepository.updateImageAnalysisId(
+                        favouriteId = favouriteId,
+                        messageId = locationImages[index].id,
+                        imageAnalysisId = imageAnalysisId
+                    ).getOrThrow()
+                }
             }
         }
     }
@@ -175,49 +174,6 @@ class MapViewModel @Inject constructor(
                 bottomSheetState = MapBottomSheetState.BOTTOM_SHEET_HIDDEN,
                 isLoading = false,
             )
-        }
-    }
-
-    private var myLocationJob: Job? = null
-    private fun getMyCurrentLocation() {
-        myLocationJob?.cancel()
-
-        myLocationJob = launchCatching {
-            if (myCoordinates.latitude != 0.0) {
-                return@launchCatching
-            }
-
-            _uiState.update {
-                it.copy(
-                    isMyLocationButtonVisible = false,
-                    componentLoadingState = ComponentLoadingState.MY_LOCATION
-                )
-            }
-
-            repositoryBundle.getCurrentLocationUseCase().collect { locationResult ->
-                locationResult
-                    .onSuccess { location ->
-                        _uiState.update {
-                            it.copy(
-                                myLocationState = MyLocationState(
-                                    isFetched = true,
-                                    loc = location
-                                )
-                            )
-                        }
-                    }
-                    .onFailure { throwable ->
-                        val message = throwable.message ?: GENERIC_ERROR_MSG
-                        SnackbarManager.showMessage(message)
-                    }
-
-                _uiState.update {
-                    it.copy(
-                        isMyLocationButtonVisible = true,
-                        componentLoadingState = ComponentLoadingState.NOTHING
-                    )
-                }
-            }
         }
     }
 
@@ -238,7 +194,7 @@ class MapViewModel @Inject constructor(
                 }
 
                 location.content.city.also { city ->
-                    apiService.unsplashDataSource.getTwoPhotos(city)
+                    apiService.unsplashRepository.getTwoPhotos(city)
                         .onSuccess { locationImages ->
                             _uiState.update { it.copy(location = location.copy(locationImages = locationImages)) }
                         }
@@ -277,24 +233,23 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    private fun onStreetViewClick(latLng: Pair<Double, Double>) =
-        launchCatching {
-            val isStreetAvailable = withContext(ioDispatcher) {
-                MapUtils.fetchStreetViewData(LatLng(latLng.first, latLng.second))
-            }
-            when (isStreetAvailable) {
-                Status.OK -> {
-                    delay(25L)
-                    _navigationState.update {
-                        NavigationState.NavigateToStreetView(
-                            Pair(latLng.first.toFloat(), latLng.second.toFloat())
-                        )
-                    }
-                }
-
-                else -> SnackbarManager.showMessage(AppText.street_view_not_available)
-            }
+    private fun onStreetViewClick(latLng: Pair<Double, Double>) = launchCatching {
+        val isStreetAvailable = withContext(ioDispatcher) {
+            MapUtils.fetchStreetViewData(LatLng(latLng.first, latLng.second))
         }
+        when (isStreetAvailable) {
+            Status.OK -> {
+                delay(25L)
+                _navigationState.update {
+                    NavigationState.NavigateToStreetView(
+                        Pair(latLng.first.toFloat(), latLng.second.toFloat())
+                    )
+                }
+            }
+
+            else -> SnackbarManager.showMessage(AppText.street_view_not_available)
+        }
+    }
 
     private fun updateUiBeforeProcess() {
         _uiState.update {

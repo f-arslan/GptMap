@@ -13,12 +13,6 @@ enum class ComponentLoadingState {
     MY_LOCATION, MAP, NOTHING
 }
 
-data class MyLocationState(
-    val isFetched: Boolean = false,
-    val isFirstTimeFetched: Boolean = false,
-    val loc: Pair<Double, Double> = 0.0 to 0.0
-)
-
 fun Pair<Double, Double>.toLatLng() = LatLng(first, second)
 
 data class ImageGalleryState(
@@ -32,18 +26,13 @@ data class MapUiState(
     val userFirstChar: Char = 'H',
     val componentLoadingState: ComponentLoadingState = ComponentLoadingState.NOTHING,
     val bottomSheetState: MapBottomSheetState = MapBottomSheetState.BOTTOM_SHEET_HIDDEN,
-    val myLocationState: MyLocationState = MyLocationState(),
     val screenshotState: ScreenshotState = ScreenshotState.IDLE,
     val imageGalleryState: ImageGalleryState = ImageGalleryState(),
     val isLoading: Boolean = false,
     val isComponentVisible: Boolean = true,
-    val isMyLocationButtonVisible: Boolean = true
 ) {
     val coordinatesLatLng: LatLng
         get() = location.content.coordinates.run { LatLng(latitude, longitude) }
-
-    val myCoordinatesLatLng: LatLng
-        get() = myLocationState.loc.run { LatLng(first, second) }
 }
 
 sealed class MapUiEvent {
@@ -61,8 +50,6 @@ sealed class MapUiEvent {
     data object OnScreenshotProcessStarted : MapUiEvent()
     data object OnScreenshotProcessCancelled : MapUiEvent()
     data class OnStreetViewClick(val latLng: Pair<Double, Double>) : MapUiEvent()
-    data object OnMyCurrentLocationClick : MapUiEvent()
-    data object OnWhenNavigateToMyLocation : MapUiEvent()
 }
 
 sealed interface NavigationState {
