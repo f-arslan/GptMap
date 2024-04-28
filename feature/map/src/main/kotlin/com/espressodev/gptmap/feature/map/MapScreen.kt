@@ -388,19 +388,15 @@ private fun MapUiState.MapCameraSection(onEvent: (MapUiEvent) -> Unit) {
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(coordinatesLatLng, 14f)
     }
+    var animateCameraState by remember { mutableStateOf(true) }
 
-    var animateCameraState by remember { mutableStateOf(false) }
-    var locationLatLng by remember { mutableStateOf(0.0 to 0.0) }
+    LaunchedEffect(myLocationState, animateCameraState) {
+        val isLocationFetched = myLocationState.isFetched
+        val shouldAnimateCamera = animateCameraState || !myLocationState.isFirstTimeFetched
 
-    // TODO: Handle it if the value change from ui state
-    LaunchedEffect(key1 = animateCameraState) {
-        if (animateCameraState) {
-            cameraPositionState.animate(
-                CameraUpdateFactory.newLatLngZoom(
-                    LatLng(locationLatLng.first, locationLatLng.second),
-                    12f
-                )
-            )
+        if (isLocationFetched && shouldAnimateCamera) {
+            cameraPositionState.navigateToLocation(myLocationState.loc.toLatLng())
+            if (!myLocationState.isFirstTimeFetched) onEvent(MapUiEvent.OnWhenNavigateToMyLocation)
             animateCameraState = false
         }
     }
@@ -409,7 +405,6 @@ private fun MapUiState.MapCameraSection(onEvent: (MapUiEvent) -> Unit) {
         MyCurrentLocationButton(
             onClick = {
                 if (myLocationState.isFetched) {
-                    locationLatLng = myLocationState.loc
                     animateCameraState = true
                 } else {
                     onEvent(MapUiEvent.OnMyCurrentLocationClick)
@@ -444,6 +439,10 @@ private fun MapUiState.MapCameraSection(onEvent: (MapUiEvent) -> Unit) {
         isCameraMoving = cameraPositionState.isMoving
     )
     MapSection(cameraPositionState)
+}
+
+private suspend fun CameraPositionState.navigateToLocation(latLng: LatLng) {
+    animate(CameraUpdateFactory.newLatLngZoom(latLng, 12f))
 }
 
 @Composable

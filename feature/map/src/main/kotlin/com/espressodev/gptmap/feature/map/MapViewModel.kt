@@ -119,6 +119,9 @@ class MapViewModel @Inject constructor(
             MapUiEvent.OnChatAiClick -> onChatAiClick()
             is MapUiEvent.OnExploreWithAiClickFromImage -> onExploreWithAiClick(event.index)
             MapUiEvent.OnProfileClick -> _navigationState.update { NavigationState.NavigateToProfile }
+            MapUiEvent.OnWhenNavigateToMyLocation -> _uiState.update {
+                it.copy(myLocationState = it.myLocationState.copy(isFirstTimeFetched = true))
+            }
         }
     }
 
@@ -180,14 +183,13 @@ class MapViewModel @Inject constructor(
         myLocationJob?.cancel()
 
         myLocationJob = launchCatching {
-            println(myCoordinates)
             if (myCoordinates.latitude != 0.0) {
                 return@launchCatching
             }
 
             _uiState.update {
                 it.copy(
-                    isComponentVisible = false,
+                    isMyLocationButtonVisible = false,
                     componentLoadingState = ComponentLoadingState.MY_LOCATION
                 )
             }
@@ -198,8 +200,8 @@ class MapViewModel @Inject constructor(
                         _uiState.update {
                             it.copy(
                                 myLocationState = MyLocationState(
-                                    true,
-                                    location
+                                    isFetched = true,
+                                    loc = location
                                 )
                             )
                         }
@@ -211,7 +213,7 @@ class MapViewModel @Inject constructor(
 
                 _uiState.update {
                     it.copy(
-                        isComponentVisible = true,
+                        isMyLocationButtonVisible = true,
                         componentLoadingState = ComponentLoadingState.NOTHING
                     )
                 }

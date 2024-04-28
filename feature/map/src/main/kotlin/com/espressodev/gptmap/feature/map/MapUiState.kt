@@ -15,8 +15,11 @@ enum class ComponentLoadingState {
 
 data class MyLocationState(
     val isFetched: Boolean = false,
+    val isFirstTimeFetched: Boolean = false,
     val loc: Pair<Double, Double> = 0.0 to 0.0
 )
+
+fun Pair<Double, Double>.toLatLng() = LatLng(first, second)
 
 data class ImageGalleryState(
     val currentIndex: Int = 0,
@@ -59,6 +62,7 @@ sealed class MapUiEvent {
     data object OnScreenshotProcessCancelled : MapUiEvent()
     data class OnStreetViewClick(val latLng: Pair<Double, Double>) : MapUiEvent()
     data object OnMyCurrentLocationClick : MapUiEvent()
+    data object OnWhenNavigateToMyLocation : MapUiEvent()
 }
 
 sealed interface NavigationState {
