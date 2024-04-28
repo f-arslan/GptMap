@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,7 +31,6 @@ import com.espressodev.gptmap.core.designsystem.component.ExtFloActionButton
 import com.espressodev.gptmap.core.designsystem.component.GmProgressIndicator
 import com.espressodev.gptmap.core.designsystem.component.HeaderWrapper
 import com.espressodev.gptmap.core.designsystem.component.PasswordTextField
-import com.espressodev.gptmap.core.google.composable.OneTapLauncher
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
@@ -63,17 +63,12 @@ internal fun LoginRoute(
     }
 
     if (uiState.loadingState is LoadingState.Loading) GmProgressIndicator()
+
     LoginScreen(
         uiState = uiState,
         onEvent = { event -> onEvent(event) },
     )
-    OneTapLauncher(
-        oneTapClient = viewModel.oneTapClient,
-        oneTapSignInUpResponse = uiState.oneTapSignInResponse,
-        singInUpWithGoogleResponse = uiState.signInWithGoogleResponse,
-        signInWithGoogle = viewModel::signInWithGoogle,
-        navigate = navigateToMap
-    )
+
 }
 
 @Composable
@@ -82,10 +77,6 @@ private fun LoginScreen(
     onEvent: (LoginEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LaunchedEffect(key1 = onEvent) {
-        Log.d("LoginScreen", "LoginScreen: onEvent")
-    }
-
     AppWrapper(modifier) {
         LoginHeader()
         DefaultTextField(
@@ -118,10 +109,11 @@ private fun LoginScreen(
             style = MaterialTheme.typography.titleMedium,
             height = 24.dp
         )
+        val context = LocalContext.current
         ExtFloActionButton(
             AppDrawable.google,
             label = AppText.continue_google,
-            onClick = { onEvent(LoginEvent.OnGoogleClicked) }
+            onClick = { onEvent(LoginEvent.OnGoogleClicked(context)) }
         )
         Spacer(Modifier.weight(1f))
         Row(

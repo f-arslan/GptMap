@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.feature.register
 
+import android.content.Context
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
@@ -9,9 +10,6 @@ import com.espressodev.gptmap.core.model.ext.isValidEmail
 import com.espressodev.gptmap.core.model.ext.isValidName
 import com.espressodev.gptmap.core.model.ext.isValidPassword
 import com.espressodev.gptmap.core.model.ext.passwordMatches
-import com.espressodev.gptmap.core.model.google.GoogleResponse
-import com.google.android.gms.auth.api.identity.SignInClient
-import com.google.firebase.auth.AuthCredential
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +21,6 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 @HiltViewModel
 class RegisterScreenViewModel @Inject constructor(
     private val authenticationRepository: AuthenticationRepository,
-    val oneTapClient: SignInClient,
     logService: LogService
 ) : GmViewModel(logService) {
 
@@ -54,7 +51,7 @@ class RegisterScreenViewModel @Inject constructor(
             is RegisterEvent.OnVerificationAlertStateChanged ->
                 _uiState.update { it.copy(verificationAlertState = event.state) }
 
-            RegisterEvent.OnGoogleClicked -> oneTapSignUp()
+            is RegisterEvent.OnGoogleClicked -> signUpWithGoogle(event.context)
             RegisterEvent.OnRegisterClicked -> onRegisterClick()
         }
     }
@@ -81,21 +78,11 @@ class RegisterScreenViewModel @Inject constructor(
         onEvent(RegisterEvent.OnLoadingStateChanged(LoadingState.Idle))
     }
 
-    private fun oneTapSignUp() = launchCatching {
-        _uiState.update { it.copy(oneTapSignUpResponse = GoogleResponse.Loading) }
-
-        val oneTapSignUpResponse = authenticationRepository.oneTapSignUpWithGoogle()
-
-        _uiState.update { it.copy(oneTapSignUpResponse = oneTapSignUpResponse) }
-    }
-
-    fun signUpWithGoogle(googleCredential: AuthCredential) = launchCatching {
-        _uiState.update { it.copy(signUpWithGoogleResponse = GoogleResponse.Loading) }
+    fun signUpWithGoogle(context: Context) = launchCatching {
 
         val signInUpWithGoogleResponse =
-            authenticationRepository.firebaseSignInUpWithGoogle(googleCredential)
+            authenticationRepository.signInUpWithGoogle(context)
 
-        _uiState.update { it.copy(signUpWithGoogleResponse = signInUpWithGoogleResponse) }
     }
 
     private fun formValidation(): Boolean =

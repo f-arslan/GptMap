@@ -1,5 +1,6 @@
 package com.espressodev.gptmap.feature.login
 
+import android.content.Context
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
@@ -7,9 +8,6 @@ import com.espressodev.gptmap.core.data.repository.AuthenticationRepository
 import com.espressodev.gptmap.core.model.Exceptions.FirebaseEmailVerificationIsFalseException
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.ext.isValidEmail
-import com.espressodev.gptmap.core.model.google.GoogleResponse
-import com.google.android.gms.auth.api.identity.SignInClient
-import com.google.firebase.auth.AuthCredential
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,7 +18,6 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val authenticationRepository: AuthenticationRepository,
-    val oneTapClient: SignInClient,
     logService: LogService
 ) : GmViewModel(logService) {
     private val _uiState = MutableStateFlow(LoginUiState())
@@ -35,12 +32,13 @@ class LoginViewModel @Inject constructor(
     fun onEvent(event: LoginEvent) {
         when (event) {
             is LoginEvent.OnEmailChanged -> _uiState.update { it.copy(email = event.email) }
-            LoginEvent.OnGoogleClicked -> oneTapSignIn()
+            is LoginEvent.OnGoogleClicked -> googleSignIn(context = event.context)
             LoginEvent.OnLoginClicked -> onLoginClick()
             is LoginEvent.OnPasswordChanged -> _uiState.update { it.copy(password = event.password) }
             is LoginEvent.OnLoadingStateChanged -> _uiState.update { it.copy(loadingState = event.state) }
             LoginEvent.OnForgotPasswordClicked ->
                 _navigationState.update { LoginNavigationState.NavigateToForgotPassword }
+
             LoginEvent.OnNotMemberClicked -> _navigationState.update { LoginNavigationState.NavigateToRegister }
         }
     }
@@ -76,20 +74,9 @@ class LoginViewModel @Inject constructor(
             false
         } else true
 
-    private fun oneTapSignIn() = launchCatching {
-        _uiState.update { it.copy(oneTapSignInResponse = GoogleResponse.Loading) }
-
-        val oneTapSignInResponse = authenticationRepository.oneTapSignInWithGoogle()
-
-        _uiState.update { it.copy(oneTapSignInResponse = oneTapSignInResponse) }
-    }
-
-    fun signInWithGoogle(googleCredential: AuthCredential) = launchCatching {
-        _uiState.update { it.copy(signInWithGoogleResponse = GoogleResponse.Loading) }
-
-        val signInWithGoogleResponse =
-            authenticationRepository.firebaseSignInUpWithGoogle(googleCredential)
-
-        _uiState.update { it.copy(signInWithGoogleResponse = signInWithGoogleResponse) }
+    private fun googleSignIn(context: Context) = launchCatching {
+        authenticationRepository.signInUpWithGoogle(context).collect {
+            println(it)
+        }
     }
 }

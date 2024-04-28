@@ -4,6 +4,7 @@ androidDesugarJdkLibs = "2.0.4"
 androidGradlePlugin = "8.3.2"
 androidTools = "31.3.2"
 androidxActivity = "1.9.0"
+androidxCredentials = "1.3.0-alpha03"
 androidxComposeBom = "2024.04.01"
 androidxComposeCompiler = "1.5.12"  # Compose VC
 androidxCoreSplashscreen = "1.0.1"
@@ -39,6 +40,7 @@ fixture = "1.2.0"
 generativeai = "0.4.0"
 gmsPlugin = "4.4.1"
 googleGson = "2.10.1"
+googleId = "1.1.0"
 googleServices = "4.4.1"
 googleOssPlugin = "0.10.6"
 hilt = "2.51.1"
@@ -98,6 +100,9 @@ androidx-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test" }  
 androidx-compose-ui-testManifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }  # Android Compose VC
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }  # Android Compose VC
 androidx-dataStore-core = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDataStore" }
+androidx-credentials = { group = "androidx.credentials", name = "credentials", version.ref = "androidxCredentials" }
+androidx-credentials-play = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "androidxCredentials" }
+googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleId"  }
 # End of it
 
 # Firebase

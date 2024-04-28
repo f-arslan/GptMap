@@ -1,25 +1,25 @@
 package com.espressodev.gptmap.core.data.repository.impl
 
+import android.content.Context
 import com.espressodev.gptmap.core.data.repository.AuthenticationRepository
 import com.espressodev.gptmap.core.data.util.runCatchingWithContext
 import com.espressodev.gptmap.core.firebase.AccountService
 import com.espressodev.gptmap.core.firebase.FirestoreRepository
 import com.espressodev.gptmap.core.google.GoogleAuthService
-import com.espressodev.gptmap.core.google.OneTapSignInUpResponse
-import com.espressodev.gptmap.core.google.SignInUpWithGoogleResponse
 import com.espressodev.gptmap.core.model.Exceptions
 import com.espressodev.gptmap.core.model.di.Dispatcher
 import com.espressodev.gptmap.core.model.di.GmDispatchers.IO
 import com.espressodev.gptmap.core.model.firebase.Provider
 import com.espressodev.gptmap.core.model.firebase.User
-import com.espressodev.gptmap.core.model.google.GoogleResponse
+import com.espressodev.gptmap.core.model.google.AuthState
 import com.espressodev.gptmap.core.mongodb.RealmAccountRepository
-import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class AuthenticationRepositoryImpl @Inject constructor(
@@ -29,29 +29,25 @@ class AuthenticationRepositoryImpl @Inject constructor(
     private val googleAuthService: GoogleAuthService,
     @Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher
 ) : AuthenticationRepository {
-    override suspend fun oneTapSignUpWithGoogle(): OneTapSignInUpResponse =
-        withContext(ioDispatcher) {
-            googleAuthService.oneTapSignUpWithGoogle()
-        }
+    override fun signInUpWithGoogle(context: Context): Flow<AuthState<Unit>> = flow {
+        googleAuthService.googleSignInUp(context).collect { state ->
+            when (state) {
+                is AuthState.Success -> {
+                    try {
+                        loginToRealm(state.data)
+                        addUserToDatabaseIfUserIsNew(state.data)
+                        emit(AuthState.Success(Unit))
+                    } catch (e: Exception) {
+                        emit(AuthState.Error(e))
+                    }
+                }
 
-    override suspend fun oneTapSignInWithGoogle(): OneTapSignInUpResponse =
-        withContext(ioDispatcher) {
-            googleAuthService.oneTapSignInWithGoogle()
-        }
-    override suspend fun firebaseSignInUpWithGoogle(googleCredential: AuthCredential): SignInUpWithGoogleResponse =
-        withContext(ioDispatcher) {
-            try {
-                val authResult = googleAuthService.firebaseSignInWithGoogle(googleCredential)
-
-                loginToRealm(authResult)
-
-                addUserToDatabaseIfUserIsNew(authResult)
-
-                GoogleResponse.Success(data = true)
-            } catch (e: Exception) {
-                GoogleResponse.Failure(e)
+                is AuthState.Error -> emit(AuthState.Error(state.e))
+                AuthState.Loading -> emit(AuthState.Loading)
+                AuthState.Idle -> emit(AuthState.Idle)
             }
         }
+    }.flowOn(ioDispatcher)
 
     override suspend fun signInWithEmailAndPassword(email: String, password: String): Result<Unit> =
         runCatchingWithContext(ioDispatcher) {

@@ -18,6 +18,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -43,9 +44,7 @@ import com.espressodev.gptmap.core.designsystem.component.GmProgressIndicator
 import com.espressodev.gptmap.core.designsystem.component.HeaderWrapper
 import com.espressodev.gptmap.core.designsystem.component.HyperlinkText
 import com.espressodev.gptmap.core.designsystem.component.PasswordTextField
-import com.espressodev.gptmap.core.google.composable.OneTapLauncher
 import com.espressodev.gptmap.core.model.LoadingState
-import com.espressodev.gptmap.core.model.google.GoogleResponse
 import kotlinx.collections.immutable.persistentMapOf
 import com.espressodev.gptmap.core.designsystem.R.drawable as AppDrawable
 import com.espressodev.gptmap.core.designsystem.R.string as AppText
@@ -91,14 +90,6 @@ internal fun RegisterRoute(
         onAlreadyHaveAccountClicked = clearAndNavigateLogin,
         modifier = modifier,
     )
-
-    OneTapLauncher(
-        oneTapClient = viewModel.oneTapClient,
-        oneTapSignInUpResponse = uiState.oneTapSignUpResponse,
-        singInUpWithGoogleResponse = uiState.signUpWithGoogleResponse,
-        signInWithGoogle = viewModel::signUpWithGoogle,
-        navigate = clearAndNavigateMap,
-    )
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -116,6 +107,7 @@ private fun RegisterScreen(
         confirmPasswordFocusRequester,
     ) = FocusRequester.createRefs()
     val keyboardController = LocalSoftwareKeyboardController.current
+    val context = LocalContext.current
     AppWrapper(modifier = modifier) {
         RegisterHeader()
         TextFieldSection(
@@ -150,7 +142,7 @@ private fun RegisterScreen(
         ExtFloActionButton(
             icon = AppDrawable.google,
             label = AppText.continue_google,
-            onClick = { onEvent(RegisterEvent.OnGoogleClicked) },
+            onClick = { onEvent(RegisterEvent.OnGoogleClicked(context)) },
         )
         Spacer(Modifier.weight(1f))
         Row(
@@ -256,8 +248,6 @@ private fun RegisterPreview() {
             confirmPassword = "mandamus",
             verificationAlertState = LoadingState.Loading,
             loadingState = LoadingState.Loading,
-            oneTapSignUpResponse = GoogleResponse.Success(null),
-            signUpWithGoogleResponse = GoogleResponse.Success(true),
         ),
         onEvent = {},
         onAlreadyHaveAccountClicked = {},

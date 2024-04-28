@@ -7,6 +7,10 @@ plugins {
 
 android {
     namespace = "com.espressodev.gptmap.core.google"
+
+    defaultConfig {
+        proguardFiles("proguard-rules.pro")
+    }
 }
 
 dependencies {
@@ -16,4 +20,8 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.play.services.auth)
     implementation(libs.play.services.location)
+
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play)
+    implementation(libs.googleid)
 }

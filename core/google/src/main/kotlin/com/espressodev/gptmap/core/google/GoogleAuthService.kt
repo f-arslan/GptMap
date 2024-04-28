@@ -1,15 +1,11 @@
 package com.espressodev.gptmap.core.google
 
-import com.espressodev.gptmap.core.model.google.GoogleResponse
-import com.google.android.gms.auth.api.identity.BeginSignInResult
+import android.content.Context
+import com.espressodev.gptmap.core.model.google.AuthState
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
-
-typealias OneTapSignInUpResponse = GoogleResponse<BeginSignInResult>
-typealias SignInUpWithGoogleResponse = GoogleResponse<Boolean>
+import kotlinx.coroutines.flow.Flow
 
 interface GoogleAuthService {
-    suspend fun oneTapSignInWithGoogle(): OneTapSignInUpResponse
-    suspend fun oneTapSignUpWithGoogle(): OneTapSignInUpResponse
-    suspend fun firebaseSignInWithGoogle(googleCredential: AuthCredential): AuthResult
+    fun googleSignInUp(context: Context): Flow<AuthState<AuthResult>>
 }
