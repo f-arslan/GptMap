@@ -19,9 +19,9 @@ sealed class LoginEvent {
     data object OnNotMemberClicked : LoginEvent()
 }
 
-sealed class LoginNavigationState {
-    data object None : LoginNavigationState()
-    data object NavigateToMap : LoginNavigationState()
-    data object NavigateToRegister : LoginNavigationState()
-    data object NavigateToForgotPassword : LoginNavigationState()
+sealed class NavigationState {
+    data object None : NavigationState()
+    data object NavigateToMap : NavigationState()
+    data object NavigateToRegister : NavigationState()
+    data object NavigateToForgotPassword : NavigationState()
 }

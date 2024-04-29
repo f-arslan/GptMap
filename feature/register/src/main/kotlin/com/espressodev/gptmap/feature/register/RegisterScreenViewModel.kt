@@ -10,6 +10,7 @@ import com.espressodev.gptmap.core.model.ext.isValidEmail
 import com.espressodev.gptmap.core.model.ext.isValidName
 import com.espressodev.gptmap.core.model.ext.isValidPassword
 import com.espressodev.gptmap.core.model.ext.passwordMatches
+import com.espressodev.gptmap.core.model.google.AuthState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +28,9 @@ class RegisterScreenViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(RegisterUiState())
     val uiState = _uiState.asStateFlow()
 
+    private val _navigationState = MutableStateFlow(NavigationState.Idle)
+    val navigationState = _navigationState.asStateFlow()
+
     private val email
         get() = uiState.value.email
 
@@ -40,26 +44,34 @@ class RegisterScreenViewModel @Inject constructor(
         when (event) {
             is RegisterEvent.OnFullNameChanged ->
                 _uiState.update { it.copy(fullName = event.fullName) }
+
             is RegisterEvent.OnEmailChanged ->
                 _uiState.update { it.copy(email = event.email) }
+
             is RegisterEvent.OnPasswordChanged ->
                 _uiState.update { it.copy(password = event.password) }
+
             is RegisterEvent.OnConfirmPasswordChanged ->
                 _uiState.update { it.copy(confirmPassword = event.confirmPassword) }
+
             is RegisterEvent.OnLoadingStateChanged ->
                 _uiState.update { it.copy(loadingState = event.state) }
+
             is RegisterEvent.OnVerificationAlertStateChanged ->
                 _uiState.update { it.copy(verificationAlertState = event.state) }
 
             is RegisterEvent.OnGoogleClicked -> signUpWithGoogle(event.context)
             RegisterEvent.OnRegisterClicked -> onRegisterClick()
+            RegisterEvent.OnAlreadyHaveAccountClick -> {
+                _navigationState.update { NavigationState.Login }
+            }
         }
     }
 
-    fun handleVerificationAndNavigate(clearAndNavigateLogin: () -> Unit) = launchCatching {
+    fun handleVerificationAndNavigate() = launchCatching {
         onEvent(RegisterEvent.OnVerificationAlertStateChanged(LoadingState.Idle))
-        delay(200L)
-        clearAndNavigateLogin()
+        delay(150L)
+        _navigationState.update { NavigationState.Login }
     }
 
     private fun onRegisterClick() = launchCatching {
@@ -78,11 +90,23 @@ class RegisterScreenViewModel @Inject constructor(
         onEvent(RegisterEvent.OnLoadingStateChanged(LoadingState.Idle))
     }
 
-    fun signUpWithGoogle(context: Context) = launchCatching {
+    private fun signUpWithGoogle(context: Context) = launchCatching {
+        authenticationRepository.signInUpWithGoogle(context).collect { authState ->
+            when (authState) {
+                is AuthState.Error -> println(authState.e)
+                AuthState.Idle -> Unit
+                AuthState.Loading -> _uiState.update { it.copy(loadingState = LoadingState.Loading) }
+                is AuthState.Success -> {
+                    _uiState.update { it.copy(loadingState = LoadingState.Idle) }
+                    delay(100)
+                    _navigationState.update { NavigationState.Map }
+                }
+            }
+        }
+    }
 
-        val signInUpWithGoogleResponse =
-            authenticationRepository.signInUpWithGoogle(context)
-
+    fun resetNavigation() {
+        _navigationState.update { NavigationState.Idle }
     }
 
     private fun formValidation(): Boolean =

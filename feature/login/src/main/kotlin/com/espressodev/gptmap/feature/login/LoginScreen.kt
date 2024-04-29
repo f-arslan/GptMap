@@ -1,6 +1,5 @@
 package com.espressodev.gptmap.feature.login
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -54,11 +53,11 @@ internal fun LoginRoute(
             viewModel.resetNavigation()
         }
         when (navigationState) {
-            is LoginNavigationState.NavigateToMap -> performNavigation(navigateToMap)
-            is LoginNavigationState.NavigateToRegister -> performNavigation(navigateToRegister)
-            is LoginNavigationState.NavigateToForgotPassword ->
+            is NavigationState.NavigateToMap -> performNavigation(navigateToMap)
+            is NavigationState.NavigateToRegister -> performNavigation(navigateToRegister)
+            is NavigationState.NavigateToForgotPassword ->
                 performNavigation(navigateToForgotPassword)
-            LoginNavigationState.None -> Unit
+            NavigationState.None -> Unit
         }
     }
 

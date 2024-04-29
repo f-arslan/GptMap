@@ -17,8 +17,8 @@ fun NavGraphBuilder.registerScreen(
 ) {
     composable(REGISTER_ROUTE) {
         RegisterRoute(
-            clearAndNavigateLogin = navigateToLogin,
-            clearAndNavigateMap = navigateToMap
+            navigateToLogin = navigateToLogin,
+            navigateToMap = navigateToMap
         )
     }
 }

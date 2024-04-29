@@ -15,7 +15,6 @@ class SecretManager {
 
     @Throws(Exception::class)
     private fun initialize() {
-        println("Secret manager initialized")
         SecretManagerServiceClient.create().use { client ->
             val unsplashSecretVersionName = SecretVersionName.of(projectId, unsplashSecretId, "latest")
 

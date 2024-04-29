@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -51,12 +52,26 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @Composable
 internal fun RegisterRoute(
-    clearAndNavigateLogin: () -> Unit,
-    clearAndNavigateMap: () -> Unit,
+    navigateToLogin: () -> Unit,
+    navigateToMap: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RegisterScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val navigationState by viewModel.navigationState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(key1 = navigationState) {
+        fun performNavigation(action: () -> Unit) {
+            action()
+            viewModel.resetNavigation()
+        }
+        when (navigationState) {
+            NavigationState.Idle -> Unit
+            NavigationState.Map -> performNavigation(navigateToMap)
+            NavigationState.Login -> performNavigation(navigateToLogin)
+        }
+    }
+
     when {
         uiState.loadingState is LoadingState.Loading -> {
             GmProgressIndicator()
@@ -66,12 +81,10 @@ internal fun RegisterRoute(
             GmAlertDialog(
                 icon = GmIcons.MarkEmailUnreadOutlined,
                 title = AppText.email_confirmation_title,
-                onConfirm = { viewModel.handleVerificationAndNavigate { clearAndNavigateLogin() } },
+                onConfirm = viewModel::handleVerificationAndNavigate,
                 onDismiss = {
                     viewModel.onEvent(
-                        RegisterEvent.OnVerificationAlertStateChanged(
-                            LoadingState.Idle,
-                        ),
+                        RegisterEvent.OnVerificationAlertStateChanged(LoadingState.Idle),
                     )
                 },
                 text = {
@@ -87,7 +100,6 @@ internal fun RegisterRoute(
     RegisterScreen(
         uiState = uiState,
         onEvent = viewModel::onEvent,
-        onAlreadyHaveAccountClicked = clearAndNavigateLogin,
         modifier = modifier,
     )
 }
@@ -97,7 +109,6 @@ internal fun RegisterRoute(
 private fun RegisterScreen(
     uiState: RegisterUiState,
     onEvent: (RegisterEvent) -> Unit,
-    onAlreadyHaveAccountClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val (
@@ -153,7 +164,7 @@ private fun RegisterScreen(
                 text = stringResource(id = AppText.already_have_account),
                 style = MaterialTheme.typography.titleMedium,
             )
-            TextButton(onClick = onAlreadyHaveAccountClicked) {
+            TextButton(onClick = { onEvent(RegisterEvent.OnAlreadyHaveAccountClick) }) {
                 Text(
                     text = stringResource(id = AppText.login),
                     style = MaterialTheme.typography.titleMedium,
@@ -250,6 +261,5 @@ private fun RegisterPreview() {
             loadingState = LoadingState.Loading,
         ),
         onEvent = {},
-        onAlreadyHaveAccountClicked = {},
     )
 }

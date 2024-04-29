@@ -8,7 +8,9 @@ import com.espressodev.gptmap.core.data.repository.AuthenticationRepository
 import com.espressodev.gptmap.core.model.Exceptions.FirebaseEmailVerificationIsFalseException
 import com.espressodev.gptmap.core.model.LoadingState
 import com.espressodev.gptmap.core.model.ext.isValidEmail
+import com.espressodev.gptmap.core.model.google.AuthState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -23,7 +25,7 @@ class LoginViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val _navigationState = MutableStateFlow<LoginNavigationState>(LoginNavigationState.None)
+    private val _navigationState = MutableStateFlow<NavigationState>(NavigationState.None)
     val navigationState = _navigationState.asStateFlow()
 
     private val email get() = uiState.value.email
@@ -37,14 +39,14 @@ class LoginViewModel @Inject constructor(
             is LoginEvent.OnPasswordChanged -> _uiState.update { it.copy(password = event.password) }
             is LoginEvent.OnLoadingStateChanged -> _uiState.update { it.copy(loadingState = event.state) }
             LoginEvent.OnForgotPasswordClicked ->
-                _navigationState.update { LoginNavigationState.NavigateToForgotPassword }
+                _navigationState.update { NavigationState.NavigateToForgotPassword }
 
-            LoginEvent.OnNotMemberClicked -> _navigationState.update { LoginNavigationState.NavigateToRegister }
+            LoginEvent.OnNotMemberClicked -> _navigationState.update { NavigationState.NavigateToRegister }
         }
     }
 
     fun resetNavigation() {
-        _navigationState.update { LoginNavigationState.None }
+        _navigationState.update { NavigationState.None }
     }
 
     private fun onLoginClick() = launchCatching {
@@ -54,7 +56,7 @@ class LoginViewModel @Inject constructor(
         authenticationRepository.signInWithEmailAndPassword(email, password)
             .onSuccess {
                 _uiState.update { it.copy(loadingState = LoadingState.Idle) }
-                _navigationState.update { LoginNavigationState.NavigateToMap }
+                _navigationState.update { NavigationState.NavigateToMap }
             }.onFailure {
                 if (it is FirebaseEmailVerificationIsFalseException) {
                     SnackbarManager.showMessage(AppText.please_verify_email)
@@ -75,8 +77,17 @@ class LoginViewModel @Inject constructor(
         } else true
 
     private fun googleSignIn(context: Context) = launchCatching {
-        authenticationRepository.signInUpWithGoogle(context).collect {
-            println(it)
+        authenticationRepository.signInUpWithGoogle(context).collect { authState ->
+            when (authState) {
+                is AuthState.Error -> println(authState.e)
+                AuthState.Idle -> Unit
+                AuthState.Loading -> _uiState.update { it.copy(loadingState = LoadingState.Loading) }
+                is AuthState.Success -> {
+                    _uiState.update { it.copy(loadingState = LoadingState.Idle) }
+                    delay(100)
+                    _navigationState.update { NavigationState.NavigateToMap }
+                }
+            }
         }
     }
 }

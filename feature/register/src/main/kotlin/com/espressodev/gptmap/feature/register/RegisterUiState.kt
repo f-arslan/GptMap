@@ -21,4 +21,9 @@ sealed class RegisterEvent {
     data class OnVerificationAlertStateChanged(val state: LoadingState) : RegisterEvent()
     data class OnGoogleClicked(val context: Context) : RegisterEvent()
     data object OnRegisterClicked : RegisterEvent()
+    data object OnAlreadyHaveAccountClick: RegisterEvent()
+}
+
+enum class NavigationState {
+    Idle, Map, Login
 }
