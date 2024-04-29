@@ -2,6 +2,7 @@ package com.espressodev.gptmap.feature.map
 
 import androidx.annotation.MainThread
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.espressodev.gptmap.core.common.GmViewModel
 import com.espressodev.gptmap.core.common.LogService
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
@@ -12,6 +13,7 @@ import com.espressodev.gptmap.feature.screenshot.ScreenshotState.FINISHED
 import com.espressodev.gptmap.feature.screenshot.ScreenshotState.IDLE
 import com.espressodev.gptmap.feature.screenshot.ScreenshotState.STARTED
 import com.google.android.gms.maps.model.LatLng
+import dagger.hilt.android.internal.ThreadUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
@@ -27,7 +29,7 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 class MapViewModel @Inject constructor(
     private val apiService: ApiService,
     private val repositoryBundle: RepositoryBundle,
-    private val dataService: DataService,
+    private val dataBundle: DataBundle,
     @Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
     private val savedStateHandle: SavedStateHandle,
     logService: LogService,
@@ -48,13 +50,17 @@ class MapViewModel @Inject constructor(
     private var initializeCalled = false
 
     @MainThread
-    suspend fun initialize() = launchCatching {
-        if (initializeCalled) return@launchCatching
+    suspend fun initialize() {
+        ThreadUtil.ensureMainThread()
+        if (initializeCalled) return
         initializeCalled = true
-        launch { getFirstLetterOfUser() }
-        launch { observeFavouriteIdFromBackStack() }
-        launch { collectScreenshotState() }
-        launch { repositoryBundle.userRepository.addIfNewUser() }
+
+        viewModelScope.launch {
+            launch { getFirstLetterOfUser() }
+            launch { observeFavouriteIdFromBackStack() }
+            launch { collectScreenshotState() }
+            launch { repositoryBundle.userRepository.addIfNewUser() }
+        }
     }
 
     private suspend fun collectScreenshotState() {
@@ -138,7 +144,7 @@ class MapViewModel @Inject constructor(
                 delay(50L)
                 when {
                     latestImageId != analysisId -> {
-                        dataService.dataStoreService.setLatestImageIdForChat(analysisId)
+                        dataBundle.dataStoreService.setLatestImageIdForChat(analysisId)
                         _navigationState.update { NavigationState.NavigateToGallery }
                     }
 
@@ -158,7 +164,7 @@ class MapViewModel @Inject constructor(
                 _navigationState.update { NavigationState.NavigateToGallery }
 
                 if (favouriteId.isNotEmpty()) {
-                    dataService.favouriteRealmRepository.updateImageAnalysisId(
+                    dataBundle.favouriteRealmRepository.updateImageAnalysisId(
                         favouriteId = favouriteId,
                         messageId = locationImages[index].id,
                         imageAnalysisId = imageAnalysisId
@@ -228,7 +234,8 @@ class MapViewModel @Inject constructor(
             it.copy(
                 isComponentVisible = true,
                 screenshotState = IDLE,
-                bottomSheetState = MapBottomSheetState.BOTTOM_SHEET_HIDDEN
+                bottomSheetState = MapBottomSheetState.BOTTOM_SHEET_HIDDEN,
+                isSearchBarVisible = true
             )
         }
     }
@@ -255,6 +262,7 @@ class MapViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 isComponentVisible = false,
+                isSearchBarVisible = false,
                 screenshotState = STARTED
             )
         }
@@ -263,14 +271,15 @@ class MapViewModel @Inject constructor(
 
     private fun loadLocationFromFavourite(favouriteId: String) = launchCatching {
         val location = withContext(ioDispatcher) {
-            dataService.favouriteRealmRepository.getFavourite(favouriteId)
+            dataBundle.favouriteRealmRepository.getFavourite(favouriteId)
         }.toLocation()
 
         _uiState.update {
             it.copy(
                 location = location,
                 bottomSheetState = MapBottomSheetState.SMALL_INFORMATION_CARD,
-                isComponentVisible = false
+                isComponentVisible = true,
+                isSearchBarVisible = false
             )
         }
     }

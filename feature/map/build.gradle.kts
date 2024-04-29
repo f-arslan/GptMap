@@ -20,6 +20,8 @@ dependencies {
     implementation(projects.feature.screenshot)
 
     implementation(libs.maps.compose)
+    implementation(libs.maps.compose.utils)
+    implementation(libs.maps.compose.widgets)
     implementation(libs.coil.compose)
     implementation(libs.lottie.compose)
     implementation(libs.accompanist.permissions)

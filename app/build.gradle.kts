@@ -108,4 +108,5 @@ dependencies {
     debugImplementation(libs.leakcanary)
     implementation(libs.androidx.profileinstaller)
     baselineProfile(projects.benchmarks)
+    implementation(libs.timber)
 }

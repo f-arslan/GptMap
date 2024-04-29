@@ -30,6 +30,7 @@ data class MapUiState(
     val imageGalleryState: ImageGalleryState = ImageGalleryState(),
     val isLoading: Boolean = false,
     val isComponentVisible: Boolean = true,
+    val isSearchBarVisible: Boolean = true
 ) {
     val coordinatesLatLng: LatLng
         get() = location.content.coordinates.run { LatLng(latitude, longitude) }

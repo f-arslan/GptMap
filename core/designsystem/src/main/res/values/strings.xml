@@ -31,6 +31,7 @@
     <string name="alert_icon">Alert Icon</string>
     <string name="dismiss">Dismiss</string>
     <string name="back_arrow">Back Arrow</string>
+    <string name="next_arrow">Next Arrow</string>
     <string name="camera">Camera</string>
     <string name="capture">Capture</string>
     <string name="done">Done</string>
@@ -65,6 +66,8 @@
     <string name="billed_monthly">Billed Monthly</string>
     <string name="billed_annually">Billed Annually</string>
     <string name="selected_plan">Selected Plan</string>
+    <string name="prev">Prev</string>
+    <string name="next">Next</string>
 
     <!-- Map -->
     <string name="map_text_field_placeholder">Search here</string>

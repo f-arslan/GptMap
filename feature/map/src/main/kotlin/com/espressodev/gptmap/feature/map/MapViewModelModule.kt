@@ -46,7 +46,7 @@ object ViewModelModule {
         favouriteRealmRepository: FavouriteRealmRepository,
         firestoreRepository: FirestoreRepository,
         dataStoreService: DataStoreService
-    ): DataService = DataService(favouriteRealmRepository, firestoreRepository, dataStoreService)
+    ): DataBundle = DataBundle(favouriteRealmRepository, firestoreRepository, dataStoreService)
 
     @ViewModelScoped
     @Provides
@@ -65,7 +65,7 @@ data class RepositoryBundle(
     val imageAnalysisRepository: ImageAnalysisRepository
 )
 
-data class DataService(
+data class DataBundle(
     val favouriteRealmRepository: FavouriteRealmRepository,
     val firestoreRepository: FirestoreRepository,
     val dataStoreService: DataStoreService

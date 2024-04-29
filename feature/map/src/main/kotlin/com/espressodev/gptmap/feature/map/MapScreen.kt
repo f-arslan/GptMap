@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -54,6 +55,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.window.Dialog
@@ -67,14 +69,16 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.espressodev.gptmap.core.designsystem.Constants.BOTTOM_BAR_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
+import com.espressodev.gptmap.core.designsystem.component.BackButton
 import com.espressodev.gptmap.core.designsystem.component.ExploreWithAiButton
+import com.espressodev.gptmap.core.designsystem.component.ExtendedButtonWithText
 import com.espressodev.gptmap.core.designsystem.component.GmDraggableButton
 import com.espressodev.gptmap.core.designsystem.component.GmProgressIndicator
 import com.espressodev.gptmap.core.designsystem.component.GradientOverImage
 import com.espressodev.gptmap.core.designsystem.component.LottieAnimationPlaceholder
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
 import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
-import com.espressodev.gptmap.core.designsystem.component.SquareButton
+import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
 import com.espressodev.gptmap.core.save_screenshot.composable.SaveScreenshot
@@ -218,7 +222,7 @@ private fun MapUiState.MapScreen(
             )
         }
         val googleMapTestTag = "map:SearchBar"
-        if (isComponentVisible) {
+        if (isSearchBarVisible) {
             MapSearchBar(
                 value = searchValue,
                 userFirstChar = userFirstChar,
@@ -447,6 +451,8 @@ private fun MapUiState.MapCameraSection(
         )
     }
 
+    NavigateBetweenLocations()
+
     AnimatedVisibility(
         visible = isComponentVisible,
         modifier = Modifier.zIndex(1f)
@@ -462,7 +468,21 @@ private fun MapUiState.MapCameraSection(
         isPinVisible = isComponentVisible,
         isCameraMoving = cameraPositionState.isMoving
     )
+
+
+
     MapSection(cameraPositionState)
+}
+
+@Composable
+private fun NavigateBetweenLocations() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .zIndex(2f)
+    ) {
+
+    }
 }
 
 private suspend fun CameraPositionState.navigateToLocation(latLng: LatLng) {
@@ -583,7 +603,7 @@ private fun BoxScope.LocationPin(
 }
 
 @Composable
-private fun BoxScope.SmallInformationCard(
+private fun SmallInformationCard(
     city: String,
     country: String,
     poeticDesc: String,
@@ -592,44 +612,67 @@ private fun BoxScope.SmallInformationCard(
     modifier: Modifier = Modifier
 ) {
     BackHandler(onBack = onBackClick)
-    Column(
-        modifier = modifier
-            .align(Alignment.BottomCenter)
-            .padding(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        SquareButton(
-            icon = IconType.Vector(GmIcons.ArrowBackOutlined),
-            contentDesc = AppText.back_arrow,
+    Box(modifier = Modifier.fillMaxSize()) {
+        BackButton(
             onClick = onBackClick,
         )
-
-        Surface(
-            shape = RoundedCornerShape(16.dp),
-            shadowElevation = 8.dp,
+        Column(
+            modifier = modifier
+                .align(Alignment.BottomCenter)
+                .padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = "$city, $country",
-                    style = MaterialTheme.typography.headlineSmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = poeticDesc,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontStyle = FontStyle.Italic
-                )
-                ExploreWithAiButton(onClick = onExploreWithAiClick)
+                ExtendedButtonWithText(textId = AppText.prev, onClick = { })
+                ExtendedButtonWithText(textId = AppText.next, onClick = { }, swap = true)
             }
+
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                shadowElevation = 8.dp,
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = "$city, $country",
+                        style = MaterialTheme.typography.headlineSmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = poeticDesc,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontStyle = FontStyle.Italic
+                    )
+                    ExploreWithAiButton(onClick = onExploreWithAiClick)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun MapScreenPreview() {
+    GptmapTheme {
+        Box(modifier = Modifier.fillMaxSize()) {
+            SmallInformationCard(
+                city = "Istanbul ",
+                country = "Hello",
+                poeticDesc = "This is good",
+                onExploreWithAiClick = {},
+                onBackClick = {},
+            )
         }
     }
 }

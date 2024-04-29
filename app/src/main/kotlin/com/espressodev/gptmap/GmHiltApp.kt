@@ -11,6 +11,7 @@ import com.espressodev.gptmap.core.firebase.StorageRepository
 import com.espressodev.gptmap.core.mongodb.RealmAccountRepository
 import com.espressodev.gptmap.core.mongodb.UserManagementRealmRepository
 import dagger.hilt.android.HiltAndroidApp
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -24,6 +25,13 @@ class GmHiltApp : Application(), Configuration.Provider {
             .setMinimumLoggingLevel(Log.DEBUG)
             .setWorkerFactory(gptmapWorkersFactory)
             .build()
+
+    override fun onCreate() {
+        super.onCreate()
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
+    }
 }
 
 

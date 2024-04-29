@@ -26,6 +26,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -66,16 +69,28 @@ import com.espressodev.gptmap.core.designsystem.R.string as AppText
 
 @Composable
 fun ExtFloActionButton(
-    @DrawableRes icon: Int,
+    iconType: IconType,
     @StringRes label: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     OutlinedButton(onClick = onClick, modifier = modifier, shape = RoundedCornerShape(16.dp)) {
-        Image(
-            painter = painterResource(icon),
-            contentDescription = null
-        )
+        when (iconType) {
+            is IconType.Bitmap -> {
+                Image(
+                    painter = painterResource(iconType.painterId),
+                    contentDescription = null
+                )
+            }
+
+            is IconType.Vector -> {
+                Image(
+                    imageVector = iconType.imageVector,
+                    contentDescription = null
+                )
+            }
+        }
+
         Spacer(Modifier.width(8.dp))
         Text(stringResource(label), style = MaterialTheme.typography.titleMedium)
     }
@@ -332,9 +347,92 @@ fun BackButton(onClick: () -> Unit) {
     }
 }
 
+@Composable
+fun ExtendedButtonWithText(
+    @StringRes textId: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    swap: Boolean = false,
+    contentPaddings: PaddingValues = PaddingValues(vertical = 8.dp, horizontal = 8.dp),
+    shape: RoundedCornerShape = RoundedCornerShape(8.dp),
+    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+    ),
+    border: BorderStroke = BorderStroke(0.dp, Color.Transparent),
+    elevation: ButtonElevation = ButtonDefaults.buttonElevation(defaultElevation = 1.dp),
+) {
+    OutlinedButton(
+        onClick = onClick,
+        contentPadding = contentPaddings,
+        shape = shape,
+        colors = colors,
+        border = border,
+        elevation = elevation,
+        modifier = modifier
+    ) {
+
+        val icon = @Composable {
+            Icon(
+                imageVector = GmIcons.ArrowBackOutlined,
+                contentDescription = null,
+                modifier = Modifier.size(26.dp)
+            )
+        }
+
+        val text = @Composable {
+            Text(
+                text = stringResource(id = textId),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.offset(y = .5.dp)
+            )
+        }
+
+        val spacer = @Composable { Spacer(modifier = Modifier.width(2.dp)) }
+
+        when (swap) {
+            true -> {
+                text()
+                spacer()
+                icon()
+            }
+
+            false -> {
+                icon()
+                spacer()
+                text()
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BackButtonPreview() {
+    GptmapTheme {
+        BackButton {
+
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun ButtonPreview() {
     GptmapTheme {
+        SquareButton(
+            contentDesc = 0,
+            onClick = {},
+            icon = IconType.Vector(GmIcons.DoneDefault),
+            modifier = Modifier,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ExtFloButtonPreview() {
+    GptmapTheme {
+        ExtendedButtonWithText(AppText.prev, {})
     }
 }

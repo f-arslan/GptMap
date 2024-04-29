@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Title
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.ArrowCircleLeft
+import androidx.compose.material.icons.outlined.ArrowCircleRight
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Delete
@@ -54,6 +55,7 @@ object GmIcons {
     val EmailOutlined = Icons.Outlined.Email
     val MarkEmailUnreadOutlined = Icons.Outlined.MarkEmailUnread
     val ArrowBackOutlined = Icons.Outlined.ArrowCircleLeft
+    val ArrowNextOutlined = Icons.Outlined.ArrowCircleRight
     val FingerPrintFilled = Icons.Filled.Fingerprint
     val LocationCityOutlined = Icons.Outlined.LocationCity
     val MyLocationOutlined = Icons.Outlined.MyLocation

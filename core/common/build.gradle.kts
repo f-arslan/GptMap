@@ -11,4 +11,5 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewModelCompose)
     implementation(libs.firebase.crashlytics)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.timber)
 }
