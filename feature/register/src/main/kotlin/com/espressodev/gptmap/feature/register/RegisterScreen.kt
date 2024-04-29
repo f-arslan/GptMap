@@ -35,6 +35,7 @@ import com.espressodev.gptmap.core.designsystem.Constants.PRIVACY_POLICY_LINK
 import com.espressodev.gptmap.core.designsystem.Constants.TERMS_CONDITIONS
 import com.espressodev.gptmap.core.designsystem.Constants.TERMS_CONDITIONS_LINK
 import com.espressodev.gptmap.core.designsystem.GmIcons
+import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.component.AppWrapper
 import com.espressodev.gptmap.core.designsystem.component.DayHeader
 import com.espressodev.gptmap.core.designsystem.component.DefaultButton
@@ -151,7 +152,7 @@ private fun RegisterScreen(
             height = 24.dp,
         )
         ExtFloActionButton(
-            icon = AppDrawable.google,
+            iconType = IconType.Bitmap(AppDrawable.google),
             label = AppText.continue_google,
             onClick = { onEvent(RegisterEvent.OnGoogleClicked(context)) },
         )

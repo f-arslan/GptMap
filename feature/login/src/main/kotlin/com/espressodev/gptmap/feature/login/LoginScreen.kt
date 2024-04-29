@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.espressodev.gptmap.core.designsystem.GmIcons
+import com.espressodev.gptmap.core.designsystem.IconType
 import com.espressodev.gptmap.core.designsystem.component.AppWrapper
 import com.espressodev.gptmap.core.designsystem.component.DayHeader
 import com.espressodev.gptmap.core.designsystem.component.DefaultButton
@@ -110,7 +111,7 @@ private fun LoginScreen(
         )
         val context = LocalContext.current
         ExtFloActionButton(
-            AppDrawable.google,
+            IconType.Bitmap(AppDrawable.google),
             label = AppText.continue_google,
             onClick = { onEvent(LoginEvent.OnGoogleClicked(context)) }
         )

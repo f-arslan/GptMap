@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
-import android.util.Log
 import com.espressodev.gptmap.core.common.SpeechRecognitionResult
 import com.espressodev.gptmap.core.common.SpeechToText
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -28,13 +27,9 @@ class SpeechToTextImpl @Inject constructor(
         val throttleDelay = 100L
 
         val listener = object : RecognitionListener {
-            override fun onReadyForSpeech(params: Bundle?) {
-                Log.d("SpeechRecognizer", "Speech recognition is ready.")
-            }
+            override fun onReadyForSpeech(params: Bundle?) = Unit
 
-            override fun onBeginningOfSpeech() {
-                Log.d("SpeechRecognizer", "Speech recognition has begun.")
-            }
+            override fun onBeginningOfSpeech() = Unit
 
             override fun onRmsChanged(rmsdB: Float) {
                 val currentTime = System.currentTimeMillis()
@@ -45,17 +40,12 @@ class SpeechToTextImpl @Inject constructor(
                 }
             }
 
-            override fun onBufferReceived(buffer: ByteArray?) {
-                Log.d("SpeechRecognizer", "Buffer received: $buffer")
-            }
+            override fun onBufferReceived(buffer: ByteArray?) = Unit
 
-            override fun onEndOfSpeech() {
-                Log.d("SpeechRecognizer", "Speech recognition has ended.")
-            }
+            override fun onEndOfSpeech() = Unit
 
             override fun onError(error: Int) {
                 trySend(SpeechRecognitionResult(emptyList(), lastRmsValue, true))
-                Log.e("SpeechRecognizer", "Error occurred during speech recognition: $error")
             }
 
             override fun onResults(results: Bundle?) {
@@ -63,20 +53,12 @@ class SpeechToTextImpl @Inject constructor(
                     ?.let { recognizedText ->
                         trySend(SpeechRecognitionResult(recognizedText, lastRmsValue))
                     } ?: trySend(SpeechRecognitionResult(emptyList(), lastRmsValue, true))
-                    .also {
-                        Log.d("SpeechRecognizer", "Speech recognition results received: $it")
-                    }
             }
 
             override fun onPartialResults(partialResults: Bundle?) {
                 partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                     ?.let { recognizedText ->
                         trySend(SpeechRecognitionResult(recognizedText, lastRmsValue))
-                    }.also {
-                        Log.d(
-                            "SpeechRecognizer",
-                            "Partial speech recognition results received: $it"
-                        )
                     }
             }
 
