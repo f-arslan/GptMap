@@ -53,7 +53,7 @@ object GeminiModule {
     @Provides
     fun bindGeminiService(
         @Named(TEXT_MODEL) generativeModelForText: GenerativeModel,
-        @Named(IMAGE_MODEL) generativeModelForImage: GenerativeModel
+        @Named(IMAGE_MODEL) generativeModelForImage: GenerativeModel,
     ): GeminiRepository =
         GeminiDataSource(
             generativeModelForText = generativeModelForText,

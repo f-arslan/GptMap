@@ -78,7 +78,7 @@ class FavouriteRealmDataSource @Inject constructor(@Dispatcher(IO) private val i
             favouriteId
         )
             .find()
-            .first().also(::println)
+            .first()
         findLatest(favouriteToUpdate)?.let { realmFavourite ->
             realmFavourite.locationImages?.find { it.id == messageId }?.analysisId =
                 imageAnalysisId

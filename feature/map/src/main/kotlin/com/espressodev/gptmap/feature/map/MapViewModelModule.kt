@@ -5,6 +5,7 @@ import com.espressodev.gptmap.core.data.repository.FavouriteRepository
 import com.espressodev.gptmap.core.data.repository.ImageAnalysisRepository
 import com.espressodev.gptmap.core.data.repository.UserRepository
 import com.espressodev.gptmap.core.datastore.DataStoreService
+import com.espressodev.gptmap.core.domain.GetNextOrPrevFavouriteUseCase
 import com.espressodev.gptmap.core.firebase.FirestoreRepository
 import com.espressodev.gptmap.core.gemini.GeminiRepository
 import com.espressodev.gptmap.core.mongodb.FavouriteRealmRepository
@@ -33,11 +34,13 @@ object ViewModelModule {
     fun provideRepositoryBundle(
         favouriteRepository: FavouriteRepository,
         userRepository: UserRepository,
-        imageAnalysisRepository: ImageAnalysisRepository
+        imageAnalysisRepository: ImageAnalysisRepository,
+        getNextOrPrevFavouriteUseCase: GetNextOrPrevFavouriteUseCase
     ): RepositoryBundle = RepositoryBundle(
         favouriteRepository,
         userRepository,
-        imageAnalysisRepository
+        imageAnalysisRepository,
+        getNextOrPrevFavouriteUseCase
     )
 
     @ViewModelScoped
@@ -62,7 +65,8 @@ data class ApiService(
 data class RepositoryBundle(
     val favouriteRepository: FavouriteRepository,
     val userRepository: UserRepository,
-    val imageAnalysisRepository: ImageAnalysisRepository
+    val imageAnalysisRepository: ImageAnalysisRepository,
+    val getNextOrPrevFavouriteUseCase: GetNextOrPrevFavouriteUseCase
 )
 
 data class DataBundle(

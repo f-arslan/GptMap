@@ -48,7 +48,7 @@ class ImageMessageRepositoryImpl @Inject constructor(
                 geminiRepository.getImageDescription(bitmap = bitmap, text = text).getOrThrow()
                     .collect { (chunk, token) ->
                         stringBuilder.append(chunk)
-                        totalToken = token.also(::println)
+                        totalToken = token
                     }
             }.onFailure {
                 stringBuilder.append(it.message)

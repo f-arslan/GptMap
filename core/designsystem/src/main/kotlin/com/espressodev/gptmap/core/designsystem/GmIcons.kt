@@ -1,6 +1,7 @@
 package com.espressodev.gptmap.core.designsystem
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowForwardIos
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.automirrored.outlined.NavigateNext
 import androidx.compose.material.icons.filled.ArrowUpward
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.filled.Screenshot
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Title
 import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.ArrowBackIosNew
 import androidx.compose.material.icons.outlined.ArrowCircleLeft
 import androidx.compose.material.icons.outlined.ArrowCircleRight
 import androidx.compose.material.icons.outlined.BookmarkBorder
@@ -55,6 +57,8 @@ object GmIcons {
     val EmailOutlined = Icons.Outlined.Email
     val MarkEmailUnreadOutlined = Icons.Outlined.MarkEmailUnread
     val ArrowBackOutlined = Icons.Outlined.ArrowCircleLeft
+    val ArrowBackIOSOutlined = Icons.Outlined.ArrowBackIosNew
+    val ArrowForwardIOSOutlined = Icons.AutoMirrored.Outlined.ArrowForwardIos
     val ArrowNextOutlined = Icons.Outlined.ArrowCircleRight
     val FingerPrintFilled = Icons.Filled.Fingerprint
     val LocationCityOutlined = Icons.Outlined.LocationCity

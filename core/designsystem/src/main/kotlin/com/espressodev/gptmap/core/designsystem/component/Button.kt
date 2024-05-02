@@ -288,7 +288,7 @@ fun SquareButton(
     onClick: () -> Unit,
     icon: IconType,
     modifier: Modifier = Modifier,
-    shape: RoundedCornerShape = RoundedCornerShape(16.dp),
+    shape: RoundedCornerShape = RoundedCornerShape(8.dp),
     contentPaddings: PaddingValues = PaddingValues(0.dp),
     size: Dp = 56.dp,
 ) {
@@ -350,10 +350,12 @@ fun BackButton(onClick: () -> Unit) {
 @Composable
 fun ExtendedButtonWithText(
     @StringRes textId: Int,
+    iconType: IconType,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     swap: Boolean = false,
-    contentPaddings: PaddingValues = PaddingValues(vertical = 8.dp, horizontal = 8.dp),
+    isTextVisible: Boolean = true,
+    contentPaddings: PaddingValues = PaddingValues(0.dp),
     shape: RoundedCornerShape = RoundedCornerShape(8.dp),
     colors: ButtonColors = ButtonDefaults.outlinedButtonColors(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -371,28 +373,39 @@ fun ExtendedButtonWithText(
         elevation = elevation,
         modifier = modifier
     ) {
-
         val icon = @Composable {
-            Icon(
-                imageVector = GmIcons.ArrowBackOutlined,
-                contentDescription = null,
-                modifier = Modifier.size(26.dp)
-            )
+            when (iconType) {
+                is IconType.Bitmap -> {
+                    Icon(
+                        painter = painterResource(id = iconType.painterId),
+                        contentDescription = null,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+
+                is IconType.Vector -> {
+                    Icon(
+                        imageVector = iconType.imageVector,
+                        contentDescription = null,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            }
         }
 
         val text = @Composable {
             Text(
                 text = stringResource(id = textId),
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.offset(y = .5.dp)
             )
         }
 
-        val spacer = @Composable { Spacer(modifier = Modifier.width(2.dp)) }
+        val spacer = @Composable { Spacer(modifier = Modifier.width(4.dp)) }
 
         when (swap) {
             true -> {
-                text()
+                if (isTextVisible) text()
+                if (isTextVisible) spacer()
                 spacer()
                 icon()
             }
@@ -400,7 +413,8 @@ fun ExtendedButtonWithText(
             false -> {
                 icon()
                 spacer()
-                text()
+                if (isTextVisible) text()
+                if (isTextVisible) spacer()
             }
         }
     }
@@ -433,6 +447,6 @@ fun ButtonPreview() {
 @Composable
 fun ExtFloButtonPreview() {
     GptmapTheme {
-        ExtendedButtonWithText(AppText.prev, {})
+        ExtendedButtonWithText(AppText.prev, IconType.Vector(GmIcons.ArrowBackOutlined), {})
     }
 }

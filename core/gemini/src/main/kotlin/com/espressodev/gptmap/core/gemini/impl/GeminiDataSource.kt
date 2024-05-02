@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 
 class GeminiDataSource(
     private val generativeModelForText: GenerativeModel,
-    private val generativeModelForImage: GenerativeModel
+    private val generativeModelForImage: GenerativeModel,
 ) : GeminiRepository {
     override suspend fun getLocationInfo(textContent: String): Result<Pair<Location, Int>> =
         withContext(Dispatchers.IO) {
@@ -32,7 +32,7 @@ class GeminiDataSource(
 
     override suspend fun getImageDescription(
         bitmap: Bitmap,
-        text: String
+        text: String,
     ): Result<Flow<Pair<String, Int>>> =
         runCatching {
             val inputContent = content {
