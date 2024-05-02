@@ -28,7 +28,6 @@ fun Application.configureSecurity() {
                     try {
                         FirebaseAuth.getInstance().verifyIdToken(idToken)
                     } catch (e: FirebaseAuthException) {
-                        println(e.message.toString())
                         call.respond(HttpStatusCode.Unauthorized)
                         finish()
                     } catch (e: Exception) {
