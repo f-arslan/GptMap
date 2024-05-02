@@ -51,6 +51,8 @@ sealed class MapUiEvent {
     data object OnScreenshotProcessStarted : MapUiEvent()
     data object OnScreenshotProcessCancelled : MapUiEvent()
     data class OnStreetViewClick(val latLng: Pair<Double, Double>) : MapUiEvent()
+    data class OnLeftClickInFavourite(val favouriteId: String) : MapUiEvent()
+    data class OnRightClickInFavourite(val favouriteId: String) : MapUiEvent()
 }
 
 sealed interface NavigationState {

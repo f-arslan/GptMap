@@ -119,8 +119,22 @@ class MapViewModel @Inject constructor(
             MapUiEvent.OnChatAiClick -> onChatAiClick()
             is MapUiEvent.OnExploreWithAiClickFromImage -> onExploreWithAiClick(event.index)
             MapUiEvent.OnProfileClick -> _navigationState.update { NavigationState.NavigateToProfile }
+            is MapUiEvent.OnLeftClickInFavourite ->
+                onNavigationClickInFavourite(event.favouriteId, false)
+
+            is MapUiEvent.OnRightClickInFavourite ->
+                onNavigationClickInFavourite(event.favouriteId, true)
         }
     }
+
+    private fun onNavigationClickInFavourite(favouriteId: String, isNext: Boolean) =
+        launchCatching {
+            val nextFavourite =
+                repositoryBundle.getNextOrPrevFavouriteUseCase(favouriteId, isNext).getOrThrow()
+            if (nextFavourite != null) {
+                savedStateHandle[FavouriteId] = nextFavourite.id
+            }
+        }
 
     private fun onChatAiClick() = launchCatching {
         val latestImageId = repositoryBundle.userRepository.getLatestImageId().getOrThrow()

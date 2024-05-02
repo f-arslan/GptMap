@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -69,7 +70,6 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.espressodev.gptmap.core.designsystem.Constants.BOTTOM_BAR_PADDING
 import com.espressodev.gptmap.core.designsystem.GmIcons
 import com.espressodev.gptmap.core.designsystem.IconType
-import com.espressodev.gptmap.core.designsystem.component.BackButton
 import com.espressodev.gptmap.core.designsystem.component.ExploreWithAiButton
 import com.espressodev.gptmap.core.designsystem.component.ExtendedButtonWithText
 import com.espressodev.gptmap.core.designsystem.component.GmDraggableButton
@@ -78,6 +78,7 @@ import com.espressodev.gptmap.core.designsystem.component.GradientOverImage
 import com.espressodev.gptmap.core.designsystem.component.LottieAnimationPlaceholder
 import com.espressodev.gptmap.core.designsystem.component.MapTextField
 import com.espressodev.gptmap.core.designsystem.component.ShimmerImage
+import com.espressodev.gptmap.core.designsystem.component.SquareButton
 import com.espressodev.gptmap.core.designsystem.theme.GptmapTheme
 import com.espressodev.gptmap.core.model.Location
 import com.espressodev.gptmap.core.model.unsplash.LocationImage
@@ -117,7 +118,7 @@ internal fun MapRoute(
     navigateToGallery: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MapViewModel = hiltViewModel(),
-    myLocationViewModel: MyLocationViewModel = hiltViewModel()
+    myLocationViewModel: MyLocationViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(key1 = Unit) {
         viewModel.initialize()
@@ -263,7 +264,7 @@ private fun BoxScope.DisplayBottomSheet(
     bottomSheetState: MapBottomSheetState,
     location: Location,
     onEvent: (MapUiEvent) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     when (bottomSheetState) {
         SMALL_INFORMATION_CARD -> location.content.run {
@@ -273,6 +274,8 @@ private fun BoxScope.DisplayBottomSheet(
                 poeticDesc = toPoeticDescWithDecor(),
                 onExploreWithAiClick = { onEvent(MapUiEvent.OnExploreWithAiClick) },
                 onBackClick = { onEvent(MapUiEvent.OnBackClick) },
+                onPrevClick = { onEvent(MapUiEvent.OnLeftClickInFavourite(location.favouriteId)) },
+                onNextClick = { onEvent(MapUiEvent.OnRightClickInFavourite(location.favouriteId)) },
                 modifier = modifier
             )
         }
@@ -339,7 +342,7 @@ private fun ImageGallery(
     initialPage: Int,
     images: List<LocationImage>,
     onDismiss: () -> Unit,
-    onExploreWithAiClick: (Int) -> Unit
+    onExploreWithAiClick: (Int) -> Unit,
 ) {
     val pagerState = rememberPagerState(pageCount = { 2 }, initialPage = initialPage)
     Dialog(onDismissRequest = onDismiss) {
@@ -386,7 +389,7 @@ private fun MapSearchBar(
     onValueChange: (String) -> Unit,
     onSearchClick: () -> Unit,
     onProfileClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     MapTextField(
         value = value,
@@ -408,7 +411,7 @@ context(BoxScope)
 private fun MapUiState.MapCameraSection(
     mapMyLocationState: MapMyLocationState,
     onEvent: (MapUiEvent) -> Unit,
-    onLocationEvent: (MapLocationEvent) -> Unit
+    onLocationEvent: (MapLocationEvent) -> Unit,
 ) {
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(coordinatesLatLng, 14f)
@@ -519,7 +522,7 @@ private fun MapSection(cameraPositionState: CameraPositionState) {
 @Composable
 private fun BoxScope.LoadingDialog(
     loadingState: ComponentLoadingState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     AnimatedVisibility(
         visible = loadingState != ComponentLoadingState.NOTHING,
@@ -573,7 +576,7 @@ private fun DefaultLoadingAnimation(modifier: Modifier = Modifier) {
 private fun BoxScope.LocationPin(
     isPinVisible: Boolean,
     isCameraMoving: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     AnimatedVisibility(
         visible = isPinVisible,
@@ -609,27 +612,45 @@ private fun SmallInformationCard(
     poeticDesc: String,
     onExploreWithAiClick: () -> Unit,
     onBackClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onPrevClick: () -> Unit,
+    onNextClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     BackHandler(onBack = onBackClick)
-    Box(modifier = Modifier.fillMaxSize()) {
-        BackButton(
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(8.dp)
+    ) {
+        SquareButton(
+            contentDesc = AppText.back_arrow,
             onClick = onBackClick,
+            icon = IconType.Vector(GmIcons.ArrowBackOutlined),
+            size = 48.dp
         )
-        Column(
-            modifier = modifier
-                .align(Alignment.BottomCenter)
-                .padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
+
+        Column(modifier = Modifier.align(Alignment.BottomCenter)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                ExtendedButtonWithText(textId = AppText.prev, onClick = { })
-                ExtendedButtonWithText(textId = AppText.next, onClick = { }, swap = true)
+                ExtendedButtonWithText(
+                    textId = AppText.prev,
+                    iconType = IconType.Vector(GmIcons.ArrowBackIOSOutlined),
+                    onClick = onPrevClick,
+                    isTextVisible = false,
+                    modifier = Modifier.size(48.dp)
+                )
+                ExtendedButtonWithText(
+                    textId = AppText.next,
+                    iconType = IconType.Vector(GmIcons.ArrowForwardIOSOutlined),
+                    onClick = onNextClick,
+                    swap = true,
+                    isTextVisible = false,
+                    modifier = Modifier.size(48.dp)
+                )
             }
-
+            Spacer(modifier = Modifier.height(8.dp))
             Surface(
                 shape = RoundedCornerShape(16.dp),
                 shadowElevation = 8.dp,
@@ -672,6 +693,7 @@ fun MapScreenPreview() {
                 poeticDesc = "This is good",
                 onExploreWithAiClick = {},
                 onBackClick = {},
+                {}, {}
             )
         }
     }
