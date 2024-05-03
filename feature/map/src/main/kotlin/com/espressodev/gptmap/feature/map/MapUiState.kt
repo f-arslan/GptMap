@@ -17,7 +17,7 @@ fun Pair<Double, Double>.toLatLng() = LatLng(first, second)
 
 data class ImageGalleryState(
     val currentIndex: Int = 0,
-    val shouldShownGallery: Boolean = false
+    val shouldShownGallery: Boolean = false,
 )
 
 data class MapUiState(
@@ -30,7 +30,8 @@ data class MapUiState(
     val imageGalleryState: ImageGalleryState = ImageGalleryState(),
     val isLoading: Boolean = false,
     val isComponentVisible: Boolean = true,
-    val isSearchBarVisible: Boolean = true
+    val isSearchBarVisible: Boolean = true,
+    val isMapPinVisible: Boolean = true,
 ) {
     val coordinatesLatLng: LatLng
         get() = location.content.coordinates.run { LatLng(latitude, longitude) }

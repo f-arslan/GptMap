@@ -132,7 +132,10 @@ class MapViewModel @Inject constructor(
             val nextFavourite =
                 repositoryBundle.getNextOrPrevFavouriteUseCase(favouriteId, isNext).getOrThrow()
             if (nextFavourite != null) {
-                savedStateHandle[FavouriteId] = nextFavourite.id
+                _uiState.update { it.copy(location = nextFavourite.toLocation()) }
+            } else {
+                if (isNext) SnackbarManager.showMessage(AppText.navigate_location_error_further)
+                else SnackbarManager.showMessage(AppText.navigate_location_error_before)
             }
         }
 
@@ -209,7 +212,9 @@ class MapViewModel @Inject constructor(
                         location = location,
                         componentLoadingState = ComponentLoadingState.NOTHING,
                         bottomSheetState = MapBottomSheetState.SMALL_INFORMATION_CARD,
-                        searchValue = ""
+                        searchValue = "",
+                        isSearchBarVisible = false,
+                        isComponentVisible = true
                     )
                 }
 
@@ -220,11 +225,7 @@ class MapViewModel @Inject constructor(
                         }
                 }
             }.onFailure {
-                _uiState.update {
-                    it.copy(
-                        componentLoadingState = ComponentLoadingState.NOTHING
-                    )
-                }
+                _uiState.update { it.copy(componentLoadingState = ComponentLoadingState.NOTHING) }
             }
     }
 

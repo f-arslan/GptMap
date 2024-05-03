@@ -468,7 +468,7 @@ private fun MapUiState.MapCameraSection(
     }
 
     LocationPin(
-        isPinVisible = isComponentVisible,
+        isPinVisible = isMapPinVisible,
         isCameraMoving = cameraPositionState.isMoving
     )
 
@@ -621,6 +621,7 @@ private fun SmallInformationCard(
         modifier = modifier
             .fillMaxSize()
             .padding(8.dp)
+            .statusBarsPadding()
     ) {
         SquareButton(
             contentDesc = AppText.back_arrow,

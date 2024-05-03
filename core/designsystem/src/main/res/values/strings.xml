@@ -68,6 +68,8 @@
     <string name="selected_plan">Selected Plan</string>
     <string name="prev">Prev</string>
     <string name="next">Next</string>
+    <string name="navigate_location_error_further">There is no location to the EAST</string>
+    <string name="navigate_location_error_before">There is no location to the WEST</string>
 
     <!-- Map -->
     <string name="map_text_field_placeholder">Search here</string>
