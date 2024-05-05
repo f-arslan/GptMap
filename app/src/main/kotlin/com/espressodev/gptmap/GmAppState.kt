@@ -12,16 +12,17 @@ import androidx.navigation.navOptions
 import com.espressodev.gptmap.core.common.NetworkMonitor
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
 import com.espressodev.gptmap.core.common.snackbar.SnackbarMessage.Companion.toMessage
-import com.espressodev.gptmap.feature.favourite.FavouriteRoute
+import com.espressodev.gptmap.feature.favourite.Favourite
 import com.espressodev.gptmap.feature.favourite.navigateToFavourite
-import com.espressodev.gptmap.feature.map.MapRouteWithArg
+import com.espressodev.gptmap.feature.map.Map
 import com.espressodev.gptmap.feature.map.navigateToMap
-import com.espressodev.gptmap.feature.screenshot_gallery.ScreenshotGalleryRoute
+import com.espressodev.gptmap.feature.map.toDestinationString
+import com.espressodev.gptmap.feature.screenshot_gallery.ScreenshotGallery
 import com.espressodev.gptmap.feature.screenshot_gallery.navigateToScreenshotGallery
 import com.espressodev.gptmap.navigation.TopLevelDestination
 import com.espressodev.gptmap.navigation.TopLevelDestination.FAVOURITE
 import com.espressodev.gptmap.navigation.TopLevelDestination.MAP
-import com.espressodev.gptmap.navigation.TopLevelDestination.SCREENSHOT_GALLERY
+import com.espressodev.gptmap.navigation.TopLevelDestination.SCREENSHOTGALLERY
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filterNotNull
@@ -36,7 +37,7 @@ class GmAppState(
     val snackbarHostState: SnackbarHostState,
     private val snackbarManager: SnackbarManager,
     private val resources: Resources,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
 ) {
     init {
         coroutineScope.launch {
@@ -67,16 +68,16 @@ class GmAppState(
             .currentBackStackEntryAsState().value?.destination
 
     val currentTopLevelDestination: TopLevelDestination?
-        @Composable get() = when (currentDestination?.route) {
-            MapRouteWithArg -> MAP
-            ScreenshotGalleryRoute -> SCREENSHOT_GALLERY
-            FavouriteRoute -> FAVOURITE
+        @Composable get() = when (currentDestination?.route?.substringAfterLast(".")) {
+            Map().toDestinationString() -> MAP
+            ScreenshotGallery.toString() -> SCREENSHOTGALLERY
+            Favourite.toString() -> FAVOURITE
             else -> null
         }
 
     fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
         val topLevelNavOptions = navOptions {
-            popUpTo(MapRouteWithArg) {
+            popUpTo(Map()) {
                 saveState = true
             }
             launchSingleTop = true
@@ -84,7 +85,7 @@ class GmAppState(
         }
         when (topLevelDestination) {
             MAP -> navController.navigateToMap(navOptions = topLevelNavOptions)
-            SCREENSHOT_GALLERY -> navController.navigateToScreenshotGallery(topLevelNavOptions)
+            SCREENSHOTGALLERY -> navController.navigateToScreenshotGallery(topLevelNavOptions)
             FAVOURITE -> navController.navigateToFavourite(topLevelNavOptions)
         }
     }

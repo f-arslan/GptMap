@@ -15,7 +15,7 @@ import com.espressodev.gptmap.feature.forgot_password.forgotPasswordScreen
 import com.espressodev.gptmap.feature.forgot_password.navigateToForgotPassword
 import com.espressodev.gptmap.feature.info.infoScreen
 import com.espressodev.gptmap.feature.info.navigateToInfo
-import com.espressodev.gptmap.feature.login.LoginRoute
+import com.espressodev.gptmap.feature.login.Login
 import com.espressodev.gptmap.feature.login.loginScreen
 import com.espressodev.gptmap.feature.login.navigateToLogin
 import com.espressodev.gptmap.feature.map.mapScreen
@@ -38,7 +38,7 @@ import com.espressodev.gptmap.feature.verify_auth.verifyAuthScreen
 fun GmNavHost(
     appState: GmAppState,
     modifier: Modifier = Modifier,
-    startDestination: String = LoginRoute
+    startDestination: Any = Login
 ) {
     val navController = appState.navController
     NavHost(
@@ -52,7 +52,7 @@ fun GmNavHost(
             navigateToProfile = navController::navigateToProfile,
             navigateToSnapToScript = navController::navigateToSnapToScript,
             navigateToGallery = {
-                appState.navigateToTopLevelDestination(TopLevelDestination.SCREENSHOT_GALLERY)
+                appState.navigateToTopLevelDestination(TopLevelDestination.SCREENSHOTGALLERY)
             }
         )
         loginScreen(

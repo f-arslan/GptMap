@@ -4,8 +4,10 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.composable
+import kotlinx.serialization.Serializable
 
-const val LoginRoute = "login_route"
+@Serializable
+data object Login
 
 fun NavController.navigateToLogin(
     navOptionsBuilder: NavOptionsBuilder.() -> Unit = {
@@ -13,7 +15,7 @@ fun NavController.navigateToLogin(
         popUpTo(0) { inclusive = true }
     }
 ) {
-    navigate(LoginRoute, builder = navOptionsBuilder)
+    navigate(Login, builder = navOptionsBuilder)
 }
 
 fun NavGraphBuilder.loginScreen(
@@ -21,7 +23,7 @@ fun NavGraphBuilder.loginScreen(
     navigateToRegister: () -> Unit,
     navigateToForgotPassword: () -> Unit
 ) {
-    composable(LoginRoute) {
+    composable<Login> {
         LoginRoute(
             navigateToMap = navigateToMap,
             navigateToRegister = navigateToRegister,

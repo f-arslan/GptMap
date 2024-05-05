@@ -4,18 +4,20 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import kotlinx.serialization.Serializable
 
-const val REGISTER_ROUTE = "register_route"
+@Serializable
+data object Register
 
 fun NavController.navigateToRegister(navOptions: NavOptions? = null) {
-    navigate(REGISTER_ROUTE, navOptions)
+    navigate(Register, navOptions)
 }
 
 fun NavGraphBuilder.registerScreen(
     navigateToLogin: () -> Unit,
     navigateToMap: () -> Unit
 ) {
-    composable(REGISTER_ROUTE) {
+    composable<Register> {
         RegisterRoute(
             navigateToLogin = navigateToLogin,
             navigateToMap = navigateToMap

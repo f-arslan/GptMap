@@ -11,6 +11,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 apply("gptmap.android.library")
                 apply("gptmap.android.hilt")
                 apply("gptmap.android.detekt")
+                apply("org.jetbrains.kotlin.plugin.serialization")
             }
 
             dependencies {
@@ -26,6 +27,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 implementation(libs.findLibrary("androidx-lifecycle-viewModelCompose").get())
                 implementation(libs.findLibrary("kotlinx-coroutines-android").get())
                 implementation(libs.findLibrary("kotlinx-collections-immutable").get())
+                implementation(libs.findLibrary("kotlinx-serialization-json").get())
             }
         }
     }

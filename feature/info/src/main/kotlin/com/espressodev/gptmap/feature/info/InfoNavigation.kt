@@ -4,15 +4,17 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import kotlinx.serialization.Serializable
 
-const val InfoRoute = "info_route"
+@Serializable
+data object Info
 
 fun NavController.navigateToInfo(navOptions: NavOptions? = null) {
-    navigate(InfoRoute, navOptions)
+    navigate(Info, navOptions)
 }
 
 fun NavGraphBuilder.infoScreen(popUp: () -> Unit) {
-    composable(InfoRoute) {
+    composable<Info> {
         InfoRoute(popUp = popUp)
     }
 }

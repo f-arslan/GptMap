@@ -35,8 +35,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.espressodev.gptmap.core.common.NetworkMonitor
 import com.espressodev.gptmap.core.common.snackbar.SnackbarManager
-import com.espressodev.gptmap.feature.login.LoginRoute
-import com.espressodev.gptmap.feature.map.MapRouteWithArg
+import com.espressodev.gptmap.feature.login.Login
+import com.espressodev.gptmap.feature.map.Map
 import com.espressodev.gptmap.navigation.GmNavHost
 import com.espressodev.gptmap.navigation.TopLevelDestination
 import kotlinx.coroutines.CoroutineScope
@@ -49,9 +49,9 @@ fun GmApp(
     accountState: AccountState,
     appState: GmAppState = rememberAppState(networkMonitor = networkMonitor)
 ) {
-    val startDestination = when (accountState) {
-        AccountState.UserAlreadySignIn -> MapRouteWithArg
-        else -> LoginRoute
+    val startDestination: Any = when (accountState) {
+        AccountState.UserAlreadySignIn -> Map()
+        else -> Login
     }
 
     val isOffline by appState.isOffline.collectAsStateWithLifecycle()
@@ -153,7 +153,7 @@ fun RowScope.GmNavigationBarItem(
 
 private fun NavDestination?.isTopLevelDestinationInHierarchy(destination: TopLevelDestination) =
     this?.hierarchy?.any {
-        it.route?.contains(destination.name, ignoreCase = true) == true
+        it.route?.substringAfterLast(".")?.contains(destination.name, ignoreCase = true) == true
     } == true
 
 @Composable

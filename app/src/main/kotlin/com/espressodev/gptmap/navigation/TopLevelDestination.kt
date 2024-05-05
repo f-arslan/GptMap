@@ -20,7 +20,7 @@ enum class TopLevelDestination(
         GmIcons.ExploreOutlined,
         AppText.explore
     ),
-    SCREENSHOT_GALLERY(
+    SCREENSHOTGALLERY(
         GmIcons.ScreenshotFilled,
         GmIcons.ScreenshotOutlined,
         AppText.gallery

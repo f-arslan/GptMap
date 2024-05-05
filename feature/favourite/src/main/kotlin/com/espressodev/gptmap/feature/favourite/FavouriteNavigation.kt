@@ -4,18 +4,20 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import kotlinx.serialization.Serializable
 
-const val FavouriteRoute = "favourite_route"
+@Serializable
+data object Favourite
 
 fun NavController.navigateToFavourite(navOptions: NavOptions? = null) {
-    navigate(FavouriteRoute, navOptions)
+    navigate(Favourite, navOptions)
 }
 
 fun NavGraphBuilder.favouriteScreen(
     popUp: () -> Unit,
     navigateToMap: (String) -> Unit,
 ) {
-    composable(FavouriteRoute) {
+    composable<Favourite> {
         FavouriteRoute(popUp = popUp, navigateToMap = navigateToMap)
     }
 }

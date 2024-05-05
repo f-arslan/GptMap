@@ -4,15 +4,17 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import kotlinx.serialization.Serializable
 
-const val VerifyAuthRoute = "verify_auth_route"
+@Serializable
+data object VerifyAuth
 
 fun NavController.navigateToVerifyAuth(navOptions: NavOptions? = null) {
-    navigate(VerifyAuthRoute, navOptions)
+    navigate(VerifyAuth, navOptions)
 }
 
 fun NavGraphBuilder.verifyAuthScreen(popUp: () -> Unit, navigateToDelete: () -> Unit) {
-    composable(VerifyAuthRoute) {
+    composable<VerifyAuth> {
         VerifyAuthRoute(
             popUp = popUp,
             navigateToDelete = navigateToDelete

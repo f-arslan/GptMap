@@ -3,14 +3,16 @@ package com.espressodev.gptmap.feature.map
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import androidx.navigation.navOptions
+import kotlinx.serialization.Serializable
 
-const val MapRoute = "map_route"
 const val FavouriteId = "favId"
-const val MapRouteWithArg = "$MapRoute/{$FavouriteId}"
+
+@Serializable
+data class Map(val favId: String = "favId")
+fun Map.toDestinationString() = "Map?$favId={$favId}"
+
 fun NavController.navigateToMap(
     favouriteId: String = "default",
     navOptions: NavOptions? = navOptions {
@@ -18,7 +20,7 @@ fun NavController.navigateToMap(
         launchSingleTop = true
     }
 ) {
-    navigate("$MapRoute/$favouriteId", navOptions)
+    navigate(Map(favouriteId), navOptions)
 }
 
 fun NavGraphBuilder.mapScreen(
@@ -28,10 +30,7 @@ fun NavGraphBuilder.mapScreen(
     navigateToSnapToScript: (String) -> Unit,
     navigateToGallery: () -> Unit
 ) {
-    composable(
-        route = "$MapRoute/{$FavouriteId}",
-        arguments = listOf(navArgument(FavouriteId) { type = NavType.StringType })
-    ) {
+    composable<Map> {
         MapRoute(
             navigateToStreetView = { locPair ->
                 navigateToStreetView(locPair.first, locPair.second)

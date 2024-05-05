@@ -4,18 +4,20 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import kotlinx.serialization.Serializable
 
-const val ScreenshotGalleryRoute = "screenshot_gallery_route"
+@Serializable
+data object ScreenshotGallery
 
 fun NavController.navigateToScreenshotGallery(navOptions: NavOptions? = null) {
-    navigate(ScreenshotGalleryRoute, navOptions = navOptions)
+    navigate(ScreenshotGallery, navOptions = navOptions)
 }
 
 fun NavGraphBuilder.screenshotGalleryScreen(
     popUp: () -> Unit,
     navigateToSnapToScript: (String) -> Unit,
 ) {
-    composable(ScreenshotGalleryRoute) {
+    composable<ScreenshotGallery> {
         ScreenshotGalleryRoute(popUp = popUp, navigateToSnapToScript = navigateToSnapToScript)
     }
 }

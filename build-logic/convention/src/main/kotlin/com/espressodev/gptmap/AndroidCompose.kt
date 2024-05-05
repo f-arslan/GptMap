@@ -38,6 +38,7 @@ internal fun Project.configureAndroidCompose(
             androidTestImplementation(libs.findLibrary("androidx-compose-ui-test").get())
             androidTestImplementation(libs.findLibrary("androidx-compose-ui-test-junit4").get())
             debugImplementation(libs.findLibrary("androidx-compose-ui-testManifest").get())
+            implementation(libs.findLibrary("androidx-navigation-compose").get())
         }
     }
 

@@ -30,8 +30,8 @@ class GetNextOrPrevFavouriteUseCase @Inject constructor(
     }
 }
 
-fun Coordinates.haversineDistance(other: Coordinates): Double {
-    val earthRadiusKm = 6371.0 // Earth's radius in kilometers
+internal fun Coordinates.haversineDistance(other: Coordinates): Double {
+    val earthRadiusKm = 6371.0
     val deltaLatRadians = Math.toRadians(other.latitude - this.latitude)
     val deltaLonRadians = Math.toRadians(other.longitude - this.longitude)
     val sinHalfDeltaLat = sin(deltaLatRadians / 2)
@@ -43,7 +43,7 @@ fun Coordinates.haversineDistance(other: Coordinates): Double {
     return earthRadiusKm * c
 }
 
-fun Favourite.findClosestFavourites(favourites: List<Favourite>): Pair<Favourite?, Favourite?> {
+internal fun Favourite.findClosestFavourites(favourites: List<Favourite>): Pair<Favourite?, Favourite?> {
     val currentLocation = content.coordinates
     val sortedFavourites =
         favourites.sortedBy { currentLocation.haversineDistance(it.content.coordinates) }
@@ -54,10 +54,6 @@ fun Favourite.findClosestFavourites(favourites: List<Favourite>): Pair<Favourite
             Direction.NORTH_EAST, Direction.EAST, Direction.SOUTH_EAST, Direction.NORTH -> "LEFT"
             Direction.SOUTH, Direction.SOUTH_WEST, Direction.WEST, Direction.NORTH_WEST -> "RIGHT"
         }
-    }
-
-    for ((direction, group) in directionGroups) {
-        println("$direction: ${group.joinToString { it.first.content.city }}")
     }
 
     val leftFavourite =
@@ -72,7 +68,7 @@ enum class Direction {
     NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST, NORTH
 }
 
-fun Coordinates.directionTo(other: Coordinates): Direction {
+internal fun Coordinates.directionTo(other: Coordinates): Direction {
     val lat1 = Math.toRadians(other.latitude)
     val lat2 = Math.toRadians(this.latitude)
     val lon1 = Math.toRadians(other.longitude)

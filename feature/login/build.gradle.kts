@@ -7,7 +7,6 @@ android {
     namespace = "com.espressodev.gptmap.feature.login"
 }
 
-
 dependencies {
     implementation(projects.core.google)
     implementation(libs.play.services.auth)
